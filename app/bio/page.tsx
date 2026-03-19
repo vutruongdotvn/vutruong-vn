@@ -5,7 +5,7 @@ import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Bio',
   description: 'Mô tả trang',
-}
+};
 
 export default function BioPage() {
   const socials = [
