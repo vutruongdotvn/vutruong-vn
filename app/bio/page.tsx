@@ -1,10 +1,9 @@
 import Image from "next/image";
-import type { Metadata } from "next";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Bio',
-  description: 'Mô tả trang',
+  description: 'Trang danh sách các liên kết mạng xã hội của Vũ Trường',
 };
 
 export default function BioPage() {
