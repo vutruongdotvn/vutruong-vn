@@ -2,9 +2,13 @@ import "./globals.css";
 import { Roboto } from "next/font/google";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "VT System",
-  description: "VT System - Hệ thống Website của Vũ Trường | vutruong.vn",
+
+export const metadata = {
+  title: {
+    default: "VT System",
+    template: "%s | VT",
+  },
+  description: "Website của Vũ Trường",
 };
 
 const roboto = Roboto({

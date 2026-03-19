@@ -1,4 +1,5 @@
-"use client";
+
+import type { Metadata } from "next";
 
 export default function BioPage() {
   const socials = [
@@ -23,6 +24,13 @@ export default function BioPage() {
       color: "from-pink-500 via-red-500 to-yellow-500",
       icon: "fa-brands fa-instagram",
     },
+    {
+      name: "Threads",
+      url: "https://threads.com/vutruong.vn",
+      display: "@vutruong.vn",
+      color: "from-black to-black",
+      icon: "fa-brands fa-threads",
+    },
   ];
 
   return (
@@ -39,7 +47,7 @@ export default function BioPage() {
           />
 
           <p className="text-gray-500 text-sm mt-1">
-            Kết nối với mình qua các nền tảng bên dưới
+            Kết nối với mình qua mạng xã hội
           </p>
         </div>
 
@@ -50,12 +58,12 @@ export default function BioPage() {
               key={index}
               href={item.url}
               target="_blank"
-              className="group flex items-center justify-between p-4 rounded-2xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-md hover:shadow-lg transition-all"
+              className="group flex items-center justify-between p-4 rounded-2xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-md hover:shadow-lg transition-all hover:scale-102"
             >
               <div className="flex items-center gap-4">
                 {/* icon */}
                 <div
-                  className={`w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br ${item.color} text-white text-lg`}
+                  className={`w-12 h-12 flex items-center justify-center rounded-2xl bg-gradient-to-br ${item.color} text-white text-2xl`}
                 >
                   <i className={`${item.icon}`} />
                 </div>
