@@ -48,7 +48,7 @@ export default function Home() {
 
           {/* Subtitle */}
           <p className="text-gray-600 text-base">
-            Đang tạm bảo trì để nâng cấp 🧐
+            Không có gì ở đây cả,<br/>đang chuyển hướng về fb 🧐
           </p>
 
           {/* Circular Countdown */}
@@ -90,7 +90,7 @@ export default function Home() {
 
           {/* Contact */}
           <p className="text-sm text-gray-500">
-            contact@vutruong.vn
+            Liên hệ <a href="/contact" className="font-bold text-gray-600">contact@vutruong.vn</a> hoặc <a className="text-gray-600 font-bold" href="/bio">bio</a>
           </p>
         </div>
       </div>
