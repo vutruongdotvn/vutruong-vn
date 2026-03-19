@@ -38,7 +38,9 @@ export default function Home() {
 
           {/* Logo */}
           <div className="flex justify-center">
-            <Image src="/logo.png" alt="logo" width={70} height={70} priority />
+            <a href="/">
+              <Image src="/logo.png" alt="logo" width={70} height={70} priority />
+            </a>
           </div>
 
           {/* Title */}

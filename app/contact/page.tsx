@@ -39,8 +39,9 @@ export default function BioPage() {
       <div className="relative w-full max-w-xl">
         {/* header */}
         <div className="text-center mb-10">
-          <Image className='mx-auto mb-4' src="/logo.png" alt="logo" width={70} height={70} priority />
-
+          <a href="/">
+            <Image className='mx-auto mb-4' src="/logo.png" alt="logo" width={70} height={70} priority />
+          </a>
           <p className="text-gray-500 text-sm mt-1">
             Liên hệ với mình qua
           </p>
