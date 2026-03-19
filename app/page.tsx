@@ -17,7 +17,7 @@ export default function Home() {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          window.location.href = 'https://www.facebook.com/www.vutruong.vn';
+          window.location.href = 'https://www.facebook.com/100014201562904';
           return 0;
         }
         return prev - 1;
