@@ -20,6 +20,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
+      <head>
+        <link
+          rel="stylesheet"
+          href="//kit-pro.fontawesome.com/releases/v7.2.0/css/pro.min.css"
+          />
+      </head>
       <body className={roboto.className}>{children}</body>
     </html>
   );

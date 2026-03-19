@@ -1,108 +1,89 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-
-const socials = [
-  {
-    name: "Facebook",
-    username: "facebook.com/100014201562904",
-    url: "https://facebook.com/100014201562904",
-    color: "from-blue-500 to-blue-600",
-    icon: "/icons/facebook.svg",
-  },
-  {
-    name: "TikTok",
-    username: "tiktok.com/@vutruong.vn",
-    url: "https://tiktok.com/@vutruong.vn",
-    color: "from-black to-gray-800",
-    icon: "/icons/tiktok.svg",
-  },
-  {
-    name: "Instagram",
-    username: "instagram.com/vutruong.vn",
-    url: "https://instagram.com/vutruong.vn",
-    color: "from-pink-500 via-red-500 to-yellow-500",
-    icon: "/icons/instagram.svg",
-  },
-];
-
 export default function BioPage() {
-  return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-200 flex items-center justify-center px-6 py-16">
+  const socials = [
+    {
+      name: "Facebook",
+      url: "https://facebook.com/100014201562904",
+      display: "facebook.com/100014201562904",
+      color: "from-blue-500 to-blue-600",
+      icon: "fa-brands fa-facebook-f",
+    },
+    {
+      name: "TikTok",
+      url: "https://tiktok.com/@vutruong.vn",
+      display: "tiktok.com/@vutruong.vn",
+      color: "from-black to-neutral-800",
+      icon: "fa-brands fa-tiktok",
+    },
+    {
+      name: "Instagram",
+      url: "https://instagram.com/vutruong.vn",
+      display: "instagram.com/vutruong.vn",
+      color: "from-pink-500 via-red-500 to-yellow-500",
+      icon: "fa-brands fa-instagram",
+    },
+  ];
 
-      {/* Background glow */}
-      <div className="absolute w-[500px] h-[500px] bg-blue-200/30 blur-3xl rounded-full top-[-150px] left-[-150px]" />
-      <div className="absolute w-[400px] h-[400px] bg-purple-200/30 blur-3xl rounded-full bottom-[-150px] right-[-150px]" />
+  return (
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 px-4 overflow-hidden">
+      {/* background blur */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.6),transparent_60%)]" />
 
       <div className="relative w-full max-w-xl">
+        {/* header */}
+        <div className="text-center mb-10">
+          <img
+            src="/logo.png"
+            className="w-14 h-14 mx-auto mb-4 opacity-90"
+          />
 
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex justify-center mb-4">
-            <Image src="/logo.png" alt="logo" width={60} height={60} />
-          </div>
-
-          <h1 className="text-3xl font-semibold text-gray-900 tracking-tight">
+          <h1 className="text-2xl font-semibold text-gray-900">
             Vũ Trường
           </h1>
 
-          <p className="text-gray-500 mt-2">
+          <p className="text-gray-500 text-sm mt-1">
             Kết nối với mình qua các nền tảng bên dưới
           </p>
         </div>
 
-        {/* Social Cards */}
-        <div className="space-y-5">
-
+        {/* list */}
+        <div className="space-y-4">
           {socials.map((item, index) => (
-            <Link
+            <a
               key={index}
               href={item.url}
               target="_blank"
-              className="group block"
+              className="group flex items-center justify-between p-4 rounded-2xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-md hover:shadow-lg transition-all"
             >
-              <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-white/40 to-white/10 backdrop-blur-xl border border-white/40 shadow-[0_10px_40px_rgba(0,0,0,0.1)] transition-all duration-300 hover:scale-[1.02]">
+              <div className="flex items-center gap-4">
+                {/* icon */}
+                <div
+                  className={`w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br ${item.color} text-white text-lg`}
+                >
+                  <i className={`${item.icon}`} />
+                </div>
 
-                {/* Inner card */}
-                <div className="flex items-center justify-between rounded-2xl bg-white/80 px-5 py-4">
-
-                  {/* Left */}
-                  <div className="flex items-center gap-4">
-                    
-                    {/* Icon */}
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white bg-gradient-to-br ${item.color} shadow-md`}>
-                      <Image
-                        src={item.icon}
-                        alt={item.name}
-                        width={22}
-                        height={22}
-                      />
-                    </div>
-
-                    {/* Text */}
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {item.name}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {item.username}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Arrow */}
-                  <div className="text-gray-400 group-hover:translate-x-1 transition">
-                    →
-                  </div>
-
+                <div>
+                  <p className="font-medium text-gray-900">
+                    {item.name}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {item.display}
+                  </p>
                 </div>
               </div>
-            </Link>
-          ))}
 
+              {/* arrow */}
+              <i className="fa-duotone fa-arrow-right text-gray-400 group-hover:translate-x-1 transition" />
+            </a>
+          ))}
         </div>
 
+        {/* footer */}
+        <div className="text-center mt-10 text-xs text-gray-400">
+          vutruong.vn © {new Date().getFullYear()}
+        </div>
       </div>
     </main>
   );
