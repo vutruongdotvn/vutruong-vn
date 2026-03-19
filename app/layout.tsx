@@ -2,35 +2,40 @@ import "./globals.css";
 import { Roboto } from "next/font/google";
 import type { Metadata } from "next";
 
+export const metadata: Metadata = {
+  metadataBase: new URL("https://vutruong.vn"),
 
-export const metadata = {
   title: {
     default: "Trang chủ | VT System",
     template: "%s | VT System",
   },
+
   description: "Hệ sinh thái số của Vũ Trường | VT System - vutruong.vn",
+
+  openGraph: {
+    title: "VT System",
+    description: "Hệ sinh thái số cá nhân",
+    url: "https://vutruong.vn",
+    siteName: "VT System",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: "vi_VN",
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "VT System",
+    description: "Hệ sinh thái số cá nhân",
+    images: ["/og.png"],
+  },
+
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
-
-const roboto = Roboto({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "700", "800"],
-  display: "swap",
-});
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="vi">
-      <head>
-        <link
-          rel="stylesheet"
-          href="//kit-pro.fontawesome.com/releases/v7.2.0/css/pro.min.css"
-          />
-      </head>
-      <body className={roboto.className}>{children}</body>
-    </html>
-  );
-}
