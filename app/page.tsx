@@ -48,7 +48,7 @@ export default function Home() {
 
           {/* Subtitle */}
           <p className="text-gray-600 text-base">
-            Website đang bảo trì để nâng cấp 🚀
+            Đang tạm bảo trì để nâng cấp 🧐
           </p>
 
           {/* Circular Countdown */}

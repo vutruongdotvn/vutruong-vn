@@ -5,10 +5,10 @@ import type { Metadata } from "next";
 
 export const metadata = {
   title: {
-    default: "VT System",
-    template: "%s | VT",
+    default: "Trang chủ | VT System",
+    template: "%s | VT System",
   },
-  description: "Website của Vũ Trường",
+  description: "Hệ sinh thái số của Vũ Trường | VT System - vutruong.vn",
 };
 
 const roboto = Roboto({

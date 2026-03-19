@@ -1,5 +1,11 @@
-
+import Image from "next/image";
 import type { Metadata } from "next";
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Bio',
+  description: 'Mô tả trang',
+}
 
 export default function BioPage() {
   const socials = [
@@ -41,10 +47,7 @@ export default function BioPage() {
       <div className="relative w-full max-w-xl">
         {/* header */}
         <div className="text-center mb-10">
-          <img
-            src="/logo.png"
-            className="w-14 h-14 mx-auto mb-4"
-          />
+          <Image className='mx-auto mb-4' src="/logo.png" alt="logo" width={70} height={70} priority />
 
           <p className="text-gray-500 text-sm mt-1">
             Kết nối với mình qua mạng xã hội
