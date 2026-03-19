@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const [timeLeft, setTimeLeft] = useState(60);
-  const [mouse, setMouse] = useState({ x: 0, y: 0 });
 
   // Countdown
   useEffect(() => {
@@ -21,18 +20,6 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  // Smooth parallax
-  useEffect(() => {
-    const move = (e: MouseEvent) => {
-      setMouse({
-        x: (e.clientX / window.innerWidth - 0.5) * 30,
-        y: (e.clientY / window.innerHeight - 0.5) * 30,
-      });
-    };
-    window.addEventListener("mousemove", move);
-    return () => window.removeEventListener("mousemove", move);
-  }, []);
-
   const progress = timeLeft / 60;
   const circumference = 2 * Math.PI * 45;
   const strokeDashoffset = circumference * (1 - progress);
@@ -40,60 +27,38 @@ export default function Home() {
   return (
     <main className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-100 via-white to-gray-200">
 
-      {/* Noise texture */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
-
-      {/* Background blobs */}
-      <div className="absolute w-[600px] h-[600px] bg-blue-300/30 blur-3xl rounded-full top-[-150px] left-[-150px]" />
-      <div className="absolute w-[500px] h-[500px] bg-purple-300/30 blur-3xl rounded-full bottom-[-150px] right-[-150px]" />
+      {/* Subtle background glow */}
+      <div className="absolute w-[500px] h-[500px] bg-blue-200/30 blur-3xl rounded-full top-[-150px] left-[-150px]" />
+      <div className="absolute w-[400px] h-[400px] bg-purple-200/30 blur-3xl rounded-full bottom-[-150px] right-[-150px]" />
 
       {/* Glass Card */}
-      <div
-        className="relative w-[420px] p-10 rounded-[32px] backdrop-blur-2xl bg-white/40 border border-white/30 shadow-[0_30px_100px_rgba(0,0,0,0.2)] transition-all duration-300"
-        style={{
-          transform: `translate(${mouse.x}px, ${mouse.y}px)`,
-        }}
-      >
-        {/* Light reflection */}
-        <div
-          className="absolute inset-0 rounded-[32px] pointer-events-none"
-          style={{
-            background: `radial-gradient(circle at ${50 + mouse.x}% ${
-              50 + mouse.y
-            }%, rgba(255,255,255,0.6), transparent 60%)`,
-          }}
-        />
+      <div className="relative w-[420px] p-10 rounded-[28px] bg-white/70 backdrop-blur-xl border border-white/50 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
 
-        {/* Inner glow */}
-        <div className="absolute inset-0 rounded-[32px] bg-white/20 opacity-40" />
-
-        <div className="relative text-center space-y-6">
+        <div className="text-center space-y-6">
 
           {/* Logo */}
-          <div className="flex justify-center relative">
-            <div className="p-0">
-              <Image src="/logo.png" alt="logo" width={70} height={70} />
-            </div>
+          <div className="flex justify-center">
+            <Image src="/logo.png" alt="logo" width={70} height={70} priority />
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-800 mb-2">
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
             Hello
           </h1>
 
           {/* Subtitle */}
-          <p className="text-gray-600 text-base mb-6">
-            Website đang bảo trì để nâng cấp 🧐
+          <p className="text-gray-600 text-base">
+            Website đang bảo trì để nâng cấp 🚀
           </p>
 
           {/* Circular Countdown */}
           <div className="flex justify-center items-center relative">
-            <svg width="120" height="120" className="rotate-[-90deg]">
+            <svg width="120" height="120" className="-rotate-90">
               <circle
                 cx="60"
                 cy="60"
                 r="45"
-                stroke="rgba(255,255,255,0.3)"
+                stroke="rgba(0,0,0,0.08)"
                 strokeWidth="8"
                 fill="none"
               />
@@ -117,14 +82,14 @@ export default function Home() {
               </defs>
             </svg>
 
-            {/* Time text */}
-            <div className="absolute text-base font-semibold text-gray-700">
+            {/* Time */}
+            <div className="absolute text-base font-semibold text-gray-800">
               {timeLeft}
             </div>
           </div>
 
           {/* Contact */}
-          <p className="text-base font-light text-gray-500">
+          <p className="text-sm text-gray-500">
             contact@vutruong.vn
           </p>
         </div>
