@@ -61,7 +61,7 @@ export default function Home() {
                 cy="60"
                 r="45"
                 stroke="rgba(0,0,0,0.08)"
-                strokeWidth="8"
+                strokeWidth="5"
                 fill="none"
               />
               <circle
@@ -69,7 +69,7 @@ export default function Home() {
                 cy="60"
                 r="45"
                 stroke="url(#grad)"
-                strokeWidth="8"
+                strokeWidth="5"
                 fill="none"
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
@@ -85,7 +85,7 @@ export default function Home() {
             </svg>
 
             {/* Time */}
-            <div className="absolute text-base font-semibold text-gray-800">
+            <div className="absolute text-base font-semibold text-blue-600">
               {timeLeft}
             </div>
           </div>
