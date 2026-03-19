@@ -1,20 +1,17 @@
-import type { Metadata } from "next";
-import { Roboto } from 'next/font/google';
 import "./globals.css";
-import { ThemeProvider } from "next-themes";
-
-// Load Roboto full weights
-const roboto = Roboto({
-  subsets: ['latin', 'vietnamese'],
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
-  variable: '--font-roboto',
-  display: 'swap',
-});
+import { Roboto } from "next/font/google";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "VT System",
-  description: "VT System | vutruong.vn",
+  description: "VT System - Hệ thống Website của Vũ Trường | vutruong.vn",
 };
+
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700", "800"],
+  display: "swap",
+});
 
 export default function RootLayout({
   children,
@@ -22,17 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" suppressHydrationWarning>
-      <body className={`${roboto.variable} font-sans antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"       // mặc định sáng
-          enableSystem               // theo hệ thống
-          disableTransitionOnChange  // tránh flash khi chuyển
-        >
-          {children}
-        </ThemeProvider>
-      </body>
+    <html lang="vi">
+      <body className={roboto.className}>{children}</body>
     </html>
   );
 }
