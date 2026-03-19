@@ -12,7 +12,7 @@ export default function BioPage() {
       name: "Email",
       url: "mailto:contact@vutruong.vn",
       display: "contact@vutruong.vn",
-      color: "from-red-300 to-red-600",
+      color: "from-sky-300 to-sky-600",
       icon: "fa-duotone fa-envelope",
     },
     {
