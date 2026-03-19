@@ -5,21 +5,21 @@ export default function BioPage() {
     {
       name: "Facebook",
       url: "https://facebook.com/100014201562904",
-      display: "facebook.com/100014201562904",
+      display: "@www.vutruong.vn",
       color: "from-blue-500 to-blue-600",
       icon: "fa-brands fa-facebook-f",
     },
     {
       name: "TikTok",
       url: "https://tiktok.com/@vutruong.vn",
-      display: "tiktok.com/@vutruong.vn",
+      display: "@vutruong.vn",
       color: "from-black to-neutral-800",
       icon: "fa-brands fa-tiktok",
     },
     {
       name: "Instagram",
       url: "https://instagram.com/vutruong.vn",
-      display: "instagram.com/vutruong.vn",
+      display: "@vutruong.vn",
       color: "from-pink-500 via-red-500 to-yellow-500",
       icon: "fa-brands fa-instagram",
     },
@@ -35,12 +35,8 @@ export default function BioPage() {
         <div className="text-center mb-10">
           <img
             src="/logo.png"
-            className="w-14 h-14 mx-auto mb-4 opacity-90"
+            className="w-14 h-14 mx-auto mb-4"
           />
-
-          <h1 className="text-2xl font-semibold text-gray-900">
-            Vũ Trường
-          </h1>
 
           <p className="text-gray-500 text-sm mt-1">
             Kết nối với mình qua các nền tảng bên dưới
@@ -80,10 +76,6 @@ export default function BioPage() {
           ))}
         </div>
 
-        {/* footer */}
-        <div className="text-center mt-10 text-xs text-gray-400">
-          vutruong.vn © {new Date().getFullYear()}
-        </div>
       </div>
     </main>
   );
