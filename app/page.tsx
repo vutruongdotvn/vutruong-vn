@@ -48,7 +48,7 @@ export default function Home() {
 
           {/* Subtitle */}
           <p className="text-gray-600 text-base">
-            Không có gì ở đây cả,<br/>đang chuyển hướng về fb 🧐
+            Ở đây không có gì cả 🧐
           </p>
 
           {/* Circular Countdown */}
