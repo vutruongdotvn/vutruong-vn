@@ -21,7 +21,7 @@ export default function ProjectCard({
 
         {/* ICON */}
         <div
-          className={`w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br ${gradient} text-white text-2xl shadow-inner shrink-0`}
+          className={`w-12 h-12 flex items-center justify-center rounded-2xl bg-gradient-to-br ${gradient} text-white text-2xl shadow-inner shrink-0`}
         >
           <i className={icon} />
         </div>
