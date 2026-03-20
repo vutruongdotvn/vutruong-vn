@@ -12,9 +12,9 @@ export default function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null);
   const menu = [
   // { name: "Trang chủ", href: "/", icon: "fa-duotone fa-home" },
-  { name: "Bio", href: "/bio", icon: "fa-duotone fa-user" },
+  { name: "Bio", href: "/bio", icon: "fa-duotone fa-users" },
   { name: "Dự án", href: "/project", icon: "fa-duotone fa-diagram-project" },
-  { name: "Blog", href: "/blog", icon: "fa-duotone fa-newspaper" },
+  { name: "Blog", href: "/blog", icon: "fa-duotone fa-pen" },
 ];
 useEffect(() => {
   function handleClickOutside(e: MouseEvent) {
@@ -85,13 +85,13 @@ useEffect(() => {
 
 <Link prefetch 
   href="/contact"
-  className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition ${
     pathname === "/contact"
       ? "bg-black text-white"
-      : "bg-white shadow hover:shadow-md"
+      : "bg-gray-200 hover:bg-gray-300"
   }`}
 >
-  Liên hệ
+  <i className="fa-duotone fa-envelope"/> Liên hệ
 </Link>
           </nav>
 
@@ -145,7 +145,7 @@ useEffect(() => {
       <Link
         href="/contact"
         onClick={() => setOpen(false)}
-        className="mt-4 px-4 py-2 rounded-full bg-black text-white text-center"
+        className="mt-4 px-4 py-2 rounded-full bg-black text-white text-center text-sm"
       >
         Liên hệ
       </Link>
