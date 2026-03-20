@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 // 🔤 Font
 const roboto = Roboto({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "700", "800"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -18,13 +18,16 @@ export const metadata: Metadata = {
     template: "%s | VT System",
   },
 
-  description: "Hệ sinh thái số của Vũ Trường",
+  description: "Hệ sinh thái số của Vũ Trường trên Internet",
 
   keywords: [
     "Vũ Trường",
     "vutruong",
+    "vutruong.vn",
     "blog cá nhân",
-    "hệ sinh thái số",
+    "vt system",
+    "vt zone",
+    "vt blog",
   ],
 
   authors: [
