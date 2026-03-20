@@ -2,6 +2,7 @@ import "./globals.css";
 import { Roboto } from "next/font/google";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
+import PageTransition from "@/components/PageTransition";
 
 // 🔤 Font
 const roboto = Roboto({
@@ -90,8 +91,10 @@ export default function RootLayout({
       <body className={`${roboto.className}`}>
         <Navbar />
         <div className="relative min-h-screen bg-gradient-to-br from-gray-200 via-white to-gray-400 overflow-hidden">
-          {children}
-          </div>
+          <PageTransition>
+            {children}
+          </PageTransition>
+        </div>
         </body>
     </html>
   );
