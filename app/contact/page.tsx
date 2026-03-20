@@ -25,7 +25,7 @@ export default function ContactPage() {
     {
       name: "Mạng xã hội",
       url: "/bio",
-      gradient: "from-blue-300 to-blue-600",
+      gradient: "from-amber-300 to-amber-600",
       icon: "fa-duotone fa-message-dots",
     },
   ];
