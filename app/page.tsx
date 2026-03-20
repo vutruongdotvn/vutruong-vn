@@ -35,19 +35,9 @@ export default function Page() {
 
           <Countdown />
 
-          {/* Contact */}
-          <p className="text-sm text-gray-600">
-            <a href="/contact" className="font-medium hover:text-gray-800">
-              Liên hệ
-            </a>
-            <span className="mx-2 text-gray-600 font-bold">•</span>
-            <a href="/bio" className="font-medium hover:text-gray-800">
-              Mạng xã hội
-            </a>
-            <span className="mx-2 text-gray-600 font-bold">•</span>
-            <a href="/project" className="font-medium hover:text-gray-800">
-              Dự án
-            </a>
+          {/* Footer Card */}
+          <p className="text-sm text-gray-400">
+            Đang chuyển hướng về Facebook á
           </p>
 
         </div>

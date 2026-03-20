@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Roboto } from "next/font/google";
 import type { Metadata } from "next";
+import Navbar from "@/components/Navbar";
 
 // 🔤 Font
 const roboto = Roboto({
@@ -86,7 +87,8 @@ export default function RootLayout({
           href="//kit-pro.fontawesome.com/releases/v7.2.0/css/pro.min.css"
         />
       </head>
-      <body className={roboto.className}>
+      <body className={`${roboto.className}`}>
+        <Navbar />
         <div className="relative min-h-screen bg-gradient-to-br from-gray-200 via-white to-gray-400 overflow-hidden">
           {children}
           </div>
