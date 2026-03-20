@@ -46,7 +46,7 @@ export default function ProjectPage() {
     },
     {
       name: "VT Zone",
-      description: "Blog cá nhân - Lưu giữ những điều đẹp đẽ & giá trị",
+      description: "Lưu giữ những điều đẹp đẽ & giá trị",
       href: "https://blog.vutruong.vn",
       icon: "fa-duotone fa-pen-nib",
       gradient: "from-pink-400 to-rose-500",
