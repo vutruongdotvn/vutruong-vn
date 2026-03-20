@@ -87,7 +87,7 @@ export default function RootLayout({
         />
       </head>
       <body className={roboto.className}>
-        <div className="relative min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-400 overflow-hidden">
+        <div className="relative min-h-screen bg-gradient-to-br from-gray-200 via-white to-gray-400 overflow-hidden">
           {children}
           </div>
         </body>

@@ -37,15 +37,15 @@ export default function Page() {
 
           {/* Contact */}
           <p className="text-sm text-gray-600">
-            <a href="/contact" className="hover:text-gray-800">
+            <a href="/contact" className="font-medium hover:text-gray-800">
               Liên hệ
             </a>
             <span className="mx-2 text-gray-600 font-bold">•</span>
-            <a href="/bio" className="hover:text-gray-800">
+            <a href="/bio" className="font-medium hover:text-gray-800">
               Mạng xã hội
             </a>
             <span className="mx-2 text-gray-600 font-bold">•</span>
-            <a href="/project" className="hover:text-gray-800">
+            <a href="/project" className="font-medium hover:text-gray-800">
               Dự án
             </a>
           </p>
