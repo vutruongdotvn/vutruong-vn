@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 export default function Countdown() {
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [timeLeft, setTimeLeft] = useState(99);
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -18,7 +18,7 @@ export default function Countdown() {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  const progress = timeLeft / 60;
+  const progress = timeLeft / 99;
   const circumference = 2 * Math.PI * 45;
   const strokeDashoffset = circumference * (1 - progress);
 

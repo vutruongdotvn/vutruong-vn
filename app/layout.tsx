@@ -1,8 +1,12 @@
 import "./globals.css";
-import { Roboto } from "next/font/google";
+import { Roboto, Geist } from "next/font/google";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import PageTransition from "@/components/PageTransition";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+
 
 // 🔤 Font
 const roboto = Roboto({
@@ -80,7 +84,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi">
+    <html lang="vi" className={cn("font-sans", geist.variable)}>
       <head>
         {/* FontAwesome */}
         <link

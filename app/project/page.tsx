@@ -76,7 +76,7 @@ export default function ProjectPage() {
           Dự án
         </h1>
         <p className="text-gray-500 text-sm">
-          Những sản phẩm mình đã làm
+          Những sản phẩm đã làm
         </p>
       </div>
 

@@ -16,9 +16,8 @@ export default function PageTransition({
         key={pathname}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
         transition={{
-          duration: 0.25, // nhanh gọn, không lề mề
+          duration: 1, // nhanh gọn, không lề mề
           ease: "easeInOut",
         }}
         className="min-h-screen will-change-opacity"

@@ -37,7 +37,7 @@ export default function BlogPage() {
 
           {/* Sub message */}
           <p className="text-sm text-gray-400">
-            Sớm thôi, sẽ có những cái xịn xò ở đây 😎
+            Chưa biết viết gì ở đây cả 😎
           </p>
 
         </div>

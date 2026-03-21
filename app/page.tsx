@@ -2,6 +2,7 @@ import Countdown from "@/components/home/Countdown";
 import GlassCard from "@/components/home/GlassCard";
 import BackgroundGlow from "@/components/home/BackgroundGlow";
 import Image from "next/image";
+import {AppleHelloVietnameseEffect} from "@/components/apple-hello-effect";
 
 export const metadata = {
   title: "Trang chủ",
@@ -24,13 +25,11 @@ export default function Page() {
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
-            Hello
-          </h1>
+          <AppleHelloVietnameseEffect />
 
           {/* Subtitle */}
           <p className="text-gray-600 text-base">
-            Không có gì ở đây cả 🧐
+            Website đang build<br/>nên không có gì để hiển thị ở đây cả 🧐
           </p>
 
           <Countdown />

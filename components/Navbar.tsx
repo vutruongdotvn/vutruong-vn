@@ -13,7 +13,7 @@ export default function Navbar() {
   const menu = [
   // { name: "Trang chủ", href: "/", icon: "fa-duotone fa-home" },
   { name: "Bio", href: "/bio", icon: "fa-duotone fa-users" },
-  { name: "Dự án", href: "/project", icon: "fa-duotone fa-diagram-project" },
+  { name: "Project", href: "/project", icon: "fa-duotone fa-diagram-project" },
   { name: "Blog", href: "/blog", icon: "fa-duotone fa-pen" },
 ];
 useEffect(() => {
@@ -36,7 +36,7 @@ useEffect(() => {
 }, [open]);
   return (
     <header className="fixed top-0 left-0 w-full z-50 flex justify-center px-4 pt-4">
-      <div className="w-full max-w-3xl">
+      <div className="w-full max-w-xl">
         <div className="flex items-center justify-between p-2 rounded-full 
           bg-white/70 backdrop-blur-xl border border-white/50 
           shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
