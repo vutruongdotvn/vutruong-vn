@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 type PostCardProps = {
   author: string;
   time: string;
@@ -15,11 +13,10 @@ export default function PostCard({
   content,
   images = [],
 }: PostCardProps) {
-  const [liked, setLiked] = useState(false);
-
   const renderImages = () => {
     const count = images.length;
 
+    // 1 ảnh
     if (count === 1) {
       return (
         <div className="mt-4">
@@ -28,6 +25,7 @@ export default function PostCard({
       );
     }
 
+    // 2 ảnh
     if (count === 2) {
       return (
         <div className="mt-4 grid grid-cols-2 gap-2">
@@ -38,6 +36,7 @@ export default function PostCard({
       );
     }
 
+    // 3 ảnh (1 lớn + 2 nhỏ)
     if (count === 3) {
       return (
         <div className="mt-4 grid grid-cols-2 gap-2">
@@ -48,6 +47,7 @@ export default function PostCard({
       );
     }
 
+    // 4 ảnh
     if (count === 4) {
       return (
         <div className="mt-4 grid grid-cols-2 gap-2">
@@ -58,6 +58,7 @@ export default function PostCard({
       );
     }
 
+    // >4 ảnh (có overlay +X)
     return (
       <div className="mt-4 grid grid-cols-2 gap-2">
         {images.slice(0, 4).map((_, i) => (
@@ -82,6 +83,7 @@ export default function PostCard({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gray-300" />
+
           <div>
             <p className="font-semibold text-gray-900">{author}</p>
             <p className="text-xs text-gray-500">{time}</p>
@@ -89,7 +91,7 @@ export default function PostCard({
         </div>
 
         <button className="text-gray-400 hover:text-gray-600">
-          <i className="fa-duotone fa-ellipsis"></i>
+          •••
         </button>
       </div>
 
@@ -99,48 +101,12 @@ export default function PostCard({
       {/* IMAGES */}
       {renderImages()}
 
-      {/* STATS */}
-      <div className="flex items-center justify-between text-sm text-gray-500 mt-4">
-        <span className="flex items-center gap-1">
-          <i className="fa-duotone fa-heart text-red-500"></i> 125
-        </span>
-        <span>3 bình luận</span>
+      {/* ACTIONS */}
+      <div className="flex items-center justify-around text-sm text-gray-500 mt-4 pt-3 border-t">
+        <span>❤️ 125</span>
+        <span>💬 3</span>
+        <span>Share</span>
       </div>
-
-      {/* ACTION BAR */}
-      <div className="flex border-t mt-3 pt-2 text-sm">
-        
-        <button
-          onClick={() => setLiked(!liked)}
-          className={`flex-1 py-2 flex items-center justify-center gap-2 rounded-lg hover:bg-gray-100 transition ${
-            liked ? "text-red-500" : "text-gray-600"
-          }`}
-        >
-          <i className="fa-duotone fa-heart"></i>
-          Thích
-        </button>
-
-        <button className="flex-1 py-2 flex items-center justify-center gap-2 rounded-lg hover:bg-gray-100 transition text-gray-600">
-          <i className="fa-duotone fa-comment"></i>
-          Bình luận
-        </button>
-
-        <button className="flex-1 py-2 flex items-center justify-center gap-2 rounded-lg hover:bg-gray-100 transition text-gray-600">
-          <i className="fa-duotone fa-share"></i>
-          Chia sẻ
-        </button>
-
-      </div>
-
-      {/* COMMENT BOX */}
-      <div className="flex items-center gap-2 mt-3">
-        <div className="w-8 h-8 bg-gray-300 rounded-full" />
-        <input
-          placeholder="Viết bình luận..."
-          className="flex-1 bg-gray-100 px-3 py-2 rounded-full text-sm outline-none"
-        />
-      </div>
-
     </div>
   );
 }
