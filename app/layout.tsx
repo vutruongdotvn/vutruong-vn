@@ -21,10 +21,10 @@ export const metadata: Metadata = {
 
   title: {
     default: "VT System",
-    template: "%s | VT System",
+    template: "%s",
   },
 
-  description: "Hệ sinh thái số của Vũ Trường trên Internet",
+  description: "Hệ sinh thái số của Vũ Trường trên Internet | vutruong.vn",
 
   keywords: [
     "Vũ Trường",

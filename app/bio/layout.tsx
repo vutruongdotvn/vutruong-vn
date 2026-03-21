@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Bio",
+  title: "Liên kết mạng xã hội",
   description: "Kết nối với Vũ Trường qua mạng xã hội",
 };
 

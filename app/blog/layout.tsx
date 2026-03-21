@@ -2,6 +2,13 @@ import React from "react";
 import BackgroundGlow from "@/components/home/BackgroundGlow";
 import Image from "next/image";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Blog",
+  description: "Blog cá nhân | Lưu giữ những điều đẹp đẽ và giá trị!",
+};
+
 export default function BlogLayout({
   children,
 }: {
@@ -18,7 +25,7 @@ export default function BlogLayout({
             <div className="sticky top-24 space-y-4">
               
               {/* PROFILE CARD */}
-              <div className="bg-white rounded-2xl shadow-sm p-4">
+              <div className="bg-white rounded-xl shadow-sm p-4">
                 <div className="flex items-center gap-3">
                   <Image
                                 src="/avatar.JPEG"
@@ -40,7 +47,7 @@ export default function BlogLayout({
               </div>
 
               {/* INTRO */}
-              <div className="bg-white rounded-2xl shadow-sm p-4">
+              <div className="bg-white rounded-xl shadow-sm p-4">
                 <p className="font-semibold text-gray-900 mb-2">
                   Giới thiệu
                 </p>
@@ -50,15 +57,15 @@ export default function BlogLayout({
               </div>
 
               {/* PHOTOS */}
-              <div className="bg-white rounded-2xl shadow-sm p-4">
+              <div className="bg-white rounded-xl shadow-sm p-4">
                 <p className="font-semibold text-gray-900 mb-3">
-                  Khoảnh khắc
+                  Ảnh
                 </p>
 
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="bg-gray-200 h-40 rounded-lg" />
-                  <div className="bg-gray-200 h-40 rounded-lg" />
-                  <div className="bg-gray-200 h-40 rounded-lg" />
+                <div className="grid grid-cols-3 gap-1">
+                  <div className="bg-gray-200 aspect-2/3 rounded-lg" />
+                  <div className="bg-gray-200 aspect-2/3 rounded-lg" />
+                  <div className="bg-gray-200 aspect-2/3 rounded-lg" />
                 </div>
               </div>
 
