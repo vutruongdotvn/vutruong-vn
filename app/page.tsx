@@ -29,7 +29,7 @@ export default function Page() {
 
           {/* Subtitle */}
           <p className="text-gray-600 text-base">
-            Website đang build...<br/>không có gì ở đây cả 🧐
+            Website đang build...<br/>chưa có ý tưởng gì cả 🫠
           </p>
 
           <Countdown />
