@@ -42,7 +42,7 @@ useEffect(() => {
           shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
 
           {/* Logo + Name */}
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2 ms-1">
             <Image
               src="/logo.png"
               alt="avatar"

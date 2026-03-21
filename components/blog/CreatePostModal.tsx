@@ -44,7 +44,7 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
         </div>
 
         {/* USER */}
-        <div className="flex items-center gap-3 mt-4">
+        <div className="flex items-center gap-3 mt-4 hidden">
           <div className="w-10 h-10 bg-gray-300 rounded-full" />
           <p className="font-semibold">Vũ Trường</p>
         </div>
@@ -55,7 +55,7 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           className="w-full mt-4 resize-none outline-none text-lg placeholder-gray-400"
-          rows={4}
+          rows={8}
         />
 
         {/* IMAGE PREVIEW */}
