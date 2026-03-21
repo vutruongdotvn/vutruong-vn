@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import PostCard from "@/components/blog/PostCard";
 import CreatePostModal from "@/components/blog/CreatePostModal";
+import { posts } from "@/lib/posts";
 
 export default function BlogPage() {
   const [open, setOpen] = useState(false);
@@ -13,40 +15,22 @@ export default function BlogPage() {
       {/* CREATE POST */}
       <div className="bg-white p-4 rounded-2xl shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gray-300" />
+          <Image src="/avatar.JPEG" alt="logo" width={36} height={36} className="rounded-full pointer-events-none" />
 
           <button
             onClick={() => setOpen(true)}
-            className="flex-1 text-left bg-gray-100 hover:bg-gray-200 transition px-4 py-2 rounded-full text-sm text-gray-500 cursor-pointer"
+            className="flex-1 text-left bg-gray-100 hover:bg-gray-200 transition px-4 py-2 rounded-full text-sm text-gray-600 cursor-pointer"
           >
             Hello ~
           </button>
         </div>
       </div>
 
-      {/* TEST POSTS */}
+      {/* POSTS */}
+      {posts.map((post) => (
+        <PostCard key={post.id} {...post} />
+      ))}
 
-      <PostCard
-        author="Vũ Trường"
-        time="5 phút trước"
-        content="1 ảnh"
-        images={["1"]}
-      />
-
-      <PostCard
-        author="Vũ Trường"
-        time="10 phút trước"
-        content="layout 3 ảnh"
-        images={["1", "2", "3"]}
-      />
-
-      <PostCard
-        author="Vũ Trường"
-        time="30 phút trước"
-        content="layout nhìu ảnh"
-        images={["1", "2", "3", "4", "5", "6"]}
-      />
-      
       {/* MODAL */}
       <CreatePostModal
         isOpen={open}

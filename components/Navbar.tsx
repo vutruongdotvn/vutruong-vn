@@ -12,9 +12,9 @@ export default function Navbar() {
 
   // ✅ MENU CONFIG (chỉ cần sửa ở đây)
   const menu = [
-    { name: "Bio", href: "/bio", icon: "fa-duotone fa-user" },
-    { name: "Dự án", href: "/project", icon: "fa-duotone fa-diagram-project" },
-    { name: "Blog", href: "/blog", icon: "fa-duotone fa-newspaper" },
+    { name: "Bio", href: "/bio", icon: "fa-duotone fa-users" },
+    { name: "Dự án", href: "/project", icon: "fa-duotone fa-code" },
+    { name: "Blog", href: "/blog", icon: "fa-duotone fa-comment-pen" },
     { name: "Liên hệ", href: "/contact", icon: "fa-duotone fa-envelope" },
   ];
 
