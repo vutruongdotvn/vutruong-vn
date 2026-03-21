@@ -36,22 +36,22 @@ useEffect(() => {
 }, [open]);
   return (
     <header className="fixed top-0 left-0 w-full z-50 flex justify-center px-4 pt-4">
-      <div className="w-full max-w-xl">
+      <div className="w-full max-w-2xl">
         <div className="flex items-center justify-between p-2 rounded-full 
-          bg-white/70 backdrop-blur-xl border border-white/50 
+          bg-white/40 backdrop-blur-xl border border-white/70 
           shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
 
           {/* Logo + Name */}
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-2">
             <Image
-              src="/avatar.JPEG"
+              src="/logo.png"
               alt="avatar"
               width={36}
               height={36}
               className="rounded-full pointer-events-none"
             />
             <span className="font-medium text-gray-900">
-              Vũ Trường
+              VT System
             </span>
           </Link>
 
@@ -111,7 +111,7 @@ useEffect(() => {
   }`}
 >
   {/* Overlay */}
-  <div className="absolute inset-0 bg-black/30"></div>
+  <div className="absolute inset-0 bg-black/10 backdrop-blur-xs"></div>
 
   {/* Slide panel */}
   <div ref={menuRef} 

@@ -15,14 +15,10 @@ export default function Page() {
       <BackgroundGlow />
 
       <GlassCard>
-        <div className="text-center space-y-6">
+        <div className="text-center space-y-8">
 
           {/* Logo */}
-          <div className="flex justify-center">
-            <a href="/">
-              <Image src="/logo.png" alt="logo" width={70} height={70} priority />
-            </a>
-          </div>
+
 
           {/* Title */}
           <AppleHelloVietnameseEffect />

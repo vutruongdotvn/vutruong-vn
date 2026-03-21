@@ -1,47 +1,63 @@
-import GlassCard from "@/components/home/GlassCard";
-import BackgroundGlow from "@/components/home/BackgroundGlow";
-import Image from "next/image";
+"use client";
 
-export const metadata = {
-  title: "Blog",
-  description: "Blog cá nhân - Lưu giữ những điều đẹp đẽ và giá trị",
-};
+import { useState } from "react";
+import PostCard from "@/components/blog/PostCard";
+import CreatePostModal from "@/components/blog/CreatePostModal";
 
 export default function BlogPage() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <main className="relative min-h-screen flex items-center justify-center">
+    <div className="space-y-6">
 
-      {/* Background */}
-      <BackgroundGlow />
+      {/* CREATE POST */}
+      <div className="bg-white p-4 rounded-2xl shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-gray-300" />
 
-      {/* Card */}
-      <GlassCard>
-        <div className="text-center space-y-6">
-
-          {/* Logo */}
-          <div className="flex justify-center">
-            <a href="/">
-              <Image src="/logo.png" alt="logo" width={70} height={70} priority />
-            </a>
-          </div>
-
-          {/* Title */}
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
-            Blog
-          </h1>
-
-          {/* Message */}
-          <p className="text-gray-600 text-base">
-            Blog đang được xây dựng 🚧
-          </p>
-
-          {/* Sub message */}
-          <p className="text-sm text-gray-400">
-            Chưa biết viết gì ở đây cả 😎
-          </p>
-
+          <button
+            onClick={() => setOpen(true)}
+            className="flex-1 text-left bg-gray-100 hover:bg-gray-200 transition px-4 py-2 rounded-full text-sm text-gray-500"
+          >
+            Chào Vũ Trường, bạn đang nghĩ gì?
+          </button>
         </div>
-      </GlassCard>
-    </main>
+      </div>
+
+      {/* POSTS */}
+      <PostCard
+        author="Vũ Trường"
+        time="5 phút trước"
+        content="Demo post 👀"
+        images={["1", "2", "3", "4", "5"]}
+      />
+      {/* TEST POSTS */}
+      <PostCard
+        author="Vũ Trường"
+        time="5 phút trước"
+        content="1 ảnh nè 👀"
+        images={["1"]}
+      />
+
+      <PostCard
+        author="Vũ Trường"
+        time="10 phút trước"
+        content="3 ảnh test layout 🔥"
+        images={["1", "2", "3"]}
+      />
+
+      <PostCard
+        author="Vũ Trường"
+        time="30 phút trước"
+        content="Nhiều ảnh nè 😏"
+        images={["1", "2", "3", "4", "5", "6"]}
+      />
+      
+      {/* MODAL */}
+      <CreatePostModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+      />
+    </div>
   );
 }

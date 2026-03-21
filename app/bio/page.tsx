@@ -6,11 +6,6 @@ export default function BioPage() {
     <div className="text-center my-12 space-y-8">
 
       {/* Logo */}
-      <div className="flex justify-center">
-        <a href='/'>
-          <Image src="/logo.png" alt="logo" width={70} height={70} priority />
-        </a>
-      </div>
 
       {/* Title */}
       <div>
