@@ -32,7 +32,7 @@ export default function Page() {
 
           {/* Footer Card */}
           <p className="text-sm text-gray-400">
-            Đang chuyển hướng về Facebook á
+            Sau 99 giây tự nổ máy 🥹
           </p>
 
         </div>
