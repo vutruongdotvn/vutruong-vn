@@ -89,12 +89,13 @@ export default function RootLayout({
         {/* FontAwesome */}
         <link
           rel="stylesheet"
-          href="//kit-pro.fontawesome.com/releases/v7.2.0/css/pro.min.css"
+          href="https://kit-pro.fontawesome.com/releases/v7.2.0/css/pro.min.css"
+          crossOrigin="anonymous"
         />
       </head>
       <body className={`${roboto.className}`}>
         <Navbar />
-        <div className="relative min-h-screen bg-gradient-to-br from-gray-200 via-white to-gray-400 overflow-hidden">
+        <div className="relative min-h-screen bg-[#f2f3f5] overflow-hidden">
           <PageTransition>
             {children}
           </PageTransition>
