@@ -1,5 +1,6 @@
 import React from "react";
 import BackgroundGlow from "@/components/home/BackgroundGlow";
+import Image from "next/image";
 
 export default function BlogLayout({
   children,
@@ -10,7 +11,7 @@ export default function BlogLayout({
     <main className="relative min-h-screen py-24">
       <BackgroundGlow />
       <div className="max-w-[1100px] mx-auto px-4">
-        <div className="grid grid-cols-12 gap-6">
+        <div className="grid grid-cols-12 gap-4">
           
           {/* LEFT SIDEBAR */}
           <aside className="col-span-12 lg:col-span-4">
@@ -19,7 +20,13 @@ export default function BlogLayout({
               {/* PROFILE CARD */}
               <div className="bg-white rounded-2xl shadow-sm p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-full bg-gray-300" />
+                  <Image
+                                src="/avatar.JPEG"
+                                alt="avatar"
+                                width={45}
+                                height={45}
+                                className="rounded-full"
+                              />
                   <div>
                     <p className="font-semibold text-gray-900">
                       Vũ Trường

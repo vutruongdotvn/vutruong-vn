@@ -17,38 +17,33 @@ export default function BlogPage() {
 
           <button
             onClick={() => setOpen(true)}
-            className="flex-1 text-left bg-gray-100 hover:bg-gray-200 transition px-4 py-2 rounded-full text-sm text-gray-500"
+            className="flex-1 text-left bg-gray-100 hover:bg-gray-200 transition px-4 py-2 rounded-full text-sm text-gray-500 cursor-pointer"
           >
-            Xin chào, bạn đang nghĩ gì?
+            Hello ~
           </button>
         </div>
       </div>
 
       {/* TEST POSTS */}
-      <PostCard
-        author="Vũ Trường"
-        time="5 phút trước"
-        content="Bài viết chỉ có text, không có ảnhh"
-      />
 
       <PostCard
         author="Vũ Trường"
         time="5 phút trước"
-        content="1 ảnh nè 👀"
+        content="1 ảnh"
         images={["1"]}
       />
 
       <PostCard
         author="Vũ Trường"
         time="10 phút trước"
-        content="3 ảnh test layout 🔥"
+        content="layout 3 ảnh"
         images={["1", "2", "3"]}
       />
 
       <PostCard
         author="Vũ Trường"
         time="30 phút trước"
-        content="Nhiều ảnh nè 😏"
+        content="layout nhìu ảnh"
         images={["1", "2", "3", "4", "5", "6"]}
       />
       
