@@ -43,7 +43,7 @@ export default function PostCard({
             onClick={(e) => e.preventDefault()}
             className="text-gray-400 hover:text-gray-600 cursor-pointer"
           >
-            <i class="fa-duotone fa-ellipsis"></i>
+            <i className="fa-duotone fa-ellipsis"></i>
           </button>
         </div>
     <Link href={`/blog/${id}`} className="block group">
