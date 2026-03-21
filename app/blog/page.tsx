@@ -19,19 +19,18 @@ export default function BlogPage() {
             onClick={() => setOpen(true)}
             className="flex-1 text-left bg-gray-100 hover:bg-gray-200 transition px-4 py-2 rounded-full text-sm text-gray-500"
           >
-            Chào Vũ Trường, bạn đang nghĩ gì?
+            Xin chào, bạn đang nghĩ gì?
           </button>
         </div>
       </div>
 
-      {/* POSTS */}
+      {/* TEST POSTS */}
       <PostCard
         author="Vũ Trường"
         time="5 phút trước"
-        content="Demo post 👀"
-        images={["1", "2", "3", "4", "5"]}
+        content="Bài viết chỉ có text, không có ảnhh"
       />
-      {/* TEST POSTS */}
+
       <PostCard
         author="Vũ Trường"
         time="5 phút trước"

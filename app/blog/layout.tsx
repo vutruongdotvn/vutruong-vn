@@ -23,9 +23,10 @@ export default function BlogLayout({
                   <div>
                     <p className="font-semibold text-gray-900">
                       Vũ Trường
+                      <i className="fa-solid fa-badge-check text-sm ms-1 text-blue-600"></i>
                     </p>
                     <p className="text-sm text-gray-500">
-                      8.4K người theo dõi
+                      @vutruong.vn
                     </p>
                   </div>
                 </div>
@@ -37,7 +38,7 @@ export default function BlogLayout({
                   Giới thiệu
                 </p>
                 <p className="text-sm text-gray-600">
-                  Lưu giữ những điều đẹp đẽ và giá trị ✨
+                  Blog demo đang build trên next.js
                 </p>
               </div>
 
@@ -48,12 +49,9 @@ export default function BlogLayout({
                 </p>
 
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="bg-gray-200 h-20 rounded-lg" />
-                  <div className="bg-gray-200 h-20 rounded-lg" />
-                  <div className="bg-gray-200 h-20 rounded-lg" />
-                  <div className="bg-gray-200 h-20 rounded-lg" />
-                  <div className="bg-gray-200 h-20 rounded-lg" />
-                  <div className="bg-gray-200 h-20 rounded-lg" />
+                  <div className="bg-gray-200 h-40 rounded-lg" />
+                  <div className="bg-gray-200 h-40 rounded-lg" />
+                  <div className="bg-gray-200 h-40 rounded-lg" />
                 </div>
               </div>
 

@@ -102,10 +102,28 @@ export default function PostCard({
       {renderImages()}
 
       {/* ACTIONS */}
-      <div className="flex items-center justify-around text-sm text-gray-500 mt-4 pt-3 border-t">
-        <span>❤️ 125</span>
-        <span>💬 3</span>
-        <span>Share</span>
+      <div className="flex gap-4 my-4">
+        
+        <button className="flex items-center gap-2 text-gray-600 hover:text-pink-500 transition">
+          <i className="fa-duotone fa-heart"></i> 123
+        </button>
+
+        <button className="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition">
+          <i className="fa-duotone fa-comment"></i> 456
+        </button>
+
+        <button className="flex items-center gap-2 text-gray-600 hover:text-green-500 transition">
+          <i className="fa-duotone fa-share"></i>
+        </button>
+      </div>
+
+      {/* COMMENT INPUT */}
+      <div className="flex items-center gap-2">
+        <div className="w-8 h-8 rounded-full bg-gray-300" />
+        <input
+          placeholder="Viết bình luận"
+          className="flex-1 px-3 py-2 rounded-full bg-gray-100 text-sm outline-none focus:bg-gray-200"
+        />
       </div>
     </div>
   );
