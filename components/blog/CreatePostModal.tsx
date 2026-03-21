@@ -30,11 +30,11 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
       />
 
       {/* MODAL */}
-      <div className="relative bg-white w-full max-w-lg rounded-2xl shadow-xl p-4 z-10 animate-fadeIn">
+      <div className="relative bg-white w-full max-w-lg rounded-2xl shadow-xl p-4 mx-4 z-10 animate-fadeIn">
         
         {/* HEADER */}
         <div className="flex items-center justify-between border-b pb-3">
-          <h2 className="font-semibold text-lg">Tạo bài viết</h2>
+          <h2 className="font-semibold text-lg">Đăng bài viết</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
@@ -43,18 +43,12 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
           </button>
         </div>
 
-        {/* USER */}
-        <div className="flex items-center gap-3 mt-4 hidden">
-          <div className="w-10 h-10 bg-gray-300 rounded-full" />
-          <p className="font-semibold">Vũ Trường</p>
-        </div>
-
         {/* TEXTAREA */}
         <textarea
-          placeholder="Bạn đang nghĩ gì?"
+          placeholder="Nội dung bài viết"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="w-full mt-4 resize-none outline-none text-lg placeholder-gray-400"
+          className="w-full mt-4 resize-none outline-none text-base placeholder-gray-400"
           rows={8}
         />
 
@@ -86,8 +80,8 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
         <div className="mt-4 border rounded-xl p-3 flex items-center justify-between">
           <span className="text-sm text-gray-600">Thêm vào bài viết</span>
 
-          <label className="cursor-pointer text-green-600 font-medium">
-            📷 Ảnh
+          <label className="cursor-pointer text-gray-600 font-bold text-sm">
+            <i className="fa-duotone fa-image-landscape me-1"></i> Ảnh
             <input
               type="file"
               multiple

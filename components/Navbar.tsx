@@ -52,7 +52,7 @@ export default function Navbar() {
 
         {/* NAVBAR */}
         <div className="flex items-center justify-between p-2 rounded-full 
-          bg-white/40 backdrop-blur-xl border border-white/70 
+          bg-white/70 backdrop-blur-xl border border-white/70 
           shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
 
           {/* LOGO + TITLE */}

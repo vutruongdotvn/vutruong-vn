@@ -17,7 +17,7 @@ export default function BlogLayout({
   return (
     <main className="relative min-h-screen py-24">
       <BackgroundGlow />
-      <div className="max-w-[1100px] mx-auto px-4">
+      <div className="max-w-[1200px] mx-auto px-4">
         <div className="grid grid-cols-12 gap-4">
           
           {/* LEFT SIDEBAR */}

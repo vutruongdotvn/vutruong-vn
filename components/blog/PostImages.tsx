@@ -34,7 +34,7 @@ export default function PostImages({ images }: { images: string[] }) {
     <>
       {/* LAYOUT */}
       {count === 1 && (
-        <div className="mt-4 relative w-full h-[420px]">
+        <div className="mt-4 relative w-full aspect-16/9">
           <Image
             src={images[0]}
             alt="post"

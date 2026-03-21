@@ -10,7 +10,7 @@ export default function BlogPage() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
 
       {/* CREATE POST */}
       <div className="bg-white p-4 rounded-2xl shadow-sm">
@@ -21,7 +21,7 @@ export default function BlogPage() {
             onClick={() => setOpen(true)}
             className="flex-1 text-left bg-gray-100 hover:bg-gray-200 transition px-4 py-2 rounded-full text-sm text-gray-600 cursor-pointer"
           >
-            Hello ~
+            Đăng bài viết mới
           </button>
         </div>
       </div>
