@@ -35,15 +35,15 @@ export default function PostCard({
 
             <div>
               <p className="font-semibold text-gray-900">{author}</p>
-              <p className="text-xs text-gray-500">{time}</p>
+              <p className="text-xs text-gray-500 font-medium">{time}</p>
             </div>
           </div>
 
           <button
             onClick={(e) => e.preventDefault()}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-600 cursor-pointer"
           >
-            •••
+            <i class="fa-duotone fa-ellipsis"></i>
           </button>
         </div>
     <Link href={`/blog/${id}`} className="block group">

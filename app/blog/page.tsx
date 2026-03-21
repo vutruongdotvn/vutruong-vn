@@ -19,9 +19,9 @@ export default function BlogPage() {
 
           <button
             onClick={() => setOpen(true)}
-            className="flex-1 text-left bg-gray-100 hover:bg-gray-200 transition px-4 py-2 rounded-full text-sm text-gray-600 cursor-pointer"
+            className="flex-1 text-left bg-gray-100 hover:bg-gray-200 transition px-4 py-2 rounded-full text-base text-gray-600 cursor-pointer"
           >
-            Đăng bài viết mới
+            Đăng bài viết
           </button>
         </div>
       </div>

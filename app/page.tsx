@@ -25,14 +25,14 @@ export default function Page() {
 
           {/* Subtitle */}
           <p className="text-gray-600 text-base">
-            Chưa có ý tưởng gì để build cả 🫠
+            Chưa có ý tưởng gì để build cả 🤷‍♂️
           </p>
 
           <Countdown />
 
           {/* Footer Card */}
           <p className="text-sm text-gray-400">
-            Sau 99 giây tự nổ máy 🥹
+            Sau 99 giây tự nổ máy 🫨
           </p>
 
         </div>

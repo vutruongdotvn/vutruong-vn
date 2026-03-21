@@ -179,7 +179,7 @@ function AppleHelloVietnameseEffect({
 
       {/* sign */}
       <motion.path
-        className="stroke-yellow-400"
+        className="stroke-amber-400"
         d="M763.027 19.3039C768.734 34.6886 780.397 48.3362 792.059 55.5322"
         style={{ strokeLinecap: "round" }}
         initial={initialProps}

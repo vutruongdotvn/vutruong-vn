@@ -12,7 +12,7 @@ export default function ProjectLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-24">
+    <section className="relative min-h-screen flex justify-center overflow-hidden py-24">
       {/* Glow background */}
       {/* <BackgroundGlow /> */}
       <BackgroundGlow />
