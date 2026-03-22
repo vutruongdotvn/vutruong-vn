@@ -16,7 +16,7 @@ export default function BlogLayout({
   return (
     <main className="relative min-h-screen py-24">
       <BackgroundGlow />
-      <div className="max-w-[1080px] mx-auto px-4">
+      <div className="max-w-[1080px] mx-auto ">
         <div className="grid grid-cols-12 gap-4">
           
           {/* LEFT SIDEBAR */}
@@ -24,7 +24,7 @@ export default function BlogLayout({
             <div className="sticky top-24 space-y-4">
               
               {/* PROFILE CARD */}
-              <div className="bg-white rounded-xl shadow-sm p-4">
+              <div className="bg-white lg:rounded-lg rounded-0 shadow-sm p-4">
                 <div className="flex items-center gap-3">
                   <Image
                                 src="/avatar.JPEG"
@@ -46,7 +46,7 @@ export default function BlogLayout({
               </div>
 
               {/* INTRO */}
-              <div className="bg-white rounded-xl shadow-sm p-4">
+              <div className="bg-white lg:rounded-lg rounded-0 shadow-sm p-4">
                 <p className="font-semibold text-gray-900 mb-2">
                   Giới thiệu
                 </p>
@@ -56,7 +56,7 @@ export default function BlogLayout({
               </div>
 
               {/* PHOTOS */}
-              <div className="bg-white rounded-xl shadow-sm p-4">
+              <div className="bg-white lg:rounded-lg rounded-0 shadow-sm p-4">
                 <p className="font-semibold text-gray-900 mb-3">
                   Ảnh
                 </p>

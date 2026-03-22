@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 type Props = {
   images: string[];
   index: number;
+  isOpen: boolean;
   onClose: () => void;
   setIndex: (i: number) => void;
 };
@@ -13,16 +15,24 @@ type Props = {
 export default function ImagePreview({
   images,
   index,
+  isOpen,
   onClose,
   setIndex,
 }: Props) {
+  const [mounted, setMounted] = useState(false);
   const total = images.length;
 
-  const prev = () => setIndex((index - 1 + total) % total);
-  const next = () => setIndex((index + 1) % total);
-
-  // ESC + Arrow key
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // 🔥 CHỈ lock scroll khi mở
+  useEffect(() => {
+    if (!isOpen) return;
+
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
       if (e.key === "ArrowLeft") prev();
@@ -30,17 +40,27 @@ export default function ImagePreview({
     };
 
     window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [index]);
 
-  return (
+    return () => {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKey);
+    };
+  }, [isOpen, index]);
+
+  const prev = () => setIndex((index - 1 + total) % total);
+  const next = () => setIndex((index + 1) % total);
+
+  if (!mounted || !isOpen) return null;
+
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+      className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center"
       onClick={onClose}
     >
-      {/* IMAGE */}
       <div
-        className="relative w-full max-w-5xl h-[80vh]"
+        className="relative w-full max-w-5xl px-4"
+        style={{ height: "90vh" }}
         onClick={(e) => e.stopPropagation()}
       >
         <Image
@@ -60,31 +80,31 @@ export default function ImagePreview({
         ✕
       </button>
 
-      {/* LEFT */}
+      {/* NAV */}
       {total > 1 && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            prev();
-          }}
-          className="absolute left-5 text-white text-3xl"
-        >
-          ‹
-        </button>
-      )}
+        <>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              prev();
+            }}
+            className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-4xl"
+          >
+            ‹
+          </button>
 
-      {/* RIGHT */}
-      {total > 1 && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            next();
-          }}
-          className="absolute right-5 text-white text-3xl"
-        >
-          ›
-        </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              next();
+            }}
+            className="absolute right-5 top-1/2 -translate-y-1/2 text-white text-4xl"
+          >
+            ›
+          </button>
+        </>
       )}
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -20,7 +20,7 @@ export default function PostCard({
   images = [],
 }: PostCardProps) {
   return (
-      <div className="bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition">
+      <div className="bg-white lg:rounded-lg rounded-0 shadow-sm p-4 hover:shadow-md transition">
 
         {/* HEADER */}
         <div className="flex items-center justify-between">

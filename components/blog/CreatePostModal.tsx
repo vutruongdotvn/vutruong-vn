@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 type Props = {
   isOpen: boolean;
@@ -10,18 +11,39 @@ type Props = {
 export default function CreatePostModal({ isOpen, onClose }: Props) {
   const [content, setContent] = useState("");
   const [images, setImages] = useState<string[]>([]);
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  // 🔥 mount để dùng portal
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // 🔥 lock scroll
+  useEffect(() => {
+    if (isOpen) {
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+    } else {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  if (!isOpen || !mounted) return null;
 
   const handleSelectImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-
     const urls = files.map((file) => URL.createObjectURL(file));
     setImages((prev) => [...prev, ...urls]);
   };
 
-  return (
-    <div className="fixed inset-0 h-screen z-51 flex items-center justify-center">
+  return createPortal(
+    <div className="fixed inset-0 h-screen z-[9998] flex items-center justify-center">
       
       {/* BACKDROP */}
       <div
@@ -30,7 +52,7 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
       />
 
       {/* MODAL */}
-      <div className="relative bg-white w-full max-w-lg rounded-2xl shadow-xl p-4 mx-4 z-10 animate-fadeIn">
+      <div className="relative bg-white w-full max-w-lg rounded-xl shadow-xl p-4 mx-2 z-10 animate-fadeIn">
         
         {/* HEADER */}
         <div className="flex items-center justify-between border-b pb-3">
@@ -94,12 +116,13 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
 
         {/* SUBMIT */}
         <button
-          className="w-full mt-4 bg-blue-500 hover:bg-blue-600 transition text-white py-2 rounded-xl font-semibold disabled:opacity-50"
+          className="w-full mt-4 bg-blue-500 hover:bg-blue-600 transition text-white py-2 rounded-lg font-semibold disabled:opacity-50"
           disabled={!content && images.length === 0}
         >
           Đăng
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

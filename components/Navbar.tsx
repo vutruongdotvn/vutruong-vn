@@ -63,6 +63,7 @@ export default function Navbar() {
               width={36}
               height={36}
               className="rounded-full pointer-events-none"
+              priority
             />
             <span className="font-bold text-base text-gray-800 tracking-wider">
               {title}

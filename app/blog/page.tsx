@@ -13,7 +13,7 @@ export default function BlogPage() {
     <div className="space-y-4">
 
       {/* CREATE POST */}
-      <div className="bg-white p-4 rounded-2xl shadow-sm">
+      <div className="bg-white p-4 lg:rounded-lg rounded-0 shadow-sm">
         <div className="flex items-center gap-3">
           <Image src="/avatar.JPEG" alt="logo" width={36} height={36} className="rounded-full pointer-events-none" />
 
