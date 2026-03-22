@@ -5,14 +5,11 @@ import { useState } from "react";
 import PostCard from "@/components/blog/PostCard";
 import CreatePostModal from "@/components/blog/CreatePostModal";
 import { posts } from "@/lib/posts";
-import FancyboxWrapper from "@/components/blog/FancyboxWrapper";
 
 export default function BlogPage() {
   const [open, setOpen] = useState(false);
 
   return (
-    <>
-    <FancyboxWrapper />
     <div className="space-y-4">
 
       {/* CREATE POST */}
@@ -40,6 +37,5 @@ export default function BlogPage() {
         onClose={() => setOpen(false)}
       />
     </div>
-    </>
   );
 }
