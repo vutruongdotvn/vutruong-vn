@@ -37,7 +37,7 @@ export default async function BlogDetailPage({
     <>
       <FancyboxWrapper />
 
-      <article className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
+      <article className="bg-white rounded-lg shadow-sm p-5 space-y-4">
         
         {/* HEADER */}
         <div className="flex items-center gap-3">

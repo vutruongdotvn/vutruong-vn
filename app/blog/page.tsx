@@ -38,7 +38,7 @@ export default function BlogPage() {
       <div className="space-y-4">
 
         {/* 🔝 HEADER */}
-        <div className="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm hidden">
+        <div className="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm">
           
           {/* 👤 USER INFO */}
           <div className="flex items-center gap-3">
