@@ -21,7 +21,7 @@ export default function BlogLayout({
           
           {/* LEFT SIDEBAR */}
           <aside className="col-span-12 lg:col-span-5">
-            <div className="sticky top-24 space-y-4">
+            <div className="space-y-4">
               
               {/* PROFILE CARD */}
               <div className="bg-white lg:rounded-lg rounded-0 shadow-sm p-4">
@@ -58,13 +58,28 @@ export default function BlogLayout({
               {/* PHOTOS */}
               <div className="bg-white lg:rounded-lg rounded-0 shadow-sm p-4">
                 <p className="font-semibold text-gray-900 mb-3">
-                  Ảnh
+                  Khoảnh khắc
                 </p>
 
                 <div className="grid grid-cols-3 gap-1">
                   <div className="bg-gray-200 aspect-2/3 rounded-lg" />
                   <div className="bg-gray-200 aspect-2/3 rounded-lg" />
                   <div className="bg-gray-200 aspect-2/3 rounded-lg" />
+                </div>
+              </div>
+
+              <div className="bg-white lg:rounded-lg rounded-0 shadow-sm p-4">
+                <p className="font-semibold text-gray-900 mb-3">
+                  Ảnh
+                </p>
+
+                <div className="grid grid-cols-3 gap-1">
+                  <div className="bg-gray-200 aspect-square rounded-lg" />
+                  <div className="bg-gray-200 aspect-square rounded-lg" />
+                  <div className="bg-gray-200 aspect-square rounded-lg" />
+                  <div className="bg-gray-200 aspect-square rounded-lg" />
+                  <div className="bg-gray-200 aspect-square rounded-lg" />
+                  <div className="bg-gray-200 aspect-square rounded-lg" />
                 </div>
               </div>
 

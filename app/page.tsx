@@ -28,8 +28,6 @@ export default function Page() {
           <div key={key} className="animate-fadeIn">
             <AppleHelloVietnameseEffect />
           </div>
-
-          {/* Countdown (optional) */}
           {/* <Countdown /> */}
         </div>
       </GlassCard>

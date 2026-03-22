@@ -103,8 +103,8 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
         <div className="mt-4 border rounded-xl p-3 flex items-center justify-between">
           <span className="text-sm text-gray-600">Thêm vào bài viết</span>
 
-          <label className="cursor-pointer text-gray-600 font-bold text-sm">
-            <i className="fa-duotone fa-image-landscape me-1"></i> Ảnh
+          <label className="flex items-center gap-2 cursor-pointer text-gray-600 hover:text-black font-bold text-sm">
+            <i className="fa-duotone fa-image text-lg"></i> Hình ảnh
             <input
               type="file"
               multiple
@@ -116,7 +116,7 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
 
         {/* SUBMIT */}
         <button
-          className="w-full mt-4 bg-blue-500 hover:bg-blue-600 transition text-white py-2 rounded-lg font-semibold disabled:opacity-50"
+          className="w-full mt-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-800 transition text-white py-2 rounded-lg font-semibold disabled:opacity-50 cursor-pointer"
           disabled={!content && images.length === 0}
         >
           Đăng
