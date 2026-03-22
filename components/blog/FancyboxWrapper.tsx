@@ -8,22 +8,21 @@ export default function FancyboxWrapper() {
       const { Fancybox } = await import("@fancyapps/ui");
 
       Fancybox.bind("[data-fancybox]", {
-        Hash: false,
-        animated: true,
-        showClass: "fancybox-fadeIn",
-        hideClass: "fancybox-fadeOut",
         dragToClose: true,
-        wheel: "zoom",
-        touch: {
-          vertical: "close",
-        },
-        Thumbs: {
-          autoStart: true,
-          type: "modern",
-        },
-        Toolbar: {
-          display: ["zoom", "slideshow", "fullscreen", "close"],
-        },
+        zoomEffect: false,
+        Hash: false,
+        showClass: "f-fadeIn",
+        hideClass: "f-fadeOut",
+        Carousel: {
+          Toolbar: {
+           display: {
+           left: ["count"],
+            middle: [],
+           right: [],
+      },
+    },
+    Thumbs: false
+  },
       });
     })();
 

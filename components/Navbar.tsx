@@ -110,7 +110,7 @@ export default function Navbar() {
           {/* SLIDE PANEL */}
           <div
             ref={menuRef}
-            className={`absolute top-0 right-0 h-full w-72 bg-white shadow-xl p-6
+            className={`absolute top-0 right-0 h-full w-72 bg-white shadow-xl p-4
             transform transition-transform duration-300 ${
               open ? "translate-x-0" : "translate-x-full"
             }`}

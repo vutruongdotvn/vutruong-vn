@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     "vutruong",
     "vutruong.vn",
     "blog cá nhân",
-    "vt system",
+    "VT Zone",
     "vt zone",
     "vt blog",
   ],
@@ -55,16 +55,16 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "VT System",
-    description: "Hệ sinh thái số cá nhân",
+    title: "VT Zone",
+    description: "Hệ sinh thái số của Vũ Trường",
     url: "https://vutruong.vn",
-    siteName: "VT System",
+    siteName: "VT Zone",
     images: [
       {
         url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "VT System",
+        alt: "VT Zone",
       },
     ],
     locale: "vi_VN",
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "VT System",
+    title: "VT Zone",
     description: "Hệ sinh thái số cá nhân",
     images: ["/og.png"],
   },
@@ -97,10 +97,7 @@ export default function RootLayout({
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="VT Zone" />
     <link rel="apple-touch-icon" href="/logo.png" />
-    <link
-      rel="stylesheet"
-      href="//kit-pro.fontawesome.com/releases/v7.2.0/css/pro.min.css"
-    />
+    <link rel="stylesheet" href="//kit-pro.fontawesome.com/releases/v7.2.0/css/pro.min.css" />
   </head>
 
   <body className={roboto.className}>
