@@ -5,6 +5,7 @@ import PageTransition from "@/components/PageTransition";
 import { cn } from "@/lib/utils";
 import { Roboto } from "next/font/google";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
+import AuthProvider from "@/components/AuthProvider";
 
 // 🔤 Font
 const roboto = Roboto({
@@ -104,9 +105,11 @@ export default function RootLayout({
     <Navbar />
 
     <div className="relative min-h-screen bg-[#f2f3f5] overflow-hidden">
-      <PageTransition>
-        {children}
-      </PageTransition>
+      <AuthProvider>
+        <PageTransition>
+          {children}
+        </PageTransition>
+      </AuthProvider>
     </div>
   </body>
 </html>
