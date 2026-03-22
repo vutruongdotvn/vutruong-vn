@@ -16,35 +16,38 @@ export default async function BlogDetailPage({
   if (!post) return notFound();
 
   return (
-    <article className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
-
-      {/* HEADER */}
-      <div className="flex items-center gap-3">
-        <Image
-          src="/avatar.JPEG"
-          alt="avatar"
-          width={45}
-          height={45}
-          className="rounded-full"
-        />
-
-        <div>
-          <p className="font-semibold text-gray-900">{post.author}</p>
-          <p className="text-sm text-gray-500">{post.time}</p>
-        </div>
-      </div>
-
-      {/* CONTENT */}
-      <p className="text-gray-800 leading-relaxed">
-        {post.content}
-      </p>
-
-      {/* IMAGES */}
-      <>
+    <>
+      {/* Fancybox global (bắt image trong page này luôn) */}
       <FancyboxWrapper />
-      <PostImages images={post.images} />
-      </>
 
-    </article>
+      <article className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
+        {/* HEADER */}
+        <div className="flex items-center gap-3">
+          <Image
+            src="/avatar.JPEG"
+            alt="avatar"
+            width={45}
+            height={45}
+            className="rounded-full"
+          />
+
+          <div>
+            <p className="font-semibold text-gray-900">{post.author}</p>
+            <p className="text-sm text-gray-500">{post.time}</p>
+          </div>
+        </div>
+
+        {/* CONTENT */}
+        <p className="text-gray-800 leading-relaxed">
+          {post.content}
+        </p>
+
+        {/* IMAGES */}
+        <PostImages
+          images={post.images}
+          postId={post.id} // ✅ FIX QUAN TRỌNG
+        />
+      </article>
+    </>
   );
 }
