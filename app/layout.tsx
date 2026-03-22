@@ -44,8 +44,8 @@ export const metadata: Metadata = {
   applicationName: "VT Zone",
 
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: "/app.jpg",
+    apple: "/app.jpg",
   },
 
   appleWebApp: {
@@ -96,7 +96,7 @@ export default function RootLayout({
     <link rel="manifest" href="/manifest.json" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="VT Zone" />
-    <link rel="apple-touch-icon" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/app.jpg" />
     <link rel="stylesheet" href="//kit-pro.fontawesome.com/releases/v7.2.0/css/pro.min.css" />
   </head>
 
