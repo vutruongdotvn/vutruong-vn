@@ -13,7 +13,7 @@ export default function Page() {
   useEffect(() => {
     const interval = setInterval(() => {
       setKey((prev) => prev + 1);
-    }, 9000); // 🔥 loop chuẩn theo animation (~7–8s)
+    }, 12000); // 🔥 loop chuẩn theo animation (~7–8s)
 
     return () => clearInterval(interval);
   }, []);

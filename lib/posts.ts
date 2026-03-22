@@ -7,6 +7,13 @@ export const posts = [
     images: ["/images/vt-girl-1.jpg"],
   },
   {
+    id: "2",
+    author: "Vũ Trường",
+    time: "55 phút",
+    content: "Layout bài viết 2 ảnh",
+    images: ["/images/vt-girl-2.jpg", "/images/vt-girl-3.jpg"],
+  },
+  {
     id: "3",
     author: "Vũ Trường",
     time: "Hôm qua",

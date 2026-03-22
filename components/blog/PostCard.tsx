@@ -33,9 +33,13 @@ export default function PostCard({
               className="rounded-full"
             />
 
-            <div>
-              <p className="font-semibold text-gray-900">{author}</p>
-              <p className="text-xs text-gray-500 font-medium">{time}</p>
+            <div className="leading-6">
+              <Link href={`/bio`}>
+              <span className="font-semibold text-gray-900">{author}</span>
+              </Link>
+              <Link href={`/blog/${id}`} className="block group">
+              <span className="block text-sm text-gray-500 hover:text-gray-800 font-normal">{time}</span>
+              </Link>
             </div>
           </div>
 
@@ -46,15 +50,14 @@ export default function PostCard({
             <i className="fa-duotone fa-ellipsis"></i>
           </button>
         </div>
-    <Link href={`/blog/${id}`} className="block group">
+
         {/* CONTENT */}
         <p className="mt-3 text-gray-800 leading-relaxed">
           {content}
         </p>
-    </Link>
 
         {/* IMAGES */}
-        <PostImages images={images} />
+        <PostImages images={images} postId={id} />
 
       </div>
   );

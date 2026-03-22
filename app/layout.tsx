@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import PageTransition from "@/components/PageTransition";
 import { cn } from "@/lib/utils";
 import { Roboto } from "next/font/google";
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
 
 // 🔤 Font
 const roboto = Roboto({

@@ -2,6 +2,7 @@ import Image from "next/image";
 import { posts } from "@/lib/posts";
 import { notFound } from "next/navigation";
 import PostImages from "@/components/blog/PostImages";
+import FancyboxWrapper from "@/components/blog/FancyboxWrapper";
 
 export default async function BlogDetailPage({
   params,
@@ -39,7 +40,10 @@ export default async function BlogDetailPage({
       </p>
 
       {/* IMAGES */}
+      <>
+      <FancyboxWrapper />
       <PostImages images={post.images} />
+      </>
 
     </article>
   );

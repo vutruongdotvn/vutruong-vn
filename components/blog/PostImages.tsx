@@ -1,21 +1,23 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
-import ImagePreview from "./ImagePreview";
 
-export default function PostImages({ images }: { images: string[] }) {
+type Props = {
+  images: string[];
+  postId: string;
+};
+
+export default function PostImages({ images, postId }: Props) {
   const count = images.length;
+  if (count === 0) return null;
 
-  const [open, setOpen] = useState(false);
-  const [index, setIndex] = useState(0);
+  const group = `post-${postId}`;
 
-  const openPreview = (i: number) => {
-    setIndex(i);
-    setOpen(true);
-  };
+  const visibleImages =
+    count <= 4 ? images : images.slice(0, 4);
 
-  if (!count) return null;
+  const hiddenImages =
+    count > 4 ? images.slice(4) : [];
 
   const renderImage = (
     img: string,
@@ -23,84 +25,67 @@ export default function PostImages({ images }: { images: string[] }) {
     className: string,
     sizes: string
   ) => (
-    <div key={i} className={`relative ${className}`}>
+    <a
+      key={i}
+      href={img}
+      data-fancybox={group}
+      className={`relative block ${className}`}
+    >
       <Image
         src={img}
         alt="post"
         fill
         sizes={sizes}
-        onClick={() => openPreview(i)}
-        className="object-cover rounded-xl cursor-pointer hover:opacity-90"
+        className="object-cover rounded-xl"
       />
-    </div>
+    </a>
   );
 
   return (
     <>
-      {/* 1 */}
+      {/* 1 IMAGE */}
       {count === 1 && (
-        <div className="mt-4 relative w-full aspect-[4/3]">
-          <Image
-            src={images[0]}
-            alt="post"
-            fill
-            sizes="(max-width: 768px) 100vw, 800px"
-            onClick={() => openPreview(0)}
-            className="object-cover rounded-xl cursor-pointer"
-          />
+        <div className="relative w-full aspect-video mt-3">
+          {renderImage(images[0], 0, "w-full h-full", "100vw")}
         </div>
       )}
 
-      {/* 2 */}
+      {/* 2 IMAGES */}
       {count === 2 && (
-        <div className="mt-4 grid grid-cols-2 gap-2">
-          {images.map((img, i) =>
-            renderImage(img, i, "h-[280px]", "(max-width: 768px) 100vw, 50vw")
+        <div className="grid grid-cols-2 gap-1 m-0 mt-3">
+          {visibleImages.map((img, i) =>
+            renderImage(
+              img,
+              i,
+              "aspect-[4/3]",
+              "(max-width:768px) 50vw, 400px"
+            )
           )}
         </div>
       )}
 
-      {/* 3 */}
-      {count === 3 && (
-        <div className="mt-4 grid grid-cols-2 gap-2">
-          {renderImage(
-            images[0],
-            0,
-            "col-span-2 h-[300px]",
-            "(max-width: 768px) 100vw, 100vw"
-          )}
+      {/* >=3 IMAGES */}
+      {count >= 3 && (
+        <div className="grid grid-cols-2 gap-1 m-0 mt-3">
+          {visibleImages.map((img, i) => (
+            <div key={i} className="relative aspect-[4/3]">
+              <a
+                href={img}
+                data-fancybox={group}
+                className="block w-full h-full"
+              >
+                <Image
+                  src={img}
+                  alt="post"
+                  fill
+                  sizes="(max-width:768px) 50vw, 400px"
+                  className="object-cover rounded-lg"
+                />
+              </a>
 
-          {images.slice(1).map((img, i) =>
-            renderImage(img, i + 1, "h-[200px]", "(max-width: 768px) 100vw, 50vw")
-          )}
-        </div>
-      )}
-
-      {/* 4 */}
-      {count === 4 && (
-        <div className="mt-4 grid grid-cols-2 gap-2">
-          {images.map((img, i) =>
-            renderImage(img, i, "h-[200px]", "(max-width: 768px) 100vw, 50vw")
-          )}
-        </div>
-      )}
-
-      {/* >4 */}
-      {count > 4 && (
-        <div className="mt-4 grid grid-cols-2 gap-2">
-          {images.slice(0, 4).map((img, i) => (
-            <div key={i} className="relative h-[200px]">
-              <Image
-                src={img}
-                alt="post"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                onClick={() => openPreview(i)}
-                className="object-cover rounded-xl cursor-pointer"
-              />
-
-              {i === 3 && (
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-xl rounded-xl">
+              {/* +N overlay */}
+              {i === 3 && count > 4 && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-xl font-semibold rounded-lg">
                   +{count - 4}
                 </div>
               )}
@@ -109,14 +94,18 @@ export default function PostImages({ images }: { images: string[] }) {
         </div>
       )}
 
-      {/* PREVIEW */}
-      <ImagePreview
-        images={images}
-        index={index}
-        isOpen={open}
-        setIndex={setIndex}
-        onClose={() => setOpen(false)}
-      />
+      {/* 🔥 ONLY hidden remaining images */}
+      {hiddenImages.length > 0 && (
+        <div className="hidden">
+          {hiddenImages.map((img, i) => (
+            <a
+              key={`hidden-${i}`}
+              href={img}
+              data-fancybox={group}
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 }
