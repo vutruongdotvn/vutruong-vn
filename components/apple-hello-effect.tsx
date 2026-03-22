@@ -39,7 +39,7 @@ function AppleHelloVietnameseEffect({
 
   return (
     <motion.svg
-      className={cn("h-12 mx-auto", className)}
+      className={cn("h-15 mx-auto", className)}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 1009 200"
       fill="none"
@@ -47,7 +47,7 @@ function AppleHelloVietnameseEffect({
       strokeWidth="14.8883"
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 1.5 }}
       {...props}
     >
       <title>Xin chào</title>

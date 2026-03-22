@@ -14,8 +14,8 @@ export default function ProjectLayout({
   return (
     <section className="relative min-h-screen flex items-start justify-center overflow-hidden py-24">
       {/* Glow background */}
-      {/* <BackgroundGlow /> */}
       <BackgroundGlow />
+      
       {/* Content */}
       <div className="relative w-full max-w-2xl px-6">
         {children}

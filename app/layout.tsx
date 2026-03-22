@@ -1,18 +1,14 @@
 import "./globals.css";
-import { Roboto, Geist } from "next/font/google";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import PageTransition from "@/components/PageTransition";
 import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
-
+import { Roboto } from "next/font/google";
 
 // 🔤 Font
 const roboto = Roboto({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  display: "swap",
+  variable: "--font-roboto",
 });
 
 // 🌐 SEO GLOBAL
@@ -20,8 +16,8 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://vutruong.vn"),
 
   title: {
-    default: "VT System",
-    template: "%s",
+    default: "VT Zone | Trang chủ",
+    template: "%s | VT Zone",
   },
 
   description: "Hệ sinh thái số của Vũ Trường trên Internet | vutruong.vn",
@@ -42,6 +38,20 @@ export const metadata: Metadata = {
       url: "https://vutruong.vn",
     },
   ],
+
+  // 🔥 PWA / APP INFO
+  applicationName: "VT Zone",
+
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
+
+  appleWebApp: {
+    capable: true,
+    title: "VT Zone",
+    statusBarStyle: "black-translucent",
+  },
 
   openGraph: {
     title: "VT System",
@@ -71,10 +81,6 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-
-  icons: {
-    icon: "/favicon.ico",
-  },
 };
 
 // 🧱 Layout
@@ -84,22 +90,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" className={cn("font-sans", geist.variable)}>
-      <head>
-        {/* FontAwesome */}
-        <link
-          rel="stylesheet"
-          href="//kit-pro.fontawesome.com/releases/v7.2.0/css/pro.min.css"
-        />
-      </head>
-      <body className={`${roboto.className}`}>
-        <Navbar />
-        <div className="relative min-h-screen bg-[#f2f3f5] overflow-hidden">
-          <PageTransition>
-            {children}
-          </PageTransition>
-        </div>
-        </body>
-    </html>
+    <html lang="vi">
+  <head>
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="VT Zone" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    <link
+      rel="stylesheet"
+      href="//kit-pro.fontawesome.com/releases/v7.2.0/css/pro.min.css"
+    />
+  </head>
+
+  <body className={roboto.className}>
+    <Navbar />
+
+    <div className="relative min-h-screen bg-[#f2f3f5] overflow-hidden">
+      <PageTransition>
+        {children}
+      </PageTransition>
+    </div>
+  </body>
+</html>
   );
 }

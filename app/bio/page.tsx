@@ -3,7 +3,7 @@ import SocialCard from "@/components/bio/SocialCard";
 
 export default function BioPage() {
   return (
-    <div className="text-center my-12 space-y-8">
+    <div className="text-center space-y-8">
 
       {/* Logo */}
 

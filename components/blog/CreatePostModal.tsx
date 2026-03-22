@@ -21,11 +21,11 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 h-screen z-51 flex items-center justify-center">
       
       {/* BACKDROP */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/10 backdrop-blur-xs"
         onClick={onClose}
       />
 
@@ -36,10 +36,11 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
         <div className="flex items-center justify-between border-b pb-3">
           <h2 className="font-semibold text-lg">Đăng bài viết</h2>
           <button
+            title="Đóng"
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-gray-500 hover:text-black cursor-pointer"
           >
-            ✕
+            <i className="fa-duotone fa-times"/>
           </button>
         </div>
 
@@ -49,7 +50,7 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           className="w-full mt-4 resize-none outline-none text-base placeholder-gray-400"
-          rows={8}
+          rows={10}
         />
 
         {/* IMAGE PREVIEW */}
@@ -69,7 +70,7 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
                   }
                   className="absolute top-1 right-1 bg-black/60 text-white text-xs px-2 rounded"
                 >
-                  ✕
+                  <i className="fa-duotone fa-times"/>
                 </button>
               </div>
             ))}
@@ -96,7 +97,7 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
           className="w-full mt-4 bg-blue-500 hover:bg-blue-600 transition text-white py-2 rounded-xl font-semibold disabled:opacity-50"
           disabled={!content && images.length === 0}
         >
-          Đăng bài
+          Đăng
         </button>
       </div>
     </div>

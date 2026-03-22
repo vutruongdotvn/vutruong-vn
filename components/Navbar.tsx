@@ -27,7 +27,7 @@ export default function Navbar() {
 
   // ✅ AUTO TITLE (sync theo menu)
   const current = menu.find((item) => pathname.startsWith(item.href));
-  const title = pathname === "/" ? "vutruong.vn" : current?.name || "vutruong.vn";
+  const title = pathname === "/" ? "VT Zone" : current?.name || "vutruong.vn";
 
   // ✅ CLICK OUTSIDE → đóng menu
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function Navbar() {
 
         {/* NAVBAR */}
         <div className="flex items-center justify-between p-2 rounded-full 
-          bg-white/70 backdrop-blur-xl border border-white/70 
+          bg-white/50 backdrop-blur-xl border border-white/80 
           shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
 
           {/* LOGO + TITLE */}
@@ -64,7 +64,7 @@ export default function Navbar() {
               height={36}
               className="rounded-full pointer-events-none"
             />
-            <span className="font-bold text-base text-gray-800 uppercase">
+            <span className="font-bold text-base text-gray-800 tracking-wider">
               {title}
             </span>
           </Link>
@@ -78,7 +78,7 @@ export default function Navbar() {
                 prefetch
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition ${
                   isActive(item.href)
-                    ? "bg-gray-200 text-black"
+                    ? "bg-gray-200 text-black font-bold"
                     : "text-gray-700 hover:bg-gray-200"
                 }`}
               >
@@ -91,15 +91,15 @@ export default function Navbar() {
           {/* MOBILE BUTTON */}
           <button
             onClick={() => setOpen(!open)}
-            className="md:hidden text-xl me-2"
+            className="md:hidden text-xl me-2 cursor-pointer hover:text-black"
           >
-            <i className="fa-solid fa-bars"></i>
+            <i className="fa-duotone fa-bars"></i>
           </button>
         </div>
 
         {/* MOBILE MENU */}
         <div
-          className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${
+          className={`fixed inset-0 z-40 md:hidden transition-all duration-500 ${
             open ? "visible opacity-100" : "invisible opacity-0"
           }`}
         >

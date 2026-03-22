@@ -1,7 +1,6 @@
 import React from "react";
 import BackgroundGlow from "@/components/home/BackgroundGlow";
 import Image from "next/image";
-
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -17,11 +16,11 @@ export default function BlogLayout({
   return (
     <main className="relative min-h-screen py-24">
       <BackgroundGlow />
-      <div className="max-w-[1200px] mx-auto px-4">
+      <div className="max-w-[1080px] mx-auto px-4">
         <div className="grid grid-cols-12 gap-4">
           
           {/* LEFT SIDEBAR */}
-          <aside className="col-span-12 lg:col-span-4">
+          <aside className="col-span-12 lg:col-span-5">
             <div className="sticky top-24 space-y-4">
               
               {/* PROFILE CARD */}
@@ -73,7 +72,7 @@ export default function BlogLayout({
           </aside>
 
           {/* MAIN FEED */}
-          <section className="col-span-12 lg:col-span-8 space-y-6">
+          <section className="col-span-12 lg:col-span-7 space-y-6">
             {children}
           </section>
 

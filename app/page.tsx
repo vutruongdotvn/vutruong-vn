@@ -1,40 +1,36 @@
-import Countdown from "@/components/home/Countdown";
+"use client";
+
+import { useEffect, useState } from "react";
+
+// import Countdown from "@/components/home/Countdown";
 import GlassCard from "@/components/home/GlassCard";
 import BackgroundGlow from "@/components/home/BackgroundGlow";
-import Image from "next/image";
-import {AppleHelloVietnameseEffect} from "@/components/apple-hello-effect";
-
-export const metadata = {
-  title: "Trang chủ",
-};
+import { AppleHelloVietnameseEffect } from "@/components/apple-hello-effect";
 
 export default function Page() {
+  const [key, setKey] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setKey((prev) => prev + 1);
+    }, 9000); // 🔥 loop chuẩn theo animation (~7–8s)
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <main className="relative min-h-screen flex items-center justify-center">
-
       <BackgroundGlow />
 
       <GlassCard>
         <div className="text-center space-y-8">
-
-          {/* Logo */}
-
-
           {/* Title */}
-          <AppleHelloVietnameseEffect />
+          <div key={key} className="animate-fadeIn">
+            <AppleHelloVietnameseEffect />
+          </div>
 
-          {/* Subtitle */}
-          <p className="text-gray-600 text-base">
-            Chưa có ý tưởng gì để build cả 🤷‍♂️
-          </p>
-
-          <Countdown />
-
-          {/* Footer Card */}
-          <p className="text-sm text-gray-400">
-            Sau 99 giây tự nổ máy 🫨
-          </p>
-
+          {/* Countdown (optional) */}
+          {/* <Countdown /> */}
         </div>
       </GlassCard>
     </main>

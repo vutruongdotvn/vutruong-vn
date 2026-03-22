@@ -14,13 +14,13 @@ export default function PageTransition({
     <AnimatePresence mode="wait">
       <motion.div
         key={pathname}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={{ y: 5, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
         transition={{
-          duration: 1,
+          duration: 0.5,
           ease: "easeInOut",
         }}
-        className="min-h-screen will-change-opacity"
+        className="min-h-screen will-change-opacity will-change-transform will-change-auto"
       >
         {children}
       </motion.div>
