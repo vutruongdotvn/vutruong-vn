@@ -25,7 +25,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
     if (error) {
       alert(error.message);
     } else {
-      alert("Login thành công 🚀");
+      // alert("Login thành công 🚀");
       onClose();
     }
   };

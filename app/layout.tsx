@@ -106,11 +106,10 @@ export default function RootLayout({
 
     <div className="relative min-h-screen bg-[#f2f3f5] overflow-hidden">
       <AuthProvider>
-        <PageTransition>
-          {children}
-        </PageTransition>
+        {children}
       </AuthProvider>
     </div>
+    {/* <PageTransition></PageTransition> */}
   </body>
 </html>
   );

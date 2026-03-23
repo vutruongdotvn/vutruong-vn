@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabase";
 
 import { useEffect, useState } from "react";
 import { getPosts } from "@/services/postService";
+import PostCardSkeleton from "@/components/blog/PostCardSkeleton";
 
 export default function BlogPage() {
   const [open, setOpen] = useState(false);
@@ -38,7 +39,7 @@ export default function BlogPage() {
       <div className="space-y-4">
 
         {/* 🔝 HEADER */}
-        <div className="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm">
+        <div className="flex items-center justify-between gap-3 bg-white p-3 rounded-lg shadow-sm">
           
           {/* 👤 USER INFO */}
           <div className="flex items-center gap-3">
@@ -65,11 +66,21 @@ export default function BlogPage() {
             </div>
           </div>
 
+        {/* ✍️ CREATE POST (CHỈ ADMIN) */}
+        {user && role === "admin" && (
+          <button
+                onClick={() => setOpen(true)}
+                className="flex-1 bg-0 px-4 py-2 rounded-lg font-medium text-gray-600 text-sm bg-gray-100 flex-fill hover:bg-gray-200 hover:text-black cursor-pointer transition"
+              >
+                Đăng bài viết
+              </button>
+        )}
+
           {/* 🔐 LOGIN / LOGOUT */}
           {!user ? (
             <button
               onClick={() => setShowLogin(true)}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm"
+              className="bg-0 px-4 py-2 rounded-lg font-medium text-gray-600 text-sm bg-gray-100 flex-fill hover:bg-gray-200 hover:text-black cursor-pointer transition"
             >
               Đăng nhập
             </button>
@@ -79,41 +90,12 @@ export default function BlogPage() {
                 await supabase.auth.signOut();
                 location.reload();
               }}
-              className="bg-0 px-4 py-2 rounded-lg font-medium text-gray-600 text-sm hover:bg-gray-200 hover:text-black cursor-pointer transition"
+              className="bg-0 px-4 py-2 rounded-lg font-medium text-gray-600 text-sm bg-gray-100 flex-fill hover:bg-gray-200 hover:text-black cursor-pointer transition"
             >
               Đăng xuất
             </button>
           )}
         </div>
-
-        {/* ✍️ CREATE POST (CHỈ ADMIN) */}
-        {user && role === "admin" && (
-          <div className="bg-white p-4 rounded-lg shadow-sm">
-            <div className="flex items-center gap-3">
-              <Image
-                src="/avatar.JPEG"
-                alt="avatar"
-                width={40}
-                height={40}
-                className="rounded-full w-10 h-10"
-              />
-
-              <button
-                onClick={() => setOpen(true)}
-                className="flex-1 text-left bg-gray-100 hover:bg-gray-200 transition px-4 py-2 rounded-full text-base text-gray-500 cursor-pointer"
-              >
-                Đăng bài viết...
-              </button>
-
-              <button
-                onClick={() => setOpen(true)}
-                className="cursor-pointer bg-gray-100 hover:bg-gray-200 p-2 rounded-full w-10 h-10 transition"
-              >
-                <i className="fa-duotone fa-paper-plane-top" />
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* ⛔ USER KHÔNG PHẢI ADMIN */}
         {user && role !== "admin" && (
@@ -131,7 +113,11 @@ export default function BlogPage() {
 
         {/* 🔄 LOADING */}
         {loading && (
-          <p className="text-center text-gray-500 hidden">Đang tải...</p>
+          <div className="space-y-4">
+            <PostCardSkeleton />
+            <PostCardSkeleton />
+            <PostCardSkeleton />
+          </div>
         )}
 
         {/* 📭 EMPTY */}

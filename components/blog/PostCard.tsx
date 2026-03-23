@@ -37,14 +37,15 @@ export default function PostCard({ post }: { post: Post }) {
             width={40}
             height={40}
             className="rounded-full object-cover"
-            unoptimized
+            priority
           />
 
-          <div className="leading-6">
-            <Link href={`/bio`}>
-              <span className="font-semibold text-gray-900">
+          <div className="leading-5">
+            <Link className="flex items-center gap-1" href={`/bio`}>
+              <span className="font-medium text-gray-800 hover:text-black text-base">
                 {name || "Người dùng"}
               </span>
+              <i className="fa-solid fa-badge-check text-blue-400 text-sm" />
             </Link>
 
             <Link href={`/blog/${post.id}`} className="block group">

@@ -25,7 +25,7 @@ export default function AuthForm() {
     if (error) {
       alert("Lỗi login: " + error.message);
     } else {
-      alert("Login thành công 🚀");
+      // alert("Login thành công 🚀");
     }
   };
 
