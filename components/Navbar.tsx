@@ -62,7 +62,7 @@ export default function Navbar() {
               alt="logo"
               width={40}
               height={40}
-              className="rounded-full pointer-events-none"
+              className="pointer-events-none"
               priority
             />
             <span className="font-bold text-base text-gray-800 tracking-wider">
