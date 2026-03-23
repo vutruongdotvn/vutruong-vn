@@ -23,7 +23,7 @@ export default function PostCard({ post }: { post: Post }) {
   const name = post.profiles?.name;
   const avatar = post.profiles?.avatar;
   return (
-    <div className="bg-white lg:rounded-lg rounded-0 shadow-sm p-4 hover:shadow-md transition">
+    <div className="bg-white lg:rounded-lg rounded-0 shadow-sm hover:shadow-md transition">
       <div className="postHeader block">
         <PostHeader
           name={name}

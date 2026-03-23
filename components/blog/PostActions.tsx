@@ -2,7 +2,7 @@
 
 export default function PostActions() {
   return (
-    <div className="postAction flex items-center gap-4 mt-4">
+    <div className="postAction flex items-center gap-4 p-3">
       <button className="cursor-pointer text-gray-600 hover:text-black">
         <i className="fa-duotone fa-heart" />
       </button>

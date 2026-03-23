@@ -36,7 +36,7 @@ export default function PostImages({ images, postId }: Props) {
         alt="post"
         fill
         sizes={sizes}
-        className="object-cover rounded-xl"
+        className="object-cover"
       />
     </a>
   );
@@ -52,12 +52,12 @@ export default function PostImages({ images, postId }: Props) {
 
       {/* 2 IMAGES */}
       {count === 2 && (
-        <div className="postImages grid grid-cols-2 gap-1 m-0 mt-3">
+        <div className="postImages grid grid-cols-2 gap-[2px] m-0 mt-3">
           {visibleImages.map((img, i) =>
             renderImage(
               img,
               i,
-              "aspect-[4/3]",
+              "aspect-[3/4]",
               "(max-width:768px) 50vw, 400px"
             )
           )}
@@ -66,7 +66,7 @@ export default function PostImages({ images, postId }: Props) {
 
       {/* >=3 IMAGES */}
       {count >= 3 && (
-        <div className="postImages grid grid-cols-2 gap-1 m-0 mt-3">
+        <div className="postImages grid grid-cols-2 gap-[2px] m-0 mt-3">
           {visibleImages.map((img, i) => (
             <div key={i} className="relative aspect-[4/3]">
               <a
@@ -79,7 +79,7 @@ export default function PostImages({ images, postId }: Props) {
                   alt="post"
                   fill
                   sizes="(max-width:768px) 50vw, 400px"
-                  className="object-cover rounded-lg"
+                  className="object-cover rounded-0"
                 />
               </a>
 

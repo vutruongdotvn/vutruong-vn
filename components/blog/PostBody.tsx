@@ -27,7 +27,7 @@ export default function PostBody({
 
   return (
     <>
-      <div className="postBody mt-3 text-gray-800 leading-relaxed whitespace-pre-line">
+      <div className="postBody mt-3 px-3 text-gray-800 leading-relaxed whitespace-pre-line">
         {displayContent}
 
         {truncate && isLong && (

@@ -27,7 +27,7 @@ export default function PostHeader({
     : new Date(createdAt).toLocaleString();
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between px-3 pt-3">
       <div className="flex items-center gap-3">
         <Image
           src={avatar || "/avatar.JPEG"}
