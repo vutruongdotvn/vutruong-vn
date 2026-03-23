@@ -40,6 +40,13 @@ export default async function BlogDetailPage({
   return (
     <>
       <FancyboxWrapper />
+      <div className="actionFooter mb-3 text-center sm:text-start">
+        <Link href="/blog" className="flex md:inline-flex items-center gap-2 text-sm text-gray-600 hover:text-black
+        bg-0 sm:bg-white px-4 py-2 rounded-0 sm:rounded-md shadow-xs">
+        <i className="fa-duotone fa-arrow-left text-xs"/>
+        Quay lại
+        </Link>
+      </div>
 
       <article className="bg-white rounded-0 md:rounded-lg shadow-xs md:shadow-sm m-0 p-0">
         
@@ -58,12 +65,6 @@ export default async function BlogDetailPage({
         />
         <PostActions />
       </article>
-      <div className="actionFooter mt-3 ms-2">
-        <Link href="/blog" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-black">
-        <i className="fa-duotone fa-arrow-left text-xs"/>
-        Quay lại
-        </Link>
-      </div>
     </>
   );
 }

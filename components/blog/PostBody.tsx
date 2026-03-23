@@ -17,7 +17,7 @@ export default function PostBody({
   images = [],
   postId,
   truncate = false,
-  maxLength = 240,
+  maxLength = 215,
   priority = false,
 }: Props) {
   const isLong = content.length > maxLength;
@@ -29,7 +29,7 @@ export default function PostBody({
 
   return (
     <>
-      <div className="postBody mt-3 px-3 text-gray-800 leading-relaxed whitespace-pre-line">
+      <div className="postBody text-base mt-3 px-3 text-gray-800 whitespace-pre-line">
         {displayContent}
 
         {truncate && isLong && (

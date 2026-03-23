@@ -156,7 +156,7 @@ export default function BlogPage() {
           <>
             <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-lg shadow-xs">
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <Image
                   height={36}
                   width={36}
@@ -166,7 +166,7 @@ export default function BlogPage() {
                 />
 
                 <div>
-                  <p className="font-medium text-gray-800 flex items-center gap-1">
+                  <p className="font-bold text-sm text-gray-800 flex items-center gap-1">
                     {fullName}
                     {user?.email === "admin@vutruong.vn" && (
                       <i className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 text-sm"></i>

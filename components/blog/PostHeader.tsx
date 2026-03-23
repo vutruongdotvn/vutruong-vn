@@ -28,33 +28,35 @@ export default function PostHeader({
 
   return (
     <div className="flex items-center justify-between px-3 pt-3">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <Image
           src={avatar || "/avatar.JPEG"}
           alt="avatar"
-          width={40}
-          height={40}
+          width={33}
+          height={33}
           className="rounded-full object-cover"
           priority
         />
 
-        <div className="leading-5">
-          <Link className="flex items-center gap-1" href={`/bio`}>
-            <span className="font-medium text-gray-800 hover:text-black text-base">
-              {name || "Người dùng"}
+        <div className="leading-5 flex gap-1">
+          <div className="flex items-center gap-[3px]">
+            <span className="font-bold text-gray-800 hover:text-black text-sm">
+              {name}
             </span>
-            <i className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 text-sm" />
-          </Link>
+            <i className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 text-xs" />
+          </div>
+
+          <span className="text-gray-600">•</span>
 
           {showLink && postId ? (
             <Link href={`/blog/${postId}`} className="block group">
-              <span className="block text-sm text-gray-500 hover:text-gray-800 font-normal">
+              <span className="text-sm text-gray-500 hover:text-gray-800 font-normal">
                 {time}
               </span>
             </Link>
           ) : (
             <div className="block group">
-              <span className="block text-sm text-gray-500 hover:text-gray-800 font-normal">
+              <span className="text-sm text-gray-500 hover:text-gray-800 font-normal">
                 {time}
               </span>
             </div>

@@ -25,14 +25,14 @@ export default function PostCard({ post, isFirst = false }: { post: Post; isFirs
   const avatar = post.profiles?.avatar;
 
   return (
-    <div className="postCard bg-white lg:rounded-lg rounded-0 shadow-xs md:shadow-sm hover:shadow-md transition">
+    <div className="postCard bg-white lg:rounded-lg rounded-0 shadow-xs hover:shadow-sm transition">
       <div className="postHeader block">
         <PostHeader
           name={name}
           avatar={avatar}
           createdAt={post.created_at}
           postId={post.id}
-          showLink={true}
+          showLink={false}
           showMenu={true}
           timeFormat={formatTimeAgo}
         />
