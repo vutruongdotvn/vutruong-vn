@@ -16,7 +16,7 @@ export default function PostBody({
   images = [],
   postId,
   truncate = false,
-  maxLength = 250,
+  maxLength = 240,
 }: Props) {
   const isLong = content.length > maxLength;
 
