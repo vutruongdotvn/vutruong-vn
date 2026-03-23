@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import PostImages from "@/components/blog/PostImages";
 import FancyboxWrapper from "@/components/blog/FancyboxWrapper";
@@ -42,22 +43,30 @@ export default async function BlogDetailPage({
         {/* HEADER */}
         <div className="flex items-center gap-3">
           <Image
-            src={avatar}
+            src={avatar || "/avatar.JPEG"}
             alt="avatar"
-            width={45}
-            height={45}
+            width={40}
+            height={40}
             className="rounded-full object-cover"
+            priority
           />
 
-          <div>
-            <p className="font-semibold text-gray-900">
-              {name}
-            </p>
-            <p className="text-sm text-gray-500">
+          <div className="leading-5">
+            <Link className="flex items-center gap-1" href={`/bio`}>
+              <span className="font-medium text-gray-800 hover:text-black text-base">
+                {name || "Người dùng"}
+              </span>
+              <i className="fa-solid fa-badge-check text-blue-400 text-sm" />
+            </Link>
+
+            <div className="block group">
+              <span className="block text-sm text-gray-500 hover:text-gray-800 font-normal">
               {new Date(post.created_at).toLocaleString()}
-            </p>
+              </span>
+            </div>
           </div>
         </div>
+
 
         {/* CONTENT */}
         <p className="text-gray-800 whitespace-pre-line">
