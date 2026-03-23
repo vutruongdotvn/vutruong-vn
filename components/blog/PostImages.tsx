@@ -45,14 +45,14 @@ export default function PostImages({ images, postId }: Props) {
     <>
       {/* 1 IMAGE */}
       {count === 1 && (
-        <div className="relative w-full aspect-video mt-3">
+        <div className="postImages relative w-full aspect-video mt-3">
           {renderImage(images[0], 0, "w-full h-full", "100vw")}
         </div>
       )}
 
       {/* 2 IMAGES */}
       {count === 2 && (
-        <div className="grid grid-cols-2 gap-1 m-0 mt-3">
+        <div className="postImages grid grid-cols-2 gap-1 m-0 mt-3">
           {visibleImages.map((img, i) =>
             renderImage(
               img,
@@ -66,7 +66,7 @@ export default function PostImages({ images, postId }: Props) {
 
       {/* >=3 IMAGES */}
       {count >= 3 && (
-        <div className="grid grid-cols-2 gap-1 m-0 mt-3">
+        <div className="postImages grid grid-cols-2 gap-1 m-0 mt-3">
           {visibleImages.map((img, i) => (
             <div key={i} className="relative aspect-[4/3]">
               <a

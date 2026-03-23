@@ -62,7 +62,7 @@ export default function BlogPage() {
   // ✅ chuẩn giống PostCard
   const fullName = user
     ? profile?.name || "Người dùng"
-    : "Hello World ~";
+    : "Hello người lạ 👋";
 
   const email = user?.email || "";
 
@@ -129,7 +129,7 @@ export default function BlogPage() {
                     )}
                   </p>
                   <p className="text-sm font-normal text-gray-500">
-                    {user ? email : "Đăng nhập để viết bài"}
+                    {user ? email : "Bạn chưa đăng nhập"}
                   </p>
                 </div>
               </div>

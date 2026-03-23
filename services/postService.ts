@@ -1,5 +1,16 @@
 import { supabase } from "@/lib/supabase";
 
+function generateNumericId(length = 20) {
+  let result = "";
+  const digits = "0123456789";
+
+  for (let i = 0; i < length; i++) {
+    result += digits[Math.floor(Math.random() * 10)];
+  }
+
+  return result;
+}
+
 export const getPosts = async () => {
   const { data: posts, error } = await supabase
     .from("posts")
@@ -89,15 +100,18 @@ export const createPost = async ({
     // 🏷️ 3. AUTO HASHTAG (optional)
     const hashtags = content.match(/#[\wÀ-ỹ]+/g) || [];
 
-    // 🧾 4. INSERT DB
+    // 🧾 4. INSERT DB (THÊM ID RANDOM 20 SỐ)
+    const id = generateNumericId();
+
     const { error: insertError } = await supabase.from("posts").insert([
-  {
-    content,
-    images: imageUrls,
-    hashtags,
-    user_id: user.id,
-  },
-]);
+      {
+        id,
+        content,
+        images: imageUrls,
+        hashtags,
+        user_id: user.id,
+      },
+    ]);
 
     if (insertError) {
       console.error("Lỗi insert:", insertError);

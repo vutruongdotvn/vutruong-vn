@@ -5,6 +5,8 @@ import { supabase } from "@/lib/supabase";
 import PostImages from "@/components/blog/PostImages";
 import FancyboxWrapper from "@/components/blog/FancyboxWrapper";
 import PostHeader from "@/components/blog/PostHeader";
+import PostActions from "@/components/blog/PostActions";
+import PostBody from "@/components/blog/PostBody";
 
 export default async function BlogDetailPage({
   params,
@@ -49,16 +51,12 @@ export default async function BlogDetailPage({
           showMenu={true}
         />
 
-
-        {/* CONTENT */}
-        <p className="text-gray-800 whitespace-pre-line">
-          {post.content}
-        </p>
-
-        {/* IMAGES */}
-        {post.images?.length > 0 && (
-          <PostImages images={post.images} postId={post.id} />
-        )}
+        <PostBody
+          content={post.content}
+          images={post.images}
+          postId={post.id}
+        />
+        <PostActions />
       </article>
     </>
   );
