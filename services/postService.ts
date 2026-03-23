@@ -11,27 +11,31 @@ function generateNumericId(length = 20) {
   return result;
 }
 
-export const getPosts = async () => {
-  const { data: posts, error } = await supabase
+// 🔥 THÊM from, to
+export const getPosts = async (from?: number, to?: number) => {
+  let query = supabase
     .from("posts")
     .select("*")
     .order("created_at", { ascending: false });
+
+  if (from !== undefined && to !== undefined) {
+    query = query.range(from, to); // 🔥 pagination
+  }
+
+  const { data: posts, error } = await query;
 
   if (error) {
     console.error("Lỗi getPosts:", error);
     return [];
   }
 
-  // 🔥 LẤY TẤT CẢ USER_ID
   const userIds = posts.map((p) => p.user_id).filter(Boolean);
 
-  // 🔥 FETCH PROFILES
   const { data: profiles } = await supabase
     .from("profiles")
     .select("id, name, avatar")
     .in("id", userIds);
 
-  // 🔥 MAP profiles vào posts
   const postsWithProfiles = posts.map((post) => {
     const profile = profiles?.find((p) => p.id === post.user_id);
 
@@ -44,7 +48,7 @@ export const getPosts = async () => {
   return postsWithProfiles;
 };
 
-// ✍️ CREATE POST (CHUẨN 100%)
+// ✍️ CREATE POST (GIỮ NGUYÊN)
 export const createPost = async ({
   content,
   files,
@@ -55,7 +59,6 @@ export const createPost = async ({
   user_id: string;
 }) => {
   try {
-    // 🔐 1. LẤY USER THẬT
     const {
       data: { user },
       error: userError,
@@ -68,7 +71,6 @@ export const createPost = async ({
       };
     }
 
-    // 📸 2. UPLOAD ẢNH
     const imageUrls: string[] = [];
 
     for (const file of files) {
@@ -83,7 +85,6 @@ export const createPost = async ({
 
       if (uploadError) {
         console.error("Lỗi upload:", uploadError);
-
         return {
           success: false,
           error: "Upload ảnh thất bại",
@@ -97,10 +98,8 @@ export const createPost = async ({
       imageUrls.push(publicUrlData.publicUrl);
     }
 
-    // 🏷️ 3. AUTO HASHTAG (optional)
     const hashtags = content.match(/#[\wÀ-ỹ]+/g) || [];
 
-    // 🧾 4. INSERT DB (THÊM ID RANDOM 20 SỐ)
     const id = generateNumericId();
 
     const { error: insertError } = await supabase.from("posts").insert([
@@ -115,20 +114,15 @@ export const createPost = async ({
 
     if (insertError) {
       console.error("Lỗi insert:", insertError);
-
       return {
         success: false,
         error: insertError.message,
       };
     }
 
-    // ✅ SUCCESS
-    return {
-      success: true,
-    };
+    return { success: true };
   } catch (err: any) {
     console.error("Lỗi hệ thống:", err);
-
     return {
       success: false,
       error: "Lỗi hệ thống",

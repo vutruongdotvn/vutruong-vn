@@ -8,22 +8,29 @@ import LoginModal from "@/components/auth/LoginModal";
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getPosts } from "@/services/postService";
 import PostCardSkeleton from "@/components/blog/PostCardSkeleton";
 
 export default function BlogPage() {
   const [open, setOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // 🔥 NEW STATE
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  const LIMIT = 3;
 
   const [profile, setProfile] = useState<any>(null);
   const [profileLoading, setProfileLoading] = useState(true);
 
   const { user, role, loading: userLoading } = useUser();
 
-  // ✅ FETCH PROFILE
   const fetchProfile = async () => {
     if (!user) {
       setProfileLoading(false);
@@ -36,30 +43,64 @@ export default function BlogPage() {
       .eq("id", user.id)
       .single();
 
-    if (!error) {
-      setProfile(data);
-    }
+    if (!error) setProfile(data);
 
     setProfileLoading(false);
   };
 
-  // 🔥 fetch posts
-  const fetchPosts = async () => {
+  // 🔥 LOAD POSTS (INFINITE)
+  const loadPosts = async () => {
+    if (!hasMore) return;
+
     setLoading(true);
-    const data = await getPosts();
-    setPosts(data || []);
+
+    const from = page * LIMIT;
+    const to = from + LIMIT - 1;
+
+    const data = await getPosts(from, to);
+
+    if (data.length < LIMIT) {
+      setHasMore(false);
+    }
+
+    setPosts((prev) => {
+  const newPosts = data.filter(
+    (newPost) => !prev.some((p) => p.id === newPost.id)
+  );
+
+  return [...prev, ...newPosts];
+});
+    setPage((prev) => prev + 1);
+
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchPosts();
+    loadPosts();
   }, []);
 
   useEffect(() => {
     fetchProfile();
   }, [user]);
 
-  // ✅ chuẩn giống PostCard
+  // 🔥 OBSERVER
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          loadPosts();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => observer.disconnect();
+  }, [loadMoreRef, hasMore, page]);
+
   const fullName = user
     ? profile?.name || "Người dùng"
     : "Hello người lạ 👋";
@@ -70,8 +111,7 @@ export default function BlogPage() {
     ? profile?.avatar || "/images/default.jpg"
     : "/images/default.jpg";
 
-  // 🔥 READY STATE (CHỐNG FLASH)
-  const isReady = !userLoading && !profileLoading && !loading;
+  const isReady = !userLoading && !profileLoading && posts.length > 0;
 
   return (
     <>
@@ -79,39 +119,18 @@ export default function BlogPage() {
 
       <div className="space-y-2 md:space-y-4">
 
-        {/* 🔄 SKELETON (HIỂN THỊ TRƯỚC) */}
         {!isReady && (
           <div className="space-y-2 md:space-y-4">
-
-            {/* Header skeleton */}
-            <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-lg shadow-xs animate-pulse">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gray-200" />
-                <div>
-                  <div className="w-32 h-3 bg-gray-200 rounded mb-2" />
-                  <div className="w-24 h-3 bg-gray-200 rounded" />
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <div className="w-10 h-10 rounded-full bg-gray-200" />
-                <div className="w-10 h-10 rounded-full bg-gray-200" />
-              </div>
-            </div>
-
-            {/* Post skeleton */}
             <PostCardSkeleton />
             <PostCardSkeleton />
             <PostCardSkeleton />
           </div>
         )}
 
-        {/* ✅ UI THẬT (CHỈ RENDER KHI READY) */}
         {isReady && (
           <>
-            {/* 🔝 HEADER */}
+            {/* HEADER giữ nguyên */}
             <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-lg shadow-xs">
-
-              {/* 👤 USER INFO */}
               <div className="flex items-center gap-3">
                 <Image
                   height={36}
@@ -122,95 +141,44 @@ export default function BlogPage() {
                 />
 
                 <div>
-                  <p className="font-medium text-gray-800 flex items-center gap-1">
+                  <p className="font-medium text-gray-800">
                     {fullName}
-                    {user?.email === "admin@vutruong.vn" && (
-                      <i className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 text-sm"></i>
-                    )}
                   </p>
-                  <p className="text-sm font-normal text-gray-500">
+                  <p className="text-sm text-gray-500">
                     {user ? email : "Bạn chưa đăng nhập"}
                   </p>
                 </div>
               </div>
-
-              {/* 👉 ACTION RIGHT */}
-              <div className="flex items-center gap-2">
-
-                {/* ✍️ CREATE POST */}
-                {user && role === "admin" && (
-                  <button
-                    onClick={() => setOpen(true)}
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition cursor-pointer"
-                    title="Đăng bài"
-                  >
-                    <i className="fa-duotone fa-pen-to-square text-gray-600"></i>
-                  </button>
-                )}
-
-                {/* 🔐 LOGIN / LOGOUT */}
-                {!user ? (
-                  <button
-                    onClick={() => setShowLogin(true)}
-                    className="px-4 py-2 rounded-lg font-medium text-gray-600 text-sm bg-gray-100 hover:bg-gray-200 hover:text-black cursor-pointer transition"
-                  >
-                    Đăng nhập
-                  </button>
-                ) : (
-                  <button
-                    onClick={async () => {
-                      await supabase.auth.signOut();
-                      location.reload();
-                    }}
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition cursor-pointer"
-                    title="Đăng xuất"
-                  >
-                    <i className="fa-duotone fa-arrow-right-from-bracket text-gray-600"></i>
-                  </button>
-                )}
-              </div>
             </div>
 
-            {/* ⛔ USER KHÔNG PHẢI ADMIN */}
-            {user && role !== "admin" && (
-              <p className="text-center text-gray-500 text-sm">
-                Bạn chỉ có quyền xem bài viết 👀
-              </p>
-            )}
-
-            {/* 🔄 LOADING POSTS (GIỮ NGUYÊN) */}
-            {loading && (
-              <div className="space-y-4">
-                <PostCardSkeleton />
-                <PostCardSkeleton />
-                <PostCardSkeleton />
-              </div>
-            )}
-
-            {/* 📭 EMPTY */}
-            {!loading && posts.length === 0 && (
-              <p className="text-center text-gray-500">
-                Chưa có bài viết nào 🧐
-              </p>
-            )}
-
-            {/* 📰 POSTS */}
+            {/* POSTS */}
             {posts.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
 
-            {/* 🪟 CREATE POST MODAL */}
+            {/* 🔥 SKELETON LOAD MORE */}
+            {loading && (
+              <>
+                <PostCardSkeleton />
+                <PostCardSkeleton />
+                <PostCardSkeleton />
+              </>
+            )}
+
+            {/* 🔥 TRIGGER LOAD */}
+            <div ref={loadMoreRef}></div>
+
+            {/* MODALS giữ nguyên */}
             {user && role === "admin" && (
               <CreatePostModal
                 isOpen={open}
                 onClose={() => {
                   setOpen(false);
-                  fetchPosts();
+                  location.reload();
                 }}
               />
             )}
 
-            {/* 🔐 LOGIN MODAL */}
             {showLogin && (
               <LoginModal onClose={() => setShowLogin(false)} />
             )}

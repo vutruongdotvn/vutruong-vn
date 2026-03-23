@@ -19,9 +19,11 @@ type Post = {
   };
 };
 
-export default function PostCard({ post }: { post: Post }) {
+// 🔥 THÊM isFirst (optional)
+export default function PostCard({ post, isFirst = false }: { post: Post; isFirst?: boolean }) {
   const name = post.profiles?.name;
   const avatar = post.profiles?.avatar;
+
   return (
     <div className="postCard bg-white lg:rounded-lg rounded-0 shadow-xs md:shadow-sm hover:shadow-md transition">
       <div className="postHeader block">
@@ -36,13 +38,15 @@ export default function PostCard({ post }: { post: Post }) {
         />
       </div>
 
-        <PostBody
-          content={post.content}
-          images={post.images}
-          postId={post.id}
-          truncate={true}
-        />
-        <PostActions />
+      <PostBody
+        content={post.content}
+        images={post.images}
+        postId={post.id}
+        truncate={true}
+        priority={isFirst} // 🔥 truyền xuống
+      />
+
+      <PostActions />
     </div>
   );
 }

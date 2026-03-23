@@ -9,6 +9,7 @@ type Props = {
   postId: string;
   truncate?: boolean;
   maxLength?: number;
+  priority?: boolean; // 🔥 thêm dòng này
 };
 
 export default function PostBody({
@@ -17,6 +18,7 @@ export default function PostBody({
   postId,
   truncate = false,
   maxLength = 240,
+  priority = false,
 }: Props) {
   const isLong = content.length > maxLength;
 
@@ -41,7 +43,11 @@ export default function PostBody({
         )}
       </div>
 
-      <PostImages images={images} postId={postId} />
+      <PostImages
+  images={images}
+  postId={postId}
+  priority={priority}
+/>
     </>
   );
 }

@@ -5,9 +5,10 @@ import Image from "next/image";
 type Props = {
   images: string[];
   postId: string;
+  priority?: boolean; // 🔥 thêm
 };
 
-export default function PostImages({ images, postId }: Props) {
+export default function PostImages({ images, postId, priority = false }: Props) {
   const count = images.length;
   if (count === 0) return null;
 
@@ -36,6 +37,7 @@ export default function PostImages({ images, postId }: Props) {
         alt="post"
         fill
         sizes={sizes}
+        priority={priority && i === 0} // 🔥 CHỈ ảnh đầu tiên
         className="object-cover transition-transform duration-300 hover:scale-102"
       />
     </a>
@@ -79,11 +81,11 @@ export default function PostImages({ images, postId }: Props) {
                   alt="post"
                   fill
                   sizes="(max-width:768px) 50vw, 400px"
+                  priority={priority && i === 0} // 🔥 fix LCP
                   className="object-cover rounded-0 transition-transform duration-300 hover:scale-102"
                 />
               </a>
 
-              {/* +N overlay */}
               {i === 3 && count > 4 && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-lg font-normal pointer-events-none">
                   +{count - 4}
@@ -94,7 +96,6 @@ export default function PostImages({ images, postId }: Props) {
         </div>
       )}
 
-      {/* 🔥 ONLY hidden remaining images */}
       {hiddenImages.length > 0 && (
         <div className="hidden">
           {hiddenImages.map((img, i) => (
