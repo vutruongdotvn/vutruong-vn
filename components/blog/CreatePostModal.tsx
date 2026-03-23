@@ -81,10 +81,11 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
     setLoading(false);
 
     if (result?.success) {
-      setContent("");
-      setImages([]);
-      setFiles([]);
-      onClose();
+      //setContent("");
+      //setImages([]);
+      //setFiles([]);
+      //onClose();
+      window.location.reload();
     } else {
       alert(result?.error || "Lỗi đăng bài 😢");
       console.error(result);

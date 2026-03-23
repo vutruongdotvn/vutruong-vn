@@ -15,13 +15,13 @@ import PostCardSkeleton from "@/components/blog/PostCardSkeleton";
 export default function BlogPage() {
   const [open, setOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 NEW STATE
+  // 🔥 NEW (KHÔNG ẢNH HƯỞNG LOGIC CŨ)
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const LIMIT = 3;
@@ -31,6 +31,7 @@ export default function BlogPage() {
 
   const { user, role, loading: userLoading } = useUser();
 
+  // ✅ FETCH PROFILE (GIỮ NGUYÊN)
   const fetchProfile = async () => {
     if (!user) {
       setProfileLoading(false);
@@ -43,16 +44,22 @@ export default function BlogPage() {
       .eq("id", user.id)
       .single();
 
-    if (!error) setProfile(data);
+    if (!error) {
+      setProfile(data);
+    }
 
     setProfileLoading(false);
   };
 
-  // 🔥 LOAD POSTS (INFINITE)
-  const loadPosts = async () => {
+  // 🔥 UPGRADE fetchPosts (KHÔNG ĐỔI CÁCH DÙNG)
+  const fetchPosts = async () => {
     if (!hasMore) return;
 
-    setLoading(true);
+    if (page === 0) {
+      setLoading(true);
+    } else {
+      setLoadingMore(true);
+    }
 
     const from = page * LIMIT;
     const to = from + LIMIT - 1;
@@ -64,42 +71,45 @@ export default function BlogPage() {
     }
 
     setPosts((prev) => {
-  const newPosts = data.filter(
-    (newPost) => !prev.some((p) => p.id === newPost.id)
-  );
+      if (page === 0) return data || [];
 
-  return [...prev, ...newPosts];
-});
+      const newPosts = data.filter(
+        (newPost) => !prev.some((p) => p.id === newPost.id)
+      );
+
+      return [...prev, ...newPosts];
+    });
+
     setPage((prev) => prev + 1);
 
     setLoading(false);
+    setLoadingMore(false);
   };
 
   useEffect(() => {
-    loadPosts();
+    fetchPosts();
   }, []);
 
   useEffect(() => {
     fetchProfile();
   }, [user]);
 
-  // 🔥 OBSERVER
+  // 🔥 INFINITE SCROLL (CHỈ THÊM CÁI NÀY)
   useEffect(() => {
     if (!loadMoreRef.current) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          loadPosts();
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          fetchPosts();
         }
       },
-      { threshold: 1 }
+      { threshold: 0.2 }
     );
 
     observer.observe(loadMoreRef.current);
-
     return () => observer.disconnect();
-  }, [loadMoreRef, hasMore, page]);
+  }, [hasMore, loadingMore, page]);
 
   const fullName = user
     ? profile?.name || "Người dùng"
@@ -111,7 +121,7 @@ export default function BlogPage() {
     ? profile?.avatar || "/images/default.jpg"
     : "/images/default.jpg";
 
-  const isReady = !userLoading && !profileLoading && posts.length > 0;
+  const isReady = !userLoading && !profileLoading && !loading;
 
   return (
     <>
@@ -121,6 +131,21 @@ export default function BlogPage() {
 
         {!isReady && (
           <div className="space-y-2 md:space-y-4">
+
+            <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-lg shadow-xs animate-pulse">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gray-200" />
+                <div>
+                  <div className="w-32 h-3 bg-gray-200 rounded mb-2" />
+                  <div className="w-24 h-3 bg-gray-200 rounded" />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <div className="w-10 h-10 rounded-full bg-gray-200" />
+                <div className="w-10 h-10 rounded-full bg-gray-200" />
+              </div>
+            </div>
+
             <PostCardSkeleton />
             <PostCardSkeleton />
             <PostCardSkeleton />
@@ -129,8 +154,8 @@ export default function BlogPage() {
 
         {isReady && (
           <>
-            {/* HEADER giữ nguyên */}
             <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-lg shadow-xs">
+
               <div className="flex items-center gap-3">
                 <Image
                   height={36}
@@ -141,40 +166,92 @@ export default function BlogPage() {
                 />
 
                 <div>
-                  <p className="font-medium text-gray-800">
+                  <p className="font-medium text-gray-800 flex items-center gap-1">
                     {fullName}
+                    {user?.email === "admin@vutruong.vn" && (
+                      <i className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 text-sm"></i>
+                    )}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm font-normal text-gray-500">
                     {user ? email : "Bạn chưa đăng nhập"}
                   </p>
                 </div>
               </div>
+
+              <div className="flex items-center gap-2">
+
+                {user && role === "admin" && (
+                  <button
+                    onClick={() => setOpen(true)}
+                    className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition cursor-pointer"
+                    title="Đăng bài"
+                  >
+                    <i className="fa-duotone fa-pen-to-square text-gray-600"></i>
+                  </button>
+                )}
+
+                {!user ? (
+                  <button
+                    onClick={() => setShowLogin(true)}
+                    className="px-4 py-2 rounded-lg font-medium text-gray-600 text-sm bg-gray-100 hover:bg-gray-200 hover:text-black cursor-pointer transition"
+                  >
+                    Đăng nhập
+                  </button>
+                ) : (
+                  <button
+                    onClick={async () => {
+                      await supabase.auth.signOut();
+                      location.reload();
+                    }}
+                    className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition cursor-pointer"
+                    title="Đăng xuất"
+                  >
+                    <i className="fa-duotone fa-arrow-right-from-bracket text-gray-600"></i>
+                  </button>
+                )}
+              </div>
             </div>
 
-            {/* POSTS */}
+            {user && role !== "admin" && (
+              <p className="text-center text-gray-500 text-sm">
+                Bạn chỉ có quyền xem bài viết 👀
+              </p>
+            )}
+
+            {loading && (
+              <div className="space-y-4">
+                <PostCardSkeleton />
+                <PostCardSkeleton />
+                <PostCardSkeleton />
+              </div>
+            )}
+
+            {!loading && posts.length === 0 && (
+              <p className="text-center text-gray-500">
+                Chưa có bài viết nào 🧐
+              </p>
+            )}
+
             {posts.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
 
-            {/* 🔥 SKELETON LOAD MORE */}
-            {loading && (
-              <>
+            {/* 🔥 LOAD MORE (1 SKE DUY NHẤT) */}
+            {loadingMore && (
+              <div className="flex justify-center py-4">
                 <PostCardSkeleton />
-                <PostCardSkeleton />
-                <PostCardSkeleton />
-              </>
+              </div>
             )}
 
-            {/* 🔥 TRIGGER LOAD */}
+            {/* 🔥 TRIGGER */}
             <div ref={loadMoreRef}></div>
 
-            {/* MODALS giữ nguyên */}
             {user && role === "admin" && (
               <CreatePostModal
                 isOpen={open}
                 onClose={() => {
                   setOpen(false);
-                  location.reload();
+                  fetchPosts(); // GIỮ NGUYÊN 100%
                 }}
               />
             )}
