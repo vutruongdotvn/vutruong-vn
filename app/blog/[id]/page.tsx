@@ -7,6 +7,7 @@ import FancyboxWrapper from "@/components/blog/FancyboxWrapper";
 import PostHeader from "@/components/blog/PostHeader";
 import PostActions from "@/components/blog/PostActions";
 import PostBody from "@/components/blog/PostBody";
+import { formatTimeAgo } from "@/lib/utils";
 
 export default async function BlogDetailPage({
   params,
@@ -56,6 +57,8 @@ export default async function BlogDetailPage({
           avatar={avatar}
           createdAt={post.created_at}
           showMenu={true}
+          timeFormat={formatTimeAgo}
+
         />
 
         <PostBody
