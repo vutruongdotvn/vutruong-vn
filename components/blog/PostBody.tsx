@@ -16,7 +16,7 @@ export default function PostBody({
   images = [],
   postId,
   truncate = false,
-  maxLength = 200,
+  maxLength = 250,
 }: Props) {
   const isLong = content.length > maxLength;
 
@@ -34,7 +34,7 @@ export default function PostBody({
           <Link
             title="Xem chi tiết"
             href={`/blog/${postId}`}
-            className="text-gray-800 font-semibold hover:text-black"
+            className="text-gray-800 font-medium hover:text-black"
           >
             Xem thêm
           </Link>
