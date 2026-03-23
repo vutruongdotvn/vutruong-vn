@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import PostImages from "./PostImages";
 import { formatTimeAgo } from "@/lib/utils";
+import PostHeader from "./PostHeader";
 
 type Post = {
   id: string;
@@ -29,36 +30,16 @@ export default function PostCard({ post }: { post: Post }) {
 
   return (
     <div className="bg-white lg:rounded-lg rounded-0 shadow-sm p-4 hover:shadow-md transition">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Image
-            src={avatar || "/avatar.JPEG"}
-            alt="avatar"
-            width={40}
-            height={40}
-            className="rounded-full object-cover"
-            priority
-          />
-
-          <div className="leading-5">
-            <Link className="flex items-center gap-1" href={`/bio`}>
-              <span className="font-medium text-gray-800 hover:text-black text-base">
-                {name || "Người dùng"}
-              </span>
-              <i className="fa-solid fa-badge-check text-blue-400 text-sm" />
-            </Link>
-
-            <Link href={`/blog/${post.id}`} className="block group">
-              <span className="block text-sm text-gray-500 hover:text-gray-800 font-normal">
-                {formatTimeAgo(post.created_at)}
-              </span>
-            </Link>
-          </div>
-        </div>
-
-        <button className="text-gray-400 hover:text-gray-600 cursor-pointer">
-          <i className="fa-duotone fa-ellipsis"></i>
-        </button>
+      <div className="postHeader block">
+        <PostHeader
+          name={name}
+          avatar={avatar}
+          createdAt={post.created_at}
+          postId={post.id}
+          showLink={true}
+          showMenu={true}
+          timeFormat={formatTimeAgo}
+        />
       </div>
 
       {/* 🔥 CONTENT (ĐÃ FIX) */}

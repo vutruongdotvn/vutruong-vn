@@ -1,6 +1,6 @@
 export default function PostCardSkeleton() {
   return (
-    <div className="w-full rounded-2xl bg-white shadow-sm border border-gray-200 p-4 animate-pulse">
+    <div className="w-full rounded-0 lg:rounded-lg bg-white shadow-sm p-4 animate-pulse">
       
       {/* Header */}
       <div className="flex items-center gap-3 mb-3">

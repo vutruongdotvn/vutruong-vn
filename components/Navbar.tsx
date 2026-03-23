@@ -14,8 +14,8 @@ export default function Navbar() {
   const menu = [
     { name: "Bio", href: "/bio", icon: "fa-duotone fa-users" },
     { name: "Dự án", href: "/project", icon: "fa-duotone fa-code" },
-    { name: "Blog", href: "/blog", icon: "fa-duotone fa-comment-pen" },
     { name: "Liên hệ", href: "/contact", icon: "fa-duotone fa-envelope" },
+    { name: "Blog", href: "/blog", icon: "fa-duotone fa-comment-pen" },
   ];
 
   // ✅ ACTIVE LOGIC
@@ -51,7 +51,7 @@ export default function Navbar() {
       <div className="w-full max-w-2xl">
 
         {/* NAVBAR */}
-        <div className="flex items-center justify-between p-2 rounded-full 
+        <div className="flex items-center justify-between p-1 rounded-lg 
           bg-white/70 backdrop-blur-xl border border-white/70 
           shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
 
@@ -77,7 +77,7 @@ export default function Navbar() {
                 key={item.name}
                 href={item.href}
                 prefetch
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
                   isActive(item.href)
                     ? "bg-gray-200 text-black font-bold"
                     : "text-gray-700 hover:bg-gray-200"

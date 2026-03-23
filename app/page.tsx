@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 
 // import Countdown from "@/components/home/Countdown";
 import GlassCard from "@/components/home/GlassCard";
-import BackgroundGlow from "@/components/home/BackgroundGlow";
 import { AppleHelloVietnameseEffect } from "@/components/apple-hello-effect";
 
 export default function Page() {
@@ -13,14 +12,13 @@ export default function Page() {
   useEffect(() => {
     const interval = setInterval(() => {
       setKey((prev) => prev + 1);
-    }, 12000); // 🔥 loop chuẩn theo animation (~7–8s)
+    }, 12000); // sau 12s reset
 
     return () => clearInterval(interval);
   }, []);
 
   return (
     <main className="relative min-h-screen flex items-center justify-center">
-      <BackgroundGlow />
 
       <GlassCard>
         <div className="text-center space-y-8">

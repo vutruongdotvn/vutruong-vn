@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 export function useUser() {
   const [user, setUser] = useState<any>(null);
   const [role, setRole] = useState<"admin" | "user" | null>(null);
+  const [loading, setLoading] = useState(true); // 👈 THÊM
 
   useEffect(() => {
     const getUser = async () => {
@@ -22,6 +23,7 @@ export function useUser() {
       } else {
         setRole(null);
       }
+      setLoading(false); // 👈 QUAN TRỌNG
     };
 
     getUser();
@@ -38,6 +40,7 @@ export function useUser() {
         } else {
           setRole(null);
         }
+        setLoading(false); // 👈 thêm luôn
       }
     );
 
@@ -46,5 +49,5 @@ export function useUser() {
     };
   }, []);
 
-  return { user, role };
+  return { user, role, loading };
 }

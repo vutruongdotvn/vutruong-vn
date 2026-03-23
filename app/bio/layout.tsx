@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import BackgroundGlow from "@/components/home/BackgroundGlow";
 
 export const metadata: Metadata = {
   title: "Liên kết mạng xã hội",
@@ -12,13 +11,10 @@ export default function BioLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="relative min-h-screen flex items-start justify-center overflow-hidden py-24">
-
-      {/* Glow background */}
-      <BackgroundGlow />
+    <section className="relative min-h-screen flex items-start justify-center overflow-hidden py-28">
 
       {/* Content */}
-      <div className="relative w-full max-w-xl px-6">
+      <div className="relative w-full max-w-2xl md:px-0 px-4">
         {children}
       </div>
     </section>

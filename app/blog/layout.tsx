@@ -1,5 +1,4 @@
 import React from "react";
-import BackgroundGlow from "@/components/home/BackgroundGlow";
 import Image from "next/image";
 import type { Metadata } from "next";
 
@@ -14,9 +13,8 @@ export default function BlogLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="relative min-h-screen py-24">
-      <BackgroundGlow />
-      <div className="max-w-2xl w-screen mx-auto ">          
+    <main className="relative min-h-screen py-20">
+      <div className="max-w-2xl w-screen mx-auto ">
           {/* LEFT SIDEBAR DELETED */}
 
           {/* MAIN FEED */}
