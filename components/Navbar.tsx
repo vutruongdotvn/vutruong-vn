@@ -51,9 +51,10 @@ export default function Navbar() {
       <div className="w-full max-w-2xl">
 
         {/* NAVBAR */}
-        <div className="flex items-center justify-between p-1 rounded-lg 
+        <div className="flex items-center justify-between p-1 
           bg-white/70 backdrop-blur-xl border border-white/70 
-          shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
+          shadow-[0_8px_30px_rgba(0,0,0,0.08)]
+          rounded-lg">
 
           {/* LOGO + TITLE */}
           <Link href="/" className="flex items-center gap-2 ms-1">
