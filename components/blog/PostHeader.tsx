@@ -43,7 +43,7 @@ export default function PostHeader({
             <span className="font-medium text-gray-800 hover:text-black text-base">
               {name || "Người dùng"}
             </span>
-            <i className="fa-solid fa-badge-check text-blue-400 text-sm" />
+            <i className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 text-sm" />
           </Link>
 
           {showLink && postId ? (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { supabase } from "@/lib/supabase";
 
@@ -8,10 +8,25 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    };
+  }, []);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      return alert("Ê"); // chưa nhập thông tin
+      return alert("Ê");
     }
 
     setLoading(true);
@@ -24,11 +39,20 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
     setLoading(false);
 
     if (error) {
-      return alert("Ê"); // sai thông tin
+      return alert("Ê");
     } else {
       onClose();
     }
   };
+
+  // 🔥 THÊM ĐOẠN NÀY
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleLogin();
+    }
+  };
+
+  if (!mounted) return null;
 
   return createPortal(
     <div className="fixed inset-0 h-screen z-[9998] flex items-center justify-center">
@@ -68,6 +92,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={handleKeyDown} // 🔥 FIX Ở ĐÂY
             className="w-full border rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-gray-200"
           />
         </div>

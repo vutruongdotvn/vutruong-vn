@@ -18,7 +18,7 @@ export default function BlogLayout({
           {/* LEFT SIDEBAR DELETED */}
 
           {/* MAIN FEED */}
-          <section className="space-y-6">
+          <section className="postFeeds">
             {children}
           </section>
 

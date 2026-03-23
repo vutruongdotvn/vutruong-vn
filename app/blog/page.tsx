@@ -77,14 +77,14 @@ export default function BlogPage() {
     <>
       <FancyboxWrapper />
 
-      <div className="space-y-4">
+      <div className="space-y-2 md:space-y-4">
 
         {/* 🔄 SKELETON (HIỂN THỊ TRƯỚC) */}
         {!isReady && (
-          <div className="space-y-4">
+          <div className="space-y-2 md:space-y-4">
 
             {/* Header skeleton */}
-            <div className="flex items-center justify-between gap-3 bg-white p-3 rounded-lg shadow-sm animate-pulse">
+            <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-lg shadow-xs animate-pulse">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gray-200" />
                 <div>
@@ -109,7 +109,7 @@ export default function BlogPage() {
         {isReady && (
           <>
             {/* 🔝 HEADER */}
-            <div className="flex items-center justify-between gap-3 bg-white p-3 rounded-lg shadow-sm">
+            <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-lg shadow-xs">
 
               {/* 👤 USER INFO */}
               <div className="flex items-center gap-3">
@@ -125,7 +125,7 @@ export default function BlogPage() {
                   <p className="font-medium text-gray-800 flex items-center gap-1">
                     {fullName}
                     {user?.email === "admin@vutruong.vn" && (
-                      <i className="fa-solid fa-badge-check text-blue-400 text-sm"></i>
+                      <i className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 text-sm"></i>
                     )}
                   </p>
                   <p className="text-sm font-normal text-gray-500">

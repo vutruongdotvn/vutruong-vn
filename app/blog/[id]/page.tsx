@@ -41,7 +41,7 @@ export default async function BlogDetailPage({
     <>
       <FancyboxWrapper />
 
-      <article className="bg-white rounded-lg shadow-sm m-0 p-0">
+      <article className="bg-white rounded-0 md:rounded-lg shadow-xs md:shadow-sm m-0 p-0">
         
         {/* HEADER */}
         <PostHeader

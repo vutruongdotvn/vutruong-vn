@@ -36,7 +36,7 @@ export default function PostImages({ images, postId }: Props) {
         alt="post"
         fill
         sizes={sizes}
-        className="object-cover"
+        className="object-cover transition-transform duration-300 hover:scale-102"
       />
     </a>
   );
@@ -45,8 +45,8 @@ export default function PostImages({ images, postId }: Props) {
     <>
       {/* 1 IMAGE */}
       {count === 1 && (
-        <div className="postImages relative w-full aspect-video mt-3">
-          {renderImage(images[0], 0, "w-full h-full", "100vw")}
+        <div className="postImages relative w-full aspect-video mt-3 overflow-hidden">
+          {renderImage(images[0], 0, "w-full h-full", "(max-width:768px) 100vw, 800px")}
         </div>
       )}
 
@@ -57,7 +57,7 @@ export default function PostImages({ images, postId }: Props) {
             renderImage(
               img,
               i,
-              "aspect-[3/4]",
+              "aspect-[3/4] overflow-hidden",
               "(max-width:768px) 50vw, 400px"
             )
           )}
@@ -72,20 +72,20 @@ export default function PostImages({ images, postId }: Props) {
               <a
                 href={img}
                 data-fancybox={group}
-                className="block w-full h-full"
+                className="relative block w-full h-full overflow-hidden"
               >
                 <Image
                   src={img}
                   alt="post"
                   fill
                   sizes="(max-width:768px) 50vw, 400px"
-                  className="object-cover rounded-0"
+                  className="object-cover rounded-0 transition-transform duration-300 hover:scale-102"
                 />
               </a>
 
               {/* +N overlay */}
               {i === 3 && count > 4 && (
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-xl font-semibold rounded-lg">
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-lg font-normal pointer-events-none">
                   +{count - 4}
                 </div>
               )}
