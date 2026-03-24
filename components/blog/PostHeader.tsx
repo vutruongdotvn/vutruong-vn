@@ -21,7 +21,7 @@ export default function PostHeader({
   avatar,
   createdAt,
   postId,
-  showLink = false,
+  showLink = true,
   showMenu = false,
   isPinned = false,
   onPin,
@@ -31,7 +31,7 @@ export default function PostHeader({
   const time = formatTimeAgo(createdAt);
 
   const renderTimeContent = () => (
-  <span className="text-xs text-gray-600 font-normal flex items-center gap-1">
+  <span className="text-xs text-gray-600 hover:text-black font-normal flex items-center gap-1">
     {time}
 
     {isPinned && (

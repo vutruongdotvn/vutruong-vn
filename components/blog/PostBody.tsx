@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
 import PostImages from "./PostImages";
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
   postId: string;
   truncate?: boolean;
   maxLength?: number;
-  priority?: boolean; // 🔥 thêm dòng này
+  priority?: boolean;
 };
 
 export default function PostBody({
@@ -20,10 +20,12 @@ export default function PostBody({
   maxLength = 200,
   priority = false,
 }: Props) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const isLong = content.length > maxLength;
 
   const displayContent =
-    truncate && isLong
+    truncate && isLong && !isExpanded
       ? content.slice(0, maxLength) + "..."
       : content;
 
@@ -33,13 +35,12 @@ export default function PostBody({
         {displayContent}
 
         {truncate && isLong && (
-          <Link
-            title="Xem chi tiết"
-            href={`/blog/${postId}`}
-            className="text-gray-800 font-medium hover:text-black"
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="ml-1 text-gray-800 font-medium hover:text-black cursor-pointer"
           >
-            Xem thêm
-          </Link>
+            {isExpanded ? "Thu gọn" : "Xem thêm"}
+          </button>
         )}
       </div>
 
