@@ -25,7 +25,7 @@ export default function PostCard({ post, isFirst = false }: { post: Post; isFirs
   const avatar = post.profiles?.avatar;
 
   return (
-    <div className="postCard bg-white lg:rounded-lg rounded-0 shadow-xs hover:shadow-sm transition">
+    <div className="postCard bg-white md:rounded-lg rounded-0 shadow-xs hover:shadow-sm transition">
       <div className="postHeader block">
         <PostHeader
           name={name}

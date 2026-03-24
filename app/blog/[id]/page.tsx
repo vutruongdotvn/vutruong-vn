@@ -42,7 +42,7 @@ export default async function BlogDetailPage({
       <FancyboxWrapper />
       <div className="actionFooter mb-3 text-center sm:text-start">
         <Link href="/blog" className="flex md:inline-flex items-center gap-2 text-sm text-gray-600 hover:text-black
-        bg-0 sm:bg-white px-4 py-2 rounded-0 sm:rounded-md shadow-xs">
+        bg-0 sm:bg-white px-4 py-2 rounded-0 sm:rounded-md md:shadow-xs">
         <i className="fa-duotone fa-arrow-left text-xs"/>
         Quay lại
         </Link>

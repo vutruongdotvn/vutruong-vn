@@ -38,7 +38,7 @@ export default function PostHeader({
           priority
         />
 
-        <div className="leading-5 flex gap-1">
+        <div className="leading-5 flex items-center gap-1">
           <div className="flex items-center gap-[3px]">
             <span className="font-bold text-gray-800 hover:text-black text-sm">
               {name}
@@ -46,17 +46,17 @@ export default function PostHeader({
             <i className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 text-xs" />
           </div>
 
-          <span className="text-gray-600">•</span>
+          <span className="text-gray-600 hidden">•</span>
 
           {showLink && postId ? (
             <Link href={`/blog/${postId}`} className="block group">
-              <span className="text-sm text-gray-500 hover:text-gray-800 font-normal">
+              <span className="text-xs text-gray-500 hover:text-gray-800 font-medium">
                 {time}
               </span>
             </Link>
           ) : (
             <div className="block group">
-              <span className="text-sm text-gray-500 hover:text-gray-800 font-normal">
+              <span className="text-xs text-gray-500 hover:text-gray-800 font-medium">
                 {time}
               </span>
             </div>

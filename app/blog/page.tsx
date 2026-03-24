@@ -113,7 +113,7 @@ export default function BlogPage() {
 
   const fullName = user
     ? profile?.name || "Người dùng"
-    : "Hello người lạ 👋";
+    : "Hello 👋";
 
   const email = user?.email || "";
 
@@ -173,7 +173,7 @@ export default function BlogPage() {
                     )}
                   </p>
                   <p className="text-sm font-normal text-gray-500">
-                    {user ? email : "Bạn chưa đăng nhập"}
+                    {user ? email : "Người lạ thoáng qua"}
                   </p>
                 </div>
               </div>
@@ -193,10 +193,12 @@ export default function BlogPage() {
                 {!user ? (
                   <button
                     onClick={() => setShowLogin(true)}
-                    className="px-4 py-2 rounded-lg font-medium text-gray-600 text-sm bg-gray-100 hover:bg-gray-200 hover:text-black cursor-pointer transition"
+                    className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition cursor-pointer"
+                    title="Đăng xuất"
                   >
-                    Đăng nhập
+                    <i className="fa-duotone fa-user-gear text-gray-600"></i>
                   </button>
+
                 ) : (
                   <button
                     onClick={async () => {

@@ -17,7 +17,7 @@ export default function PostBody({
   images = [],
   postId,
   truncate = false,
-  maxLength = 215,
+  maxLength = 200,
   priority = false,
 }: Props) {
   const isLong = content.length > maxLength;
@@ -44,10 +44,10 @@ export default function PostBody({
       </div>
 
       <PostImages
-  images={images}
-  postId={postId}
-  priority={priority}
-/>
+        images={images}
+        postId={postId}
+        priority={priority}
+      />
     </>
   );
 }
