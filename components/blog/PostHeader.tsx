@@ -31,13 +31,13 @@ export default function PostHeader({
   const time = formatTimeAgo(createdAt);
 
   const renderTimeContent = () => (
-  <span className="text-xs text-gray-500 font-medium flex items-center gap-1">
+  <span className="text-xs text-gray-600 font-normal flex items-center gap-1">
     {time}
 
     {isPinned && (
       <>
-        <span>·</span>
-        <span className="text-gray-400 font-normal flex items-center gap-[3px]">
+        <span className="text-gray-600">•</span>
+        <span className="text-gray-600 font-normal flex items-center gap-[3px]">
           <i className="fa-duotone fa-thumbtack text-[10px]" />
           Bài ghim
         </span>

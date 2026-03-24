@@ -15,7 +15,7 @@ const DEFAULT_AVATAR = "/images/default.jpg";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
-
+  const [newPassword, setNewPassword] = useState("");
   const [name, setName] = useState("");
   const [avatar, setAvatar] = useState("");
 
@@ -175,24 +175,44 @@ export default function ProfilePage() {
   };
 
   const isChanged =
-    name !== originalName || avatar !== originalAvatar;
+  name !== originalName ||
+  avatar !== originalAvatar ||
+  newPassword.trim() !== "";
 
   const handleSave = async () => {
-    if (!isChanged || saving) return;
+  if (!isChanged || saving) return;
 
-    setSaving(true);
+  setSaving(true);
 
-    await supabase
-      .from("profiles")
-      .update({ name, avatar: safeAvatar })
-      .eq("id", user.id);
+  // update profile (giữ nguyên)
+  await supabase
+    .from("profiles")
+    .update({ name, avatar: safeAvatar })
+    .eq("id", user.id);
 
-    setOriginalName(name);
-    setOriginalAvatar(avatar);
+  // ✅ THÊM ĐOẠN NÀY
+  if (newPassword.trim() !== "") {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
 
-    setSaving(false);
-    showToast("Đã lưu 🎉");
-  };
+    if (error) {
+      console.error(error);
+      showToast("Đổi mật khẩu thất bại ❌");
+      setSaving(false);
+      return;
+    }
+  }
+
+  setOriginalName(name);
+  setOriginalAvatar(avatar);
+
+  // reset password input sau khi lưu
+  setNewPassword("");
+
+  setSaving(false);
+  showToast("Đã lưu 🎉");
+};
 
   const handleReuse = (url: string) => {
     setAvatar(url);
@@ -302,9 +322,9 @@ export default function ProfilePage() {
       )}
 
       <GlassCard>
-        <div className="space-y-6 text-center">
+        <div className="space-y-4 text-center">
 
-          <h1 className="text-xl font-semibold">Profile</h1>
+          <h1 className="text-xl font-semibold mb-6">Profile</h1>
 
           {/* AVATAR */}
           <label className="relative w-24 h-24 mx-auto cursor-pointer group block">
@@ -317,7 +337,7 @@ export default function ProfilePage() {
             />
 
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs rounded-full">
-              Đổi ảnh
+              Avatar
             </div>
 
             <input
@@ -337,6 +357,14 @@ export default function ProfilePage() {
             className="w-full px-3 py-2 border rounded-lg"
           />
 
+          <input
+  type="password"
+  placeholder="Mật khẩu mới"
+  value={newPassword}
+  onChange={(e) => setNewPassword(e.target.value)}
+  className="w-full px-3 py-2 border rounded-lg"
+/>
+
           {/* SAVE */}
           <button
             onClick={handleSave}
@@ -351,7 +379,7 @@ export default function ProfilePage() {
           {/* AVATAR LIST */}
           <div className="text-left">
             <p className="text-sm text-gray-500 mb-2">
-              Avatar đã dùng
+              Avatar cũ
             </p>
 
             {avatarLoading ? (
@@ -367,18 +395,18 @@ export default function ProfilePage() {
             ) : (
               <div className="grid grid-cols-3 gap-3">
                 {avatars.map((item) => (
-                  <div key={item.id} className="relative group">
+                  <div key={item.id} className="relative group w-33">
                     <img
                       src={item.url}
-                      className="w-24 aspect-square rounded-lg object-cover border cursor-pointer"
+                      className="w-33 aspect-square rounded-xl object-cover border cursor-pointer"
                       onClick={() => handleReuse(item.url)}
                     />
 
-                    <div className="absolute rounded-lg inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-xs gap-1">
-                      <button onClick={() => handleReuse(item.url)}>
-                        Sử dụng lại
+                    <div className="absolute w-auto rounded-xl inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-sm gap-2">
+                      <button className="cursor-pointer hover:text-sky-400 font-normal hover:font-bold" onClick={() => handleReuse(item.url)}>
+                        Sử dụng
                       </button>
-                      <button onClick={() => handleDelete(item)}>
+                      <button className="cursor-pointer hover:text-red-400 font-normal hover:font-bold" onClick={() => handleDelete(item)}>
                         Xoá
                       </button>
                     </div>

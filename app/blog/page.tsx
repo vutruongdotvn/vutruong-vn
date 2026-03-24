@@ -142,7 +142,7 @@ const handleEdit = (post: any) => {
 
   const fullName = user
     ? profile?.name || "Người dùng"
-    : "Hello 👋";
+    : "Xin chào! 👋";
 
   const email = user?.email || "";
 
@@ -204,7 +204,7 @@ const handleEdit = (post: any) => {
                     )}
                   </p>
                   <p className="text-sm font-normal text-gray-500">
-                    {user ? email : "Người lạ thoáng qua"}
+                    {user ? email : ""} {/* thêm custom text vào giữa dấu ngoặc */}
                   </p>
                 </div>
               </div>

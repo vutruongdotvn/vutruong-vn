@@ -28,11 +28,13 @@ export const formatTimeAgo = (date: string) => {
   const days = Math.floor(diff / 86400);
   if (days < 7) return `${days} ngày`;
 
-  return postDate.toLocaleString("vi-VN", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  // 👉 format full
+  const day = postDate.getDate();
+  const month = postDate.getMonth() + 1;
+  const year = postDate.getFullYear();
+
+  const hours = postDate.getHours().toString().padStart(2, "0");
+  const minutes = postDate.getMinutes().toString().padStart(2, "0");
+
+  return `${day} tháng ${month}, ${year} lúc ${hours}:${minutes}`;
 };

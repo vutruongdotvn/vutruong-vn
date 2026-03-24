@@ -26,7 +26,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      return alert("Ê");
+      return;
     }
 
     setLoading(true);
@@ -39,9 +39,10 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
     setLoading(false);
 
     if (error) {
-      return alert("Ê");
+      return;
     } else {
       onClose();
+      // window.location.reload();
     }
   };
 
