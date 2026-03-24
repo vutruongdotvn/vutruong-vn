@@ -1,5 +1,8 @@
 import { supabase } from "@/lib/supabase";
+import { uploadToCloudinary } from "@/lib/cloudinary";
+import { compressImage } from "@/lib/compressImage";
 
+// tạo ID số ngẫu nhiên
 function generateNumericId(length = 20) {
   let result = "";
   const digits = "0123456789";
@@ -11,15 +14,16 @@ function generateNumericId(length = 20) {
   return result;
 }
 
-// 🔥 THÊM from, to
+// 📥 GET POSTS (có pagination)
 export const getPosts = async (from?: number, to?: number) => {
   let query = supabase
     .from("posts")
     .select("*")
+    .order("is_pinned", { ascending: false }) // 🔥 pin lên đầu
     .order("created_at", { ascending: false });
 
   if (from !== undefined && to !== undefined) {
-    query = query.range(from, to); // 🔥 pagination
+    query = query.range(from, to);
   }
 
   const { data: posts, error } = await query;
@@ -71,32 +75,42 @@ export const createPost = async ({
       };
     }
 
-    const imageUrls: string[] = [];
+    const uploadPromises = files.map(async (file) => {
+      try {
+        const compressed = await compressImage(file);
+        const result = await uploadToCloudinary(compressed);
 
-    for (const file of files) {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Date.now()}-${Math.random()
-        .toString(36)
-        .substring(2)}.${fileExt}`;
+        const screenWidth =
+          typeof window !== "undefined" ? window.innerWidth : 1200;
 
-      const { error: uploadError } = await supabase.storage
-        .from("posts")
-        .upload(fileName, file);
+        const optimizedUrl = result.url.replace(
+          "/upload/",
+          `/upload/w_${screenWidth},q_auto/`
+        );
 
-      if (uploadError) {
-        console.error("Lỗi upload:", uploadError);
         return {
-          success: false,
-          error: "Upload ảnh thất bại",
+          url: optimizedUrl,
+          public_id: result.public_id,
         };
+      } catch (err) {
+        console.error("Upload lỗi:", err);
+        throw err;
       }
+    });
 
-      const { data: publicUrlData } = supabase.storage
-        .from("posts")
-        .getPublicUrl(fileName);
+    let uploadedImages;
 
-      imageUrls.push(publicUrlData.publicUrl);
+    try {
+      uploadedImages = await Promise.all(uploadPromises);
+    } catch (err) {
+      return {
+        success: false,
+        error: "Upload ảnh thất bại",
+      };
     }
+
+    const imageUrls = uploadedImages.map((img) => img.url);
+    const publicIds = uploadedImages.map((img) => img.public_id);
 
     const hashtags = content.match(/#[\wÀ-ỹ]+/g) || [];
 
@@ -107,6 +121,7 @@ export const createPost = async ({
         id,
         content,
         images: imageUrls,
+        public_ids: publicIds,
         hashtags,
         user_id: user.id,
       },
@@ -127,5 +142,100 @@ export const createPost = async ({
       success: false,
       error: "Lỗi hệ thống",
     };
+  }
+};
+
+// 🗑️ DELETE POST (🔥 FIX CHUẨN)
+export const deletePost = async (postId: string) => {
+  try {
+    // 1. lấy public_ids
+    const { data: post, error: fetchError } = await supabase
+      .from("posts")
+      .select("public_ids")
+      .eq("id", postId)
+      .single();
+
+    if (fetchError || !post) {
+      return {
+        success: false,
+        error: "Không tìm thấy bài viết",
+      };
+    }
+
+    // 2. xoá Cloudinary (🔥 FIX header)
+    if (Array.isArray(post.public_ids) && post.public_ids.length > 0) {
+      const res = await fetch("/api/delete-images", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    public_ids: post.public_ids,
+  }),
+});
+
+const data = await res.json();
+
+console.log("🔥 DELETE CLOUDINARY RESPONSE:", data);
+    }
+
+    // 3. xoá DB
+    const { error: deleteError } = await supabase
+      .from("posts")
+      .delete()
+      .eq("id", postId);
+
+    if (deleteError) {
+      return {
+        success: false,
+        error: deleteError.message,
+      };
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      error: "Lỗi xoá bài viết",
+    };
+  }
+};
+
+// 📌 PIN / UNPIN (🔥 FIX TOGGLE)
+export const pinPost = async (postId: string, isPinned: boolean) => {
+  try {
+    // 👉 nếu đang ghim → bỏ ghim
+    if (isPinned) {
+      const { error } = await supabase
+        .from("posts")
+        .update({ is_pinned: false })
+        .eq("id", postId);
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    }
+
+    // 👉 nếu chưa ghim → reset rồi ghim
+    await supabase
+      .from("posts")
+      .update({ is_pinned: false })
+      .neq("id", "");
+
+    const { error } = await supabase
+      .from("posts")
+      .update({ is_pinned: true })
+      .eq("id", postId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: "Lỗi ghim bài" };
   }
 };

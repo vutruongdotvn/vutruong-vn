@@ -7,6 +7,8 @@ import { formatTimeAgo } from "@/lib/utils";
 import PostHeader from "./PostHeader";
 import PostActions from "./PostActions";
 import PostBody from "./PostBody";
+import { useUser } from "@/hooks/useUser";
+
 
 type Post = {
   id: string;
@@ -20,22 +22,36 @@ type Post = {
 };
 
 // 🔥 THÊM isFirst (optional)
-export default function PostCard({ post, isFirst = false }: { post: Post; isFirst?: boolean }) {
+export default function PostCard({
+  post,
+  isFirst = false,
+  onPin,
+  onDelete,
+  onEdit,
+}: any) {
   const name = post.profiles?.name;
   const avatar = post.profiles?.avatar;
+  const { role } = useUser();
 
   return (
-    <div className="postCard bg-white md:rounded-lg rounded-0 shadow-xs hover:shadow-sm transition">
+    <div
+  className={`
+    postCard bg-white md:rounded-lg rounded-0 shadow-xs hover:shadow-sm transition
+    ${post.is_pinned ? "border-2 border-red-400" : ""}
+  `}
+>
       <div className="postHeader block">
         <PostHeader
-          name={name}
-          avatar={avatar}
-          createdAt={post.created_at}
-          postId={post.id}
-          showLink={false}
-          showMenu={true}
-          timeFormat={formatTimeAgo}
-        />
+  name={name}
+  avatar={avatar}
+  createdAt={post.created_at}
+  postId={post.id}
+  showMenu={role === "admin"} // 🔥 FIX ADMIN
+  isPinned={post.is_pinned}   // 🔥 truyền trạng thái
+  onPin={() => onPin(post)}
+  onEdit={() => onEdit(post)}
+  onDelete={() => onDelete(post)}
+/>
       </div>
 
       <PostBody

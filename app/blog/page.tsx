@@ -11,6 +11,7 @@ import { supabase } from "@/lib/supabase";
 import { useEffect, useState, useRef } from "react";
 import { getPosts } from "@/services/postService";
 import PostCardSkeleton from "@/components/blog/PostCardSkeleton";
+import { pinPost, deletePost } from "@/services/postService";
 
 export default function BlogPage() {
   const [open, setOpen] = useState(false);
@@ -50,6 +51,34 @@ export default function BlogPage() {
 
     setProfileLoading(false);
   };
+
+  const handlePin = async (post: any) => {
+  const res = await pinPost(post.id, post.is_pinned);
+
+  if (!res.success) {
+    alert(res.error);
+    return;
+  }
+
+  window.location.reload(); // 🔥 FIX
+};
+
+const handleDelete = async (post: any) => {
+  if (!confirm("Xóa bài này?")) return;
+
+  const res = await deletePost(post.id);
+
+  if (!res.success) {
+    alert(res.error);
+    return;
+  }
+
+  window.location.reload(); // 🔥 FIX
+};
+
+const handleEdit = (post: any) => {
+  alert("Tính năng chỉnh sửa sẽ làm sau 😎");
+};
 
   // 🔥 UPGRADE fetchPosts (KHÔNG ĐỔI CÁCH DÙNG)
   const fetchPosts = async () => {
@@ -234,9 +263,18 @@ export default function BlogPage() {
               </p>
             )}
 
-            {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
+            {/* 🔥 PINNED POST (HIỆN TRƯỚC) */}
+
+{/* 🔥 DANH SÁCH POSTS */}
+{posts.map((post) => (
+  <PostCard
+    key={post.id}
+    post={post}
+    onPin={handlePin}
+    onDelete={handleDelete}
+    onEdit={handleEdit}
+  />
+))}
 
             {/* 🔥 LOAD MORE (1 SKE DUY NHẤT) */}
             {loadingMore && (
