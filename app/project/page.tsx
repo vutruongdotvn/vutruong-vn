@@ -10,8 +10,8 @@ export const metadata = createMetadata({
 export default function ProjectPage() {
   const projects = [
     {
-      name: "VT System",
-      description: "Hệ sinh thái số trên Internet",
+      name: "VT Zone",
+      description: "Hệ sinh thái số cá nhân",
       href: "https://vutruong.vn",
       icon: "fa-duotone fa-earth-asia",
       gradient: "from-olive-400 to-olive-600",
@@ -32,7 +32,7 @@ export default function ProjectPage() {
     },
     {
       name: "VT Invoice",
-      description: "Hệ thống quản lý hóa đơn & chi phí vận hành",
+      description: "Hệ thống quản lý & vận hành Quán ăn",
       href: "https://hoadon.vutruong.vn",
       icon: "fa-duotone fa-file-invoice",
       gradient: "from-emerald-400 to-green-600",
@@ -45,7 +45,7 @@ export default function ProjectPage() {
       gradient: "from-purple-400 to-indigo-600",
     },
     {
-      name: "VT Zone",
+      name: "VT Blog",
       description: "Lưu giữ những điều đẹp đẽ & giá trị",
       href: "https://blog.vutruong.vn",
       icon: "fa-duotone fa-pen-nib",
