@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { uploadImage  } from "@/lib/cloudinary";
+import { uploadImage } from "@/lib/cloudinary";
 import { compressImage } from "@/lib/compressImage";
 
 // tạo ID số ngẫu nhiên
