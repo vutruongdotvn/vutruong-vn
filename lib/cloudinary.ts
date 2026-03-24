@@ -1,6 +1,6 @@
 export async function uploadToCloudinary(file: File) {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-
+  console.log("cloudName:", cloudName); // 👈 thêm dòng này
   const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
 
   const formData = new FormData();
