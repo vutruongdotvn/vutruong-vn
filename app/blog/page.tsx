@@ -66,13 +66,13 @@ export default function BlogPage() {
 const handleDelete = async (post: any) => {
   if (!confirm("Xóa bài này?")) return;
 
-  const res = await deletePost(post.id);
+  const res = await deletePost(post.id, post.public_ids);
 
   if (!res.success) {
     alert(res.error);
     return;
   }
-
+  console.log("🔥 DELETE RESULT:", res);
   window.location.reload(); // 🔥 FIX
 };
 

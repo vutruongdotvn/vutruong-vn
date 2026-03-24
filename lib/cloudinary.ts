@@ -23,7 +23,7 @@ export const uploadImage = async (file: File) => {
       console.error("Cloudinary error:", data);
       throw new Error("Upload Cloudinary thất bại");
     }
-
+    console.log("🔥 CLOUDINARY FULL RESPONSE:", data);
     return {
       url: data.secure_url,
       public_id: data.public_id,

@@ -146,59 +146,57 @@ export const createPost = async ({
 };
 
 // 🗑️ DELETE POST (🔥 FIX CHUẨN)
-export const deletePost = async (postId: string) => {
+export const deletePost = async (postId: string, public_ids: string[]) => {
   try {
-    // 1. lấy public_ids
-    const { data: post, error: fetchError } = await supabase
-      .from("posts")
-      .select("public_ids")
-      .eq("id", postId)
-      .single();
+    console.log("🔥 DELETE SERVICE - public_ids:", public_ids);
 
-    if (fetchError || !post) {
-      return {
-        success: false,
-        error: "Không tìm thấy bài viết",
-      };
-    }
-
-    // 2. xoá Cloudinary (🔥 FIX header)
-    if (Array.isArray(post.public_ids) && post.public_ids.length > 0) {
-      const res = await fetch("/api/delete-images", {
+    // 🔥 GỌI API DELETE ẢNH TRƯỚC
+    if (public_ids && public_ids.length > 0) {
+      const res = await fetch(`${window.location.origin}/api/delete-images`, {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
   },
-  body: JSON.stringify({
-    public_ids: post.public_ids,
-  }),
+  body: JSON.stringify({ public_ids }),
 });
 
 const data = await res.json();
 
-console.log("🔥 DELETE CLOUDINARY RESPONSE:", data);
+console.log("🔥 DELETE API RESPONSE:", data);
+try {
+  const res = await fetch(`${window.location.origin}/api/delete-images`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ public_ids }),
+  });
+
+  const data = await res.json();
+
+  console.log("🔥 DELETE API RESPONSE:", data);
+} catch (err) {
+  console.error("❌ FETCH DELETE ERROR:", err);
+}
+      if (!data.success) {
+        return { success: false, error: "Xóa ảnh thất bại" };
+      }
     }
 
-    // 3. xoá DB
-    const { error: deleteError } = await supabase
+    // 🔥 SAU ĐÓ MỚI XÓA DB
+    const { error } = await supabase
       .from("posts")
       .delete()
       .eq("id", postId);
 
-    if (deleteError) {
-      return {
-        success: false,
-        error: deleteError.message,
-      };
+    if (error) {
+      return { success: false, error: error.message };
     }
 
     return { success: true };
   } catch (err) {
     console.error(err);
-    return {
-      success: false,
-      error: "Lỗi xoá bài viết",
-    };
+    return { success: false, error: "Lỗi xoá" };
   }
 };
 
