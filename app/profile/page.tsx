@@ -230,6 +230,26 @@ export default function ProfilePage() {
     );
   }
 
+  if (!user) {
+  return (
+    <main className="min-h-screen flex items-center justify-center">
+      <GlassCard>
+        <p className="text-center text-gray-500">
+            <Image
+              src={safeAvatar}
+              alt="avatar"
+              width={44}
+              height={44}
+              className="rounded-full object-cover mx-auto mb-3"
+              onError={() => setAvatar(DEFAULT_AVATAR)}
+            />
+          Bạn chưa đăng nhập!
+        </p>
+      </GlassCard>
+    </main>
+  );
+}
+
   return (
     <main className="min-h-screen flex items-center justify-center">
 
@@ -354,9 +374,9 @@ export default function ProfilePage() {
                       onClick={() => handleReuse(item.url)}
                     />
 
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-xs gap-1">
+                    <div className="absolute rounded-lg inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-xs gap-1">
                       <button onClick={() => handleReuse(item.url)}>
-                        Dùng
+                        Sử dụng lại
                       </button>
                       <button onClick={() => handleDelete(item)}>
                         Xoá
