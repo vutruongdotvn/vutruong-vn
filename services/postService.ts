@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { uploadToCloudinary } from "@/lib/cloudinary";
+import { uploadImage  } from "@/lib/cloudinary";
 import { compressImage } from "@/lib/compressImage";
 
 // tạo ID số ngẫu nhiên
@@ -78,7 +78,7 @@ export const createPost = async ({
     const uploadPromises = files.map(async (file) => {
       try {
         const compressed = await compressImage(file);
-        const result = await uploadToCloudinary(compressed);
+        const result = await uploadImage (compressed);
 
         const screenWidth =
           typeof window !== "undefined" ? window.innerWidth : 1200;
