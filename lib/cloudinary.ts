@@ -24,3 +24,5 @@ export async function uploadToCloudinary(file: File) {
     public_id: data.public_id, // 🔥 QUAN TRỌNG để delete
   };
 }
+console.log("cloudName:", process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME);
+console.log("uploadPreset:", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
