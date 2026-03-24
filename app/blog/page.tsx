@@ -197,7 +197,7 @@ const handleEdit = (post: any) => {
                 </Link>
 
                 <div>
-                  <p className="font-bold text-sm text-gray-800 flex items-center gap-1">
+                  <p className="font-medium text-sm text-gray-800 flex items-center gap-1">
                     {fullName}
                     {user?.email === "admin@vutruong.vn" && (
                       <i className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 text-sm"></i>
