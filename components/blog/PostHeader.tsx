@@ -72,7 +72,7 @@ export default function PostHeader({
 
         <div className="leading-5 flex items-center gap-1">
           <div className="flex items-center gap-[3px]">
-            <span className="font-bold text-gray-800 text-sm">{name}</span>
+            <span className="font-medium text-gray-800 text-sm">{name}</span>
             <i className="fa-solid fa-badge-check text-blue-500 text-xs" />
           </div>
 
