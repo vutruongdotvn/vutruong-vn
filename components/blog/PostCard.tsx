@@ -37,7 +37,7 @@ export default function PostCard({
     <div
   className={`
     postCard bg-white md:rounded-lg rounded-0 shadow-xs hover:shadow-sm transition
-    ${post.is_pinned ? "border-2 border-red-400" : ""}
+    ${post.is_pinned ? "hover:shadow-lg" : ""}
   `}
 >
       <div className="postHeader block">

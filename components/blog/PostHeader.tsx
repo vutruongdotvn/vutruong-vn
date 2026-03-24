@@ -29,6 +29,23 @@ export default function PostHeader({
   onDelete,
 }: Props) {
   const time = formatTimeAgo(createdAt);
+
+  const renderTimeContent = () => (
+  <span className="text-xs text-gray-500 font-medium flex items-center gap-1">
+    {time}
+
+    {isPinned && (
+      <>
+        <span>·</span>
+        <span className="text-gray-400 font-normal flex items-center gap-[3px]">
+          <i className="fa-duotone fa-thumbtack text-[10px]" />
+          Bài ghim
+        </span>
+      </>
+    )}
+  </span>
+);
+
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -40,7 +57,7 @@ export default function PostHeader({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
+  
   return (
     <div className="flex items-center justify-between px-3 pt-3">
       <div className="flex items-center gap-2">
@@ -60,12 +77,12 @@ export default function PostHeader({
           </div>
 
           {showLink && postId ? (
-            <Link href={`/blog/${postId}`}>
-              <span className="text-xs text-gray-500 font-medium">{time}</span>
-            </Link>
-          ) : (
-            <span className="text-xs text-gray-500 font-medium">{time}</span>
-          )}
+  <Link href={`/blog/${postId}`}>
+    {renderTimeContent()}
+  </Link>
+) : (
+  renderTimeContent()
+)}
         </div>
       </div>
 
