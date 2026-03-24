@@ -10,7 +10,7 @@ export async function uploadImage(file: File) {
 
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("upload_preset", "blog_unsigned_v2");
+  formData.append("upload_preset", uploadPreset!);
   
   // 🔥 debug production
   console.log("UPLOAD DEBUG:", {
