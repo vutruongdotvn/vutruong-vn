@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import Image from "next/image";
 import PostCard from "@/components/blog/PostCard";
 import CreatePostModal from "@/components/blog/CreatePostModal";
@@ -186,6 +186,7 @@ const handleEdit = (post: any) => {
             <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-lg shadow-xs">
 
               <div className="flex items-center gap-2">
+                <Link href="/profile">
                 <Image
                   height={36}
                   width={36}
@@ -193,6 +194,7 @@ const handleEdit = (post: any) => {
                   src={avatar}
                   className="w-10 h-10 rounded-full object-cover"
                 />
+                </Link>
 
                 <div>
                   <p className="font-bold text-sm text-gray-800 flex items-center gap-1">

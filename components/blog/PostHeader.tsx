@@ -49,7 +49,7 @@ export default function PostHeader({
           alt="avatar"
           width={33}
           height={33}
-          className="rounded-full object-cover"
+          className="rounded-full object-cover aspect-square"
           priority
         />
 
@@ -80,25 +80,30 @@ export default function PostHeader({
           </button>
 
           {open && (
-            <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg border z-50">
+            <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg z-50">
               <button
-                onClick={() => {
-                  onPin?.();
-                  setOpen(false);
-                }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
-              >
-                {isPinned ? "📌 Bỏ ghim" : "📌 Ghim"}
-              </button>
+  onClick={() => {
+    onPin?.();
+    setOpen(false);
+  }}
+  className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer"
+>
+  <i
+    className={`fa-duotone ${
+      isPinned ? "fa-thumbtack-slash" : "fa-thumbtack"
+    }`}
+  />
+  <span>{isPinned ? "Bỏ ghim" : "Ghim"}</span>
+</button>
 
               <button
                 onClick={() => {
                   onEdit?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer"
               >
-                ✏️ Chỉnh sửa
+                <i className="fa-duotone fa-edit" /> <span>Chỉnh sửa</span>
               </button>
 
               <button
@@ -106,9 +111,9 @@ export default function PostHeader({
                   onDelete?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-red-100 text-red-500 text-sm"
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer"
               >
-                🗑️ Xóa
+                <i className="fa-duotone fa-trash" /> <span>Xóa</span>
               </button>
             </div>
           )}
