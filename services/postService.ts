@@ -77,19 +77,19 @@ export const createPost = async ({
 
     const uploadPromises = files.map(async (file) => {
       try {
-        const compressed = await compressImage(file);
-        const result = await uploadImage (compressed);
+        const result = await uploadImage(file);
 
         const screenWidth =
           typeof window !== "undefined" ? window.innerWidth : 1200;
 
         const optimizedUrl = result.url.replace(
           "/upload/",
-          `/upload/w_${screenWidth},q_auto/`
+          // `/upload/w_${screenWidth},q_auto/`
+          `/upload/q_auto:best/`
         );
 
         return {
-          url: optimizedUrl,
+          url: result.url, // 🔥 giữ nguyên ảnh gốc
           public_id: result.public_id,
         };
       } catch (err) {

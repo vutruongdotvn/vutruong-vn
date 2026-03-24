@@ -26,26 +26,24 @@ export default function ProfilePage() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [avatarLoading, setAvatarLoading] = useState(true);
 
   const [toast, setToast] = useState("");
 
-  // crop
   const [cropImage, setCropImage] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
 
-  // 🔥 SAFE AVATAR (KEY FIX)
   const safeAvatar =
     avatar && avatar.trim() !== "" ? avatar : DEFAULT_AVATAR;
 
-  // toast helper
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2500);
   };
 
-  // load data
+  // LOAD DATA
   useEffect(() => {
     const fetchData = async () => {
       const {
@@ -75,13 +73,17 @@ export default function ProfilePage() {
       setOriginalName(profile?.name || "");
       setOriginalAvatar(initialAvatar);
 
-      const { data: avatarList } = await supabase
+      // 🔥 LOAD AVATAR LIST
+      const { data: avatarList, error } = await supabase
         .from("user_avatars")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
+      console.log("AVATAR LIST:", avatarList, error);
+
       setAvatars(avatarList || []);
+      setAvatarLoading(false);
 
       setLoading(false);
     };
@@ -89,12 +91,11 @@ export default function ProfilePage() {
     fetchData();
   }, []);
 
-  // crop complete
+  // CROP
   const onCropComplete = useCallback((_: any, area: any) => {
     setCroppedAreaPixels(area);
   }, []);
 
-  // crop -> blob
   const getCroppedImage = async () => {
     const image = new window.Image();
     image.src = cropImage!;
@@ -123,7 +124,7 @@ export default function ProfilePage() {
     });
   };
 
-  // upload avatar
+  // UPLOAD
   const handleCropSave = async () => {
     try {
       const blob = await getCroppedImage();
@@ -138,9 +139,13 @@ export default function ProfilePage() {
       );
 
       const data = await res.json();
-      const newUrl = data.secure_url;
 
-      setAvatar(newUrl);
+      if (!data.secure_url) {
+        showToast("Upload fail ❌");
+        return;
+      }
+
+      const newUrl = data.secure_url;
 
       await supabase.from("user_avatars").insert({
         user_id: user.id,
@@ -148,6 +153,7 @@ export default function ProfilePage() {
         public_id: data.public_id,
       });
 
+      setAvatar(newUrl);
       showToast("Upload thành công 🎉");
 
       const { data: avatarList } = await supabase
@@ -157,10 +163,9 @@ export default function ProfilePage() {
         .order("created_at", { ascending: false });
 
       setAvatars(avatarList || []);
-
       setCropImage(null);
     } catch {
-      showToast("Upload lỗi 😢");
+      showToast("Lỗi hệ thống 😢");
     }
   };
 
@@ -179,10 +184,7 @@ export default function ProfilePage() {
 
     await supabase
       .from("profiles")
-      .update({
-        name,
-        avatar: safeAvatar,
-      })
+      .update({ name, avatar: safeAvatar })
       .eq("id", user.id);
 
     setOriginalName(name);
@@ -199,31 +201,21 @@ export default function ProfilePage() {
   const handleDelete = async (item: any) => {
     if (item.url === avatar) {
       setAvatar(DEFAULT_AVATAR);
-
-      await supabase
-        .from("profiles")
-        .update({ avatar: DEFAULT_AVATAR })
-        .eq("id", user.id);
     }
 
     await fetch("/api/delete-images", {
       method: "POST",
-      body: JSON.stringify({
-        public_ids: [item.public_id],
-      }),
+      body: JSON.stringify({ public_ids: [item.public_id] }),
     });
 
-    await supabase
-      .from("user_avatars")
-      .delete()
-      .eq("id", item.id);
+    await supabase.from("user_avatars").delete().eq("id", item.id);
 
     setAvatars((prev) => prev.filter((a) => a.id !== item.id));
 
     showToast("Đã xoá 🗑️");
   };
 
-  // skeleton
+  // SKELETON
   if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center">
@@ -241,14 +233,12 @@ export default function ProfilePage() {
   return (
     <main className="min-h-screen flex items-center justify-center">
 
-      {/* toast */}
       {toast && (
         <div className="fixed top-5 right-5 bg-black/80 text-white px-4 py-2 rounded-lg">
           {toast}
         </div>
       )}
 
-      {/* crop modal */}
       {cropImage && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-white p-4 rounded-xl w-[320px] space-y-4">
@@ -296,18 +286,15 @@ export default function ProfilePage() {
 
           <h1 className="text-xl font-semibold">Profile</h1>
 
-          {/* 🔥 AVATAR + UPLOAD FIX */}
+          {/* AVATAR */}
           <label className="relative w-24 h-24 mx-auto cursor-pointer group block">
-            <div className="relative w-full h-full">
-              <Image
-                key={safeAvatar}
-                src={safeAvatar}
-                alt="avatar"
-                fill
-                onError={() => setAvatar(DEFAULT_AVATAR)}
-                className="rounded-full object-cover border"
-              />
-            </div>
+            <Image
+              src={safeAvatar}
+              alt="avatar"
+              fill
+              className="rounded-full object-cover border"
+              onError={() => setAvatar(DEFAULT_AVATAR)}
+            />
 
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs rounded-full">
               Đổi ảnh
@@ -323,62 +310,62 @@ export default function ProfilePage() {
             />
           </label>
 
-          {/* name */}
+          {/* NAME */}
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg"
           />
 
-          {/* save */}
+          {/* SAVE */}
           <button
             onClick={handleSave}
             disabled={!isChanged || saving}
             className={`w-full py-2 rounded text-white ${
-              !isChanged || saving
-                ? "bg-gray-300"
-                : "bg-blue-500"
+              !isChanged || saving ? "bg-gray-300" : "bg-blue-500"
             }`}
           >
             {saving ? "Đang lưu..." : "Lưu thay đổi"}
           </button>
 
-          {/* history */}
+          {/* AVATAR LIST */}
           <div className="text-left">
             <p className="text-sm text-gray-500 mb-2">
               Avatar đã dùng
             </p>
 
-            <div className="grid grid-cols-3 gap-3">
-              {avatars.map((item) => (
-                <div key={item.id} className="relative group">
-                  <div
-                    className={`relative w-full aspect-square rounded-lg overflow-hidden border cursor-pointer ${
-                      item.url === avatar
-                        ? "ring-2 ring-blue-500"
-                        : ""
-                    }`}
-                    onClick={() => handleReuse(item.url)}
-                  >
-                    <Image
+            {avatarLoading ? (
+              <div className="grid grid-cols-3 gap-3">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="aspect-square bg-gray-200 animate-pulse rounded-lg" />
+                ))}
+              </div>
+            ) : avatars.length === 0 ? (
+              <p className="text-xs text-gray-400">
+                Chưa có avatar nào
+              </p>
+            ) : (
+              <div className="grid grid-cols-3 gap-3">
+                {avatars.map((item) => (
+                  <div key={item.id} className="relative group">
+                    <img
                       src={item.url}
-                      alt=""
-                      fill
-                      className="object-cover"
+                      className="w-24 aspect-square rounded-lg object-cover border cursor-pointer"
+                      onClick={() => handleReuse(item.url)}
                     />
-                  </div>
 
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-xs gap-1">
-                    <button onClick={() => handleReuse(item.url)}>
-                      Dùng
-                    </button>
-                    <button onClick={() => handleDelete(item)}>
-                      Xoá
-                    </button>
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-xs gap-1">
+                      <button onClick={() => handleReuse(item.url)}>
+                        Dùng
+                      </button>
+                      <button onClick={() => handleDelete(item)}>
+                        Xoá
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
         </div>
