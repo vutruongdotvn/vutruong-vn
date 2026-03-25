@@ -38,7 +38,7 @@ export default function PostImages({ images, postId, priority = false }: Props) 
         fill
         sizes={sizes}
         priority={priority && i === 0} // 🔥 CHỈ ảnh đầu tiên
-        className="object-cover transition-transform duration-300 hover:scale-102"
+        className="object-cover transition-transform duration-300 ease-in-out hover:scale-105"
       />
     </a>
   );
@@ -47,19 +47,19 @@ export default function PostImages({ images, postId, priority = false }: Props) 
     <>
       {/* 1 IMAGE */}
       {count === 1 && (
-        <div className="postImages relative w-full aspect-video mt-3 overflow-hidden">
+        <div className="postImages relative w-full aspect-video mt-3 overflow-hidden select-none">
           {renderImage(images[0], 0, "w-full h-full", "(max-width:768px) 100vw, 800px")}
         </div>
       )}
 
       {/* 2 IMAGES */}
       {count === 2 && (
-        <div className="postImages grid grid-cols-2 gap-[2px] m-0 mt-3">
+        <div className="postImages grid grid-cols-2 gap-[2px] m-0 mt-3 select-none">
           {visibleImages.map((img, i) =>
             renderImage(
               img,
               i,
-              "aspect-[3/4] overflow-hidden",
+              "aspect-[4/3] overflow-hidden",
               "(max-width:768px) 50vw, 400px"
             )
           )}
@@ -68,7 +68,7 @@ export default function PostImages({ images, postId, priority = false }: Props) 
 
       {/* >=3 IMAGES */}
       {count >= 3 && (
-        <div className="postImages grid grid-cols-2 gap-[2px] m-0 mt-3">
+        <div className="postImages grid grid-cols-2 gap-[2px] m-0 mt-3 select-none">
           {visibleImages.map((img, i) => (
             <div key={i} className="relative aspect-[4/3]">
               <a
@@ -82,7 +82,7 @@ export default function PostImages({ images, postId, priority = false }: Props) 
                   fill
                   sizes="(max-width:768px) 50vw, 400px"
                   priority={priority && i === 0} // 🔥 fix LCP
-                  className="object-cover rounded-0 transition-transform duration-300 hover:scale-102"
+                  className="object-cover rounded-0 transition-transform duration-300 ease-in-out hover:scale-105"
                 />
               </a>
 

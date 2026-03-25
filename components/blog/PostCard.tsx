@@ -9,7 +9,6 @@ import PostActions from "./PostActions";
 import PostBody from "./PostBody";
 import { useUser } from "@/hooks/useUser";
 
-
 type Post = {
   id: string;
   content: string;
@@ -35,23 +34,23 @@ export default function PostCard({
 
   return (
     <div
-  className={`
-    postCard bg-white md:rounded-lg rounded-0 shadow-xs hover:shadow-sm transition
-    ${post.is_pinned ? "hover:shadow-lg" : ""}
+      className={`
+    postCard md:rounded-lg rounded-0 shadow-xs
+    ${post.is_pinned ? "bg-white border-0 sm:border sm:border-olive-300" : "bg-white"}
   `}
->
+    >
       <div className="postHeader block">
         <PostHeader
-  name={name}
-  avatar={avatar}
-  createdAt={post.created_at}
-  postId={post.id}
-  showMenu={role === "admin"} // 🔥 FIX ADMIN
-  isPinned={post.is_pinned}   // 🔥 truyền trạng thái
-  onPin={() => onPin(post)}
-  onEdit={() => onEdit(post)}
-  onDelete={() => onDelete(post)}
-/>
+          name={name}
+          avatar={avatar}
+          createdAt={post.created_at}
+          postId={post.id}
+          showMenu={role === "admin"} // 🔥 FIX ADMIN
+          isPinned={post.is_pinned} // 🔥 truyền trạng thái
+          onPin={() => onPin(post)}
+          onEdit={() => onEdit(post)}
+          onDelete={() => onDelete(post)}
+        />
       </div>
 
       <PostBody

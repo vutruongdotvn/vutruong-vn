@@ -27,7 +27,7 @@ export default function Navbar() {
 
   // ✅ AUTO TITLE (sync theo menu)
   const current = menu.find((item) => pathname.startsWith(item.href));
-  const title = pathname === "/" ? "VT Zone" : current?.name || "vutruong.vn";
+  const title = pathname === "/" ? "VT Zone" : current?.name || "VT Zone";
 
   // ✅ CLICK OUTSIDE → đóng menu
   useEffect(() => {
@@ -52,9 +52,7 @@ export default function Navbar() {
 
         {/* NAVBAR */}
         <div className="flex items-center justify-between p-1 
-          bg-white/70 backdrop-blur-xl border border-white/70 
-          shadow-[0_8px_30px_rgba(0,0,0,0.08)]
-          rounded-lg">
+          bg-white/70 backdrop-blur-lg shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-lg">
 
           {/* LOGO + TITLE */}
           <Link href="/" className="flex items-center gap-2 ms-1">
@@ -66,7 +64,7 @@ export default function Navbar() {
               className="pointer-events-none"
               priority
             />
-            <span className="font-bold text-base text-gray-800 tracking-wider">
+            <span className="font-bold text-base text-gray-800 hover:text-black tracking-wider">
               {title}
             </span>
           </Link>
@@ -78,9 +76,9 @@ export default function Navbar() {
                 key={item.name}
                 href={item.href}
                 prefetch
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ease-in-out duration-300 ${
                   isActive(item.href)
-                    ? "bg-gray-200 text-black font-bold"
+                    ? "bg-gray-200 text-black"
                     : "text-gray-700 hover:bg-gray-200"
                 }`}
               >

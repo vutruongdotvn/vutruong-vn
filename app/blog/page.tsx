@@ -153,10 +153,10 @@ export default function BlogPage() {
     <>
       <FancyboxWrapper />
 
-      <div className="space-y-2 md:space-y-4">
+      <div className="space-y-1 md:space-y-4">
         {!isReady && (
-          <div className="space-y-2 md:space-y-4">
-            <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-lg shadow-xs animate-pulse">
+          <div className="space-y-1 md:space-y-4">
+            <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-lg animate-pulse">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gray-200" />
                 <div>
@@ -191,10 +191,10 @@ export default function BlogPage() {
                 </Link>
 
                 <div>
-                  <p className="font-medium text-sm text-gray-800 flex items-center gap-1">
+                  <p className="font-medium text-sm text-gray-800 flex items-center gap-[2px]">
                     {fullName}
-                    {user?.email === "admin@vutruong.vn" && (
-                      <i className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 text-sm"></i>
+                    {user && role === "admin" && (
+                      <i className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 cursor-pointer text-xs" title="Tài khoản đã xác thực"></i>
                     )}
                   </p>
                   <p className="text-sm font-normal text-gray-500">

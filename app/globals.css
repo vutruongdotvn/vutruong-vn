@@ -14,6 +14,11 @@ body {
   min-height: 100vh;
 }
 
+img {
+  user-select: none;
+  -webkit-user-select: none
+}
+
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);

@@ -31,20 +31,20 @@ export default function PostHeader({
   const time = formatTimeAgo(createdAt);
 
   const renderTimeContent = () => (
-  <span className="text-xs text-gray-600 hover:text-black font-normal flex items-center gap-1">
-    {time}
+    <span className="text-xs text-gray-600 hover:text-black font-normal flex items-center gap-1">
+      {time}
 
-    {isPinned && (
-      <>
-        <span className="text-gray-600">•</span>
-        <span className="text-gray-600 font-normal flex items-center gap-[3px]">
-          <i className="fa-duotone fa-thumbtack text-[10px]" />
-          Bài ghim
-        </span>
-      </>
-    )}
-  </span>
-);
+      {isPinned && (
+        <>
+          <span className="text-gray-600">•</span>
+          <span className="text-gray-600 font-normal flex items-center gap-[3px]">
+            <i className="fa-duotone fa-thumbtack text-[10px]" />
+            Bài ghim
+          </span>
+        </>
+      )}
+    </span>
+  );
 
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -57,12 +57,12 @@ export default function PostHeader({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-  
+
   return (
-    <div className="flex items-center justify-between px-3 pt-3">
+    <div className="flex items-center justify-between px-3 pt-3 select-none">
       <div className="flex items-center gap-2">
         <Image
-          src={avatar || "/avatar.JPEG"}
+          src={avatar || "/images/default.jpg"}
           alt="avatar"
           width={33}
           height={33}
@@ -73,16 +73,15 @@ export default function PostHeader({
         <div className="leading-5 flex items-center gap-1">
           <div className="flex items-center gap-[3px]">
             <span className="font-medium text-gray-800 text-sm">{name}</span>
-            <i className="fa-solid fa-badge-check text-blue-500 text-xs" />
+            <i className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 text-xs cursor-pointer" title="Tài khoản đã xác thực" />
           </div>
+          <span className="text-gray-600">•</span>
 
           {showLink && postId ? (
-  <Link href={`/blog/${postId}`}>
-    {renderTimeContent()}
-  </Link>
-) : (
-  renderTimeContent()
-)}
+            <Link href={`/blog/${postId}`}>{renderTimeContent()}</Link>
+          ) : (
+            renderTimeContent()
+          )}
         </div>
       </div>
 
@@ -91,7 +90,7 @@ export default function PostHeader({
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setOpen(!open)}
-            className="text-gray-400 hover:text-gray-600 cursor-pointer"
+            className="text-gray-400 hover:text-gray-600 cursor-pointer px-3"
           >
             <i className="fa-duotone fa-ellipsis"></i>
           </button>
@@ -99,26 +98,26 @@ export default function PostHeader({
           {open && (
             <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg z-50">
               <button
-  onClick={() => {
-    onPin?.();
-    setOpen(false);
-  }}
-  className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer"
->
-  <i
-    className={`fa-duotone ${
-      isPinned ? "fa-thumbtack-slash" : "fa-thumbtack"
-    }`}
-  />
-  <span>{isPinned ? "Bỏ ghim" : "Ghim"}</span>
-</button>
+                onClick={() => {
+                  onPin?.();
+                  setOpen(false);
+                }}
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer rounded-lg"
+              >
+                <i
+                  className={`fa-duotone ${
+                    isPinned ? "fa-thumbtack-slash" : "fa-thumbtack"
+                  }`}
+                />
+                <span>{isPinned ? "Bỏ ghim" : "Ghim"}</span>
+              </button>
 
               <button
                 onClick={() => {
                   onEdit?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer"
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer rounded-lg"
               >
                 <i className="fa-duotone fa-edit" /> <span>Chỉnh sửa</span>
               </button>
@@ -128,7 +127,7 @@ export default function PostHeader({
                   onDelete?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer"
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer rounded-lg"
               >
                 <i className="fa-duotone fa-trash" /> <span>Xóa</span>
               </button>
