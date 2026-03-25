@@ -7,7 +7,6 @@ import FancyboxWrapper from "@/components/blog/FancyboxWrapper";
 import LoginModal from "@/components/auth/LoginModal";
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
-
 import { useEffect, useState, useRef } from "react";
 import { getPosts } from "@/services/postService";
 import PostCardSkeleton from "@/components/blog/PostCardSkeleton";
@@ -53,32 +52,32 @@ export default function BlogPage() {
   };
 
   const handlePin = async (post: any) => {
-  const res = await pinPost(post.id, post.is_pinned);
+    const res = await pinPost(post.id, post.is_pinned);
 
-  if (!res.success) {
-    alert(res.error);
-    return;
-  }
+    if (!res.success) {
+      alert(res.error);
+      return;
+    }
 
-  window.location.reload(); // 🔥 FIX
-};
+    window.location.reload(); // 🔥 FIX
+  };
 
-const handleDelete = async (post: any) => {
-  if (!confirm("Xóa bài này?")) return;
+  const handleDelete = async (post: any) => {
+    if (!confirm("Xóa bài này?")) return;
 
-  const res = await deletePost(post.id, post.public_ids);
+    const res = await deletePost(post.id, post.public_ids);
 
-  if (!res.success) {
-    alert(res.error);
-    return;
-  }
-  console.log("🔥 DELETE RESULT:", res);
-  window.location.reload(); // 🔥 FIX
-};
+    if (!res.success) {
+      alert(res.error);
+      return;
+    }
+    console.log("🔥 DELETE RESULT:", res);
+    window.location.reload(); // 🔥 FIX
+  };
 
-const handleEdit = (post: any) => {
-  alert("Tính năng chỉnh sửa sẽ làm sau 😎");
-};
+  const handleEdit = (post: any) => {
+    alert("Tính năng chỉnh sửa sẽ làm sau 😎");
+  };
 
   // 🔥 UPGRADE fetchPosts (KHÔNG ĐỔI CÁCH DÙNG)
   const fetchPosts = async () => {
@@ -140,9 +139,7 @@ const handleEdit = (post: any) => {
     return () => observer.disconnect();
   }, [hasMore, loadingMore, page]);
 
-  const fullName = user
-    ? profile?.name || "Người dùng"
-    : "Xin chào! 👋";
+  const fullName = user ? profile?.name || "Người dùng" : "Xin chào! 👋";
 
   const email = user?.email || "";
 
@@ -157,10 +154,8 @@ const handleEdit = (post: any) => {
       <FancyboxWrapper />
 
       <div className="space-y-2 md:space-y-4">
-
         {!isReady && (
           <div className="space-y-2 md:space-y-4">
-
             <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-lg shadow-xs animate-pulse">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gray-200" />
@@ -184,16 +179,15 @@ const handleEdit = (post: any) => {
         {isReady && (
           <>
             <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-lg shadow-xs">
-
               <div className="flex items-center gap-2">
                 <Link href="/profile">
-                <Image
-                  height={36}
-                  width={36}
-                  alt="avatar"
-                  src={avatar}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
+                  <Image
+                    height={36}
+                    width={36}
+                    alt="avatar"
+                    src={avatar}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
                 </Link>
 
                 <div>
@@ -204,13 +198,13 @@ const handleEdit = (post: any) => {
                     )}
                   </p>
                   <p className="text-sm font-normal text-gray-500">
-                    {user ? email : ""} {/* thêm custom text vào giữa dấu ngoặc */}
+                    {user ? email : ""}{" "}
+                    {/* thêm custom text vào giữa dấu ngoặc */}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-
                 {user && role === "admin" && (
                   <button
                     onClick={() => setOpen(true)}
@@ -225,11 +219,10 @@ const handleEdit = (post: any) => {
                   <button
                     onClick={() => setShowLogin(true)}
                     className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition cursor-pointer"
-                    title="Đăng xuất"
+                    title="Đăng nhập"
                   >
                     <i className="fa-duotone fa-user-gear text-gray-600"></i>
                   </button>
-
                 ) : (
                   <button
                     onClick={async () => {
@@ -267,20 +260,20 @@ const handleEdit = (post: any) => {
 
             {/* 🔥 PINNED POST (HIỆN TRƯỚC) */}
 
-{/* 🔥 DANH SÁCH POSTS */}
-{posts.map((post) => (
-  <PostCard
-    key={post.id}
-    post={post}
-    onPin={handlePin}
-    onDelete={handleDelete}
-    onEdit={handleEdit}
-  />
-))}
+            {/* 🔥 DANH SÁCH POSTS */}
+            {posts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                onPin={handlePin}
+                onDelete={handleDelete}
+                onEdit={handleEdit}
+              />
+            ))}
 
             {/* 🔥 LOAD MORE (1 SKE DUY NHẤT) */}
             {loadingMore && (
-              <div className="flex justify-center py-4">
+              <div className="flex justify-center">
                 <PostCardSkeleton />
               </div>
             )}
@@ -298,9 +291,7 @@ const handleEdit = (post: any) => {
               />
             )}
 
-            {showLogin && (
-              <LoginModal onClose={() => setShowLogin(false)} />
-            )}
+            {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
           </>
         )}
       </div>
