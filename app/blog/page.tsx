@@ -132,7 +132,7 @@ export default function BlogPage() {
           fetchPosts();
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.2 , rootMargin: "100px 0px" }
     );
 
     observer.observe(loadMoreRef.current);
