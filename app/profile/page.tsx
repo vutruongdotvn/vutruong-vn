@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
-import GlassCard from "@/components/home/GlassCard";
+import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
+import FloatingSymbols from "@/components/ui/FloatingSymbols";
 import { createClient } from "@supabase/supabase-js";
 import Cropper from "react-easy-crop";
 
@@ -73,7 +74,6 @@ export default function ProfilePage() {
       setOriginalName(profile?.name || "");
       setOriginalAvatar(initialAvatar);
 
-      // 🔥 LOAD AVATAR LIST
       const { data: avatarList, error } = await supabase
         .from("user_avatars")
         .select("*")
@@ -175,44 +175,40 @@ export default function ProfilePage() {
   };
 
   const isChanged =
-  name !== originalName ||
-  avatar !== originalAvatar ||
-  newPassword.trim() !== "";
+    name !== originalName ||
+    avatar !== originalAvatar ||
+    newPassword.trim() !== "";
 
   const handleSave = async () => {
-  if (!isChanged || saving) return;
+    if (!isChanged || saving) return;
 
-  setSaving(true);
+    setSaving(true);
 
-  // update profile (giữ nguyên)
-  await supabase
-    .from("profiles")
-    .update({ name, avatar: safeAvatar })
-    .eq("id", user.id);
+    await supabase
+      .from("profiles")
+      .update({ name, avatar: safeAvatar })
+      .eq("id", user.id);
 
-  // ✅ THÊM ĐOẠN NÀY
-  if (newPassword.trim() !== "") {
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword,
-    });
+    if (newPassword.trim() !== "") {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
 
-    if (error) {
-      console.error(error);
-      showToast("Đổi mật khẩu thất bại ❌");
-      setSaving(false);
-      return;
+      if (error) {
+        console.error(error);
+        showToast("Đổi mật khẩu thất bại ❌");
+        setSaving(false);
+        return;
+      }
     }
-  }
 
-  setOriginalName(name);
-  setOriginalAvatar(avatar);
+    setOriginalName(name);
+    setOriginalAvatar(avatar);
+    setNewPassword("");
 
-  // reset password input sau khi lưu
-  setNewPassword("");
-
-  setSaving(false);
-  showToast("Đã lưu 🎉");
-};
+    setSaving(false);
+    showToast("Đã lưu 🎉");
+  };
 
   const handleReuse = (url: string) => {
     setAvatar(url);
@@ -238,51 +234,95 @@ export default function ProfilePage() {
   // SKELETON
   if (loading) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
-        <GlassCard>
-          <div className="space-y-4 animate-pulse w-[260px]">
-            <div className="w-24 h-24 bg-gray-300 rounded-full mx-auto" />
-            <div className="h-8 bg-gray-300 rounded" />
-            <div className="h-10 bg-gray-300 rounded" />
+      <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
+        <FloatingSymbols />
+        <PremiumGlassCard
+          className="max-w-5xl"
+          contentClassName="p-8 sm:p-10"
+        >
+          <div className="animate-pulse">
+            <div className="mx-auto mb-8 h-10 w-40 rounded-full bg-black/10" />
+            <div className="mx-auto mb-4 h-10 w-56 rounded-xl bg-black/10" />
+            <div className="mx-auto mb-10 h-5 w-80 rounded-lg bg-black/10" />
+
+            <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
+              <div className="rounded-[32px] border border-black/5 bg-white/55 p-6">
+                <div className="mx-auto mb-6 h-32 w-32 rounded-full bg-black/10" />
+                <div className="space-y-4">
+                  <div className="h-5 w-24 rounded bg-black/10" />
+                  <div className="h-12 rounded-2xl bg-black/10" />
+                  <div className="h-5 w-28 rounded bg-black/10" />
+                  <div className="h-12 rounded-2xl bg-black/10" />
+                  <div className="h-12 rounded-full bg-black/10" />
+                </div>
+              </div>
+
+              <div className="rounded-[32px] border border-black/5 bg-white/55 p-6">
+                <div className="mb-4 h-5 w-28 rounded bg-black/10" />
+                <div className="grid grid-cols-2 gap-4">
+                  {[...Array(4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="aspect-square rounded-3xl bg-black/10"
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        </GlassCard>
+        </PremiumGlassCard>
       </main>
     );
   }
 
   if (!user) {
-  return (
-    <main className="min-h-screen flex items-center justify-center">
-      <GlassCard>
-        <p className="text-center text-gray-500">
-            <Image
-              src={safeAvatar}
-              alt="avatar"
-              width={44}
-              height={44}
-              className="rounded-full object-cover mx-auto mb-3"
-              onError={() => setAvatar(DEFAULT_AVATAR)}
-            />
-          Bạn chưa đăng nhập!
-        </p>
-      </GlassCard>
-    </main>
-  );
-}
+    return (
+      <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
+        <FloatingSymbols />
+        <PremiumGlassCard
+          className="max-w-md"
+          contentClassName="p-10 sm:p-12 text-center"
+        >
+          <div className="space-y-4">
+            <div className="flex justify-center">
+              <Image
+                src={safeAvatar}
+                alt="avatar"
+                width={72}
+                height={72}
+                className="rounded-full object-cover border border-white/60 shadow-sm"
+                onError={() => setAvatar(DEFAULT_AVATAR)}
+              />
+            </div>
+
+            <div>
+              <p className="text-lg font-semibold text-neutral-900">
+                Bạn chưa đăng nhập
+              </p>
+              <p className="mt-2 text-sm text-neutral-500">
+                Vui lòng đăng nhập để chỉnh sửa hồ sơ của bạn.
+              </p>
+            </div>
+          </div>
+        </PremiumGlassCard>
+      </main>
+    );
+  }
 
   return (
-    <main className="min-h-screen flex items-center justify-center">
+    <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
+      <FloatingSymbols />
 
       {toast && (
-        <div className="fixed top-5 right-5 bg-black/80 text-white px-4 py-2 rounded-lg">
+        <div className="fixed right-5 top-5 z-50 rounded-2xl border border-white/30 bg-black/80 px-4 py-2 text-sm text-white shadow-xl backdrop-blur-md">
           {toast}
         </div>
       )}
 
       {cropImage && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-xl w-[320px] space-y-4">
-            <div className="relative w-full h-[250px]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+          <div className="w-full max-w-sm rounded-3xl border border-white/20 bg-white/95 p-5 shadow-2xl backdrop-blur-xl space-y-4">
+            <div className="relative h-[280px] w-full overflow-hidden rounded-2xl bg-black/5">
               <Cropper
                 image={cropImage}
                 crop={crop}
@@ -301,18 +341,19 @@ export default function ProfilePage() {
               step={0.1}
               value={zoom}
               onChange={(e) => setZoom(Number(e.target.value))}
+              className="w-full accent-neutral-900"
             />
 
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <button
                 onClick={() => setCropImage(null)}
-                className="flex-1 bg-gray-200 py-2 rounded"
+                className="flex-1 rounded-full border border-black/10 bg-black/5 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-black/10"
               >
                 Huỷ
               </button>
               <button
                 onClick={handleCropSave}
-                className="flex-1 bg-blue-500 text-white py-2 rounded"
+                className="flex-1 rounded-full bg-neutral-900 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
               >
                 Xác nhận
               </button>
@@ -321,103 +362,193 @@ export default function ProfilePage() {
         </div>
       )}
 
-      <GlassCard>
-        <div className="space-y-4 text-center">
-
-          <h1 className="text-xl font-semibold mb-6">Profile</h1>
-
-          {/* AVATAR */}
-          <label className="relative w-24 h-24 mx-auto cursor-pointer group block">
-            <Image
-              src={safeAvatar}
-              alt="avatar"
-              fill
-              className="rounded-full object-cover border"
-              onError={() => setAvatar(DEFAULT_AVATAR)}
-            />
-
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs rounded-full">
-              Avatar
+      <PremiumGlassCard
+        className="max-w-6xl"
+        contentClassName="p-6 sm:p-8 lg:p-10 xl:p-12"
+      >
+        <div className="space-y-10">
+          {/* Header */}
+          <div className="text-center">
+            <div className="mb-5 flex justify-center">
+              <span className="inline-flex items-center gap-2 rounded-full border border-sky-300 bg-sky-100 px-4 py-1.5 text-xs font-medium text-neutral-600 backdrop-blur">
+                <i className="fa-duotone fa-user-gear text-sky-500" />
+                Hồ sơ cá nhân
+              </span>
             </div>
 
-            <input
-              type="file"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleSelectFile(file);
-              }}
-            />
-          </label>
-
-          {/* NAME */}
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2 border rounded-lg"
-          />
-
-          <input
-  type="password"
-  placeholder="Mật khẩu mới"
-  value={newPassword}
-  onChange={(e) => setNewPassword(e.target.value)}
-  className="w-full px-3 py-2 border rounded-lg"
-/>
-
-          {/* SAVE */}
-          <button
-            onClick={handleSave}
-            disabled={!isChanged || saving}
-            className={`w-full py-2 rounded text-white ${
-              !isChanged || saving ? "bg-gray-300" : "bg-blue-500"
-            }`}
-          >
-            {saving ? "Đang lưu..." : "Lưu thay đổi"}
-          </button>
-
-          {/* AVATAR LIST */}
-          <div className="text-left">
-            <p className="text-sm text-gray-500 mb-2">
-              Avatar cũ
+            <h1 className="text-4xl font-semibold tracking-tight text-neutral-900 sm:text-5xl">
+              Profile
+            </h1>
+            <p className="mt-3 text-sm leading-7 text-neutral-500 md:text-base">
+              Cập nhật tên, ảnh đại diện và mật khẩu.
             </p>
-
-            {avatarLoading ? (
-              <div className="grid grid-cols-3 gap-3">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="aspect-square bg-gray-200 animate-pulse rounded-lg" />
-                ))}
-              </div>
-            ) : avatars.length === 0 ? (
-              <p className="text-xs text-gray-400">
-                Chưa có avatar nào
-              </p>
-            ) : (
-              <div className="grid grid-cols-3 gap-3">
-                {avatars.map((item) => (
-                  <div key={item.id} className="relative group w-33">
-                    <img
-                      src={item.url}
-                      className="w-33 aspect-square rounded-xl object-cover border cursor-pointer"
-                      onClick={() => handleReuse(item.url)}
-                    />
-
-                    <div className="absolute w-auto rounded-xl inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-sm gap-2">
-                      <button className="cursor-pointer hover:text-sky-400 font-normal hover:font-bold" onClick={() => handleReuse(item.url)}>
-                        Sử dụng
-                      </button>
-                      <button className="cursor-pointer hover:text-red-400 font-normal hover:font-bold" onClick={() => handleDelete(item)}>
-                        Xoá
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
 
+          {/* Main layout */}
+          <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
+            {/* LEFT PANEL */}
+            <section className="relative overflow-hidden rounded-[34px] border border-black/5 bg-white/60 p-6 shadow-[0_16px_60px_rgba(0,0,0,0.05)] backdrop-blur-xl sm:p-8">
+              <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-sky-100/35 to-transparent pointer-events-none" />
+              <div className="absolute -bottom-10 left-1/2 h-32 w-32 -translate-x-1/2 rounded-full bg-sky-100/25 blur-3xl pointer-events-none" />
+
+              <div className="relative mb-8 text-center">
+                <label className="relative mx-auto block h-36 w-36 cursor-pointer group/avatar-main">
+                  <div className="absolute -inset-3 rounded-full bg-gradient-to-br from-sky-200/50 via-white/0 to-purple-200/40 blur-2xl opacity-90" />
+
+                  <Image
+                    src={safeAvatar}
+                    alt="avatar"
+                    fill
+                    className="relative rounded-full object-cover border border-white/80 shadow-[0_14px_50px_rgba(0,0,0,0.18)]"
+                    onError={() => setAvatar(DEFAULT_AVATAR)}
+                  />
+
+                  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/35 text-sm font-medium text-white opacity-0 transition group-hover/avatar-main:opacity-100">
+                    Đổi ảnh
+                  </div>
+
+                  <input
+                    type="file"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleSelectFile(file);
+                    }}
+                  />
+                </label>
+
+                <p className="mt-5 text-sm text-neutral-500">
+                  Nhấn vào ảnh để tải avatar mới
+                </p>
+              </div>
+
+              <div className="relative space-y-5">
+                <div>
+                  <div className="mb-2 flex items-center gap-2">
+                    <i className="fa-duotone fa-signature text-neutral-400 text-sm" />
+                    <label className="text-sm font-medium text-neutral-700">
+                      Tên hiển thị
+                    </label>
+                  </div>
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full rounded-2xl border border-black/10 bg-white/80 px-4 py-3.5 text-sm text-neutral-900 outline-none backdrop-blur transition focus:border-black/20 focus:bg-white focus:shadow-[0_0_0_4px_rgba(0,0,0,0.03)]"
+                  />
+                </div>
+
+                <div>
+                  <div className="mb-2 flex items-center gap-2">
+                    <i className="fa-duotone fa-lock-keyhole text-neutral-400 text-sm" />
+                    <label className="text-sm font-medium text-neutral-700">
+                      Mật khẩu mới
+                    </label>
+                  </div>
+                  <input
+                    type="password"
+                    placeholder="Nhập mật khẩu mới"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full rounded-2xl border border-black/10 bg-white/80 px-4 py-3.5 text-sm text-neutral-900 outline-none backdrop-blur transition focus:border-black/20 focus:bg-white focus:shadow-[0_0_0_4px_rgba(0,0,0,0.03)]"
+                  />
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    onClick={handleSave}
+                    disabled={!isChanged || saving}
+                    className={`w-full rounded-full py-3.5 text-sm font-medium text-white shadow-sm transition ${
+                      !isChanged || saving
+                        ? "cursor-not-allowed bg-neutral-300"
+                        : "bg-neutral-900 hover:opacity-90 hover:shadow-md cursor-pointer"
+                    }`}
+                  >
+                    {saving ? "Đang lưu" : "Lưu thay đổi"}
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            {/* RIGHT PANEL */}
+            <section className="relative overflow-hidden rounded-[34px] border border-black/5 bg-white/60 p-6 shadow-[0_16px_60px_rgba(0,0,0,0.05)] backdrop-blur-xl sm:p-8">
+              <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-purple-100/25 to-transparent pointer-events-none" />
+
+              <div className="relative mb-6">
+                <div className="mb-2 flex items-center gap-2">
+                  <i className="fa-duotone fa-images text-neutral-400 text-sm" />
+                  <h2 className="text-lg font-semibold text-neutral-900">
+                    Avatar cũ
+                  </h2>
+                </div>
+                <p className="text-sm text-neutral-500">
+                  Chọn lại avatar đã từng sử dụng.
+                </p>
+              </div>
+
+              {avatarLoading ? (
+                <div className="grid grid-cols-2 gap-4">
+                  {[...Array(4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="aspect-square rounded-3xl bg-black/10 animate-pulse"
+                    />
+                  ))}
+                </div>
+              ) : avatars.length === 0 ? (
+                <div className="flex aspect-[1.1/1] items-center justify-center rounded-[28px] border border-dashed border-black/10 bg-black/[0.02] text-center">
+                  <div>
+                    <i className="fa-duotone fa-image-slash text-2xl text-neutral-300" />
+                    <p className="mt-3 text-sm text-neutral-400">
+                      Chưa có avatar nào
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4">
+                  {avatars.map((item) => (
+                    <div
+                      key={item.id}
+                      className="group/avatar relative overflow-hidden rounded-3xl border border-white/70 bg-white/40 shadow-sm"
+                    >
+                      <img
+                        src={item.url || DEFAULT_AVATAR}
+                        className="aspect-square w-full object-cover transition duration-300 group-hover/avatar:scale-[1.03]"
+                        onClick={() => handleReuse(item.url)}
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src =
+                            DEFAULT_AVATAR;
+                        }}
+                      />
+
+                      {item.url === avatar && (
+                        <div className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-medium text-neutral-700 shadow-sm backdrop-blur">
+                          Đang dùng
+                        </div>
+                      )}
+
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/55 opacity-0 transition group-hover/avatar:opacity-100">
+                        <button
+                          className="rounded-full bg-white/95 px-5 py-2 text-sm font-medium text-neutral-900 shadow-sm transition hover:scale-[1.02] cursor-pointer"
+                          onClick={() => handleReuse(item.url)}
+                        >
+                          Sử dụng
+                        </button>
+
+                        <button
+                          className="rounded-full bg-red-500/95 px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:scale-[1.02] hidden"
+                          onClick={() => handleDelete(item)}
+                        >
+                          Xoá
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
         </div>
-      </GlassCard>
+      </PremiumGlassCard>
     </main>
   );
 }
