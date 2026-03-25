@@ -1,11 +1,17 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
 
 type Props = {
   images: string[];
   postId: string;
-  priority?: boolean; // 🔥 thêm
+  priority?: boolean;
+};
+
+type ImageMeta = {
+  width: number;
+  height: number;
 };
 
 export default function PostImages({ images, postId, priority = false }: Props) {
@@ -13,97 +19,320 @@ export default function PostImages({ images, postId, priority = false }: Props) 
   if (count === 0) return null;
 
   const group = `post-${postId}`;
+  const [imageMeta, setImageMeta] = useState<Record<string, ImageMeta>>({});
 
-  const visibleImages =
-    count <= 4 ? images : images.slice(0, 4);
+  useEffect(() => {
+    const loadImageSizes = async () => {
+      const results: Record<string, ImageMeta> = {};
 
-  const hiddenImages =
-    count > 4 ? images.slice(4) : [];
+      await Promise.all(
+        images.map(
+          (src) =>
+            new Promise<void>((resolve) => {
+              const img = new window.Image();
+              img.src = src;
+
+              img.onload = () => {
+                results[src] = {
+                  width: img.naturalWidth,
+                  height: img.naturalHeight,
+                };
+                resolve();
+              };
+
+              img.onerror = () => {
+                results[src] = {
+                  width: 1200,
+                  height: 900,
+                };
+                resolve();
+              };
+            })
+        )
+      );
+
+      setImageMeta(results);
+    };
+
+    loadImageSizes();
+  }, [images]);
+
+  const getRatio = (src: string) => {
+    const meta = imageMeta[src];
+    if (!meta) return 1.333; // fallback 4/3
+    return meta.width / meta.height;
+  };
+
+  const isPortrait = (src: string) => getRatio(src) < 1;
+  const isLandscape = (src: string) => getRatio(src) >= 1.15;
+  const isWide = (src: string) => getRatio(src) >= 1.6;
+
+  // ===== SMART HERO PICKER =====
+  const heroIndex = useMemo(() => {
+    if (count < 3) return 0;
+
+    let bestIndex = 0;
+    let bestScore = -999;
+
+    images.forEach((img, i) => {
+      const ratio = getRatio(img);
+      let score = 0;
+
+      // Ưu tiên ảnh ngang đẹp
+      if (ratio >= 1.6) score += 100; // wide đẹp
+      else if (ratio >= 1.15) score += 70; // landscape đẹp
+      else if (ratio >= 1) score += 40; // hơi ngang
+      else if (ratio >= 0.75) score += 10; // portrait vừa
+      else score -= 20; // portrait quá dài
+
+      // Ưu tiên ảnh đầu một chút để giữ thứ tự tự nhiên
+      if (i === 0) score += 12;
+      if (i === 1) score += 6;
+
+      // Ảnh quá cực đoan thì trừ điểm
+      if (ratio > 2.4) score -= 15; // siêu panorama
+      if (ratio < 0.6) score -= 15; // siêu dài dọc
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestIndex = i;
+      }
+    });
+
+    return bestIndex;
+  }, [count, images, imageMeta]);
+
+  const orderedImages = useMemo(() => {
+    if (count < 3) return images;
+    const cloned = [...images];
+    const [hero] = cloned.splice(heroIndex, 1);
+    return [hero, ...cloned];
+  }, [images, heroIndex, count]);
+
+  const visibleImages = count <= 5 ? orderedImages : orderedImages.slice(0, 5);
+  const hiddenImages = count > 5 ? orderedImages.slice(5) : [];
 
   const renderImage = (
     img: string,
     i: number,
     className: string,
-    sizes: string
+    sizes: string,
+    overlay?: React.ReactNode
   ) => (
     <a
-      key={i}
+      key={`${img}-${i}`}
       href={img}
       data-fancybox={group}
-      className={`relative block ${className}`}
+      className={`relative block overflow-hidden ${className}`}
     >
       <Image
         src={img}
         alt="post"
         fill
         sizes={sizes}
-        priority={priority && i === 0} // 🔥 CHỈ ảnh đầu tiên
-        className="object-cover transition-transform duration-300 ease-in-out hover:scale-105"
+        priority={priority && i === 0}
+        className="object-cover object-center transition-transform duration-500 ease-in-out hover:scale-103"
       />
+      {overlay}
     </a>
   );
+
+  // ===== SINGLE IMAGE =====
+  const firstImage = images[0];
+  const firstMeta = imageMeta[firstImage];
+
+  const getSingleImageClass = () => {
+    if (!firstMeta) return "w-full aspect-[4/3]";
+
+    const ratio = firstMeta.width / firstMeta.height;
+
+    if (ratio >= 1) return "w-full";
+    return "w-full aspect-[3/4]";
+  };
+
+  const getSingleImageStyle = () => {
+    if (!firstMeta) return undefined;
+
+    const ratio = firstMeta.width / firstMeta.height;
+
+    if (ratio >= 1) {
+      return {
+        aspectRatio: `${firstMeta.width} / ${firstMeta.height}`,
+      };
+    }
+
+    return undefined;
+  };
+
+  // ===== SMART LAYOUT DETECT =====
+  const smartLayout = useMemo(() => {
+    if (count === 3) {
+      const hasLandscape = orderedImages.some((img) => isLandscape(img));
+      return hasLandscape ? "3-top-hero" : "3-left-hero";
+    }
+
+    if (count === 4) {
+      return "4-grid";
+    }
+
+    if (count >= 5) {
+      const hero = orderedImages[0];
+      const landscapeCount = orderedImages.slice(0, 5).filter((img) => isLandscape(img)).length;
+
+      if (isWide(hero) && landscapeCount >= 3) return "5-top-hero";
+      return "5-grid";
+    }
+
+    return null;
+  }, [count, orderedImages, imageMeta]);
 
   return (
     <>
       {/* 1 IMAGE */}
       {count === 1 && (
-        <div className="postImages relative w-full aspect-video mt-3 overflow-hidden select-none">
-          {renderImage(images[0], 0, "w-full h-full", "(max-width:768px) 100vw, 800px")}
+        <div
+          className={`postImages relative mt-3 overflow-hidden select-none max-h-[75vh] ${getSingleImageClass()}`}
+          style={getSingleImageStyle()}
+        >
+          {renderImage(
+            firstImage,
+            0,
+            "w-full h-full",
+            "(max-width:768px) 100vw, 800px"
+          )}
         </div>
       )}
 
       {/* 2 IMAGES */}
       {count === 2 && (
-        <div className="postImages grid grid-cols-2 gap-[2px] m-0 mt-3 select-none">
-          {visibleImages.map((img, i) =>
+        <div className="postImages grid grid-cols-2 gap-[2px] mt-3 select-none overflow-hidden">
+          {images.map((img, i) =>
             renderImage(
               img,
               i,
-              "aspect-[4/3] overflow-hidden",
+              "aspect-[4/3]",
               "(max-width:768px) 50vw, 400px"
             )
           )}
         </div>
       )}
 
-      {/* >=3 IMAGES */}
-      {count >= 3 && (
-        <div className="postImages grid grid-cols-2 gap-[2px] m-0 mt-3 select-none">
-          {visibleImages.map((img, i) => (
-            <div key={i} className="relative aspect-[4/3]">
-              <a
-                href={img}
-                data-fancybox={group}
-                className="relative block w-full h-full overflow-hidden"
-              >
-                <Image
-                  src={img}
-                  alt="post"
-                  fill
-                  sizes="(max-width:768px) 50vw, 400px"
-                  priority={priority && i === 0} // 🔥 fix LCP
-                  className="object-cover rounded-0 transition-transform duration-300 ease-in-out hover:scale-105"
-                />
-              </a>
+      {/* 3 IMAGES - TOP HERO */}
+{count === 3 && smartLayout === "3-top-hero" && (
+  <div className="postImages mt-3 grid gap-[2px] select-none overflow-hidden">
+    {/* Hero ngang hơn */}
+    <div className="relative w-full aspect-[16/9]">
+      {renderImage(
+        orderedImages[0],
+        0,
+        "w-full h-full",
+        "(max-width:768px) 100vw, 800px"
+      )}
+    </div>
 
-              {i === 3 && count > 4 && (
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-lg font-normal pointer-events-none">
-                  +{count - 4}
-                </div>
-              )}
-            </div>
-          ))}
+    {/* 2 ảnh dưới giữ 4/3 */}
+    <div className="grid grid-cols-2 gap-[2px]">
+      {orderedImages.slice(1, 3).map((img, idx) =>
+        renderImage(
+          img,
+          idx + 1,
+          "aspect-[4/3]",
+          "(max-width:768px) 50vw, 400px"
+        )
+      )}
+    </div>
+  </div>
+)}
+
+      {/* 3 IMAGES - LEFT HERO */}
+      {count === 3 && smartLayout === "3-left-hero" && (
+        <div className="postImages grid grid-cols-2 gap-[2px] mt-3 select-none aspect-[4/3] overflow-hidden">
+          {renderImage(
+            orderedImages[0],
+            0,
+            "h-full",
+            "(max-width:768px) 50vw, 400px"
+          )}
+
+          <div className="grid grid-rows-2 gap-[2px] h-full">
+            {orderedImages.slice(1, 3).map((img, idx) =>
+              renderImage(
+                img,
+                idx + 1,
+                "h-full",
+                "(max-width:768px) 50vw, 400px"
+              )
+            )}
+          </div>
         </div>
       )}
 
+      {/* 4 IMAGES - GRID */}
+      {count === 4 && smartLayout === "4-grid" && (
+        <div className="postImages grid grid-cols-2 gap-[2px] mt-3 select-none overflow-hidden">
+          {orderedImages.map((img, i) =>
+            renderImage(
+              img,
+              i,
+              "aspect-[4/3]",
+              "(max-width:768px) 50vw, 400px"
+            )
+          )}
+        </div>
+      )}
+
+      {/* 5+ IMAGES - TOP HERO */}
+      {count >= 5 && smartLayout === "5-top-hero" && (
+        <div className="postImages mt-3 grid grid-rows-[2fr_1fr_1fr] gap-[2px] select-none overflow-hidden aspect-[4/5]">
+          {renderImage(
+            visibleImages[0],
+            0,
+            "w-full h-full",
+            "(max-width:768px) 100vw, 800px"
+          )}
+
+          <div className="grid grid-cols-2 gap-[2px] row-span-2">
+            {visibleImages.slice(1, 5).map((img, idx) =>
+              renderImage(
+                img,
+                idx + 1,
+                "aspect-[4/3]",
+                "(max-width:768px) 50vw, 400px",
+                idx === 3 ? (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-2xl font-medium pointer-events-none">
+                    +{count - 5}
+                  </div>
+                ) : null
+              )
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 5+ IMAGES - GRID */}
+      {count >= 5 && smartLayout === "5-grid" && (
+        <div className="postImages grid grid-cols-2 gap-[2px] mt-3 select-none overflow-hidden">
+          {visibleImages.slice(0, 4).map((img, i) =>
+            renderImage(
+              img,
+              i,
+              "aspect-[4/3]",
+              "(max-width:768px) 50vw, 400px",
+              i === 3 ? (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-2xl font-medium pointer-events-none">
+                  +{count - 4}
+                </div>
+              ) : null
+            )
+          )}
+        </div>
+      )}
+
+      {/* Hidden fancybox images */}
       {hiddenImages.length > 0 && (
         <div className="hidden">
           {hiddenImages.map((img, i) => (
-            <a
-              key={`hidden-${i}`}
-              href={img}
-              data-fancybox={group}
-            />
+            <a key={`hidden-${i}`} href={img} data-fancybox={group} />
           ))}
         </div>
       )}
