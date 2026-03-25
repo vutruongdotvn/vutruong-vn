@@ -281,6 +281,13 @@ export default function BlogPage() {
             {/* 🔥 TRIGGER */}
             <div ref={loadMoreRef}></div>
 
+{/* 🔥 HẾT BÀI VIẾT */}
+{!loading && posts.length > 0 && !hasMore && (
+  <div className="text-center text-sm text-gray-400 mt-5">
+    — Đã tải hết bài viết —
+  </div>
+)}
+
             {user && role === "admin" && (
               <CreatePostModal
                 isOpen={open}

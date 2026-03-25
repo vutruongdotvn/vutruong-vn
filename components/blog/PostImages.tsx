@@ -176,11 +176,7 @@ export default function PostImages({ images, postId, priority = false }: Props) 
     }
 
     if (count >= 5) {
-      const hero = orderedImages[0];
-      const landscapeCount = orderedImages.slice(0, 5).filter((img) => isLandscape(img)).length;
-
-      if (isWide(hero) && landscapeCount >= 3) return "5-top-hero";
-      return "5-grid";
+      return "4-grid";
     }
 
     return null;
@@ -267,66 +263,40 @@ export default function PostImages({ images, postId, priority = false }: Props) 
         </div>
       )}
 
-      {/* 4 IMAGES - GRID */}
-      {count === 4 && smartLayout === "4-grid" && (
-        <div className="postImages grid grid-cols-2 gap-[2px] mt-3 select-none overflow-hidden">
-          {orderedImages.map((img, i) =>
-            renderImage(
-              img,
-              i,
-              "aspect-[4/3]",
-              "(max-width:768px) 50vw, 400px"
-            )
-          )}
-        </div>
-      )}
+      {/* 4 IMAGES */}
+{count === 4 && (
+  <div className="postImages grid grid-cols-2 gap-[2px] mt-3 select-none overflow-hidden">
+    {images.slice(0, 4).map((img, i) =>
+      renderImage(
+        img,
+        i,
+        "aspect-[4/3]",
+        "(max-width:768px) 50vw, 400px"
+      )
+    )}
+  </div>
+)}
 
-      {/* 5+ IMAGES - TOP HERO */}
-      {count >= 5 && smartLayout === "5-top-hero" && (
-        <div className="postImages mt-3 grid grid-rows-[2fr_1fr_1fr] gap-[2px] select-none overflow-hidden aspect-[4/5]">
-          {renderImage(
-            visibleImages[0],
-            0,
-            "w-full h-full",
-            "(max-width:768px) 100vw, 800px"
-          )}
 
-          <div className="grid grid-cols-2 gap-[2px] row-span-2">
-            {visibleImages.slice(1, 5).map((img, idx) =>
-              renderImage(
-                img,
-                idx + 1,
-                "aspect-[4/3]",
-                "(max-width:768px) 50vw, 400px",
-                idx === 3 ? (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-2xl font-medium pointer-events-none">
-                    +{count - 5}
-                  </div>
-                ) : null
-              )
-            )}
+
+      {/* 5+ IMAGES */}
+{count >= 5 && (
+  <div className="postImages grid grid-cols-2 gap-[2px] mt-3 select-none overflow-hidden">
+    {images.slice(0, 4).map((img, i) =>
+      renderImage(
+        img,
+        i,
+        "aspect-[4/3]",
+        "(max-width:768px) 50vw, 400px",
+        i === 3 ? (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-2xl font-medium pointer-events-none">
+            +{count - 4}
           </div>
-        </div>
-      )}
-
-      {/* 5+ IMAGES - GRID */}
-      {count >= 5 && smartLayout === "5-grid" && (
-        <div className="postImages grid grid-cols-2 gap-[2px] mt-3 select-none overflow-hidden">
-          {visibleImages.slice(0, 4).map((img, i) =>
-            renderImage(
-              img,
-              i,
-              "aspect-[4/3]",
-              "(max-width:768px) 50vw, 400px",
-              i === 3 ? (
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-2xl font-medium pointer-events-none">
-                  +{count - 4}
-                </div>
-              ) : null
-            )
-          )}
-        </div>
-      )}
+        ) : null
+      )
+    )}
+  </div>
+)}
 
       {/* Hidden fancybox images */}
       {hiddenImages.length > 0 && (
