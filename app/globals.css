@@ -159,3 +159,46 @@ img {
 .animate-fadeIn {
   animation: fadeIn 0.6s ease;
 }
+
+@keyframes floatY {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fadeInUpSoft {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.animate-fade-soft {
+  animation: fadeInUpSoft 0.6s ease-out both;
+}
+
+@keyframes fadeWord {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.animate-fade-word {
+  animation: fadeWord 0.45s ease-out both;
+}
