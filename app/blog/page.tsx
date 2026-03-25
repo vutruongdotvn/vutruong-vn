@@ -17,6 +17,7 @@ export default function BlogPage() {
   const [showLogin, setShowLogin] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingPost, setEditingPost] = useState<any | null>(null);
 
   // 🔥 NEW (KHÔNG ẢNH HƯỞNG LOGIC CŨ)
   const [page, setPage] = useState(0);
@@ -76,7 +77,8 @@ export default function BlogPage() {
   };
 
   const handleEdit = (post: any) => {
-    alert("Tính năng chỉnh sửa sẽ làm sau 😎");
+    setEditingPost(post);
+    setOpen(true);
   };
 
   // 🔥 UPGRADE fetchPosts (KHÔNG ĐỔI CÁCH DÙNG)
@@ -290,12 +292,14 @@ export default function BlogPage() {
 
             {user && role === "admin" && (
               <CreatePostModal
-                isOpen={open}
-                onClose={() => {
-                  setOpen(false);
-                  fetchPosts(); // GIỮ NGUYÊN 100%
-                }}
-              />
+    isOpen={open}
+    editingPost={editingPost}
+    onClose={() => {
+      setOpen(false);
+      setEditingPost(null);
+      window.location.reload();
+    }}
+  />
             )}
 
             {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
