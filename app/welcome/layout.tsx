@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Welcome",
-  description: "Trang khởi động trên trình duyệt | VT Welcome",
+  title: {
+    absolute: "VT Welcome",
+  },
 };
 
 export default function WelcomeLayout({
@@ -12,3 +13,4 @@ export default function WelcomeLayout({
 }) {
   return <>{children}</>;
 }
+// Trang VT Welcome không cần SEO
