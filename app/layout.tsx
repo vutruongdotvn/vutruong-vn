@@ -16,8 +16,8 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://vutruong.vn"),
 
   title: {
-    default: "VT Zone | Trang chủ",
-    template: "%s | VT Zone",
+    default: "VT Zone",
+    template: "%s",
   },
 
   description: "Hệ sinh thái số của Vũ Trường trên Internet | vutruong.vn",
