@@ -25,7 +25,7 @@ export default function NotFound() {
 
             {/* Main Icon */}
             <div className="mb-6 flex justify-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-white/60 bg-white/50 shadow-sm">
+              <div className="flex h-20 w-20 items-center justify-center rounded-xl border border-white/60 bg-white/50 shadow-sm">
                 <i className="fa-duotone fa-file-circle-question text-4xl text-neutral-800" />
               </div>
             </div>

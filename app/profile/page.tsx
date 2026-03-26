@@ -256,9 +256,9 @@ export default function ProfilePage() {
                 <div className="mx-auto mb-6 h-32 w-32 rounded-full bg-black/10" />
                 <div className="space-y-4">
                   <div className="h-5 w-24 rounded bg-black/10" />
-                  <div className="h-12 rounded-2xl bg-black/10" />
+                  <div className="h-12 rounded-xl bg-black/10" />
                   <div className="h-5 w-28 rounded bg-black/10" />
-                  <div className="h-12 rounded-2xl bg-black/10" />
+                  <div className="h-12 rounded-xl bg-black/10" />
                   <div className="h-12 rounded-full bg-black/10" />
                 </div>
               </div>
@@ -322,7 +322,7 @@ export default function ProfilePage() {
       {cropImage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
           <div className="w-full max-w-sm rounded-3xl border border-white/20 bg-white/95 p-5 shadow-2xl backdrop-blur-xl space-y-4">
-            <div className="relative h-[280px] w-full overflow-hidden rounded-2xl bg-black/5">
+            <div className="relative h-[280px] w-full overflow-hidden rounded-xl bg-black/5">
               <Cropper
                 image={cropImage}
                 crop={crop}
@@ -430,7 +430,7 @@ export default function ProfilePage() {
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full rounded-2xl border border-black/10 bg-white/80 px-4 py-3.5 text-sm text-neutral-900 outline-none backdrop-blur transition focus:border-black/20 focus:bg-white focus:shadow-[0_0_0_4px_rgba(0,0,0,0.03)]"
+                    className="w-full rounded-xl border border-black/10 bg-white/80 px-4 py-3.5 text-sm text-neutral-900 outline-none backdrop-blur transition focus:border-black/20 focus:bg-white focus:shadow-[0_0_0_4px_rgba(0,0,0,0.03)]"
                   />
                 </div>
 
@@ -446,7 +446,7 @@ export default function ProfilePage() {
                     placeholder="Nhập mật khẩu mới"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full rounded-2xl border border-black/10 bg-white/80 px-4 py-3.5 text-sm text-neutral-900 outline-none backdrop-blur transition focus:border-black/20 focus:bg-white focus:shadow-[0_0_0_4px_rgba(0,0,0,0.03)]"
+                    className="w-full rounded-xl border border-black/10 bg-white/80 px-4 py-3.5 text-sm text-neutral-900 outline-none backdrop-blur transition focus:border-black/20 focus:bg-white focus:shadow-[0_0_0_4px_rgba(0,0,0,0.03)]"
                   />
                 </div>
 

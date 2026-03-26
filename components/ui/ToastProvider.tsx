@@ -134,11 +134,11 @@ function PremiumToast({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 12, scale: 0.97 }}
       transition={{ duration: 0.22, ease: "easeOut" }}
-      className={`pointer-events-auto relative overflow-hidden rounded-3xl border backdrop-blur-2xl shadow-2xl ${current.container}`}
+      className={`pointer-events-auto relative overflow-hidden rounded-xl border backdrop-blur-2xl shadow-2xl ${current.container}`}
     >
       <div className="flex items-start gap-3 p-4">
         <div
-          className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${current.iconWrap}`}
+          className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${current.iconWrap}`}
         >
           <i className={`${current.icon} text-lg`} />
         </div>

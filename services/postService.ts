@@ -186,7 +186,7 @@ export const deletePost = async (postId: string, public_ids: string[]) => {
 
         const data = await res.json();
 
-        console.log("🔥 DELETE API RESPONSE:", data);
+        console.log("🔥 DELETE API RESULT:", data);
 
         if (!data.success) {
           return { success: false, error: "Xóa ảnh thất bại" };
@@ -197,71 +197,60 @@ export const deletePost = async (postId: string, public_ids: string[]) => {
       }
     }
 
-    // 🔥 SAU ĐÓ MỚI XÓA DB
+    // 🔥 XÓA BÀI VIẾT TRONG DB
     const { error } = await supabase.from("posts").delete().eq("id", postId);
 
     if (error) {
+      console.error("Lỗi delete post:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true };
-  } catch (err) {
-    console.error(err);
-    return { success: false, error: "Lỗi xoá" };
+  } catch (err: any) {
+    console.error("Lỗi hệ thống:", err);
+    return { success: false, error: "Lỗi hệ thống" };
   }
 };
 
-// 📌 PIN / UNPIN
-export const pinPost = async (postId: string, isPinned: boolean) => {
-  try {
-    // 👉 nếu đang ghim → bỏ ghim
-    if (isPinned) {
-      const { error } = await supabase
-        .from("posts")
-        .update({ is_pinned: false })
-        .eq("id", postId);
+// 📌 PIN / UNPIN POST
+export const pinPost = async (postId: string, currentPinned: boolean) => {
+  const { error } = await supabase
+    .from("posts")
+    .update({ is_pinned: !currentPinned })
+    .eq("id", postId);
 
-      if (error) {
-        return { success: false, error: error.message };
-      }
-
-      return { success: true };
-    }
-
-    // 👉 nếu chưa ghim → reset rồi ghim
-    await supabase.from("posts").update({ is_pinned: false }).neq("id", "");
-
-    const { error } = await supabase
-      .from("posts")
-      .update({ is_pinned: true })
-      .eq("id", postId);
-
-    if (error) {
-      return { success: false, error: error.message };
-    }
-
-    return { success: true };
-  } catch (err) {
-    return { success: false, error: "Lỗi ghim bài" };
+  if (error) {
+    console.error("Lỗi pinPost:", error);
+    return { success: false, error: error.message };
   }
+
+  return { success: true };
 };
 
-// ✏️ UPDATE POST (TEXT ONLY)
-// ✏️ UPDATE POST (TEXT + IMAGES)
+// ✏️ UPDATE POST (TEXT + IMAGE + REORDER)
 export const updatePost = async ({
   postId,
   content,
-  existingImages,
-  existingPublicIds,
-  removedPublicIds,
-  newFiles,
+  removedPublicIds = [],
+  orderedImageItems = [],
 }: {
   postId: string;
   content: string;
-  existingImages: string[];
-  existingPublicIds: string[];
-  removedPublicIds: string[];
-  newFiles: File[];
+  removedPublicIds?: string[];
+  orderedImageItems?: Array<
+    | {
+        id: string;
+        type: "existing";
+        url: string;
+        public_id: string;
+      }
+    | {
+        id: string;
+        type: "new";
+        url: string;
+        file: File;
+      }
+  >;
 }) => {
   try {
     const {
@@ -276,10 +265,9 @@ export const updatePost = async ({
       };
     }
 
-    // 🔒 kiểm tra quyền
     const { data: post, error: postError } = await supabase
       .from("posts")
-      .select("id, user_id")
+      .select("id, user_id, public_ids")
       .eq("id", postId)
       .single();
 
@@ -297,22 +285,68 @@ export const updatePost = async ({
       };
     }
 
-    // 1) Upload ảnh mới (nếu có)
-    let uploadedImages: { url: string; public_id: string }[] = [];
+    const normalizedRemovedIds = normalizePublicIds(removedPublicIds);
 
-    if (newFiles.length > 0) {
+    // 🔥 XÓA ẢNH CŨ KHỎI CLOUDINARY
+    if (normalizedRemovedIds.length > 0) {
       try {
-        uploadedImages = await Promise.all(
-          newFiles.map(async (file) => {
-            const result = await uploadImage(file);
+        const res = await fetch(`${window.location.origin}/api/delete-images`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ public_ids: normalizedRemovedIds }),
+        });
+
+        const data = await res.json();
+
+        console.log("🔥 DELETE RESULT:", data);
+
+        if (!data.success) {
+          return { success: false, error: "Xóa ảnh cũ thất bại" };
+        }
+      } catch (err) {
+        console.error("❌ FETCH DELETE ERROR:", err);
+        return { success: false, error: "Không thể gọi API xóa ảnh cũ" };
+      }
+    }
+
+    // 🔥 UPLOAD TẤT CẢ ẢNH MỚI (THEO ID TẠM)
+    const uploadMap = new Map<string, { url: string; public_id: string }>();
+
+    const newItems = orderedImageItems.filter(
+      (
+        item
+      ): item is {
+        id: string;
+        type: "new";
+        url: string;
+        file: File;
+      } => item.type === "new"
+    );
+
+    if (newItems.length > 0) {
+      try {
+        const uploadedResults = await Promise.all(
+          newItems.map(async (item) => {
+            const result = await uploadImage(item.file);
+
             return {
+              id: item.id,
               url: result.url,
               public_id: result.public_id,
             };
           })
         );
+
+        uploadedResults.forEach((img) => {
+          uploadMap.set(img.id, {
+            url: img.url,
+            public_id: img.public_id,
+          });
+        });
       } catch (err) {
-        console.error("Upload ảnh mới lỗi:", err);
+        console.error("Upload lỗi:", err);
         return {
           success: false,
           error: "Upload ảnh mới thất bại",
@@ -320,67 +354,42 @@ export const updatePost = async ({
       }
     }
 
-    // 2) Xóa ảnh cũ trên Cloudinary (nếu có)
-    const normalizedRemovedPublicIds = normalizePublicIds(removedPublicIds);
+    // 🔥 BUILD LẠI ẢNH THEO ĐÚNG THỨ TỰ UI
+    const finalImages: string[] = [];
+    const finalPublicIds: string[] = [];
 
-if (normalizedRemovedPublicIds.length > 0) {
-  try {
-    console.log("🗑️ removedPublicIds:", normalizedRemovedPublicIds);
+    for (const item of orderedImageItems) {
+      if (item.type === "existing") {
+        finalImages.push(item.url);
+        finalPublicIds.push(item.public_id);
+      }
 
-    const res = await fetch(`${window.location.origin}/api/delete-images`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ public_ids: normalizedRemovedPublicIds }),
-    });
+      if (item.type === "new") {
+        const uploaded = uploadMap.get(item.id);
 
-    const data = await res.json();
-
-    console.log("🗑️ delete-images response:", data);
-
-    if (!data.success) {
-      return {
-        success: false,
-        error: "Xóa ảnh cũ thất bại",
-      };
+        if (uploaded) {
+          finalImages.push(uploaded.url);
+          finalPublicIds.push(uploaded.public_id);
+        }
+      }
     }
-  } catch (err) {
-    console.error("❌ Xóa ảnh cũ lỗi:", err);
-    return {
-      success: false,
-      error: "Không thể xóa ảnh cũ",
-    };
-  }
-}
-
-    // 3) Gộp ảnh cuối cùng
-    const finalImages = [
-      ...existingImages,
-      ...uploadedImages.map((img) => img.url),
-    ];
-
-    const finalPublicIds = [
-      ...existingPublicIds,
-      ...uploadedImages.map((img) => img.public_id),
-    ];
 
     const hashtags = content.match(/#[\wÀ-ỹ]+/g) || [];
 
-    // 4) Update DB
     const { error: updateError } = await supabase
       .from("posts")
       .update({
         content,
         images: finalImages,
         public_ids: finalPublicIds,
+        cover_image: finalImages[0] || null,
         hashtags,
-        cover_image: finalImages?.[0] || null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", postId);
 
     if (updateError) {
+      console.error("Lỗi update:", updateError);
       return {
         success: false,
         error: updateError.message,
@@ -388,7 +397,7 @@ if (normalizedRemovedPublicIds.length > 0) {
     }
 
     return { success: true };
-  } catch (err) {
+  } catch (err: any) {
     console.error("Lỗi update post:", err);
     return {
       success: false,

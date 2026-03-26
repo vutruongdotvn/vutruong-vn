@@ -15,13 +15,13 @@ export default function SocialCard({
     <a
       href={href}
       target="_blank"
-      className="group flex items-center justify-between p-5 rounded-2xl bg-white/70 backdrop-blur-xl border border-white/50 shadow-md hover:shadow-xl hover:-translate-y-1 hover:bg-white/90 transition-all duration-300"
+      className="group flex items-center justify-between p-5 rounded-xl bg-white/70 backdrop-blur-xl border border-white/50 shadow-md hover:shadow-xl hover:-translate-y-1 hover:bg-white/90 transition-all duration-300"
     >
       <div className="flex items-center gap-4">
 
         {/* ICON */}
         <div
-          className={`w-12 h-12 flex items-center justify-center rounded-2xl shrink-0 ${iconBg}`}
+          className={`w-12 h-12 flex items-center justify-center rounded-xl shrink-0 ${iconBg}`}
         >
           {icon}
         </div>

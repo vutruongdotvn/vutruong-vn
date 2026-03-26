@@ -5,6 +5,22 @@ import { createPortal } from "react-dom";
 import { createPost, updatePost } from "@/services/postService";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/useToast";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  rectSortingStrategy,
+  useSortable,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 function safeParseArray(value: any): string[] {
   if (Array.isArray(value)) return value;
@@ -21,25 +37,126 @@ function safeParseArray(value: any): string[] {
   return [];
 }
 
+function generateLocalImageId() {
+  return `img_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+}
+
 type ExistingImageItem = {
+  id: string;
   type: "existing";
   url: string;
   public_id: string;
 };
 
 type NewImageItem = {
+  id: string;
   type: "new";
   url: string;
   file: File;
 };
 
-type ImageItem = ExistingImageItem | NewImageItem;
+export type OrderedImageItem = ExistingImageItem | NewImageItem;
+type ImageItem = OrderedImageItem;
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
   editingPost?: any | null;
 };
+
+type SortableImageCardProps = {
+  img: ImageItem;
+  index: number;
+  onRemove: (index: number) => void;
+};
+
+const getOptimizedPreviewUrl = (
+  url: string,
+  width = 320,
+  height = 220
+) => {
+  if (!url) return url;
+
+  // ảnh local preview khi mới chọn từ máy
+  if (url.startsWith("blob:")) return url;
+
+  // chỉ xử lý ảnh cloudinary
+  if (!url.includes("res.cloudinary.com") || !url.includes("/upload/")) {
+    return url;
+  }
+
+  return url.replace(
+    "/upload/",
+    `/upload/f_auto,q_auto,c_fill,w_${width},h_${height}/`
+  );
+};
+
+function SortableImageCard({
+  img,
+  index,
+  onRemove,
+}: SortableImageCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: img.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`group relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm transition select-none ${
+        isDragging ? "z-20 scale-[1.03] shadow-xl opacity-90" : "hover:shadow-md"
+      }`}
+    >
+      <img
+  src={getOptimizedPreviewUrl(img.url, 240, 180)}
+  alt={`preview-${index}`}
+  loading="lazy"
+  className="h-40 w-full object-cover transition duration-300 group-hover:scale-[1.03] pointer-events-none"
+/>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
+
+      <div className="absolute left-3 bottom-3 rounded-full bg-black/65 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm">
+        {index === 0
+          ? "Ảnh bìa"
+          : img.type === "existing"
+          ? "Ảnh cũ"
+          : "Ảnh mới"}
+      </div>
+
+      {/* Drag handle */}
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        className="absolute left-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition hover:scale-105 hover:bg-black/80 cursor-grab active:cursor-grabbing"
+        title="Kéo để sắp xếp"
+      >
+        <i className="fa-regular fa-grip-dots text-xs" />
+      </button>
+
+      {/* Remove */}
+      <button
+        type="button"
+        onClick={() => onRemove(index)}
+        className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition hover:bg-red-400 cursor-pointer"
+      >
+        <i className="fa-regular fa-xmark text-xs" />
+      </button>
+    </div>
+  );
+}
 
 export default function CreatePostModal({
   isOpen,
@@ -63,6 +180,20 @@ export default function CreatePostModal({
   const trimmedContent = content.trim();
   const trimmedOriginalContent = originalContent.trim();
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 6,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 180,
+        tolerance: 8,
+      },
+    })
+  );
+
   const originalExistingImages: ExistingImageItem[] = useMemo(() => {
     const safeImages = safeParseArray(editingPost?.images);
     const safePublicIds = safeParseArray(editingPost?.public_ids);
@@ -70,6 +201,7 @@ export default function CreatePostModal({
     if (!safeImages.length) return [];
 
     return safeImages.map((url: string, index: number) => ({
+      id: generateLocalImageId(),
       type: "existing",
       url,
       public_id: safePublicIds[index] || "",
@@ -89,13 +221,23 @@ export default function CreatePostModal({
     .map((item) => item.file);
 
   const hasTextChanged = trimmedContent !== trimmedOriginalContent;
-  const hasImagesChanged =
-    removedExistingPublicIds.length > 0 || newFiles.length > 0;
 
-  const hasUnsavedChanges =
-    isEditMode
-      ? hasTextChanged || hasImagesChanged
-      : trimmedContent.length > 0 || imageItems.length > 0;
+  const hasImageOrderChanged =
+    isEditMode &&
+    imageItems
+      .filter((item): item is ExistingImageItem => item.type === "existing")
+      .map((item) => item.public_id)
+      .join("|") !==
+      originalExistingImages.map((item) => item.public_id).join("|");
+
+  const hasImagesChanged =
+    removedExistingPublicIds.length > 0 ||
+    newFiles.length > 0 ||
+    hasImageOrderChanged;
+
+  const hasUnsavedChanges = isEditMode
+    ? hasTextChanged || hasImagesChanged
+    : trimmedContent.length > 0 || imageItems.length > 0;
 
   const canSubmitEdit =
     isEditMode &&
@@ -147,6 +289,7 @@ export default function CreatePostModal({
 
       const oldImages: ExistingImageItem[] = safeImages.map(
         (url: string, index: number) => ({
+          id: generateLocalImageId(),
           type: "existing",
           url,
           public_id: safePublicIds[index] || "",
@@ -188,6 +331,7 @@ export default function CreatePostModal({
     }
 
     const newItems: NewImageItem[] = imageFiles.map((file) => ({
+      id: generateLocalImageId(),
       type: "new",
       file,
       url: URL.createObjectURL(file),
@@ -238,10 +382,19 @@ export default function CreatePostModal({
     appendFiles(droppedFiles);
   };
 
-  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-    const pastedFiles = Array.from(e.clipboardData.files || []);
-    if (!pastedFiles.length) return;
-    appendFiles(pastedFiles);
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    setImageItems((prev) => {
+      const oldIndex = prev.findIndex((item) => item.id === active.id);
+      const newIndex = prev.findIndex((item) => item.id === over.id);
+
+      if (oldIndex === -1 || newIndex === -1) return prev;
+
+      return arrayMove(prev, oldIndex, newIndex);
+    });
   };
 
   const handleSubmit = async () => {
@@ -261,23 +414,18 @@ export default function CreatePostModal({
     let result;
 
     if (isEditMode && editingPost) {
-      const keptExistingImages = imageItems.filter(
-        (item): item is ExistingImageItem => item.type === "existing"
-      );
-
       console.log("🧩 editingPost.images:", editingPost.images);
       console.log("🧩 editingPost.public_ids:", editingPost.public_ids);
       console.log("🧩 originalExistingImages:", originalExistingImages);
       console.log("🧩 currentExistingPublicIds:", currentExistingPublicIds);
       console.log("🧩 removedExistingPublicIds:", removedExistingPublicIds);
+      console.log("🧩 orderedImageItems:", imageItems);
 
       result = await updatePost({
         postId: editingPost.id,
         content: content.trim(),
-        existingImages: keptExistingImages.map((item) => item.url),
-        existingPublicIds: keptExistingImages.map((item) => item.public_id),
         removedPublicIds: removedExistingPublicIds,
-        newFiles,
+        orderedImageItems: imageItems,
       });
     } else {
       result = await createPost({
@@ -313,7 +461,7 @@ export default function CreatePostModal({
 
       {/* Modal */}
       <div
-        className="relative z-10 w-full max-w-4xl max-h-[94vh] overflow-hidden rounded-[28px] border border-white/60 bg-white/95 shadow-[0_25px_80px_rgba(0,0,0,0.18)] animate-fadeIn"
+        className="relative z-10 w-full max-w-4xl max-h-[94vh] overflow-hidden rounded-xl border border-white/60 bg-white/95 shadow-[0_25px_80px_rgba(0,0,0,0.18)] animate-fadeIn"
         onDragEnter={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -336,7 +484,7 @@ export default function CreatePostModal({
         {/* Drag overlay */}
         {isDragging && (
           <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/25 backdrop-blur-sm">
-            <div className="rounded-3xl border border-white/40 bg-white/90 px-8 py-7 text-center shadow-xl">
+            <div className="rounded-xl border border-white/40 bg-white/90 px-8 py-7 text-center shadow-xl">
               <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-gray-100 text-gray-700">
                 <i className="fa-duotone fa-cloud-arrow-up text-2xl" />
               </div>
@@ -367,58 +515,39 @@ export default function CreatePostModal({
                   <h2 className="text-[18px] sm:text-[20px] font-semibold text-gray-900 leading-tight">
                     {isEditMode ? "Chỉnh sửa bài viết" : "Tạo bài viết mới"}
                   </h2>
-
-                  {hasUnsavedChanges && (
-                    <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-700">
-                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                      Chưa lưu
-                    </span>
-                  )}
                 </div>
-
-                <p className="mt-1 text-xs sm:text-sm text-gray-500">
+                <p className="mt-0.5 text-sm text-gray-500">
                   {isEditMode
                     ? "Chỉnh nội dung, thêm ảnh mới hoặc xóa ảnh cũ"
-                    : "Viết bài, dán ảnh bằng Ctrl+V hoặc kéo thả trực tiếp"}
+                    : "Viết nội dung, thêm ảnh và chia sẻ bài viết mới"}
                 </p>
               </div>
             </div>
 
             <button
+              type="button"
               onClick={handleSafeClose}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
+              className="flex h-11 w-11 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
+              aria-label="Đóng"
             >
-              <i className="fa-regular fa-xmark text-lg" />
+              <i className="fa-regular fa-xmark text-2xl" />
             </button>
           </div>
         </div>
 
-        {/* Body */}
-        <div className="max-h-[calc(94vh-256px)] overflow-y-auto px-5 py-5 sm:px-6">
-          <div className="space-y-5">
-            {/* Editor card */}
-            <div className="overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
-              <div className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white px-4 py-3 sm:px-5">
-                <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-gray-700">
-                      <i className="fa-regular fa-file-lines" />
-                      Nội dung bài viết
-                    </span>
+        {/* Scroll body */}
+        <div className="max-h-[calc(94vh-300px)] overflow-y-auto px-5 py-5 sm:px-6">
+          <div className="space-y-6">
+            {/* Editor */}
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
+              <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/70 px-4 py-3">
+                <div className="inline-flex items-center gap-2 text-sm font-medium text-gray-600">
+                  <i className="fa-regular fa-file-lines" />
+                  <span>Nội dung bài viết</span>
+                </div>
 
-                    {imageItems.length > 0 && (
-                      <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-gray-700">
-                        <i className="fa-regular fa-images" />
-                        {imageItems.length} ảnh
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="text-gray-400">
-                    {trimmedContent.length > 0
-                      ? `${trimmedContent.length} ký tự`
-                      : "Chưa có nội dung"}
-                  </div>
+                <div className="text-xs font-medium text-gray-400">
+                  {content.length} ký tự
                 </div>
               </div>
 
@@ -427,26 +556,25 @@ export default function CreatePostModal({
                   ref={textareaRef}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  onPaste={handlePaste}
                   placeholder={
                     isEditMode
-                      ? "Chỉnh sửa bài viết"
-                      : "Bạn đang nghĩ gì hôm nay?"
+                      ? "Chỉnh sửa nội dung bài viết..."
+                      : "Bạn đang nghĩ gì?"
                   }
-                  className="w-full resize-none overflow-y-auto bg-transparent text-[15px] sm:text-[16px] leading-7 text-gray-900 placeholder:text-gray-400 outline-none min-h-[180px] max-h-[420px]"
+                  className="w-full resize-none overflow-y-auto bg-transparent text-[16px] leading-8 text-gray-900 placeholder:text-gray-400 outline-none min-h-[180px] max-h-[420px]"
                 />
 
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4 hidden">
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
                   <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1.5">
+                    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
                       <i className="fa-regular fa-hashtag" />
                       Hashtag tự nhận diện
                     </span>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1.5">
-                      <i className="fa-regular fa-arrow-turn-down" />
+                    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
+                      <i className="fa-regular fa-arrow-down-wide-short" />
                       Hỗ trợ xuống dòng
                     </span>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1.5">
+                    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
                       <i className="fa-regular fa-paste" />
                       Dán ảnh trực tiếp
                     </span>
@@ -455,28 +583,28 @@ export default function CreatePostModal({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
+                    className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 cursor-pointer"
                   >
-                    <i className="fa-regular fa-image text-base" />
+                    <i className="fa-regular fa-image" />
                     <span>Thêm ảnh</span>
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Images section */}
+            {/* Image section */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-end justify-between gap-3">
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-gray-900">
                     Hình ảnh đính kèm
                   </h3>
-                  <p className="mt-0.5 text-xs text-gray-500">
-                    Kéo thả, chọn file hoặc dán ảnh để thêm nhanh
+                  <p className="mt-0.5 text-sm text-gray-500">
+                    Kéo ảnh để sắp xếp thứ tự, ảnh đầu tiên sẽ là ảnh bìa / OG
                   </p>
                 </div>
 
-                <div className="text-xs text-gray-400">
+                <div className="text-sm font-medium text-gray-400">
                   {imageItems.length > 0
                     ? `${imageItems.length} ảnh hiện có`
                     : "Chưa có ảnh"}
@@ -484,47 +612,39 @@ export default function CreatePostModal({
               </div>
 
               {imageItems.length > 0 ? (
-                <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-4">
-                  {imageItems.map((img, index) => (
-                    <div
-                      key={`${img.type}-${img.url}-${index}`}
-                      className="group relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm transition hover:shadow-md select-none"
-                    >
-                      <img
-                        src={img.url}
-                        alt={`preview-${index}`}
-                        className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03] pointer-events-none"
-                      />
-
-                      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
-
-                      <div className="absolute left-3 bottom-3 rounded-full bg-black/20 px-3 py-1.5 text-xs font-normal text-white backdrop-blur-xs select-none">
-                        {img.type === "existing" ? "Ảnh cũ" : "Ảnh mới"}
-                      </div>
-
-                      <button
-                        title="Xóa ảnh"
-                        type="button"
-                        onClick={() => handleRemoveImage(index)}
-                        className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition hover:bg-red-500 cursor-pointer"
-                      >
-                        <i className="fa-regular fa-xmark text-xs" />
-                      </button>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={imageItems.map((item) => item.id)}
+                    strategy={rectSortingStrategy}
+                  >
+                    <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-4">
+                      {imageItems.map((img, index) => (
+                        <SortableImageCard
+                          key={img.id}
+                          img={img}
+                          index={index}
+                          onRemove={handleRemoveImage}
+                        />
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </SortableContext>
+                </DndContext>
               ) : (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="rounded-[28px] border border-dashed border-gray-300 bg-gradient-to-br from-gray-50 to-white px-6 py-12 text-center transition hover:border-gray-400 hover:bg-gray-50 cursor-pointer"
+                  className="flex min-h-[180px] cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50/70 px-6 py-10 text-center transition hover:border-gray-400 hover:bg-gray-50"
                 >
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gray-100 text-gray-700">
-                    <i className="fa-duotone fa-images text-2xl" />
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
+                    <i className="fa-duotone fa-image text-2xl" />
                   </div>
-                  <p className="text-sm font-semibold text-gray-900">
+                  <p className="text-base font-semibold text-gray-900">
                     Chưa có ảnh nào được chọn
                   </p>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-2 max-w-md text-sm text-gray-500">
                     Nhấn để chọn ảnh, kéo thả vào đây hoặc dán ảnh trực tiếp
                   </p>
                 </div>
@@ -534,14 +654,12 @@ export default function CreatePostModal({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 z-20 border-t border-gray-100/80 bg-white/95 px-5 py-4 backdrop-blur-xl sm:px-6">
+        <div className="sticky bottom-0 z-20 border-t border-gray-100/80 bg-white/90 px-5 py-4 backdrop-blur-xl sm:px-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
               <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-gray-700">
-                <i className="fa-regular fa-pen-line" />
-                {trimmedContent.length > 0
-                  ? `${trimmedContent.length} ký tự`
-                  : "Chưa có nội dung"}
+                <i className="fa-regular fa-pen" />
+                {content.length} ký tự
               </span>
 
               <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-gray-700">
