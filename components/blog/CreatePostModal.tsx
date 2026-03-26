@@ -17,12 +17,20 @@ export default function CreatePostModal({
   editingPost,
 }: Props) {
   const [content, setContent] = useState("");
-  const [images, setImages] = useState<string[]>([]);
-  const [files, setFiles] = useState<File[]>([]);
-  const [mounted, setMounted] = useState(false);
-  const [loading, setLoading] = useState(false);
+const [originalContent, setOriginalContent] = useState("");
+const [images, setImages] = useState<string[]>([]);
+const [files, setFiles] = useState<File[]>([]);
+const [mounted, setMounted] = useState(false);
+const [loading, setLoading] = useState(false);
 
   const isEditMode = !!editingPost;
+
+  const trimmedContent = content.trim();
+const trimmedOriginalContent = originalContent.trim();
+
+const hasChanged = trimmedContent !== trimmedOriginalContent;
+const canSubmitEdit = isEditMode && hasChanged && trimmedContent.length > 0;
+const canSubmitCreate = !isEditMode && (trimmedContent.length > 0 || files.length > 0);
 
   useEffect(() => {
     setMounted(true);
@@ -53,18 +61,21 @@ export default function CreatePostModal({
 
   // 🔥 fill data when open
   useEffect(() => {
-    if (!isOpen) return;
+  if (!isOpen) return;
 
-    if (isEditMode && editingPost) {
-      setContent(editingPost.content || "");
-      setImages([]); // phase này chưa sửa ảnh
-      setFiles([]);
-    } else {
-      setContent("");
-      setImages([]);
-      setFiles([]);
-    }
-  }, [isOpen, isEditMode, editingPost]);
+  if (isEditMode && editingPost) {
+    const oldContent = editingPost.content || "";
+    setContent(oldContent);
+    setOriginalContent(oldContent);
+    setImages([]);
+    setFiles([]);
+  } else {
+    setContent("");
+    setOriginalContent("");
+    setImages([]);
+    setFiles([]);
+  }
+}, [isOpen, isEditMode, editingPost]);
 
   if (!isOpen || !mounted) return null;
 
@@ -86,8 +97,8 @@ export default function CreatePostModal({
   };
 
   const handleSubmit = async () => {
-    if (!content.trim() && !isEditMode && files.length === 0) return;
-    if (isEditMode && !content.trim()) return;
+
+    if (!canSubmitCreate && !canSubmitEdit) return;
 
     setLoading(true);
 
@@ -206,9 +217,9 @@ export default function CreatePostModal({
           )}
 
           <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="px-4 py-2 rounded-xl bg-gray-900 text-white text-sm font-medium hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={handleSubmit}
+          disabled={loading || (isEditMode ? !canSubmitEdit : !canSubmitCreate)}
+          className="px-4 py-2 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading
               ? isEditMode

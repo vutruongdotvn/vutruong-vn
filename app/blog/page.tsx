@@ -297,7 +297,7 @@ export default function BlogPage() {
     onClose={() => {
       setOpen(false);
       setEditingPost(null);
-      window.location.reload();
+      // window.location.reload();
     }}
   />
             )}
