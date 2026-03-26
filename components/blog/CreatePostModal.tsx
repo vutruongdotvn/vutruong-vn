@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import { createPost, updatePost } from "@/services/postService";
 import { supabase } from "@/lib/supabase";
@@ -143,7 +143,7 @@ function SortableImageCard({
         className="absolute left-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition hover:scale-105 hover:bg-black/80 cursor-grab active:cursor-grabbing"
         title="Kéo để sắp xếp"
       >
-        <i className="fa-regular fa-grip-dots text-xs" />
+        <i className="fa-duotone fa-grip-dots text-xs" />
       </button>
 
       {/* Remove */}
@@ -152,7 +152,7 @@ function SortableImageCard({
         onClick={() => onRemove(index)}
         className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition hover:bg-red-400 cursor-pointer"
       >
-        <i className="fa-regular fa-xmark text-xs" />
+        <i className="fa-duotone fa-xmark text-xs" />
       </button>
     </div>
   );
@@ -172,6 +172,14 @@ export default function CreatePostModal({
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const editorWrapRef = useRef<HTMLDivElement | null>(null);
+
+  const [selectionHint, setSelectionHint] = useState<{
+  visible: boolean;
+  top: number;
+  left: number;
+  } | null>(null);
 
   const { showToast } = useToast();
 
@@ -251,6 +259,12 @@ export default function CreatePostModal({
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+  if (!isOpen) {
+    setSelectionHint(null);
+  }
+}, [isOpen]);
+
   // lock scroll
   useEffect(() => {
     if (isOpen) {
@@ -307,14 +321,13 @@ export default function CreatePostModal({
   }, [isOpen, isEditMode, editingPost]);
 
   // auto resize textarea
-  useEffect(() => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+  useLayoutEffect(() => {
+  const textarea = textareaRef.current;
+  if (!textarea) return;
 
-    textarea.style.height = "0px";
-    const nextHeight = Math.min(textarea.scrollHeight, 420);
-    textarea.style.height = `${nextHeight}px`;
-  }, [content, isOpen]);
+  textarea.style.height = "auto";
+  textarea.style.height = `${textarea.scrollHeight}px`;
+}, [content, isOpen]);
 
   if (!isOpen || !mounted) return null;
 
@@ -397,6 +410,98 @@ export default function CreatePostModal({
     });
   };
 
+  const updateSelectionHint = () => {
+  const textarea = textareaRef.current;
+  const wrap = editorWrapRef.current;
+
+  if (!textarea || !wrap) {
+    setSelectionHint(null);
+    return;
+  }
+
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+
+  if (start === end) {
+    setSelectionHint(null);
+    return;
+  }
+
+  const selectedText = textarea.value.slice(start, end).trim();
+
+  if (!selectedText) {
+    setSelectionHint(null);
+    return;
+  }
+
+  const textareaRect = textarea.getBoundingClientRect();
+  const wrapRect = wrap.getBoundingClientRect();
+
+  // đặt hint ở góc trên phải textarea cho nhẹ, ổn định, không cần đo caret phức tạp
+  setSelectionHint({
+    visible: true,
+    top: textareaRect.top - wrapRect.top + 10,
+    left: textareaRect.right - wrapRect.left - 110,
+  });
+};
+
+const handleWrapBold = () => {
+  const textarea = textareaRef.current;
+  if (!textarea) return;
+
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+
+  if (start === end) return;
+
+  const selected = content.slice(start, end);
+  const alreadyBold =
+    selected.startsWith("**") && selected.endsWith("**") && selected.length >= 4;
+
+  let nextContent = "";
+  let nextSelectionStart = start;
+  let nextSelectionEnd = end;
+
+  if (alreadyBold) {
+    const unwrapped = selected.slice(2, -2);
+    nextContent =
+      content.slice(0, start) + unwrapped + content.slice(end);
+
+    nextSelectionStart = start;
+    nextSelectionEnd = start + unwrapped.length;
+  } else {
+    nextContent =
+      content.slice(0, start) + `**${selected}**` + content.slice(end);
+
+    nextSelectionStart = start + 2;
+    nextSelectionEnd = end + 2;
+  }
+
+  setContent(nextContent);
+  setSelectionHint(null);
+
+  requestAnimationFrame(() => {
+    textarea.focus();
+    textarea.setSelectionRange(nextSelectionStart, nextSelectionEnd);
+  });
+};
+
+const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+  const items = Array.from(e.clipboardData?.items || []);
+
+  const imageFiles = items
+    .filter((item) => item.type.startsWith("image/"))
+    .map((item) => item.getAsFile())
+    .filter((file): file is File => !!file);
+
+  if (imageFiles.length > 0) {
+    e.preventDefault();
+    appendFiles(imageFiles);
+    showToast(`Đã dán ${imageFiles.length} ảnh`, "success");
+    return;
+  }
+};
+
   const handleSubmit = async () => {
     if (!canSubmitCreate && !canSubmitEdit) return;
 
@@ -461,7 +566,7 @@ export default function CreatePostModal({
 
       {/* Modal */}
       <div
-        className="relative z-10 w-full max-w-4xl max-h-[94vh] overflow-hidden rounded-xl border border-white/60 bg-white/95 shadow-[0_25px_80px_rgba(0,0,0,0.18)] animate-fadeIn"
+        className="relative z-10 flex w-full max-w-4xl max-h-[94vh] flex-col overflow-hidden rounded-xl border border-white/60 bg-white/95 shadow-[0_25px_80px_rgba(0,0,0,0.18)] animate-fadeIn"
         onDragEnter={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -518,8 +623,8 @@ export default function CreatePostModal({
                 </div>
                 <p className="mt-0.5 text-sm text-gray-500">
                   {isEditMode
-                    ? "Chỉnh nội dung, thêm ảnh mới hoặc xóa ảnh cũ"
-                    : "Viết nội dung, thêm ảnh và chia sẻ bài viết mới"}
+                    ? "Sửa nội dung, thêm/xóa ảnh"
+                    : "Đăng bài viết hoặc hình ảnh"}
                 </p>
               </div>
             </div>
@@ -530,19 +635,19 @@ export default function CreatePostModal({
               className="flex h-11 w-11 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
               aria-label="Đóng"
             >
-              <i className="fa-regular fa-xmark text-2xl" />
+              <i className="fa-duotone fa-xmark text-2xl" />
             </button>
           </div>
         </div>
 
         {/* Scroll body */}
-        <div className="max-h-[calc(94vh-300px)] overflow-y-auto px-5 py-5 sm:px-6">
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-6">
           <div className="space-y-6">
             {/* Editor */}
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
               <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/70 px-4 py-3">
                 <div className="inline-flex items-center gap-2 text-sm font-medium text-gray-600">
-                  <i className="fa-regular fa-file-lines" />
+                  <i className="fa-duotone fa-file-lines" />
                   <span>Nội dung bài viết</span>
                 </div>
 
@@ -551,43 +656,65 @@ export default function CreatePostModal({
                 </div>
               </div>
 
-              <div className="p-4 sm:p-5">
+              <div ref={editorWrapRef} className="relative p-4 sm:p-5">
                 <textarea
-                  ref={textareaRef}
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder={
-                    isEditMode
-                      ? "Chỉnh sửa nội dung bài viết..."
-                      : "Bạn đang nghĩ gì?"
-                  }
-                  className="w-full resize-none overflow-y-auto bg-transparent text-[16px] leading-8 text-gray-900 placeholder:text-gray-400 outline-none min-h-[180px] max-h-[420px]"
-                />
+  ref={textareaRef}
+  value={content}
+  onChange={(e) => {
+    setContent(e.target.value);
+    setSelectionHint(null);
+  }}
+  onPaste={handlePaste}
+  onMouseUp={updateSelectionHint}
+  onKeyUp={updateSelectionHint}
+  onSelect={updateSelectionHint}
+  onBlur={() => {
+    setTimeout(() => setSelectionHint(null), 120);
+  }}
+  placeholder={
+    isEditMode
+      ? "Chỉnh sửa nội dung bài viết..."
+      : "Bạn đang nghĩ gì?"
+  }
+  className="w-full bg-transparent text-base/6 text-gray-900 placeholder:text-gray-400 outline-none resize-none overflow-hidden min-h-[1rem] align-top"
+/>
+
+{selectionHint?.visible && (
+  <button
+    type="button"
+    onMouseDown={(e) => e.preventDefault()}
+    onClick={handleWrapBold}
+    className="absolute z-20 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/95 px-3 py-2 text-xs font-medium text-gray-700 shadow-lg backdrop-blur-sm transition hover:bg-gray-50 opacity-0 pointer-events-none"
+    style={{
+      top: selectionHint.top,
+      left: selectionHint.left,
+    }}
+  >
+    <i className="fa-duotone fa-bold" />
+    **In đậm**
+  </button>
+)}
 
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
                   <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                    <button
+  type="button"
+  onClick={handleWrapBold}
+  className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 transition hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
+>
+  <i className="fa-duotone fa-bold" />
+  **In đậm**
+</button>
                     <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
-                      <i className="fa-regular fa-hashtag" />
-                      Hashtag tự nhận diện
+                      <i className="fa-duotone fa-paste" />
+                      Dán ảnh
                     </span>
                     <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
-                      <i className="fa-regular fa-arrow-down-wide-short" />
-                      Hỗ trợ xuống dòng
-                    </span>
-                    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
-                      <i className="fa-regular fa-paste" />
-                      Dán ảnh trực tiếp
+                      <i className="fa-duotone fa-hashtag" />
+                      Auto Hashtag
                     </span>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 cursor-pointer"
-                  >
-                    <i className="fa-regular fa-image" />
-                    <span>Thêm ảnh</span>
-                  </button>
                 </div>
               </div>
             </div>
@@ -600,7 +727,7 @@ export default function CreatePostModal({
                     Hình ảnh đính kèm
                   </h3>
                   <p className="mt-0.5 text-sm text-gray-500">
-                    Kéo ảnh để sắp xếp thứ tự, ảnh đầu tiên sẽ là ảnh bìa / OG
+                    Kéo thả/dán/sắp xếp ảnh
                   </p>
                 </div>
 
@@ -658,18 +785,18 @@ export default function CreatePostModal({
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
               <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-gray-700">
-                <i className="fa-regular fa-pen" />
+                <i className="fa-duotone fa-pen" />
                 {content.length} ký tự
               </span>
 
               <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-gray-700">
-                <i className="fa-regular fa-image" />
+                <i className="fa-duotone fa-image" />
                 {imageItems.length} ảnh
               </span>
 
               {isEditMode && removedExistingPublicIds.length > 0 && (
                 <span className="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1.5 text-red-600">
-                  <i className="fa-regular fa-trash" />
+                  <i className="fa-duotone fa-trash" />
                   {removedExistingPublicIds.length} ảnh sẽ bị xóa
                 </span>
               )}
