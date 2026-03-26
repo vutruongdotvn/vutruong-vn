@@ -54,7 +54,7 @@ export default function Page() {
           {/* Tagline */}
           <div className="mt-6 space-y-2">
             <p className="mx-auto max-w-2xl text-sm leading-7 text-neutral-500 md:text-base">
-              Đây là không gian của mình trên Internet.
+              Đây là hệ sinh thái số của mình.
               <br />
               Xây dựng những thứ mình thích chỉ với những dòng code.
             </p>
@@ -74,12 +74,6 @@ export default function Page() {
           </div>
         </PremiumGlassCard>
 
-        {/* Footer note */}
-        <div className="mt-10 text-center">
-          <p className="text-sm text-neutral-400">
-            Built on Next.js, Supabase with ❤️
-          </p>
-        </div>
       </div>
     </main>
   );
