@@ -2,30 +2,44 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useToast } from "@/hooks/useToast";
 
 export default function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const { showToast } = useToast();
+
   const handleLogin = async () => {
-    if (!email || !password) {
-      return alert("Nhập email + password bro!");
+    if (!email.trim() && !password.trim()) {
+      showToast("Vui lòng nhập email và mật khẩu", "warning");
+      return;
+    }
+
+    if (!email.trim()) {
+      showToast("Vui lòng nhập email", "warning");
+      return;
+    }
+
+    if (!password.trim()) {
+      showToast("Vui lòng nhập mật khẩu", "warning");
+      return;
     }
 
     setLoading(true);
 
     const { error } = await supabase.auth.signInWithPassword({
-      email,
+      email: email.trim(),
       password,
     });
 
     setLoading(false);
 
     if (error) {
-      alert("Lỗi login: " + error.message);
+      showToast("Email hoặc mật khẩu không đúng", "error");
     } else {
-      // alert("Login thành công 🚀");
+      showToast("Đăng nhập thành công", "success");
     }
   };
 

@@ -6,6 +6,7 @@ import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
 import FloatingSymbols from "@/components/ui/FloatingSymbols";
 import { createClient } from "@supabase/supabase-js";
 import Cropper from "react-easy-crop";
+import { useToast } from "@/hooks/useToast";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,20 +30,15 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [avatarLoading, setAvatarLoading] = useState(true);
 
-  const [toast, setToast] = useState("");
-
   const [cropImage, setCropImage] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
 
+  const { showToast } = useToast();
+
   const safeAvatar =
     avatar && avatar.trim() !== "" ? avatar : DEFAULT_AVATAR;
-
-  const showToast = (msg: string) => {
-    setToast(msg);
-    setTimeout(() => setToast(""), 2500);
-  };
 
   // LOAD DATA
   useEffect(() => {
@@ -141,7 +137,7 @@ export default function ProfilePage() {
       const data = await res.json();
 
       if (!data.secure_url) {
-        showToast("Upload fail ❌");
+        showToast("Tải avatar lên thất bại", "error");
         return;
       }
 
@@ -154,7 +150,7 @@ export default function ProfilePage() {
       });
 
       setAvatar(newUrl);
-      showToast("Upload thành công 🎉");
+      showToast("Tải avatar lên thành công", "success");
 
       const { data: avatarList } = await supabase
         .from("user_avatars")
@@ -165,7 +161,7 @@ export default function ProfilePage() {
       setAvatars(avatarList || []);
       setCropImage(null);
     } catch {
-      showToast("Lỗi hệ thống 😢");
+      showToast("Có lỗi xảy ra khi tải avatar", "error");
     }
   };
 
@@ -182,6 +178,16 @@ export default function ProfilePage() {
   const handleSave = async () => {
     if (!isChanged || saving) return;
 
+    if (!name.trim() && newPassword.trim() === "" && avatar === originalAvatar) {
+      showToast("Không có thay đổi nào để lưu", "warning");
+      return;
+    }
+
+    if (newPassword.trim() !== "" && newPassword.trim().length < 6) {
+      showToast("Mật khẩu mới phải có ít nhất 6 ký tự", "warning");
+      return;
+    }
+
     setSaving(true);
 
     await supabase
@@ -196,7 +202,7 @@ export default function ProfilePage() {
 
       if (error) {
         console.error(error);
-        showToast("Đổi mật khẩu thất bại ❌");
+        showToast("Đổi mật khẩu thất bại", "error");
         setSaving(false);
         return;
       }
@@ -207,11 +213,12 @@ export default function ProfilePage() {
     setNewPassword("");
 
     setSaving(false);
-    showToast("Đã lưu 🎉");
+    showToast("Đã lưu thay đổi", "success");
   };
 
   const handleReuse = (url: string) => {
     setAvatar(url);
+    showToast("Đã chọn lại avatar cũ", "success");
   };
 
   const handleDelete = async (item: any) => {
@@ -228,10 +235,9 @@ export default function ProfilePage() {
 
     setAvatars((prev) => prev.filter((a) => a.id !== item.id));
 
-    showToast("Đã xoá 🗑️");
+    showToast("Đã xoá avatar", "success");
   };
 
-  // SKELETON
   if (loading) {
     return (
       <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
@@ -313,12 +319,6 @@ export default function ProfilePage() {
     <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
       <FloatingSymbols />
 
-      {toast && (
-        <div className="fixed right-5 top-5 z-50 rounded-2xl border border-white/30 bg-black/80 px-4 py-2 text-sm text-white shadow-xl backdrop-blur-md">
-          {toast}
-        </div>
-      )}
-
       {cropImage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
           <div className="w-full max-w-sm rounded-3xl border border-white/20 bg-white/95 p-5 shadow-2xl backdrop-blur-xl space-y-4">
@@ -367,7 +367,6 @@ export default function ProfilePage() {
         contentClassName="p-6 sm:p-8 lg:p-10 xl:p-12"
       >
         <div className="space-y-10">
-          {/* Header */}
           <div className="text-center">
             <div className="mb-5 flex justify-center">
               <span className="inline-flex items-center gap-2 rounded-full border border-sky-300 bg-sky-100 px-4 py-1.5 text-xs font-medium text-neutral-600 backdrop-blur">
@@ -384,9 +383,7 @@ export default function ProfilePage() {
             </p>
           </div>
 
-          {/* Main layout */}
           <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
-            {/* LEFT PANEL */}
             <section className="relative overflow-hidden rounded-[34px] border border-black/5 bg-white/60 p-6 shadow-[0_16px_60px_rgba(0,0,0,0.05)] backdrop-blur-xl sm:p-8">
               <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-sky-100/35 to-transparent pointer-events-none" />
               <div className="absolute -bottom-10 left-1/2 h-32 w-32 -translate-x-1/2 rounded-full bg-sky-100/25 blur-3xl pointer-events-none" />
@@ -469,7 +466,6 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {/* RIGHT PANEL */}
             <section className="relative overflow-hidden rounded-[34px] border border-black/5 bg-white/60 p-6 shadow-[0_16px_60px_rgba(0,0,0,0.05)] backdrop-blur-xl sm:p-8">
               <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-purple-100/25 to-transparent pointer-events-none" />
 

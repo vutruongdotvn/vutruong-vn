@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { createPost, updatePost } from "@/services/postService";
 import { supabase } from "@/lib/supabase";
+import { useToast } from "@/hooks/useToast";
 
 type Props = {
   isOpen: boolean;
@@ -17,20 +18,23 @@ export default function CreatePostModal({
   editingPost,
 }: Props) {
   const [content, setContent] = useState("");
-const [originalContent, setOriginalContent] = useState("");
-const [images, setImages] = useState<string[]>([]);
-const [files, setFiles] = useState<File[]>([]);
-const [mounted, setMounted] = useState(false);
-const [loading, setLoading] = useState(false);
+  const [originalContent, setOriginalContent] = useState("");
+  const [images, setImages] = useState<string[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
+  const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const { showToast } = useToast();
 
   const isEditMode = !!editingPost;
 
   const trimmedContent = content.trim();
-const trimmedOriginalContent = originalContent.trim();
+  const trimmedOriginalContent = originalContent.trim();
 
-const hasChanged = trimmedContent !== trimmedOriginalContent;
-const canSubmitEdit = isEditMode && hasChanged && trimmedContent.length > 0;
-const canSubmitCreate = !isEditMode && (trimmedContent.length > 0 || files.length > 0);
+  const hasChanged = trimmedContent !== trimmedOriginalContent;
+  const canSubmitEdit = isEditMode && hasChanged && trimmedContent.length > 0;
+  const canSubmitCreate =
+    !isEditMode && (trimmedContent.length > 0 || files.length > 0);
 
   useEffect(() => {
     setMounted(true);
@@ -59,28 +63,28 @@ const canSubmitCreate = !isEditMode && (trimmedContent.length > 0 || files.lengt
     };
   }, [images]);
 
-  // 🔥 fill data when open
+  // fill data when open
   useEffect(() => {
-  if (!isOpen) return;
+    if (!isOpen) return;
 
-  if (isEditMode && editingPost) {
-    const oldContent = editingPost.content || "";
-    setContent(oldContent);
-    setOriginalContent(oldContent);
-    setImages([]);
-    setFiles([]);
-  } else {
-    setContent("");
-    setOriginalContent("");
-    setImages([]);
-    setFiles([]);
-  }
-}, [isOpen, isEditMode, editingPost]);
+    if (isEditMode && editingPost) {
+      const oldContent = editingPost.content || "";
+      setContent(oldContent);
+      setOriginalContent(oldContent);
+      setImages([]);
+      setFiles([]);
+    } else {
+      setContent("");
+      setOriginalContent("");
+      setImages([]);
+      setFiles([]);
+    }
+  }, [isOpen, isEditMode, editingPost]);
 
   if (!isOpen || !mounted) return null;
 
   const handleSelectImages = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (isEditMode) return; // edit text only => chặn ảnh
+    if (isEditMode) return;
 
     const selectedFiles = Array.from(e.target.files || []);
     const urls = selectedFiles.map((file) => URL.createObjectURL(file));
@@ -97,7 +101,6 @@ const canSubmitCreate = !isEditMode && (trimmedContent.length > 0 || files.lengt
   };
 
   const handleSubmit = async () => {
-
     if (!canSubmitCreate && !canSubmitEdit) return;
 
     setLoading(true);
@@ -106,7 +109,7 @@ const canSubmitCreate = !isEditMode && (trimmedContent.length > 0 || files.lengt
     const user = data.user;
 
     if (!user) {
-      alert("Bạn chưa đăng nhập!");
+      showToast("Bạn cần đăng nhập để đăng bài", "warning");
       setLoading(false);
       return;
     }
@@ -133,9 +136,10 @@ const canSubmitCreate = !isEditMode && (trimmedContent.length > 0 || files.lengt
       onClose();
       window.location.reload();
     } else {
-      alert(
+      showToast(
         result?.error ||
-          (isEditMode ? "Lỗi cập nhật bài viết 😢" : "Lỗi đăng bài 😢")
+          (isEditMode ? "Không thể cập nhật bài viết" : "Không thể đăng bài"),
+        "error"
       );
       console.error(result);
     }
@@ -174,7 +178,7 @@ const canSubmitCreate = !isEditMode && (trimmedContent.length > 0 || files.lengt
           className="w-full min-h-[140px] resize-none outline-none text-[15px] text-gray-800 placeholder:text-gray-400"
         />
 
-        {/* Image preview - chỉ hiện ở mode tạo bài */}
+        {/* Image preview */}
         {!isEditMode && images.length > 0 && (
           <div className="grid grid-cols-3 gap-2 mt-3">
             {images.map((img, index) => (
@@ -197,7 +201,6 @@ const canSubmitCreate = !isEditMode && (trimmedContent.length > 0 || files.lengt
 
         {/* Footer */}
         <div className="flex items-center justify-between mt-4 pt-3 border-t">
-          {/* Upload ảnh - chỉ cho create */}
           {!isEditMode ? (
             <label className="cursor-pointer inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900">
               <i className="fa-regular fa-image text-base" />
@@ -217,9 +220,9 @@ const canSubmitCreate = !isEditMode && (trimmedContent.length > 0 || files.lengt
           )}
 
           <button
-          onClick={handleSubmit}
-          disabled={loading || (isEditMode ? !canSubmitEdit : !canSubmitCreate)}
-          className="px-4 py-2 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleSubmit}
+            disabled={loading || (isEditMode ? !canSubmitEdit : !canSubmitCreate)}
+            className="px-4 py-2 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading
               ? isEditMode

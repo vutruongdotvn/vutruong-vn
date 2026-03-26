@@ -4,6 +4,7 @@ import { Roboto } from "next/font/google";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import AuthProvider from "@/components/AuthProvider";
 import LayoutShell from "@/components/LayoutShell";
+import { ToastProvider } from "@/components/ui/ToastProvider";
 
 // 🔤 Font
 const roboto = Roboto({
@@ -102,6 +103,7 @@ export default function RootLayout({
       </head>
 
       <body className={`${roboto.className} antialiased`}>
+        <ToastProvider>
         <LayoutShell>
           <div className="relative min-h-screen overflow-hidden bg-[#f6f6f7]">
             {/* ===== Global Ambient Background ===== */}
@@ -148,6 +150,7 @@ export default function RootLayout({
             </AuthProvider>
           </div>
         </LayoutShell>
+        </ToastProvider>
       </body>
     </html>
   );

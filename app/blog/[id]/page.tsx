@@ -63,7 +63,7 @@ export default async function BlogDetailPage({
           images={post.images}
           postId={post.id}
         />
-        <PostActions />
+        <PostActions postId={post.id} postTitle={post.title} />
       </article>
     </>
   );

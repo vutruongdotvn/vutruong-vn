@@ -61,7 +61,7 @@ export default function PostCard({
         priority={isFirst} // 🔥 truyền xuống
       />
 
-      <PostActions />
+      <PostActions postId={post.id} postTitle={post.title} />
     </div>
   );
 }
