@@ -354,10 +354,6 @@ export default function BlogPostLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="relative min-h-screen py-20">
-      <div className="max-w-2xl w-screen mx-auto">
-        <section className="postFeeds">{children}</section>
-      </div>
-    </main>
+    {children}
   );
 }
