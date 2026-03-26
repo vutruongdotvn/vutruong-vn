@@ -42,7 +42,7 @@ export default function Page() {
           <div className="mb-6 flex justify-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-50 px-4 py-1.5 text-xs font-medium text-neutral-600 backdrop-blur">
               <span className="relative flex size-2">
-              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75"></span>
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75"></span>
               <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
               </span>
               Personal digital ecosystem
