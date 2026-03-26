@@ -7,6 +7,10 @@ import FancyboxWrapper from "@/components/blog/FancyboxWrapper";
 import PostHeader from "@/components/blog/PostHeader";
 import PostActions from "@/components/blog/PostActions";
 import PostBody from "@/components/blog/PostBody";
+import {
+  extractPostTitle,
+  extractPostDescription,
+} from "@/lib/postMeta";
 
 export default async function BlogDetailPage({
   params,
@@ -63,7 +67,11 @@ export default async function BlogDetailPage({
           images={post.images}
           postId={post.id}
         />
-        <PostActions postId={post.id} postTitle={post.title} />
+        <PostActions
+          postId={post.id}
+          postTitle={extractPostTitle(post.content)}
+          postDescription={extractPostDescription(post.content)}
+        />
       </article>
     </>
   );

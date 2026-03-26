@@ -1,6 +1,10 @@
 import React from "react";
 import type { Metadata } from "next";
 import { supabase } from "@/lib/supabase";
+import {
+  extractPostTitle,
+  extractPostDescription,
+} from "@/lib/postMeta";
 
 type Props = {
   children: React.ReactNode;
@@ -370,8 +374,8 @@ export async function generateMetadata({
     };
   }
 
-  const titleText = extractTitleText(post.content);
-  const descriptionText = extractDescriptionText(post.content);
+  const titleText = extractPostTitle(post.content);
+const descriptionText = extractPostDescription(post.content);
   const firstImage = extractFirstImage(post.content);
 
   // Ưu tiên cover_image, nếu không có thì lấy ảnh đầu tiên trong bài

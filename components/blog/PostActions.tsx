@@ -6,9 +6,14 @@ import { useToast } from "@/hooks/useToast";
 type PostActionsProps = {
   postId: string;
   postTitle?: string;
+  postDescription?: string;
 };
 
-export default function PostActions({ postId, postTitle }: PostActionsProps) {
+export default function PostActions({
+  postId,
+  postTitle,
+  postDescription,
+}: PostActionsProps) {
   const { showToast } = useToast();
   const [sharing, setSharing] = useState(false);
 
@@ -18,9 +23,10 @@ export default function PostActions({ postId, postTitle }: PostActionsProps) {
     setSharing(true);
 
     const url = `${window.location.origin}/blog/${postId}`;
+
     const shareData = {
-      title: postTitle || "Bài viết từ Vũ Trường",
-      text: postTitle || "Xem bài viết này nhé",
+      title: postTitle?.trim() || "VT Zone",
+      text: postDescription?.trim() || postTitle?.trim() || "Xem bài viết này nhé",
       url,
     };
 

@@ -8,6 +8,10 @@ import PostHeader from "./PostHeader";
 import PostActions from "./PostActions";
 import PostBody from "./PostBody";
 import { useUser } from "@/hooks/useUser";
+import {
+  extractPostTitle,
+  extractPostDescription,
+} from "@/lib/postMeta";
 
 type Post = {
   id: string;
@@ -61,7 +65,11 @@ export default function PostCard({
         priority={isFirst} // 🔥 truyền xuống
       />
 
-      <PostActions postId={post.id} postTitle={post.title} />
+      <PostActions
+                postId={post.id}
+                postTitle={extractPostTitle(post.content)}
+                postDescription={extractPostDescription(post.content)}
+              />
     </div>
   );
 }
