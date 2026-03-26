@@ -52,7 +52,7 @@ export default function Navbar() {
 
         {/* NAVBAR */}
         <div className="flex items-center justify-between p-1 
-          bg-white/70 backdrop-blur-lg shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-lg">
+          bg-white/70 backdrop-blur-lg shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-xl">
 
           {/* LOGO + TITLE */}
           <Link href="/" className="flex items-center gap-2 ms-1">
@@ -76,7 +76,7 @@ export default function Navbar() {
                 key={item.name}
                 href={item.href}
                 prefetch
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ease-in-out duration-300 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition ease-in-out duration-300 ${
                   isActive(item.href)
                     ? "bg-gray-200 text-black"
                     : "text-gray-700 hover:bg-gray-200"

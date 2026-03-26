@@ -1,6 +1,6 @@
 export default function PostCardSkeleton() {
   return (
-    <div className="w-full rounded-0 lg:rounded-lg bg-white shadow-xs p-3 animate-pulse">
+    <div className="w-full rounded-0 lg:rounded-xl bg-white shadow-xs p-3 animate-pulse">
       
       {/* Header */}
       <div className="flex items-center gap-2 mb-3">
@@ -9,17 +9,17 @@ export default function PostCardSkeleton() {
 
         {/* Name + time */}
         <div className="space-y-2 flex">
-          <div className="w-32 h-3 bg-gray-300 rounded-lg" />
+          <div className="w-32 h-3 bg-gray-300 rounded-xl" />
         </div>
       </div>
 
       {/* 3 dòng text */}
       <div className="space-y-2">
-        <div className="w-full h-3 bg-gray-300 rounded-lg" />
-        <div className="w-5/6 h-3 bg-gray-300 rounded-lg" />
-        <div className="w-2/3 h-3 bg-gray-300 rounded-lg" />
+        <div className="w-full h-3 bg-gray-300 rounded-xl" />
+        <div className="w-5/6 h-3 bg-gray-300 rounded-xl" />
+        <div className="w-2/3 h-3 bg-gray-300 rounded-xl" />
       </div>
-      <div className="skeImg bg-gray-200 w-full h-30 rounded-lg mt-3"/>
+      <div className="skeImg bg-gray-200 w-full h-30 rounded-xl mt-3"/>
     </div>
   );
 }

@@ -96,13 +96,13 @@ export default function PostHeader({
           </button>
 
           {open && (
-            <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg z-50">
+            <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-xl z-50">
               <button
                 onClick={() => {
                   onPin?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer rounded-lg"
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer rounded-xl"
               >
                 <i
                   className={`fa-duotone ${
@@ -117,7 +117,7 @@ export default function PostHeader({
                   onEdit?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer rounded-lg"
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer rounded-xl"
               >
                 <i className="fa-duotone fa-edit" /> <span>Chỉnh sửa</span>
               </button>
@@ -127,7 +127,7 @@ export default function PostHeader({
                   onDelete?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer rounded-lg"
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer rounded-xl"
               >
                 <i className="fa-duotone fa-trash" /> <span>Xóa</span>
               </button>

@@ -158,7 +158,7 @@ export default function BlogPage() {
       <div className="space-y-1 md:space-y-4">
         {!isReady && (
           <div className="space-y-1 md:space-y-4">
-            <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-lg animate-pulse shadow-xs">
+            <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-xl animate-pulse shadow-xs">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gray-200" />
                 <div>
@@ -180,7 +180,7 @@ export default function BlogPage() {
 
         {isReady && (
           <>
-            <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-lg shadow-xs">
+            <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-xl shadow-xs">
               <div className="flex items-center gap-2">
                 <Link href="/profile">
                   <Image

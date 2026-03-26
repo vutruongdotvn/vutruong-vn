@@ -35,7 +35,7 @@ export default function PostCard({
   return (
     <div
       className={`
-    bg-white postCard md:rounded-lg rounded-0 shadow-xs
+    bg-white postCard md:rounded-xl rounded-0 shadow-xs
     ${post.is_pinned ? "pinnedPost" : ""}
   `}
     >

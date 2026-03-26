@@ -38,7 +38,7 @@ export default function AuthForm() {
         placeholder="Nhập email..."
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="w-full border rounded-lg px-3 py-2 mb-3"
+        className="w-full border rounded-xl px-3 py-2 mb-3"
       />
 
       <input
@@ -46,13 +46,13 @@ export default function AuthForm() {
         placeholder="Nhập password..."
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full border rounded-lg px-3 py-2 mb-3"
+        className="w-full border rounded-xl px-3 py-2 mb-3"
       />
 
       <button
         onClick={handleLogin}
         disabled={loading}
-        className="w-full bg-blue-500 text-white py-2 rounded-lg"
+        className="w-full bg-blue-500 text-white py-2 rounded-xl"
       >
         {loading ? "Đang login..." : "Đăng nhập"}
       </button>

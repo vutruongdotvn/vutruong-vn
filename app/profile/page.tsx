@@ -243,7 +243,7 @@ export default function ProfilePage() {
           <div className="animate-pulse">
             <div className="mx-auto mb-8 h-10 w-40 rounded-full bg-black/10" />
             <div className="mx-auto mb-4 h-10 w-56 rounded-xl bg-black/10" />
-            <div className="mx-auto mb-10 h-5 w-80 rounded-lg bg-black/10" />
+            <div className="mx-auto mb-10 h-5 w-80 rounded-xl bg-black/10" />
 
             <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
               <div className="rounded-[32px] border border-black/5 bg-white/55 p-6">

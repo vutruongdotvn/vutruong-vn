@@ -167,7 +167,7 @@ export default function CreatePostModal({
         {!isEditMode && images.length > 0 && (
           <div className="grid grid-cols-3 gap-2 mt-3">
             {images.map((img, index) => (
-              <div key={index} className="relative rounded-lg overflow-hidden">
+              <div key={index} className="relative rounded-xl overflow-hidden">
                 <img
                   src={img}
                   alt={`preview-${index}`}
@@ -208,7 +208,7 @@ export default function CreatePostModal({
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="px-4 py-2 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-xl bg-gray-900 text-white text-sm font-medium hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading
               ? isEditMode
