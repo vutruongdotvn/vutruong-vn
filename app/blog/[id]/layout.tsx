@@ -35,17 +35,9 @@ function decodeHtmlEntities(text: string) {
 }
 
 /**
- * Loại bỏ markdown/raw syntax để SEO title/meta chỉ còn plain text
- * Hỗ trợ:
- * - **bold**
- * - *italic*
- * - ~~strike~~
- * - `code`
- * - [text](url)
- * - ![alt](url)
- * - # heading
- * - #hashtag
- * - link raw
+ * Chỉ loại bỏ markdown formatting
+ * - GIỮ NGUYÊN hashtag (#nextjs)
+ * - GIỮ NGUYÊN raw link (https://...)
  */
 function stripMarkdown(text: string) {
   return text
@@ -64,7 +56,9 @@ function stripMarkdown(text: string) {
     .replace(/__(.*?)__/g, "$1")
     .replace(/_(.*?)_/g, "$1")
     .replace(/~~(.*?)~~/g, "$1")
-    // heading markdown
+    // heading markdown: "# Title" ở đầu dòng
+    // chỉ remove khi có khoảng trắng sau dấu #
+    // nên "#nextjs" sẽ KHÔNG bị ảnh hưởng
     .replace(/^#{1,6}\s+/gm, "")
     // blockquote
     .replace(/^>\s+/gm, "")
@@ -72,17 +66,6 @@ function stripMarkdown(text: string) {
     .replace(/^[-*+]\s+/gm, "")
     // ordered list
     .replace(/^\d+\.\s+/gm, "")
-    // hashtag inline: #nextjs -> nextjs
-    .replace(/(^|\s)#([a-zA-Z0-9_À-ỹ]+)/g, "$1$2")
-    // raw links => giữ lại domain/path dạng text sạch hơn
-    .replace(/https?:\/\/[^\s"'<>]+/g, (url) => {
-      try {
-        const u = new URL(url);
-        return `${u.hostname}${u.pathname}`.replace(/\/$/, "");
-      } catch {
-        return url;
-      }
-    })
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -119,7 +102,7 @@ function isImageUrl(url: string) {
 }
 
 /**
- * (Giữ lại vì file hiện tại của bạn đang có)
+ * (Giữ nguyên để tương thích logic hiện tại)
  */
 function normalizeContent(content: any): string {
   if (!content) return "";
@@ -136,13 +119,63 @@ function normalizeContent(content: any): string {
 }
 
 /**
- * Lấy text đầu tiên có nghĩa từ mọi kiểu content:
+ * Lấy dòng đầu tiên
+ */
+function getFirstMeaningfulLine(text: string) {
+  const lines = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  return lines[0] || "";
+}
+
+/**
+ * Nếu chỉ có 1 dòng nhưng nhiều câu => chỉ lấy câu đầu tiên
+ */
+function getFirstSentence(text: string) {
+  return (
+    text.match(/.*?[.!?…](?=\s|$)/)?.[0]?.trim() ||
+    text.trim()
+  );
+}
+
+/**
+ * Title:
+ * - Ưu tiên dòng đầu tiên
+ * - Nếu dòng đầu tiên nhiều câu -> chỉ lấy câu đầu tiên
+ */
+function extractTitleText(content: any): string {
+  const plain = extractPlainText(content);
+  if (!plain) return "";
+
+  const firstLine = getFirstMeaningfulLine(plain);
+  if (!firstLine) return "";
+
+  return getFirstSentence(firstLine).slice(0, 160).trim();
+}
+
+/**
+ * Description:
+ * - Giữ nguyên plain text sạch
+ * - Không cắt hashtag
+ * - Không đổi link
+ */
+function extractDescriptionText(content: any): string {
+  const plain = extractPlainText(content);
+  if (!plain) return FALLBACK_DESCRIPTION;
+
+  return plain.slice(0, 200).trim() || FALLBACK_DESCRIPTION;
+}
+
+/**
+ * Lấy plain text từ mọi kiểu content:
  * - HTML string
  * - JSON string
  * - object / array
  */
-function extractFirstText(content: any): string {
-  if (!content) return FALLBACK_DESCRIPTION;
+function extractPlainText(content: any): string {
+  if (!content) return "";
 
   // 1) Nếu là string HTML/text
   if (typeof content === "string") {
@@ -150,27 +183,19 @@ function extractFirstText(content: any): string {
 
     // Nếu string này thực ra là JSON
     if (parsed) {
-      return extractFirstText(parsed);
+      return extractPlainText(parsed);
     }
 
-    const plain = stripHtml(content);
-    if (!plain) return FALLBACK_DESCRIPTION;
-
-    const firstSentence =
-      plain.match(/.*?[.!?…](\s|$)/)?.[0]?.trim() ||
-      plain.split("\n").find((line) => line.trim().length > 0)?.trim() ||
-      plain;
-
-    return firstSentence.slice(0, 160) || FALLBACK_DESCRIPTION;
+    return stripHtml(content);
   }
 
   // 2) Nếu là array block
   if (Array.isArray(content)) {
-    for (const item of content) {
-      const found = extractFirstText(item);
-      if (found && found !== FALLBACK_DESCRIPTION) return found;
-    }
-    return FALLBACK_DESCRIPTION;
+    const texts = content
+      .map((item) => extractPlainText(item))
+      .filter(Boolean);
+
+    return texts.join("\n").trim();
   }
 
   // 3) Nếu là object block
@@ -185,20 +210,27 @@ function extractFirstText(content: any): string {
       "description",
     ];
 
+    const collected: string[] = [];
+
     for (const key of priorityKeys) {
       if (content[key]) {
-        const found = extractFirstText(content[key]);
-        if (found && found !== FALLBACK_DESCRIPTION) return found;
+        const value = extractPlainText(content[key]);
+        if (value) collected.push(value);
       }
     }
 
-    for (const value of Object.values(content)) {
-      const found = extractFirstText(value);
-      if (found && found !== FALLBACK_DESCRIPTION) return found;
+    if (collected.length > 0) {
+      return collected.join("\n").trim();
     }
+
+    const fallbackCollected = Object.values(content)
+      .map((value) => extractPlainText(value))
+      .filter(Boolean);
+
+    return fallbackCollected.join("\n").trim();
   }
 
-  return FALLBACK_DESCRIPTION;
+  return "";
 }
 
 /**
@@ -304,7 +336,7 @@ export async function generateMetadata({
 
   if (!post) {
     return {
-      title: "Bài viết không tồn tại | VT Zone",
+      title: "Bài viết không tồn tại",
       description: FALLBACK_DESCRIPTION,
       alternates: {
         canonical: url,
@@ -314,7 +346,7 @@ export async function generateMetadata({
         follow: false,
       },
       openGraph: {
-        title: "Bài viết không tồn tại | VT Zone",
+        title: "Bài viết không tồn tại",
         description: FALLBACK_DESCRIPTION,
         url,
         siteName: SITE_NAME,
@@ -331,25 +363,25 @@ export async function generateMetadata({
       },
       twitter: {
         card: "summary_large_image",
-        title: "Bài viết không tồn tại | VT Zone",
+        title: "Bài viết không tồn tại",
         description: FALLBACK_DESCRIPTION,
         images: [FALLBACK_OG],
       },
     };
   }
 
-  const firstText = extractFirstText(post.content);
+  const titleText = extractTitleText(post.content);
+  const descriptionText = extractDescriptionText(post.content);
   const firstImage = extractFirstImage(post.content);
 
   // Ưu tiên cover_image, nếu không có thì lấy ảnh đầu tiên trong bài
   const ogImage = toAbsoluteUrl(post.cover_image || firstImage || FALLBACK_OG);
 
-  // title = câu đầu tiên trong postBody (đã được làm sạch markdown/html/link/hashtag)
-  const title = firstText || "Bài viết | VT Zone";
-  const description = firstText || FALLBACK_DESCRIPTION;
+  const title = titleText || "Bài viết";
+  const description = descriptionText || FALLBACK_DESCRIPTION;
 
   return {
-    title: `${title} | VT Zone`,
+    title: `${title}`,
     description,
     alternates: {
       canonical: url,
