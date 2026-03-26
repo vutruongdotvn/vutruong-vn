@@ -34,8 +34,61 @@ function decodeHtmlEntities(text: string) {
     .replace(/&gt;/gi, ">");
 }
 
+/**
+ * Loại bỏ markdown/raw syntax để SEO title/meta chỉ còn plain text
+ * Hỗ trợ:
+ * - **bold**
+ * - *italic*
+ * - ~~strike~~
+ * - `code`
+ * - [text](url)
+ * - ![alt](url)
+ * - # heading
+ * - #hashtag
+ * - link raw
+ */
+function stripMarkdown(text: string) {
+  return text
+    // code block
+    .replace(/```[\s\S]*?```/g, " ")
+    // inline code
+    .replace(/`([^`]+)`/g, "$1")
+    // markdown image ![alt](url) => alt
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, "$1")
+    // markdown link [text](url) => text
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1")
+    // bold / italic / strike
+    .replace(/\*\*\*(.*?)\*\*\*/g, "$1")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/__(.*?)__/g, "$1")
+    .replace(/_(.*?)_/g, "$1")
+    .replace(/~~(.*?)~~/g, "$1")
+    // heading markdown
+    .replace(/^#{1,6}\s+/gm, "")
+    // blockquote
+    .replace(/^>\s+/gm, "")
+    // unordered list
+    .replace(/^[-*+]\s+/gm, "")
+    // ordered list
+    .replace(/^\d+\.\s+/gm, "")
+    // hashtag inline: #nextjs -> nextjs
+    .replace(/(^|\s)#([a-zA-Z0-9_À-ỹ]+)/g, "$1$2")
+    // raw links => giữ lại domain/path dạng text sạch hơn
+    .replace(/https?:\/\/[^\s"'<>]+/g, (url) => {
+      try {
+        const u = new URL(url);
+        return `${u.hostname}${u.pathname}`.replace(/\/$/, "");
+      } catch {
+        return url;
+      }
+    })
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function stripHtml(html: string) {
-  return decodeHtmlEntities(
+  const cleaned = decodeHtmlEntities(
     html
       .replace(/<style[\s\S]*?<\/style>/gi, "")
       .replace(/<script[\s\S]*?<\/script>/gi, "")
@@ -43,6 +96,8 @@ function stripHtml(html: string) {
       .replace(/\s+/g, " ")
       .trim()
   );
+
+  return stripMarkdown(cleaned);
 }
 
 function safeJsonParse(value: string) {
@@ -63,6 +118,9 @@ function isImageUrl(url: string) {
   return /\.(jpg|jpeg|png|webp|gif|avif|svg)(\?.*)?$/i.test(url);
 }
 
+/**
+ * (Giữ lại vì file hiện tại của bạn đang có)
+ */
 function normalizeContent(content: any): string {
   if (!content) return "";
 
@@ -283,12 +341,10 @@ export async function generateMetadata({
   const firstText = extractFirstText(post.content);
   const firstImage = extractFirstImage(post.content);
 
-  // Theo yêu cầu của bạn:
   // Ưu tiên cover_image, nếu không có thì lấy ảnh đầu tiên trong bài
   const ogImage = toAbsoluteUrl(post.cover_image || firstImage || FALLBACK_OG);
 
-  // Theo yêu cầu của bạn:
-  // title = câu đầu tiên trong postBody
+  // title = câu đầu tiên trong postBody (đã được làm sạch markdown/html/link/hashtag)
   const title = firstText || "Bài viết | VT Zone";
   const description = firstText || FALLBACK_DESCRIPTION;
 
