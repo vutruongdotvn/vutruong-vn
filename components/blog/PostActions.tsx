@@ -33,7 +33,7 @@ export default function PostActions({
     try {
       if (navigator.share) {
         await navigator.share(shareData);
-        showToast("Đã mở bảng chia sẻ", "success");
+        // showToast("Đã mở bảng chia sẻ", "success");
         return;
       }
 
