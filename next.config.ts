@@ -6,8 +6,6 @@ const nextConfig: NextConfig = {
       "frqouslfjppnpcpgrhjd.supabase.co",
       "ui-avatars.com",
       "res.cloudinary.com",
-      "img.ophim.live",
-      "img.youtube.com",
     ],
 
     // Ảnh responsive lớn: post image, cover, card...
