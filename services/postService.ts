@@ -1,6 +1,21 @@
 import { supabase } from "@/lib/supabase";
 import { uploadImage } from "@/lib/cloudinary";
 
+function normalizePublicIds(value: any): string[] {
+  if (Array.isArray(value)) return value.filter(Boolean);
+
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+    } catch {
+      return value ? [value] : [];
+    }
+  }
+
+  return [];
+}
+
 // tạo ID số ngẫu nhiên
 function generateNumericId(length = 20) {
   let result = "";
@@ -232,12 +247,21 @@ export const pinPost = async (postId: string, isPinned: boolean) => {
 };
 
 // ✏️ UPDATE POST (TEXT ONLY)
+// ✏️ UPDATE POST (TEXT + IMAGES)
 export const updatePost = async ({
   postId,
   content,
+  existingImages,
+  existingPublicIds,
+  removedPublicIds,
+  newFiles,
 }: {
   postId: string;
   content: string;
+  existingImages: string[];
+  existingPublicIds: string[];
+  removedPublicIds: string[];
+  newFiles: File[];
 }) => {
   try {
     const {
@@ -252,7 +276,7 @@ export const updatePost = async ({
       };
     }
 
-    // 🔒 Lấy bài viết để kiểm tra quyền
+    // 🔒 kiểm tra quyền
     const { data: post, error: postError } = await supabase
       .from("posts")
       .select("id, user_id")
@@ -266,7 +290,6 @@ export const updatePost = async ({
       };
     }
 
-    // 🔒 Chỉ chủ bài viết mới được sửa
     if (post.user_id !== user.id) {
       return {
         success: false,
@@ -274,13 +297,85 @@ export const updatePost = async ({
       };
     }
 
+    // 1) Upload ảnh mới (nếu có)
+    let uploadedImages: { url: string; public_id: string }[] = [];
+
+    if (newFiles.length > 0) {
+      try {
+        uploadedImages = await Promise.all(
+          newFiles.map(async (file) => {
+            const result = await uploadImage(file);
+            return {
+              url: result.url,
+              public_id: result.public_id,
+            };
+          })
+        );
+      } catch (err) {
+        console.error("Upload ảnh mới lỗi:", err);
+        return {
+          success: false,
+          error: "Upload ảnh mới thất bại",
+        };
+      }
+    }
+
+    // 2) Xóa ảnh cũ trên Cloudinary (nếu có)
+    const normalizedRemovedPublicIds = normalizePublicIds(removedPublicIds);
+
+if (normalizedRemovedPublicIds.length > 0) {
+  try {
+    console.log("🗑️ removedPublicIds:", normalizedRemovedPublicIds);
+
+    const res = await fetch(`${window.location.origin}/api/delete-images`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ public_ids: normalizedRemovedPublicIds }),
+    });
+
+    const data = await res.json();
+
+    console.log("🗑️ delete-images response:", data);
+
+    if (!data.success) {
+      return {
+        success: false,
+        error: "Xóa ảnh cũ thất bại",
+      };
+    }
+  } catch (err) {
+    console.error("❌ Xóa ảnh cũ lỗi:", err);
+    return {
+      success: false,
+      error: "Không thể xóa ảnh cũ",
+    };
+  }
+}
+
+    // 3) Gộp ảnh cuối cùng
+    const finalImages = [
+      ...existingImages,
+      ...uploadedImages.map((img) => img.url),
+    ];
+
+    const finalPublicIds = [
+      ...existingPublicIds,
+      ...uploadedImages.map((img) => img.public_id),
+    ];
+
     const hashtags = content.match(/#[\wÀ-ỹ]+/g) || [];
 
+    // 4) Update DB
     const { error: updateError } = await supabase
       .from("posts")
       .update({
         content,
+        images: finalImages,
+        public_ids: finalPublicIds,
         hashtags,
+        cover_image: finalImages?.[0] || null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", postId);

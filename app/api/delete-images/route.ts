@@ -9,31 +9,57 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+function safeParseArray(value: any): string[] {
+  if (Array.isArray(value)) return value;
+
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [value];
+    } catch {
+      return [value];
+    }
+  }
+
+  return [];
+}
+
 export async function POST(req: Request) {
   try {
     const { public_ids } = await req.json();
 
-    console.log("🚨 DELETE:", public_ids);
-const parsedIds =
-  typeof public_ids === "string"
-    ? JSON.parse(public_ids)
-    : public_ids;
+    const parsedIds = safeParseArray(public_ids)
+      .map((id) => String(id).trim())
+      .filter(Boolean);
+
+    console.log("🚨 DELETE INPUT:", public_ids);
+    console.log("🚨 PARSED IDS:", parsedIds);
+
     const results: any[] = [];
 
     for (const id of parsedIds) {
-  const res = await cloudinary.uploader.destroy(id, {
-    invalidate: true,
-  });
-
+      const res = await cloudinary.uploader.destroy(id, {
+        invalidate: true,
+        resource_type: "image",
+      });
 
       console.log("🔥 DESTROY:", id, res);
 
-      results.push(res);
+      results.push({
+        id,
+        result: res.result,
+      });
     }
 
-    return NextResponse.json({ success: true, results });
+    return NextResponse.json({
+      success: true,
+      results,
+    });
   } catch (err: any) {
     console.error("❌ ERROR:", err);
-    return NextResponse.json({ success: false, error: err.message });
+    return NextResponse.json({
+      success: false,
+      error: err.message || "Lỗi server",
+    });
   }
 }
