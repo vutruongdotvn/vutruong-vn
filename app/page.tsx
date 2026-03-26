@@ -54,9 +54,9 @@ export default function Page() {
           {/* Tagline */}
           <div className="mt-6 space-y-2">
             <p className="mx-auto max-w-2xl text-sm leading-7 text-neutral-500 md:text-base">
-              Đây là hệ sinh thái số của mình.
+              Đây là không gian của mình trên Internet.
               <br />
-              Xây dựng những thứ mình thích chỉ với những dòng code.
+              Xây dựng những thứ mình thích chỉ với các dòng code.
             </p>
 
             <div className="overflow-hidden">
