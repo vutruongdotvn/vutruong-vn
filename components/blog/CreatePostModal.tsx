@@ -307,13 +307,13 @@ export default function CreatePostModal({
     <div className="fixed inset-0 z-[9998] flex items-center justify-center p-3 sm:p-5">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/30 backdrop-blur-[6px]"
+        className="absolute inset-0 bg-black/30 backdrop-blur-[3px]"
         onClick={handleSafeClose}
       />
 
       {/* Modal */}
       <div
-        className="relative z-10 w-full max-w-4xl max-h-[94vh] overflow-hidden rounded-[28px] border border-white/60 bg-white/95 shadow-[0_25px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl animate-fadeIn"
+        className="relative z-10 w-full max-w-4xl max-h-[94vh] overflow-hidden rounded-[28px] border border-white/60 bg-white/95 shadow-[0_25px_80px_rgba(0,0,0,0.18)] animate-fadeIn"
         onDragEnter={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -337,7 +337,7 @@ export default function CreatePostModal({
         {isDragging && (
           <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/25 backdrop-blur-sm">
             <div className="rounded-3xl border border-white/40 bg-white/90 px-8 py-7 text-center shadow-xl">
-              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 text-gray-700">
+              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-gray-100 text-gray-700">
                 <i className="fa-duotone fa-cloud-arrow-up text-2xl" />
               </div>
               <p className="text-base font-semibold text-gray-900">
@@ -354,7 +354,7 @@ export default function CreatePostModal({
         <div className="sticky top-0 z-20 border-b border-gray-100/80 bg-white/90 px-5 py-4 backdrop-blur-xl sm:px-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 shadow-sm">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 shadow-sm">
                 <i
                   className={`fa-duotone ${
                     isEditMode ? "fa-pen-to-square" : "fa-feather-pointed"
@@ -394,7 +394,7 @@ export default function CreatePostModal({
         </div>
 
         {/* Body */}
-        <div className="max-h-[calc(94vh-156px)] overflow-y-auto px-5 py-5 sm:px-6">
+        <div className="max-h-[calc(94vh-256px)] overflow-y-auto px-5 py-5 sm:px-6">
           <div className="space-y-5">
             {/* Editor card */}
             <div className="overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
@@ -417,7 +417,7 @@ export default function CreatePostModal({
                   <div className="text-gray-400">
                     {trimmedContent.length > 0
                       ? `${trimmedContent.length} ký tự`
-                      : "Bắt đầu viết..."}
+                      : "Chưa có nội dung"}
                   </div>
                 </div>
               </div>
@@ -430,13 +430,13 @@ export default function CreatePostModal({
                   onPaste={handlePaste}
                   placeholder={
                     isEditMode
-                      ? "Chỉnh sửa nội dung bài viết của bạn..."
+                      ? "Chỉnh sửa bài viết"
                       : "Bạn đang nghĩ gì hôm nay?"
                   }
                   className="w-full resize-none overflow-y-auto bg-transparent text-[15px] sm:text-[16px] leading-7 text-gray-900 placeholder:text-gray-400 outline-none min-h-[180px] max-h-[420px]"
                 />
 
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4 hidden">
                   <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
                     <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1.5">
                       <i className="fa-regular fa-hashtag" />
@@ -455,7 +455,7 @@ export default function CreatePostModal({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
+                    className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
                   >
                     <i className="fa-regular fa-image text-base" />
                     <span>Thêm ảnh</span>
@@ -484,30 +484,31 @@ export default function CreatePostModal({
               </div>
 
               {imageItems.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-4">
                   {imageItems.map((img, index) => (
                     <div
                       key={`${img.type}-${img.url}-${index}`}
-                      className="group relative overflow-hidden rounded-3xl border border-gray-200 bg-gray-100 shadow-sm transition hover:shadow-md"
+                      className="group relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm transition hover:shadow-md select-none"
                     >
                       <img
                         src={img.url}
                         alt={`preview-${index}`}
-                        className="h-40 w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                        className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03] pointer-events-none"
                       />
 
                       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
 
-                      <div className="absolute left-3 bottom-3 rounded-full bg-black/65 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm">
+                      <div className="absolute left-3 bottom-3 rounded-full bg-black/20 px-3 py-1.5 text-xs font-normal text-white backdrop-blur-xs select-none">
                         {img.type === "existing" ? "Ảnh cũ" : "Ảnh mới"}
                       </div>
 
                       <button
+                        title="Xóa ảnh"
                         type="button"
                         onClick={() => handleRemoveImage(index)}
-                        className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition hover:scale-105 hover:bg-black/80 cursor-pointer"
+                        className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition hover:bg-red-500 cursor-pointer"
                       >
-                        <i className="fa-regular fa-xmark text-sm" />
+                        <i className="fa-regular fa-xmark text-xs" />
                       </button>
                     </div>
                   ))}
@@ -517,7 +518,7 @@ export default function CreatePostModal({
                   onClick={() => fileInputRef.current?.click()}
                   className="rounded-[28px] border border-dashed border-gray-300 bg-gradient-to-br from-gray-50 to-white px-6 py-12 text-center transition hover:border-gray-400 hover:bg-gray-50 cursor-pointer"
                 >
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 text-gray-700">
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gray-100 text-gray-700">
                     <i className="fa-duotone fa-images text-2xl" />
                   </div>
                   <p className="text-sm font-semibold text-gray-900">
@@ -556,11 +557,11 @@ export default function CreatePostModal({
               )}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={handleSafeClose}
-                className="inline-flex items-center justify-center rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50 cursor-pointer"
+                className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50 cursor-pointer"
               >
                 Hủy
               </button>
@@ -568,7 +569,7 @@ export default function CreatePostModal({
               <button
                 onClick={handleSubmit}
                 disabled={loading || (isEditMode ? !canSubmitEdit : !canSubmitCreate)}
-                className="inline-flex min-w-[170px] items-center justify-center gap-2 rounded-2xl bg-gray-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer shadow-lg shadow-gray-900/10"
+                className="inline-flex min-w-[170px] items-center justify-center gap-2 rounded-xl bg-gray-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer shadow-lg shadow-gray-900/10"
               >
                 {loading ? (
                   <>
@@ -582,7 +583,7 @@ export default function CreatePostModal({
                         isEditMode ? "fa-floppy-disk" : "fa-paper-plane-top"
                       } text-sm`}
                     />
-                    <span>{isEditMode ? "Lưu chỉnh sửa" : "Đăng bài"}</span>
+                    <span>{isEditMode ? "Lưu" : "Đăng"}</span>
                   </>
                 )}
               </button>
