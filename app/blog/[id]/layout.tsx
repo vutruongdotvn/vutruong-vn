@@ -353,7 +353,5 @@ export default function BlogPostLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    {children}
-  );
+  return <>{children}</>;
 }
