@@ -52,7 +52,7 @@ export default async function BlogDetailPage({
         </Link>
       </div>
 
-      <article className="bg-white rounded-0 md:rounded-xl shadow-xs md:shadow-sm m-0 p-0">
+      <article className="fullPost bg-white rounded-0 md:rounded-xl shadow-xs m-0 p-0">
         
         {/* HEADER */}
         <PostHeader
