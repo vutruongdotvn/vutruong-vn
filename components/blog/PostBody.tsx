@@ -41,7 +41,7 @@ export default function PostBody({
 
   return (
     <>
-      <div className="postBody text-base mt-3 px-3 text-gray-800">
+      <div className="postBody text-base/6 text-justify mt-3 px-3 pe-6 sm:pe-3 text-gray-800">
         {paragraphs.map((paragraph, index) => {
           const isLast = index === paragraphs.length - 1;
           const inlineParts = parsePostInline(paragraph);
@@ -67,7 +67,7 @@ export default function PostBody({
                       href={part.value}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-800 font-medium hover:underline break-all"
+                      className="text-sky-800 font-medium hover:text-black break-all"
                     >
                       {part.value}
                     </Link>

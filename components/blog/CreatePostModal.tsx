@@ -378,7 +378,7 @@ export default function CreatePostModal({
 
     if (hasUnsavedChanges) {
       const confirmed = window.confirm(
-        "Bạn có thay đổi chưa lưu. Xác nhận Hủy chỉnh sửa?"
+        "Bài viết chưa được lưu, xác nhận Hủy?"
       );
       if (!confirmed) return;
     }
@@ -695,27 +695,39 @@ const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
   </button>
 )}
 
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
-                    <button
-  type="button"
-  onClick={handleWrapBold}
-  className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 transition hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
->
-  <i className="fa-duotone fa-bold" />
-  **In đậm**
-</button>
-                    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
-                      <i className="fa-duotone fa-paste" />
-                      Dán ảnh
-                    </span>
-                    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
-                      <i className="fa-duotone fa-hashtag" />
-                      Auto Hashtag
-                    </span>
-                  </div>
 
-                </div>
+<div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
+  <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+    <button
+      type="button"
+      onClick={handleWrapBold}
+      className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 transition hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
+    >
+      <i className="fa-duotone fa-bold" />
+      In đậm
+    </button>
+
+    <button
+      type="button"
+      onClick={() => fileInputRef.current?.click()}
+      className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 transition hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
+    >
+      <i className="fa-duotone fa-image" />
+      Ảnh
+    </button>
+
+    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
+      <i className="fa-duotone fa-paste" />
+      Dán ảnh
+    </span>
+
+    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
+      <i className="fa-duotone fa-hashtag" />
+      Auto Hashtag
+    </span>
+  </div>
+</div>
+
               </div>
             </div>
 

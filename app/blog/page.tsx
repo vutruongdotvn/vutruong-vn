@@ -11,6 +11,7 @@ import { useEffect, useState, useRef } from "react";
 import { getPosts } from "@/services/postService";
 import PostCardSkeleton from "@/components/blog/PostCardSkeleton";
 import { pinPost, deletePost } from "@/services/postService";
+import { useToastContext } from "@/components/ui/ToastProvider";
 
 export default function BlogPage() {
   const [open, setOpen] = useState(false);
@@ -25,12 +26,13 @@ export default function BlogPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const LIMIT = 3;
+  const LIMIT = 1;
 
   const [profile, setProfile] = useState<any>(null);
   const [profileLoading, setProfileLoading] = useState(true);
 
   const { user, role, loading: userLoading } = useUser();
+  const { showToast } = useToastContext();
 
   // ✅ FETCH PROFILE (GIỮ NGUYÊN)
   const fetchProfile = async () => {
@@ -64,17 +66,20 @@ export default function BlogPage() {
   };
 
   const handleDelete = async (post: any) => {
-    if (!confirm("Xóa bài này?")) return;
+  if (!confirm("Xác nhận xóa bài viết này?")) return;
 
-    const res = await deletePost(post.id, post.public_ids);
+  showToast("Đang xóa bài viết...", "warning", 0);
 
-    if (!res.success) {
-      alert(res.error);
-      return;
-    }
-    console.log("🔥 DELETE RESULT:", res);
-    window.location.reload(); // 🔥 FIX
-  };
+  const res = await deletePost(post.id, post.public_ids);
+
+  if (!res.success) {
+    showToast(res.error || "Xóa bài viết thất bại!", "error", 3200);
+    return;
+  }
+
+  console.log("🔥 DELETE RESULT:", res);
+  window.location.reload();
+};
 
   const handleEdit = (post: any) => {
     setEditingPost(post);
@@ -134,7 +139,7 @@ export default function BlogPage() {
           fetchPosts();
         }
       },
-      { threshold: 0.2 , rootMargin: "100px 0px" }
+      // { threshold: 0, rootMargin: "0px" }
     );
 
     observer.observe(loadMoreRef.current);
@@ -174,7 +179,6 @@ export default function BlogPage() {
 
             <PostCardSkeleton />
             <PostCardSkeleton />
-            <PostCardSkeleton />
           </div>
         )}
 
@@ -184,8 +188,8 @@ export default function BlogPage() {
               <div className="flex items-center gap-2">
                 <Link href="/profile">
                   <Image
-                    height={36}
-                    width={36}
+                    height={40}
+                    width={40}
                     alt="avatar"
                     src={avatar}
                     className="w-10 h-10 rounded-full object-cover"

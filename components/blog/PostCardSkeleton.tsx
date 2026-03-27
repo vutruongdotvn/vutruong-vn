@@ -13,13 +13,12 @@ export default function PostCardSkeleton() {
         </div>
       </div>
 
-      {/* 3 dòng text */}
+      {/* 2 dòng text */}
       <div className="space-y-2">
         <div className="w-full h-3 bg-gray-300 rounded-xl" />
-        <div className="w-5/6 h-3 bg-gray-300 rounded-xl" />
-        <div className="w-2/3 h-3 bg-gray-300 rounded-xl" />
+        <div className="w-3/6 h-3 bg-gray-300 rounded-xl" />
       </div>
-      <div className="skeImg bg-gray-200 w-full h-30 rounded-xl mt-3"/>
+      <div className="skeImg bg-gray-200 w-full aspect-video rounded-xl mt-3"/>
     </div>
   );
 }
