@@ -189,18 +189,14 @@ img {
 @keyframes fadeWord {
   from {
     opacity: 0;
-    transform: translateY(6px);
-    filter: blur(4px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
   }
 }
 
 .animate-fade-word {
-  animation: fadeWord 0.45s ease-out both;
+  animation: fadeWord 1s ease-in-out both;
 }
 
 /* Khóa Zoom khi focus Input */

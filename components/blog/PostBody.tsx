@@ -41,7 +41,7 @@ export default function PostBody({
 
   return (
     <>
-      <div className="postBody text-base/6 text-justify mt-3 px-3 pe-6 sm:pe-3 text-gray-800">
+      <div className="postBody text-base/6 text-left mt-3 px-3 text-gray-800">
         {paragraphs.map((paragraph, index) => {
           const isLast = index === paragraphs.length - 1;
           const inlineParts = parsePostInline(paragraph);
@@ -94,7 +94,7 @@ export default function PostBody({
               {isLast && truncate && isLong && (
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="ml-1 inline whitespace-nowrap font-medium text-gray-800 hover:text-black cursor-pointer"
+                  className="ml-1 inline whitespace-nowrap font-medium text-gray-800 hover:underline cursor-pointer"
                 >
                   {isExpanded ? "Thu gọn" : "Xem thêm"}
                 </button>

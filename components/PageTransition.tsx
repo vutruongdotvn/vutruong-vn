@@ -14,7 +14,7 @@ export default function PageTransition({
     <AnimatePresence mode="wait">
       <motion.div
         key={pathname}
-        initial={{ y: 5, opacity: 0 }}
+        initial={{ y: 0, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{
           duration: 0.5,

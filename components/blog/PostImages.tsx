@@ -126,12 +126,14 @@ export default function PostImages({ images, postId, priority = false }: Props) 
       className={`relative block overflow-hidden ${className}`}
     >
       <Image
+        loading="eager"
         src={img}
         alt="post"
         fill
         sizes={sizes}
         priority={priority && i === 0}
-        className="object-cover object-center transition-transform duration-500 ease-in-out hover:scale-103"
+        className="object-cover object-center transition-transform duration-500 ease-in-out hover:scale-102"
+        title="Bấm để xem ảnh chất lượng cao"
       />
       {overlay}
     </a>
