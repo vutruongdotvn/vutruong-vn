@@ -1,4 +1,4 @@
-import Image from "next/image";
+
 import ProjectCard from "@/components/project/ProjectCard";
 import { createMetadata } from "@/lib/metadata";
 
@@ -39,14 +39,14 @@ export default function ProjectPage() {
     },
     {
       name: "VT Films",
-      description: "Trang xem phim nội bộ",
+      description: "Trang xem phim cá nhân - nội bộ",
       href: "https://films.vutruong.vn",
       icon: "fa-duotone fa-film",
       gradient: "from-purple-400 to-indigo-600",
     },
     {
       name: "VT Blog",
-      description: "Lưu giữ những điều đẹp đẽ & giá trị",
+      description: "Blog cá nhân - lưu giữ những điều giá trị",
       href: "https://blog.vutruong.vn",
       icon: "fa-duotone fa-pen-nib",
       gradient: "from-pink-400 to-rose-500",

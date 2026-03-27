@@ -303,10 +303,10 @@ export default function ProfilePage() {
 
             <div>
               <p className="text-lg font-semibold text-neutral-900">
-                Bạn chưa đăng nhập
+                Hello 👋
               </p>
               <p className="mt-2 text-sm text-neutral-500">
-                Vui lòng đăng nhập để chỉnh sửa hồ sơ của bạn.
+                Đăng nhập để chỉnh sửa thông tin cá nhân của bạn.
               </p>
             </div>
           </div>

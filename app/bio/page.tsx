@@ -1,4 +1,4 @@
-import Image from "next/image";
+
 import SocialCard from "@/components/bio/SocialCard";
 
 export default function BioPage() {
