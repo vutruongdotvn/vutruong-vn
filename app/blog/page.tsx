@@ -168,7 +168,7 @@ export default function BlogPage() {
 
       
         {!isReady && (
-          <div className="space-y-1 md:space-y-4">
+          <div className="space-y-4 md:space-y-4">
             <div className="userWrap flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md border border-white/70 p-4 rounded-[28px] animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gray-200" />
@@ -190,7 +190,7 @@ export default function BlogPage() {
 
         {isReady && (
           <>
-            <div className="userWrap mb-3 flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md
+            <div className="userWrap mb-8 flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md
             border border-white/70 p-4 rounded-[28px] shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
               <div className="flex items-center gap-2">
                 <Link href="/profile">
