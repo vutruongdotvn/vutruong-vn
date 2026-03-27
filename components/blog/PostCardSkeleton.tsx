@@ -8,7 +8,7 @@ export default function PostCardSkeleton() {
           <div className="relative z-20 mt-3 w-10 h-10 rounded-full bg-gray-300" />
 
           {/* Line */}
-          <div className="absolute top-14 bottom-[-10px] w-[2px] bg-gradient-to-b from-gray-200 via-gray-200 to-gray-200 z-0" />
+          <div className="absolute top-14 bottom-[-10px] w-[2px] bg-gradient-to-b from-gray-300 via-gray-200 to-transparent z-0" />
 
           {/* Dot */}
           <div className="relative z-10 mt-3 size-3 rounded-full bg-gray-300 border-2 border-white shadow-sm" />
