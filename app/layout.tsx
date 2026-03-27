@@ -107,7 +107,7 @@ export default function RootLayout({
   <ToastProvider>
     <LayoutShell>
       <PageTransition>
-        <div className="relative min-h-screen overflow-hidden bg-[#f6f6f7]">
+        <div className="relative min-h-screen overflow-hidden bg-[#f2f3f5]">
           {/* ===== Global Ambient Background ===== */}
           <div className="pointer-events-none absolute inset-0">
             {/* Soft atmospheric glows */}
