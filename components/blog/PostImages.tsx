@@ -59,13 +59,11 @@ export default function PostImages({ images, postId, priority = false }: Props) 
 
   const getRatio = (src: string) => {
     const meta = imageMeta[src];
-    if (!meta) return 1.333; // fallback 4/3
+    if (!meta) return 1.333;
     return meta.width / meta.height;
   };
 
-  const isPortrait = (src: string) => getRatio(src) < 1;
   const isLandscape = (src: string) => getRatio(src) >= 1.15;
-  const isWide = (src: string) => getRatio(src) >= 1.6;
 
   // ===== SMART HERO PICKER =====
   const heroIndex = useMemo(() => {
@@ -78,20 +76,17 @@ export default function PostImages({ images, postId, priority = false }: Props) 
       const ratio = getRatio(img);
       let score = 0;
 
-      // Ưu tiên ảnh ngang đẹp
-      if (ratio >= 1.6) score += 100; // wide đẹp
-      else if (ratio >= 1.15) score += 70; // landscape đẹp
-      else if (ratio >= 1) score += 40; // hơi ngang
-      else if (ratio >= 0.75) score += 10; // portrait vừa
-      else score -= 20; // portrait quá dài
+      if (ratio >= 1.6) score += 100;
+      else if (ratio >= 1.15) score += 70;
+      else if (ratio >= 1) score += 40;
+      else if (ratio >= 0.75) score += 10;
+      else score -= 20;
 
-      // Ưu tiên ảnh đầu một chút để giữ thứ tự tự nhiên
       if (i === 0) score += 12;
       if (i === 1) score += 6;
 
-      // Ảnh quá cực đoan thì trừ điểm
-      if (ratio > 2.4) score -= 15; // siêu panorama
-      if (ratio < 0.6) score -= 15; // siêu dài dọc
+      if (ratio > 2.4) score -= 15;
+      if (ratio < 0.6) score -= 15;
 
       if (score > bestScore) {
         bestScore = score;
@@ -123,7 +118,7 @@ export default function PostImages({ images, postId, priority = false }: Props) 
       key={`${img}-${i}`}
       href={img}
       data-fancybox={group}
-      className={`relative block overflow-hidden ${className}`}
+      className={`relative block overflow-hidden rounded-[22px] group ${className}`}
     >
       <Image
         loading="eager"
@@ -132,9 +127,13 @@ export default function PostImages({ images, postId, priority = false }: Props) 
         fill
         sizes={sizes}
         priority={priority && i === 0}
-        className="object-cover object-center transition-transform duration-500 ease-in-out hover:scale-102"
+        className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.025]"
         title="Bấm để xem ảnh chất lượng cao"
       />
+
+      {/* Cinematic overlay */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/[0.04] via-transparent to-white/[0.04]" />
+
       {overlay}
     </a>
   );
@@ -173,13 +172,8 @@ export default function PostImages({ images, postId, priority = false }: Props) 
       return hasLandscape ? "3-top-hero" : "3-left-hero";
     }
 
-    if (count === 4) {
-      return "4-grid";
-    }
-
-    if (count >= 5) {
-      return "4-grid";
-    }
+    if (count === 4) return "4-grid";
+    if (count >= 5) return "4-grid";
 
     return null;
   }, [count, orderedImages, imageMeta]);
@@ -189,7 +183,7 @@ export default function PostImages({ images, postId, priority = false }: Props) 
       {/* 1 IMAGE */}
       {count === 1 && (
         <div
-          className={`postImages relative mt-3 overflow-hidden select-none max-h-[75vh] ${getSingleImageClass()}`}
+          className={`postImages relative mt-3 overflow-hidden select-none max-h-[78vh] px-3 ${getSingleImageClass()}`}
           style={getSingleImageStyle()}
         >
           {renderImage(
@@ -203,7 +197,7 @@ export default function PostImages({ images, postId, priority = false }: Props) 
 
       {/* 2 IMAGES */}
       {count === 2 && (
-        <div className="postImages grid grid-cols-2 gap-[2px] mt-3 select-none overflow-hidden">
+        <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3">
           {images.map((img, i) =>
             renderImage(
               img,
@@ -216,35 +210,33 @@ export default function PostImages({ images, postId, priority = false }: Props) 
       )}
 
       {/* 3 IMAGES - TOP HERO */}
-{count === 3 && smartLayout === "3-top-hero" && (
-  <div className="postImages mt-3 grid gap-[2px] select-none overflow-hidden">
-    {/* Hero ngang hơn */}
-    <div className="relative w-full aspect-[16/9]">
-      {renderImage(
-        orderedImages[0],
-        0,
-        "w-full h-full",
-        "(max-width:768px) 100vw, 800px"
-      )}
-    </div>
+      {count === 3 && smartLayout === "3-top-hero" && (
+        <div className="postImages mt-3 grid gap-[6px] select-none overflow-hidden px-3">
+          <div className="relative w-full aspect-[16/9]">
+            {renderImage(
+              orderedImages[0],
+              0,
+              "w-full h-full",
+              "(max-width:768px) 100vw, 800px"
+            )}
+          </div>
 
-    {/* 2 ảnh dưới giữ 4/3 */}
-    <div className="grid grid-cols-2 gap-[2px]">
-      {orderedImages.slice(1, 3).map((img, idx) =>
-        renderImage(
-          img,
-          idx + 1,
-          "aspect-[4/3]",
-          "(max-width:768px) 50vw, 400px"
-        )
+          <div className="grid grid-cols-2 gap-[6px]">
+            {orderedImages.slice(1, 3).map((img, idx) =>
+              renderImage(
+                img,
+                idx + 1,
+                "aspect-[4/3]",
+                "(max-width:768px) 50vw, 400px"
+              )
+            )}
+          </div>
+        </div>
       )}
-    </div>
-  </div>
-)}
 
       {/* 3 IMAGES - LEFT HERO */}
       {count === 3 && smartLayout === "3-left-hero" && (
-        <div className="postImages grid grid-cols-2 gap-[2px] mt-3 select-none aspect-[4/3] overflow-hidden">
+        <div className="postImages grid grid-cols-2 gap-[6px] 3 select-none aspect-[4/3] overflow-hidden px-3">
           {renderImage(
             orderedImages[0],
             0,
@@ -252,7 +244,7 @@ export default function PostImages({ images, postId, priority = false }: Props) 
             "(max-width:768px) 50vw, 400px"
           )}
 
-          <div className="grid grid-rows-2 gap-[2px] h-full">
+          <div className="grid grid-rows-2 gap-[6px] h-full">
             {orderedImages.slice(1, 3).map((img, idx) =>
               renderImage(
                 img,
@@ -266,39 +258,37 @@ export default function PostImages({ images, postId, priority = false }: Props) 
       )}
 
       {/* 4 IMAGES */}
-{count === 4 && (
-  <div className="postImages grid grid-cols-2 gap-[2px] mt-3 select-none overflow-hidden">
-    {images.slice(0, 4).map((img, i) =>
-      renderImage(
-        img,
-        i,
-        "aspect-[4/3]",
-        "(max-width:768px) 50vw, 400px"
-      )
-    )}
-  </div>
-)}
-
-
+      {count === 4 && (
+        <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3">
+          {images.slice(0, 4).map((img, i) =>
+            renderImage(
+              img,
+              i,
+              "aspect-[4/3]",
+              "(max-width:768px) 50vw, 400px"
+            )
+          )}
+        </div>
+      )}
 
       {/* 5+ IMAGES */}
-{count >= 5 && (
-  <div className="postImages grid grid-cols-2 gap-[2px] mt-3 select-none overflow-hidden">
-    {images.slice(0, 4).map((img, i) =>
-      renderImage(
-        img,
-        i,
-        "aspect-[4/3]",
-        "(max-width:768px) 50vw, 400px",
-        i === 3 ? (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-2xl font-medium pointer-events-none">
-            +{count - 4}
-          </div>
-        ) : null
-      )
-    )}
-  </div>
-)}
+      {count >= 5 && (
+        <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3">
+          {images.slice(0, 4).map((img, i) =>
+            renderImage(
+              img,
+              i,
+              "aspect-[4/3]",
+              "(max-width:768px) 50vw, 400px",
+              i === 3 ? (
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-2xl font-semibold pointer-events-none backdrop-blur-[2px]">
+                  +{count - 4}
+                </div>
+              ) : null
+            )
+          )}
+        </div>
+      )}
 
       {/* Hidden fancybox images */}
       {hiddenImages.length > 0 && (

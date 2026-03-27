@@ -50,11 +50,11 @@ export default function PostActions({
   };
 
   return (
-    <div className="postAction flex items-center gap-3 p-3">
+    <div className="postAction flex items-center gap-4 px-5 py-4 border-t border-gray-100/80">
       <button
         onClick={handleShare}
         disabled={sharing}
-        className="cursor-pointer text-gray-600 transition hover:text-black active:scale-95 disabled:opacity-50"
+        className="cursor-pointer text-gray-500 transition hover:text-black active:scale-95 disabled:opacity-50"
         title="Chia sẻ"
       >
         <i

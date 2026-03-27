@@ -14,11 +14,11 @@ export default function BlogLayout({
 }) {
   return (
     <main className="relative min-h-screen py-20">
-      <div className="max-w-2xl w-screen mx-auto ">
+      <div className="max-w-2xl w-screen mx-auto px-5 sm:px-0">
           {/* LEFT SIDEBAR DELETED */}
 
           {/* MAIN FEED */}
-          <section className="postFeeds">
+          <section className="postFeeds space-y-12">
             {children}
           </section>
 

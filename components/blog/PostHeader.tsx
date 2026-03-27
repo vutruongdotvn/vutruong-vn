@@ -4,6 +4,7 @@ import Image from "next/image";
 import { formatTimeAgo } from "@/lib/utils";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
+
 type Props = {
   name?: string;
   avatar?: string;
@@ -15,7 +16,9 @@ type Props = {
   onPin?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  hideAvatar?: boolean;
 };
+
 export default function PostHeader({
   name,
   avatar,
@@ -27,17 +30,18 @@ export default function PostHeader({
   onPin,
   onEdit,
   onDelete,
+  hideAvatar = false,
 }: Props) {
   const time = formatTimeAgo(createdAt);
 
   const renderTimeContent = () => (
-    <span className="text-xs text-gray-600 hover:text-black font-normal flex items-center gap-1">
+    <span className="text-sm text-gray-500 hover:text-black font-normal flex items-center gap-1">
       {time}
 
       {isPinned && (
         <>
-          <span className="text-gray-600">•</span>
-          <span className="text-gray-600 font-normal flex items-center gap-[3px]">
+          <span className="text-gray-400">•</span>
+          <span className="text-gray-500 font-normal flex items-center gap-[4px]">
             <i className="fa-duotone fa-thumbtack text-[10px]" />
             Bài ghim
           </span>
@@ -48,6 +52,7 @@ export default function PostHeader({
 
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handleClickOutside = (e: any) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -59,50 +64,56 @@ export default function PostHeader({
   }, []);
 
   return (
-    <div className="flex items-center justify-between px-3 pt-3 select-none">
-      <div className="flex items-center gap-2">
-        <Image
-          src={avatar || "/images/default.jpg"}
-          alt="avatar"
-          width={33}
-          height={33}
-          className="rounded-full object-cover aspect-square"
-          priority
-        />
+    <div className="flex items-center justify-between px-5 pt-5 select-none">
+      <div className="flex items-center gap-2 min-w-0">
+        {!hideAvatar && (
+          <Image
+            src={avatar || "/images/default.jpg"}
+            alt="avatar"
+            width={40}
+            height={40}
+            className="rounded-full object-cover aspect-square"
+            priority
+          />
+        )}
 
-        <div className="leading-5 flex items-center gap-1">
-          <div className="flex items-center gap-[3px]">
-            <span className="font-medium text-gray-800 text-sm">{name}</span>
-            <i className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 text-xs cursor-pointer" title="Tài khoản đã xác thực" />
+        <div className="leading-6 flex items-center gap-1 min-w-0 flex-wrap">
+          <div className="flex items-center gap-[4px] min-w-0 bg-blue-100 border border-blue-300 px-3 py-1 rounded-full">
+            <span className="text-sm text-blue-900 font-bold">
+              {name}
+            </span>
+            <i
+              className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 text-xs cursor-pointer shrink-0"
+              title="Tài khoản đã xác thực"
+            />
           </div>
-          <span className="text-gray-600">•</span>
+
 
           {showLink && postId ? (
-            <Link href={`/blog/${postId}`}>{renderTimeContent()}</Link>
+            <Link className="ms-[6px]" href={`/blog/${postId}`}>{renderTimeContent()}</Link>
           ) : (
             renderTimeContent()
           )}
         </div>
       </div>
 
-      {/* 🔥 MENU */}
       {showMenu && (
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setOpen(!open)}
-            className="text-gray-400 hover:text-gray-600 cursor-pointer px-3"
+            className="text-gray-400 hover:text-gray-700 cursor-pointer px-3"
           >
             <i className="fa-duotone fa-ellipsis"></i>
           </button>
 
           {open && (
-            <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-xl z-50">
+            <div className="absolute right-0 w-44 bg-white shadow-xl rounded-2xl z-50 border border-gray-100 overflow-hidden">
               <button
                 onClick={() => {
                   onPin?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer rounded-xl"
+                className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm flex items-center gap-2 cursor-pointer"
               >
                 <i
                   className={`fa-duotone ${
@@ -117,9 +128,10 @@ export default function PostHeader({
                   onEdit?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer rounded-xl"
+                className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm flex items-center gap-2 cursor-pointer"
               >
-                <i className="fa-duotone fa-edit" /> <span>Chỉnh sửa</span>
+                <i className="fa-duotone fa-edit" />
+                <span>Chỉnh sửa</span>
               </button>
 
               <button
@@ -127,9 +139,10 @@ export default function PostHeader({
                   onDelete?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 cursor-pointer rounded-xl"
+                className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm flex items-center gap-2 cursor-pointer"
               >
-                <i className="fa-duotone fa-trash" /> <span>Xóa</span>
+                <i className="fa-duotone fa-trash" />
+                <span>Xóa</span>
               </button>
             </div>
           )}

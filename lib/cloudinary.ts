@@ -33,3 +33,28 @@ export const uploadImage = async (file: File) => {
     throw err;
   }
 };
+
+export function optimizeCloudinaryImage(
+  url?: string,
+  options?: {
+    width?: number;
+    height?: number;
+    quality?: number;
+    crop?: "fill" | "fit" | "thumb" | "scale";
+  }
+) {
+  if (!url) return "/images/default.jpg";
+
+  if (!url.includes("res.cloudinary.com")) return url;
+
+  const width = options?.width ?? 80;
+  const height = options?.height ?? 80;
+  const quality = options?.quality ?? 80;
+  const crop = options?.crop ?? "fill";
+
+  // Nếu URL đã có /upload/ thì chèn transform vào sau upload
+  return url.replace(
+    "/upload/",
+    `/upload/f_auto,q_${quality},c_${crop},w_${width},h_${height}/`
+  );
+}

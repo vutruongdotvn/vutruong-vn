@@ -12,6 +12,7 @@ import { getPosts } from "@/services/postService";
 import PostCardSkeleton from "@/components/blog/PostCardSkeleton";
 import { pinPost, deletePost } from "@/services/postService";
 import { useToastContext } from "@/components/ui/ToastProvider";
+import { optimizeCloudinaryImage } from "@/lib/cloudinary";
 
 export default function BlogPage() {
   const [open, setOpen] = useState(false);
@@ -26,7 +27,7 @@ export default function BlogPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const LIMIT = 1;
+  const LIMIT = 5;
 
   const [profile, setProfile] = useState<any>(null);
   const [profileLoading, setProfileLoading] = useState(true);
@@ -151,8 +152,13 @@ export default function BlogPage() {
   const email = user?.email || "";
 
   const avatar = user
-    ? profile?.avatar || "/images/default.jpg"
-    : "/images/default.jpg";
+  ? optimizeCloudinaryImage(profile?.avatar, {
+      width: 80,
+      height: 80,
+      quality: 80,
+      crop: "fill",
+    }) || "/images/default.jpg"
+  : "/images/default.jpg";
 
   const isReady = !userLoading && !profileLoading && !loading;
 
@@ -160,10 +166,10 @@ export default function BlogPage() {
     <>
       <FancyboxWrapper />
 
-      <div className="space-y-1 md:space-y-4">
+      
         {!isReady && (
           <div className="space-y-1 md:space-y-4">
-            <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-xl animate-pulse shadow-xs">
+            <div className="userWrap flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md border border-white/70 p-4 rounded-[28px] animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gray-200" />
                 <div>
@@ -184,26 +190,28 @@ export default function BlogPage() {
 
         {isReady && (
           <>
-            <div className="userWrap flex items-center justify-between gap-3 bg-white p-3 rounded-0 md:rounded-xl shadow-xs">
+            <div className="userWrap mb-3 flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md
+            border border-white/70 p-4 rounded-[28px] shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
               <div className="flex items-center gap-2">
                 <Link href="/profile">
                   <Image
-                    height={40}
-                    width={40}
-                    alt="avatar"
-                    src={avatar}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
+  height={40}
+  width={40}
+  alt="avatar"
+  src={avatar}
+  className="w-10 h-10 rounded-full object-cover shadow-sm bg-white"
+  unoptimized={false}
+/>
                 </Link>
 
                 <div>
-                  <p className="font-medium text-sm text-gray-800 flex items-center gap-[2px]">
+                  <p className="font-semibold text-[17px] text-gray-900 flex items-center gap-[4px] leading-5">
                     {fullName}
                     {user && role === "admin" && (
                       <i className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 cursor-pointer text-xs" title="Tài khoản đã xác thực"></i>
                     )}
                   </p>
-                  <p className="text-sm font-normal text-gray-500">
+                  <p className="text-sm font-normal text-gray-500 leading-5">
                     {user ? email : ""}{" "}
                     {/* thêm custom text vào giữa dấu ngoặc */}
                   </p>
@@ -214,7 +222,7 @@ export default function BlogPage() {
                 {user && role === "admin" && (
                   <button
                     onClick={() => setOpen(true)}
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition cursor-pointer"
+                    className="w-11 h-11 flex items-center justify-center rounded-full bg-white/70 hover:bg-white transition border border-gray-100 shadow-sm cursor-pointer"
                     title="Đăng bài"
                   >
                     <i className="fa-duotone fa-pen-to-square text-gray-600"></i>
@@ -224,7 +232,7 @@ export default function BlogPage() {
                 {!user ? (
                   <button
                     onClick={() => setShowLogin(true)}
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition cursor-pointer"
+                    className="w-11 h-11 flex items-center justify-center rounded-full bg-white/70 hover:bg-white transition border border-gray-100 shadow-sm cursor-pointer"
                     title="Đăng nhập"
                   >
                     <i className="fa-duotone fa-user-gear text-gray-600"></i>
@@ -235,7 +243,7 @@ export default function BlogPage() {
                       await supabase.auth.signOut();
                       location.reload();
                     }}
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition cursor-pointer"
+                    className="w-11 h-11 flex items-center justify-center rounded-full bg-white/70 hover:bg-white transition border border-gray-100 shadow-sm cursor-pointer"
                     title="Đăng xuất"
                   >
                     <i className="fa-duotone fa-arrow-right-from-bracket text-gray-600"></i>
@@ -251,7 +259,7 @@ export default function BlogPage() {
             )}
 
             {loading && (
-              <div className="space-y-4">
+              <div className="space-y-0">
                 <PostCardSkeleton />
                 <PostCardSkeleton />
                 <PostCardSkeleton />
@@ -267,15 +275,17 @@ export default function BlogPage() {
             {/* 🔥 PINNED POST (HIỆN TRƯỚC) */}
 
             {/* 🔥 DANH SÁCH POSTS */}
-            {posts.map((post) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                onPin={handlePin}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
-              />
-            ))}
+            {posts.map((post, index) => (
+  <PostCard
+    key={post.id}
+    post={post}
+    isFirst={index === 0}
+    isLast={index === posts.length - 1}
+    onPin={handlePin}
+    onDelete={handleDelete}
+    onEdit={handleEdit}
+  />
+))}
 
             {/* 🔥 LOAD MORE (1 SKE DUY NHẤT) */}
             {loadingMore && (
@@ -309,7 +319,6 @@ export default function BlogPage() {
             {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
           </>
         )}
-      </div>
     </>
   );
 }

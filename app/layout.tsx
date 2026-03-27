@@ -129,7 +129,7 @@ export default function RootLayout({
                   linear-gradient(to right, #000 1px, transparent 1px),
                   linear-gradient(to bottom, #000 1px, transparent 1px)
                 `,
-                backgroundSize: "44px 44px",
+                backgroundSize: "0px", // Sửa BG ô vuông ở đây
               }}
             />
 
