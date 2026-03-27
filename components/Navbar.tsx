@@ -63,7 +63,7 @@ export default function Navbar() {
         <div
           className={`
             relative flex items-center justify-between
-            rounded-[24px] border border-white/70
+            rounded-2xl border border-white/70
             bg-white/80 backdrop-blur-xl
             shadow-[0_8px_30px_rgba(0,0,0,0.05)]
             transition-all duration-300
@@ -71,7 +71,7 @@ export default function Navbar() {
           `}
         >
           {/* LIGHT GLOW */}
-          <div className="pointer-events-none absolute inset-0 rounded-[24px] bg-gradient-to-r from-white/40 via-transparent to-white/30" />
+          <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-r from-white/40 via-transparent to-white/30" />
 
           {/* LOGO + TITLE */}
           <Link

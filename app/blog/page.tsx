@@ -27,7 +27,7 @@ export default function BlogPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const LIMIT = 5;
+  const LIMIT = 3;
 
   const [profile, setProfile] = useState<any>(null);
   const [profileLoading, setProfileLoading] = useState(true);
@@ -67,20 +67,20 @@ export default function BlogPage() {
   };
 
   const handleDelete = async (post: any) => {
-  if (!confirm("Xác nhận xóa bài viết này?")) return;
+    if (!confirm("Xác nhận xóa bài viết này?")) return;
 
-  showToast("Đang xóa bài viết...", "warning", 0);
+    showToast("Đang xóa bài viết...", "warning", 0);
 
-  const res = await deletePost(post.id, post.public_ids);
+    const res = await deletePost(post.id, post.public_ids);
 
-  if (!res.success) {
-    showToast(res.error || "Xóa bài viết thất bại!", "error", 3200);
-    return;
-  }
+    if (!res.success) {
+      showToast(res.error || "Xóa bài viết thất bại!", "error", 3200);
+      return;
+    }
 
-  console.log("🔥 DELETE RESULT:", res);
-  window.location.reload();
-};
+    console.log("🔥 DELETE RESULT:", res);
+    window.location.reload();
+  };
 
   const handleEdit = (post: any) => {
     setEditingPost(post);
@@ -139,7 +139,7 @@ export default function BlogPage() {
         if (entries[0].isIntersecting && hasMore && !loadingMore) {
           fetchPosts();
         }
-      },
+      }
       // { threshold: 0, rootMargin: "0px" }
     );
 
@@ -152,13 +152,13 @@ export default function BlogPage() {
   const email = user?.email || "";
 
   const avatar = user
-  ? optimizeCloudinaryImage(profile?.avatar, {
-      width: 80,
-      height: 80,
-      quality: 80,
-      crop: "fill",
-    }) || "/images/default.jpg"
-  : "/images/default.jpg";
+    ? optimizeCloudinaryImage(profile?.avatar, {
+        width: 80,
+        height: 80,
+        quality: 80,
+        crop: "fill",
+      }) || "/images/default.jpg"
+    : "/images/default.jpg";
 
   const isReady = !userLoading && !profileLoading && !loading;
 
@@ -166,159 +166,161 @@ export default function BlogPage() {
     <>
       <FancyboxWrapper />
 
-      
-        {!isReady && (
-          <div className="space-y-4 md:space-y-4">
-            <div className="userWrap flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md border border-white/70 p-4 rounded-[28px] animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gray-200" />
-                <div>
-                  <div className="w-32 h-3 bg-gray-200 rounded mb-2" />
-                  <div className="w-24 h-3 bg-gray-200 rounded" />
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <div className="w-10 h-10 rounded-full bg-gray-200" />
-                <div className="w-10 h-10 rounded-full bg-gray-200" />
+      {!isReady && (
+        <div className="space-y-4 md:space-y-4">
+          <div className="userWrap flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md border border-white/70 p-4 rounded-2xl animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gray-200" />
+              <div>
+                <div className="w-32 h-3 bg-gray-200 rounded mb-2" />
+                <div className="w-24 h-3 bg-gray-200 rounded" />
               </div>
             </div>
-
-            <PostCardSkeleton />
-            <PostCardSkeleton />
+            <div className="flex gap-2">
+              <div className="w-10 h-10 rounded-full bg-gray-200" />
+              <div className="w-10 h-10 rounded-full bg-gray-200" />
+            </div>
           </div>
-        )}
 
-        {isReady && (
-          <>
-            <div className="userWrap mb-8 flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md
-            border border-white/70 p-4 rounded-[28px] shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-              <div className="flex items-center gap-2">
-                <Link href="/profile">
-                  <Image
-  height={40}
-  width={40}
-  alt="avatar"
-  src={avatar}
-  className="w-10 h-10 rounded-full object-cover shadow-sm bg-white"
-  unoptimized={false}
-/>
-                </Link>
+          <PostCardSkeleton />
+          <PostCardSkeleton />
+        </div>
+      )}
 
-                <div>
-                  <p className="font-semibold text-[17px] text-gray-900 flex items-center gap-[4px] leading-5">
-                    {fullName}
-                    {user && role === "admin" && (
-                      <i className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 cursor-pointer text-xs" title="Tài khoản đã xác thực"></i>
-                    )}
-                  </p>
-                  <p className="text-sm font-normal text-gray-500 leading-5">
-                    {user ? email : ""}{" "}
-                    {/* thêm custom text vào giữa dấu ngoặc */}
-                  </p>
-                </div>
-              </div>
+      {isReady && (
+        <>
+          <div
+            className="userWrap mb-8 flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md
+            border border-white/70 p-4 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)]"
+          >
+            <div className="flex items-center gap-2">
+              <Link href="/profile">
+                <Image
+                  height={40}
+                  width={40}
+                  alt="avatar"
+                  src={avatar}
+                  className="w-10 h-10 rounded-full object-cover shadow-sm bg-white"
+                  unoptimized={false}
+                />
+              </Link>
 
-              <div className="flex items-center gap-2">
-                {user && role === "admin" && (
-                  <button
-                    onClick={() => setOpen(true)}
-                    className="w-11 h-11 flex items-center justify-center rounded-full bg-white/70 hover:bg-white transition border border-gray-100 shadow-sm cursor-pointer"
-                    title="Đăng bài"
-                  >
-                    <i className="fa-duotone fa-pen-to-square text-gray-600"></i>
-                  </button>
-                )}
-
-                {!user ? (
-                  <button
-                    onClick={() => setShowLogin(true)}
-                    className="w-11 h-11 flex items-center justify-center rounded-full bg-white/70 hover:bg-white transition border border-gray-100 shadow-sm cursor-pointer"
-                    title="Đăng nhập"
-                  >
-                    <i className="fa-duotone fa-user-gear text-gray-600"></i>
-                  </button>
-                ) : (
-                  <button
-                    onClick={async () => {
-                      await supabase.auth.signOut();
-                      location.reload();
-                    }}
-                    className="w-11 h-11 flex items-center justify-center rounded-full bg-white/70 hover:bg-white transition border border-gray-100 shadow-sm cursor-pointer"
-                    title="Đăng xuất"
-                  >
-                    <i className="fa-duotone fa-arrow-right-from-bracket text-gray-600"></i>
-                  </button>
-                )}
+              <div>
+                <p className="font-semibold text-[17px] text-gray-900 flex items-center gap-[3px] leading-5">
+                  {fullName}
+                  {user && role === "admin" && (
+                    <i
+                      className="fa-solid fa-badge-check text-neutral-500 hover:text-neutral-600 cursor-pointer text-xs"
+                      title="Tài khoản đã xác thực"
+                    ></i>
+                  )}
+                </p>
+                <p className="text-sm font-normal text-gray-500 leading-5">
+                  {user ? email : ""}{" "}
+                  {/* thêm custom text vào giữa dấu ngoặc */}
+                </p>
               </div>
             </div>
 
-            {user && role !== "admin" && (
-              <p className="text-center text-gray-500 text-sm">
-                Bạn chỉ có quyền xem bài viết 👀
-              </p>
-            )}
+            <div className="flex items-center gap-2">
+              {user && role === "admin" && (
+                <button
+                  onClick={() => setOpen(true)}
+                  className="w-11 h-11 flex items-center justify-center rounded-full bg-white/70 hover:bg-white transition border border-gray-100 shadow-sm cursor-pointer"
+                  title="Đăng bài"
+                >
+                  <i className="fa-duotone fa-pen-to-square text-gray-600"></i>
+                </button>
+              )}
 
-            {loading && (
-              <div className="space-y-0">
-                <PostCardSkeleton />
-                <PostCardSkeleton />
-                <PostCardSkeleton />
-              </div>
-            )}
+              {!user ? (
+                <button
+                  onClick={() => setShowLogin(true)}
+                  className="w-11 h-11 flex items-center justify-center rounded-full bg-white/70 hover:bg-white transition border border-gray-100 shadow-sm cursor-pointer"
+                  title="Đăng nhập"
+                >
+                  <i className="fa-duotone fa-user-gear text-gray-600"></i>
+                </button>
+              ) : (
+                <button
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    location.reload();
+                  }}
+                  className="w-11 h-11 flex items-center justify-center rounded-full bg-white/70 hover:bg-white transition border border-gray-100 shadow-sm cursor-pointer"
+                  title="Đăng xuất"
+                >
+                  <i className="fa-duotone fa-arrow-right-from-bracket text-gray-600"></i>
+                </button>
+              )}
+            </div>
+          </div>
 
-            {!loading && posts.length === 0 && (
-              <p className="text-center text-gray-500">
-                Chưa có bài viết nào 🧐
-              </p>
-            )}
+          {user && role !== "admin" && (
+            <p className="text-center text-gray-500 text-sm">
+              Bạn chỉ có quyền xem bài viết 👀
+            </p>
+          )}
 
-            {/* 🔥 PINNED POST (HIỆN TRƯỚC) */}
+          {loading && (
+            <div className="space-y-0">
+              <PostCardSkeleton />
+              <PostCardSkeleton />
+              <PostCardSkeleton />
+            </div>
+          )}
 
-            {/* 🔥 DANH SÁCH POSTS */}
-            {posts.map((post, index) => (
-  <PostCard
-    key={post.id}
-    post={post}
-    isFirst={index === 0}
-    isLast={index === posts.length - 1}
-    onPin={handlePin}
-    onDelete={handleDelete}
-    onEdit={handleEdit}
-  />
-))}
+          {!loading && posts.length === 0 && (
+            <p className="text-center text-gray-500">Chưa có bài viết nào 🧐</p>
+          )}
 
-            {/* 🔥 LOAD MORE (1 SKE DUY NHẤT) */}
-            {loadingMore && (
-              <div className="flex justify-center">
-                <PostCardSkeleton />
-              </div>
-            )}
+          {/* 🔥 PINNED POST (HIỆN TRƯỚC) */}
 
-            {/* 🔥 TRIGGER */}
-            <div ref={loadMoreRef}></div>
+          {/* 🔥 DANH SÁCH POSTS */}
+          {posts.map((post, index) => (
+            <PostCard
+              key={post.id}
+              post={post}
+              isFirst={index === 0}
+              isLast={index === posts.length - 1}
+              onPin={handlePin}
+              onDelete={handleDelete}
+              onEdit={handleEdit}
+            />
+          ))}
 
-{/* 🔥 HẾT BÀI VIẾT */}
-{!loading && posts.length > 0 && !hasMore && (
-  <div className="text-center text-sm text-gray-400 mt-5">
-    — Đã tải hết bài viết —
-  </div>
-)}
+          {/* 🔥 LOAD MORE (1 SKE DUY NHẤT) */}
+          {loadingMore && (
+            <div className="w-full">
+              <PostCardSkeleton />
+            </div>
+          )}
 
-            {user && role === "admin" && (
-              <CreatePostModal
-    isOpen={open}
-    editingPost={editingPost}
-    onClose={() => {
-      setOpen(false);
-      setEditingPost(null);
-      // window.location.reload();
-    }}
-  />
-            )}
+          {/* 🔥 TRIGGER */}
+          <div ref={loadMoreRef}></div>
 
-            {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
-          </>
-        )}
+          {/* 🔥 HẾT BÀI VIẾT */}
+          {!loading && posts.length > 0 && !hasMore && (
+            <div className="text-center text-sm text-gray-400 mt-5">
+              Hết!
+            </div>
+          )}
+
+          {user && role === "admin" && (
+            <CreatePostModal
+              isOpen={open}
+              editingPost={editingPost}
+              onClose={() => {
+                setOpen(false);
+                setEditingPost(null);
+                // window.location.reload();
+              }}
+            />
+          )}
+
+          {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
+        </>
+      )}
     </>
   );
 }

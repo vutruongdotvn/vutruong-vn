@@ -491,7 +491,7 @@ export default function ProfilePage() {
                   ))}
                 </div>
               ) : avatars.length === 0 ? (
-                <div className="flex aspect-[1.1/1] items-center justify-center rounded-[28px] border border-dashed border-black/10 bg-black/[0.02] text-center">
+                <div className="flex aspect-[1.1/1] items-center justify-center rounded-2xl border border-dashed border-black/10 bg-black/[0.02] text-center">
                   <div>
                     <i className="fa-duotone fa-image-slash text-2xl text-neutral-300" />
                     <p className="mt-3 text-sm text-neutral-400">

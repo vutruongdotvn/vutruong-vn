@@ -118,7 +118,7 @@ export default function PostImages({ images, postId, priority = false }: Props) 
       key={`${img}-${i}`}
       href={img}
       data-fancybox={group}
-      className={`relative block overflow-hidden rounded-[22px] group ${className}`}
+      className={`relative block overflow-hidden rounded-2xl group ${className}`}
     >
       <Image
         loading="eager"
