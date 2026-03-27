@@ -1,5 +1,5 @@
-import Image from "next/image";
 import ContactCard from "@/components/contact/ContactCard";
+import ContactForm from "@/components/contact/ContactForm";
 import { createMetadata } from "@/lib/metadata";
 
 export const metadata = createMetadata({
@@ -19,33 +19,32 @@ export default function ContactPage() {
     {
       name: "Điện thoại",
       url: "tel:0968999542",
+      // display: "0968 999 542",
       gradient: "from-green-300 to-green-600",
       icon: "fa-duotone fa-phone",
     },
     {
       name: "Mạng xã hội",
       url: "/bio",
+      // display: "Xem tất cả liên kết",
       gradient: "from-amber-300 to-amber-600",
       icon: "fa-duotone fa-message-dots",
     },
   ];
 
   return (
-    <div className="text-center space-y-8">
-
-      {/* Logo */}
-
-      {/* Title */}
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-900">
+    <div className="space-y-10">
+      {/* Header */}
+      <div className="text-center">
+        <h1 className="font-semibold text-gray-900 text-2xl">
           Liên hệ với mình
         </h1>
-        <p className="text-gray-500 text-sm">
-          Qua các kênh dưới đây
+        <p className="text-sm text-gray-500">
+          Qua các kênh bên dưới hoặc gửi biểu mẫu trực tiếp
         </p>
       </div>
 
-      {/* List */}
+      {/* Contact cards */}
       <div className="space-y-4 text-left">
         {socials.map((item, index) => (
           <ContactCard
@@ -59,6 +58,8 @@ export default function ContactPage() {
         ))}
       </div>
 
+      {/* Contact form */}
+      <ContactForm />
     </div>
   );
 }

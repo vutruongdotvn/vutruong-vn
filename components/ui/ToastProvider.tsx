@@ -20,7 +20,7 @@ type ToastItem = {
 };
 
 type ToastContextType = {
-  showToast: (message: string, type?: ToastType, duration?: number) => void;
+  showToast: (message: string, type?: ToastType, duration?: number) => number;
   removeToast: (id: number) => void;
 };
 
@@ -40,25 +40,27 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const showToast = useCallback(
-  (
-    message: string,
-    type: ToastType = "success",
-    duration: number = 2600
-  ) => {
-    const id = Date.now() + Math.floor(Math.random() * 10000);
+    (
+      message: string,
+      type: ToastType = "success",
+      duration: number = 2600
+    ) => {
+      const id = Date.now() + Math.floor(Math.random() * 10000);
 
-    setToasts((prev) => [...prev, { id, message, type, duration }]);
+      setToasts((prev) => [...prev, { id, message, type, duration }]);
 
-    // duration <= 0 => toast sẽ không tự đóng
-    if (duration > 0) {
-      timeoutRefs.current[id] = setTimeout(() => {
-        setToasts((prev) => prev.filter((toast) => toast.id !== id));
-        delete timeoutRefs.current[id];
-      }, duration);
-    }
-  },
-  []
-);
+      // duration <= 0 => toast sẽ không tự đóng
+      if (duration > 0) {
+        timeoutRefs.current[id] = setTimeout(() => {
+          setToasts((prev) => prev.filter((toast) => toast.id !== id));
+          delete timeoutRefs.current[id];
+        }, duration);
+      }
+
+      return id;
+    },
+    []
+  );
 
   const value = useMemo(
     () => ({
@@ -148,7 +150,7 @@ function PremiumToast({
 
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold leading-5">{current.title}</p>
-          <p className="mt-0.5 text-sm leading-5 text-black/75 break-words">
+          <p className="mt-0.5 break-words text-sm leading-5 text-black/75">
             {toast.message}
           </p>
         </div>
@@ -164,12 +166,12 @@ function PremiumToast({
 
       {toast.duration > 0 && (
         <motion.div
-        initial={{ width: "100%" }}
-        animate={{ width: 0 }}
-        transition={{ duration: toast.duration / 1000, ease: "linear" }}
-        className={`h-[3px] ${current.progress}`}
+          initial={{ width: "100%" }}
+          animate={{ width: 0 }}
+          transition={{ duration: toast.duration / 1000, ease: "linear" }}
+          className={`h-[3px] ${current.progress}`}
         />
-        )}
+      )}
     </motion.div>
   );
 }

@@ -15,7 +15,7 @@ export default function ProjectCard({
     <a
       href={href}
       target="_blank"
-      className="group block p-5 rounded-xl bg-white/70 backdrop-blur-xl border border-white/50 shadow-md hover:shadow-xl hover:-translate-y-1 hover:bg-white/90 transition-all duration-300"
+      className="group block p-5 rounded-xl bg-white/70 backdrop-blur-xl border border-white/50 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:bg-white/90 transition-all duration-300"
     >
       <div className="flex items-center gap-4">
 
