@@ -69,7 +69,7 @@ export default function BlogPage() {
   const handleDelete = async (post: any) => {
     if (!confirm("Xác nhận xóa bài viết này?")) return;
 
-    showToast("Đang xóa bài viết...", "warning", 0);
+    showToast("Đang xóa bài viết", "warning", 0);
 
     const res = await deletePost(post.id, post.public_ids);
 

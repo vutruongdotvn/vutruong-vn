@@ -66,7 +66,7 @@ export default function Navbar() {
             rounded-2xl border border-white/70
             bg-white/80 backdrop-blur-xl
             shadow-[0_8px_30px_rgba(0,0,0,0.05)]
-            transition-all duration-300
+            transition-all duration-700 ease-out
             ${scrolled ? "px-3 py-2.5" : "px-3 py-3"}
           `}
         >
@@ -93,7 +93,7 @@ export default function Navbar() {
             <span
               className={`
                 font-bold tracking-wide text-gray-900 transition-all duration-300
-                ${scrolled ? "text-[17px]" : "text-[18px]"}
+                ${scrolled ? "text-lg" : "text-xl"}
               `}
             >
               {title}

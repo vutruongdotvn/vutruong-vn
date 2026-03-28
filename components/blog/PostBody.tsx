@@ -49,7 +49,7 @@ export default function PostBody({
           return (
             <p
               key={index}
-              className="mb-3 text-sm/6 sm:text-base/7 whitespace-pre-line last:mb-0"
+              className="mb-3 sm:mb-4 text-sm/6 sm:text-base/7 whitespace-pre-line last:mb-0"
             >
               {inlineParts.map((part, partIndex) => {
                 if (part.type === "bold") {

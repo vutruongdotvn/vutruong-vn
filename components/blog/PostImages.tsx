@@ -127,12 +127,12 @@ export default function PostImages({ images, postId, priority = false }: Props) 
         fill
         sizes={sizes}
         priority={priority && i === 0}
-        className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.025]"
+        className="object-cover object-center transition-transform duration-900 ease-out group-hover:scale-[1.05]"
         title="Bấm để xem ảnh chất lượng cao"
       />
 
       {/* Cinematic overlay */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/[0.04] via-transparent to-white/[0.04]" />
+      <div className="hidden pointer-events-none absolute inset-0 bg-gradient-to-t from-black/[0.15] via-transparent to-white/[0.04]" />
 
       {overlay}
     </a>
@@ -183,7 +183,7 @@ export default function PostImages({ images, postId, priority = false }: Props) 
       {/* 1 IMAGE */}
       {count === 1 && (
         <div
-          className={`postImages relative mt-3 overflow-hidden select-none max-h-[78vh] px-3 ${getSingleImageClass()}`}
+          className={`postImages relative mt-3 overflow-hidden select-none max-h-[78vh] px-3 sm:px-5 ${getSingleImageClass()}`}
           style={getSingleImageStyle()}
         >
           {renderImage(
@@ -197,7 +197,7 @@ export default function PostImages({ images, postId, priority = false }: Props) 
 
       {/* 2 IMAGES */}
       {count === 2 && (
-        <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3">
+        <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
           {images.map((img, i) =>
             renderImage(
               img,
@@ -211,7 +211,7 @@ export default function PostImages({ images, postId, priority = false }: Props) 
 
       {/* 3 IMAGES - TOP HERO */}
       {count === 3 && smartLayout === "3-top-hero" && (
-        <div className="postImages mt-3 grid gap-[6px] select-none overflow-hidden px-3">
+        <div className="postImages mt-3 grid gap-[6px] select-none overflow-hidden px-3 sm:px-5">
           <div className="relative w-full aspect-[16/9]">
             {renderImage(
               orderedImages[0],
@@ -236,7 +236,7 @@ export default function PostImages({ images, postId, priority = false }: Props) 
 
       {/* 3 IMAGES - LEFT HERO */}
       {count === 3 && smartLayout === "3-left-hero" && (
-        <div className="postImages grid grid-cols-2 gap-[6px] 3 select-none aspect-[4/3] overflow-hidden px-3">
+        <div className="postImages grid grid-cols-2 gap-[6px] 3 select-none aspect-[4/3] overflow-hidden px-3 sm:px-5">
           {renderImage(
             orderedImages[0],
             0,
@@ -259,12 +259,12 @@ export default function PostImages({ images, postId, priority = false }: Props) 
 
       {/* 4 IMAGES */}
       {count === 4 && (
-        <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3">
+        <div className="postImages grid grid-cols-2 sm:grid-cols-4 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
           {images.slice(0, 4).map((img, i) =>
             renderImage(
               img,
               i,
-              "aspect-[4/3]",
+              "aspect-[4/3] sm:aspect-square",
               "(max-width:768px) 50vw, 400px"
             )
           )}
@@ -273,15 +273,16 @@ export default function PostImages({ images, postId, priority = false }: Props) 
 
       {/* 5+ IMAGES */}
       {count >= 5 && (
-        <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3">
+        <div className="postImages grid grid-cols-2 sm:grid-cols-4 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
           {images.slice(0, 4).map((img, i) =>
             renderImage(
               img,
               i,
-              "aspect-[4/3]",
+              "aspect-[4/3] sm:aspect-square",
               "(max-width:768px) 50vw, 400px",
               i === 3 ? (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-2xl font-semibold pointer-events-none backdrop-blur-[2px]">
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center
+                text-white text-lg pointer-events-none">
                   +{count - 4}
                 </div>
               ) : null
