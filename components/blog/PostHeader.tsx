@@ -40,10 +40,8 @@ export default function PostHeader({
 
       {isPinned && (
         <>
-          <span className="text-gray-400">•</span>
-          <span className="text-gray-500 font-normal flex items-center gap-[4px]">
-            <i className="fa-duotone fa-thumbtack text-[10px]" />
-            Bài ghim
+          <span className="text-gray-500 font-normal flex items-center gap-[4px] ml-1" title="Bài ghim">
+            <i className="fa-duotone fa-thumbtack text-sm" />
           </span>
         </>
       )}
@@ -113,7 +111,7 @@ export default function PostHeader({
                   onPin?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm flex items-center gap-2 cursor-pointer"
+                className="w-full text-left px-4 py-2 hover:text-green-600 text-sm flex items-center gap-2 cursor-pointer"
               >
                 <i
                   className={`fa-duotone ${
@@ -128,7 +126,7 @@ export default function PostHeader({
                   onEdit?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm flex items-center gap-2 cursor-pointer"
+                className="w-full text-left px-4 py-2 hover:text-amber-600 text-sm flex items-center gap-2 cursor-pointer"
               >
                 <i className="fa-duotone fa-edit" />
                 <span>Chỉnh sửa</span>
@@ -139,7 +137,7 @@ export default function PostHeader({
                   onDelete?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm flex items-center gap-2 cursor-pointer"
+                className="w-full text-left px-4 py-2 hover:text-red-600 text-sm flex items-center gap-2 cursor-pointer"
               >
                 <i className="fa-duotone fa-trash" />
                 <span>Xóa</span>

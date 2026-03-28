@@ -50,7 +50,7 @@ export default function PostActions({
   };
 
   return (
-    <div className="postAction flex items-center gap-4 px-5 py-4 border-t border-gray-100/80">
+    <div className="postAction flex items-center gap-4 px-5 py-4">
       <button
         onClick={handleShare}
         disabled={sharing}

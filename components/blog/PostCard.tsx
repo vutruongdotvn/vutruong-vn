@@ -35,7 +35,7 @@ export default function PostCard({
         {/* LEFT TIMELINE */}
         <div className="relative flex flex-col items-center">
           {/* Avatar */}
-          <div className="relative z-20 mt-3">
+          <div className="relative z-20 mt-2">
             <Image
               src={avatar || "/images/default.jpg"}
               alt={name || "avatar"}
@@ -63,7 +63,7 @@ export default function PostCard({
         <div className="p-0">
           <div
             className={`
-              overflow-hidden rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md
+              rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md
               shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300
               hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)]
               ${post.is_pinned ? "pinnedPost" : ""}
