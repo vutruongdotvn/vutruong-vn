@@ -236,7 +236,7 @@ export default function PostImages({ images, postId, priority = false }: Props) 
 
       {/* 3 IMAGES - LEFT HERO */}
       {count === 3 && smartLayout === "3-left-hero" && (
-        <div className="postImages grid grid-cols-2 gap-[6px] 3 select-none aspect-[4/3] overflow-hidden px-3 sm:px-5">
+        <div className="postImages grid grid-cols-2 gap-[6px] 3 select-none aspect-[4/3] overflow-hidden px-3 sm:px-5 mt-3">
           {renderImage(
             orderedImages[0],
             0,
