@@ -405,3 +405,75 @@ export const updatePost = async ({
     };
   }
 };
+
+
+export async function getPostsByHashtag(tag: string, from = 0, to = 2) {
+  // ✅ DB của bạn đang lưu hashtag có cả dấu #
+  const normalizedTag = tag.trim().startsWith("#")
+    ? tag.trim().toLowerCase()
+    : `#${tag.trim().toLowerCase()}`;
+
+  let query = supabase
+    .from("posts")
+    .select("*")
+    .eq("visibility", "public")
+    .contains("hashtags", [normalizedTag])
+    .order("is_pinned", { ascending: false })
+    .order("created_at", { ascending: false });
+
+  if (from !== undefined && to !== undefined) {
+    query = query.range(from, to);
+  }
+
+  const { data: posts, error } = await query;
+
+  if (error) {
+    console.error("❌ getPostsByHashtag error:", error.message);
+    return [];
+  }
+
+  if (!posts || posts.length === 0) return [];
+
+  // ✅ GIỮ NGUYÊN LOGIC BACKEND CŨ như getPosts()
+  const userIds = [...new Set(posts.map((p) => p.user_id).filter(Boolean))];
+
+  const { data: profiles, error: profileError } = await supabase
+    .from("profiles")
+    .select("id, name, avatar")
+    .in("id", userIds);
+
+  if (profileError) {
+    console.error("❌ getPostsByHashtag profiles error:", profileError.message);
+  }
+
+  const postsWithProfiles = posts.map((post) => {
+    const profile = profiles?.find((p) => p.id === post.user_id);
+
+    return {
+      ...post,
+      profiles: profile || null,
+    };
+  });
+
+  return postsWithProfiles;
+}
+
+export async function countPostsByHashtag(tag: string) {
+  // ✅ DB đang lưu hashtag có dấu #
+  const normalizedTag = tag.trim().startsWith("#")
+    ? tag.trim().toLowerCase()
+    : `#${tag.trim().toLowerCase()}`;
+
+  const { count, error } = await supabase
+    .from("posts")
+    .select("*", { count: "exact", head: true })
+    .eq("visibility", "public")
+    .contains("hashtags", [normalizedTag]);
+
+  if (error) {
+    console.error("❌ countPostsByHashtag error:", error.message);
+    return 0;
+  }
+
+  return count || 0;
+}

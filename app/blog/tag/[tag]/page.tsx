@@ -1,33 +1,46 @@
 "use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useParams } from "next/navigation";
+
 import PostCard from "@/components/blog/PostCard";
+import PostCardSkeleton from "@/components/blog/PostCardSkeleton";
 import CreatePostModal from "@/components/blog/CreatePostModal";
 import FancyboxWrapper from "@/components/blog/FancyboxWrapper";
 import LoginModal from "@/components/auth/LoginModal";
-import { useUser } from "@/hooks/useUser";
-import { supabase } from "@/lib/supabase";
-import { useEffect, useState, useRef } from "react";
-import { getPosts } from "@/services/postService";
-import PostCardSkeleton from "@/components/blog/PostCardSkeleton";
-import { pinPost, deletePost } from "@/services/postService";
-import { useToastContext } from "@/components/ui/ToastProvider";
-import { optimizeCloudinaryImage } from "@/lib/cloudinary";
 import BlogUserCard from "@/components/blog/BlogUserCard";
 
-export default function BlogPage() {
+import { useUser } from "@/hooks/useUser";
+import { supabase } from "@/lib/supabase";
+import { optimizeCloudinaryImage } from "@/lib/cloudinary";
+import { useToastContext } from "@/components/ui/ToastProvider";
+
+import {
+  getPostsByHashtag,
+  countPostsByHashtag,
+  pinPost,
+  deletePost,
+} from "@/services/postService";
+
+export default function BlogTagPage() {
+  const params = useParams();
+  const rawTag = Array.isArray(params?.tag) ? params.tag[0] : params?.tag || "";
+  const tagName = decodeURIComponent(rawTag).trim().toLowerCase();
+
   const [open, setOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingPost, setEditingPost] = useState<any | null>(null);
 
-  // 🔥 NEW (KHÔNG ẢNH HƯỞNG LOGIC CŨ)
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const [totalPosts, setTotalPosts] = useState(0);
 
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const LIMIT = 3;
 
   const [profile, setProfile] = useState<any>(null);
@@ -36,7 +49,10 @@ export default function BlogPage() {
   const { user, role, loading: userLoading } = useUser();
   const { showToast } = useToastContext();
 
-  // ✅ FETCH PROFILE (GIỮ NGUYÊN)
+  const displayTag = useMemo(() => {
+    return tagName.startsWith("#") ? tagName : `#${tagName}`;
+    }, [tagName]);
+
   const fetchProfile = async () => {
     if (!user) {
       setProfileLoading(false);
@@ -64,7 +80,7 @@ export default function BlogPage() {
       return;
     }
 
-    window.location.reload(); // 🔥 FIX
+    window.location.reload();
   };
 
   const handleDelete = async (post: any) => {
@@ -79,7 +95,6 @@ export default function BlogPage() {
       return;
     }
 
-    console.log("🔥 DELETE RESULT:", res);
     window.location.reload();
   };
 
@@ -88,9 +103,8 @@ export default function BlogPage() {
     setOpen(true);
   };
 
-  // 🔥 UPGRADE fetchPosts (KHÔNG ĐỔI CÁCH DÙNG)
   const fetchPosts = async () => {
-    if (!hasMore) return;
+    if (!hasMore || !tagName) return;
 
     if (page === 0) {
       setLoading(true);
@@ -101,7 +115,7 @@ export default function BlogPage() {
     const from = page * LIMIT;
     const to = from + LIMIT - 1;
 
-    const data = await getPosts(from, to);
+    const data = await getPostsByHashtag(tagName, from, to);
 
     if (data.length < LIMIT) {
       setHasMore(false);
@@ -111,45 +125,65 @@ export default function BlogPage() {
       if (page === 0) return data || [];
 
       const newPosts = data.filter(
-        (newPost) => !prev.some((p) => p.id === newPost.id)
+        (newPost: any) => !prev.some((p) => p.id === newPost.id)
       );
 
       return [...prev, ...newPosts];
     });
 
     setPage((prev) => prev + 1);
-
     setLoading(false);
     setLoadingMore(false);
   };
 
+  const fetchTotalPosts = async () => {
+    if (!tagName) return;
+    const total = await countPostsByHashtag(tagName);
+    setTotalPosts(total);
+  };
+
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    if (!tagName) return;
+
+    setPosts([]);
+    setPage(0);
+    setHasMore(true);
+    setLoading(true);
+
+    fetchTotalPosts();
+
+    (async () => {
+      const firstBatch = await getPostsByHashtag(tagName, 0, LIMIT - 1);
+
+      if (firstBatch.length < LIMIT) {
+        setHasMore(false);
+      }
+
+      setPosts(firstBatch || []);
+      setPage(1);
+      setLoading(false);
+    })();
+  }, [tagName]);
 
   useEffect(() => {
     fetchProfile();
   }, [user]);
 
-  // 🔥 INFINITE SCROLL (CHỈ THÊM CÁI NÀY)
   useEffect(() => {
     if (!loadMoreRef.current) return;
+    if (loading) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore) {
-          fetchPosts();
-        }
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore && !loadingMore) {
+        fetchPosts();
       }
-      // { threshold: 0, rootMargin: "0px" }
-    );
+    });
 
     observer.observe(loadMoreRef.current);
     return () => observer.disconnect();
-  }, [hasMore, loadingMore, page]);
+  }, [hasMore, loadingMore, page, loading, tagName]);
 
   const fullName = user ? profile?.name || "Người dùng" : "Xin chào! 👋";
-
   const email = user?.email || "";
 
   const avatar = user
@@ -183,6 +217,11 @@ export default function BlogPage() {
             </div>
           </div>
 
+          <div className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md p-4 animate-pulse">
+            <div className="w-56 h-4 bg-gray-200 rounded mb-3" />
+            <div className="w-32 h-3 bg-gray-100 rounded" />
+          </div>
+
           <PostCardSkeleton />
           <PostCardSkeleton />
         </div>
@@ -196,10 +235,37 @@ export default function BlogPage() {
   fullName={fullName}
   email={email}
   avatar={avatar}
-  className="mb-8"
+  className="mb-5"
   onOpenCreatePost={() => setOpen(true)}
   onOpenLogin={() => setShowLogin(true)}
 />
+
+          {/* BOX THÔNG BÁO HASHTAG */}
+          <div className="mb-7 rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md px-5 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <div>
+                <p className="text-sm text-gray-500 mb-1">Bộ lọc hashtag</p>
+                <h1 className="text-base sm:text-lg font-semibold text-gray-900">
+                  Các bài viết có hashtag{" "}
+                  <span className="text-gray-800">{displayTag}</span>
+                </h1>
+              </div>
+
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-black transition"
+              >
+                <i className="fa-duotone fa-arrow-left" />
+                Quay lại Blog
+              </Link>
+            </div>
+
+            <p className="text-sm text-gray-500 mt-2">
+              {totalPosts > 0
+                ? `${totalPosts} bài viết được tìm thấy`
+                : `Chưa tìm thấy bài viết nào với hashtag ${displayTag}`}
+            </p>
+          </div>
 
           {user && role !== "admin" && (
             <p className="text-center text-gray-500 text-sm">
@@ -216,12 +282,11 @@ export default function BlogPage() {
           )}
 
           {!loading && posts.length === 0 && (
-            <p className="text-center text-gray-500">Chưa có bài viết nào 🧐</p>
+            <div className="text-center text-gray-500 py-8">
+              Chưa có bài viết nào với hashtag <span className="font-medium">{displayTag}</span> 🧐
+            </div>
           )}
 
-          {/* 🔥 PINNED POST (HIỆN TRƯỚC) */}
-
-          {/* 🔥 DANH SÁCH POSTS */}
           {posts.map((post, index) => (
             <PostCard
               key={post.id}
@@ -234,17 +299,14 @@ export default function BlogPage() {
             />
           ))}
 
-          {/* 🔥 LOAD MORE (1 SKE DUY NHẤT) */}
           {loadingMore && (
             <div className="w-full">
               <PostCardSkeleton />
             </div>
           )}
 
-          {/* 🔥 TRIGGER */}
           <div ref={loadMoreRef}></div>
 
-          {/* 🔥 HẾT BÀI VIẾT */}
           {!loading && posts.length > 0 && !hasMore && (
             <div className="text-center text-sm text-gray-400 mt-5">
               Hết!
@@ -258,7 +320,6 @@ export default function BlogPage() {
               onClose={() => {
                 setOpen(false);
                 setEditingPost(null);
-                // window.location.reload();
               }}
             />
           )}

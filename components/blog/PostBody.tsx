@@ -75,18 +75,17 @@ export default function PostBody({
                 }
 
                 if (part.type === "hashtag") {
-                  const tagName = part.value.replace(/^#/, "");
-
-                  return (
-                    <Link
-                      key={partIndex}
-                      href={`/blog/tag/${encodeURIComponent(tagName)}`}
-                      className="text-gray-800 font-medium hover:underline"
-                    >
-                      {part.value}
+                  const tagName = part.value.replace(/^#/, "").trim().toLowerCase();
+                   return (
+                   <Link
+                   key={partIndex}
+                   href={`/blog/tag/${encodeURIComponent(tagName)}`}
+                   className="text-gray-800 font-medium hover:underline"
+                   >
+                    {part.value}
                     </Link>
-                  );
-                }
+                    );
+                  }
 
                 return <span key={partIndex}>{part.value}</span>;
               })}
