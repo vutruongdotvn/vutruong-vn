@@ -35,7 +35,7 @@ export default function PostHeader({
   const time = formatTimeAgo(createdAt);
 
   const renderTimeContent = () => (
-    <span className="text-sm text-gray-500 hover:text-black font-normal flex items-center gap-1">
+    <span className="postPublish text-xs text-gray-500 hover:text-black font-normal flex items-center gap-1">
       {time}
 
       {isPinned && (
@@ -64,7 +64,7 @@ export default function PostHeader({
   }, []);
 
   return (
-    <div className="flex items-center justify-between px-5 pt-5 select-none">
+    <div className="flex items-center justify-between px-3 sm:px-5 pt-3 sm:pt-5 select-none">
       <div className="flex items-center gap-2 min-w-0">
         {!hideAvatar && (
           <Image
@@ -79,7 +79,7 @@ export default function PostHeader({
 
         <div className="leading-6 flex items-center gap-1 min-w-0 flex-wrap">
           <div className="flex items-center gap-[3px] min-w-0 bg-neutral-100 border border-neutral-300 hover:border-neutral-400 px-3 py-1 rounded-full cursor-pointer">
-            <span className="text-sm text-neutral-800 font-bold">
+            <span className="text-sm text-neutral-800 font-medium">
               {name}
             </span>
             <i
@@ -90,7 +90,7 @@ export default function PostHeader({
 
 
           {showLink && postId ? (
-            <Link className="ms-[6px]" href={`/blog/${postId}`}>{renderTimeContent()}</Link>
+            <Link className="ms-[4px]" href={`/blog/${postId}`}>{renderTimeContent()}</Link>
           ) : (
             renderTimeContent()
           )}

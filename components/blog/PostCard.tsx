@@ -31,7 +31,7 @@ export default function PostCard({
 
   return (
     <article className="timelineItem relative">
-      <div className="grid grid-cols-[56px_1fr] gap-2 md:gap-3">
+      <div className="grid grid-cols-[40px_1fr] gap-2 md:gap-3">
         {/* LEFT TIMELINE */}
         <div className="relative flex flex-col items-center">
           {/* Avatar */}

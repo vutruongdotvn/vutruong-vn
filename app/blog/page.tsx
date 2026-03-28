@@ -206,7 +206,7 @@ export default function BlogPage() {
               </Link>
 
               <div>
-                <p className="font-semibold text-[17px] text-gray-900 flex items-center gap-[3px] leading-5">
+                <p className="font-semibold text-base text-gray-900 flex items-center gap-[3px] leading-5">
                   {fullName}
                   {user && role === "admin" && (
                     <i

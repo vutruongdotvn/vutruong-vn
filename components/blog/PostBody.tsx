@@ -41,7 +41,7 @@ export default function PostBody({
 
   return (
     <>
-      <div className="postBody text-base/8 text-left pt-3 px-5 text-gray-800">
+      <div className="postBody text-base/8 text-left pt-3 px-3 sm:px-5 text-gray-800">
         {paragraphs.map((paragraph, index) => {
           const isLast = index === paragraphs.length - 1;
           const inlineParts = parsePostInline(paragraph);
@@ -49,7 +49,7 @@ export default function PostBody({
           return (
             <p
               key={index}
-              className="mb-3 text-base/7 whitespace-pre-line last:mb-0"
+              className="mb-3 text-sm/6 sm:text-base/7 whitespace-pre-line last:mb-0"
             >
               {inlineParts.map((part, partIndex) => {
                 if (part.type === "bold") {

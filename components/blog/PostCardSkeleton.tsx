@@ -1,7 +1,7 @@
 export default function PostCardSkeleton() {
   return (
     <div className="relative">
-      <div className="grid grid-cols-[56px_1fr] gap-2 md:gap-3 animate-pulse">
+      <div className="grid grid-cols-[40px_1fr] gap-2 md:gap-3 animate-pulse">
         {/* LEFT TIMELINE */}
         <div className="relative flex flex-col items-center">
           {/* Avatar */}
