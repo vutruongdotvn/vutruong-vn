@@ -1,6 +1,5 @@
 "use client";
-import Link from "next/link";
-import Image from "next/image";
+
 import PostCard from "@/components/blog/PostCard";
 import CreatePostModal from "@/components/blog/CreatePostModal";
 import FancyboxWrapper from "@/components/blog/FancyboxWrapper";
@@ -9,7 +8,7 @@ import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState, useRef } from "react";
 import { getPosts } from "@/services/postService";
-import PostCardSkeleton from "@/components/blog/PostCardSkeleton";
+import SmartPostSkeletonFeed from "@/components/blog/SmartPostSkeletonFeed";
 import { pinPost, deletePost } from "@/services/postService";
 import { useToastContext } from "@/components/ui/ToastProvider";
 import { optimizeCloudinaryImage } from "@/lib/cloudinary";
@@ -168,25 +167,24 @@ export default function BlogPage() {
       <FancyboxWrapper />
 
       {!isReady && (
-        <div className="space-y-4 md:space-y-4">
-          <div className="userWrap flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md border border-white/70 p-4 rounded-2xl animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gray-200" />
-              <div>
-                <div className="w-32 h-3 bg-gray-200 rounded mb-2" />
-                <div className="w-24 h-3 bg-gray-200 rounded" />
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <div className="w-10 h-10 rounded-full bg-gray-200" />
-              <div className="w-10 h-10 rounded-full bg-gray-200" />
-            </div>
-          </div>
-
-          <PostCardSkeleton />
-          <PostCardSkeleton />
+  <div className="space-y-4 md:space-y-4">
+    <div className="userWrap flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md border border-white/70 p-4 rounded-2xl animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full bg-gray-200" />
+        <div>
+          <div className="w-32 h-3 bg-gray-200 rounded mb-2" />
+          <div className="w-24 h-3 bg-gray-200 rounded" />
         </div>
-      )}
+      </div>
+      <div className="flex gap-2">
+        <div className="w-10 h-10 rounded-full bg-gray-200" />
+        <div className="w-10 h-10 rounded-full bg-gray-200" />
+      </div>
+    </div>
+
+    <SmartPostSkeletonFeed mode="initial" />
+  </div>
+)}
 
       {isReady && (
         <>
@@ -207,13 +205,7 @@ export default function BlogPage() {
             </p>
           )}
 
-          {loading && (
-            <div className="space-y-0">
-              <PostCardSkeleton />
-              <PostCardSkeleton />
-              <PostCardSkeleton />
-            </div>
-          )}
+          {loading && <SmartPostSkeletonFeed mode="initial" />}
 
           {!loading && posts.length === 0 && (
             <p className="text-center text-gray-500">Chưa có bài viết nào 🧐</p>
@@ -235,11 +227,7 @@ export default function BlogPage() {
           ))}
 
           {/* 🔥 LOAD MORE (1 SKE DUY NHẤT) */}
-          {loadingMore && (
-            <div className="w-full">
-              <PostCardSkeleton />
-            </div>
-          )}
+          {loadingMore && <SmartPostSkeletonFeed mode="loadMore" />}
 
           {/* 🔥 TRIGGER */}
           <div ref={loadMoreRef}></div>

@@ -47,9 +47,7 @@ export default function PostCard({
           </div>
 
           {/* Line */}
-          {!isLast && (
-            <div className="absolute mt-3 top-15 bottom-[-10px] w-[2px] bg-gradient-to-b from-gray-300 via-gray-200 to-transparent z-0" />
-          )}
+          <div className="absolute mt-3 top-15 bottom-[-10px] w-[2px] bg-gradient-to-b from-gray-300 via-gray-200 to-transparent z-0" />
 
           {/* Dot */}
           <div

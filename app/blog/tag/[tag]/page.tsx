@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 
 import PostCard from "@/components/blog/PostCard";
-import PostCardSkeleton from "@/components/blog/PostCardSkeleton";
+import SmartPostSkeletonFeed from "@/components/blog/SmartPostSkeletonFeed";
 import CreatePostModal from "@/components/blog/CreatePostModal";
 import FancyboxWrapper from "@/components/blog/FancyboxWrapper";
 import LoginModal from "@/components/auth/LoginModal";
@@ -51,7 +50,7 @@ export default function BlogTagPage() {
 
   const displayTag = useMemo(() => {
     return tagName.startsWith("#") ? tagName : `#${tagName}`;
-    }, [tagName]);
+  }, [tagName]);
 
   const fetchProfile = async () => {
     if (!user) {
@@ -203,6 +202,7 @@ export default function BlogTagPage() {
 
       {!isReady && (
         <div className="space-y-4 md:space-y-4">
+          {/* USER CARD SKELETON */}
           <div className="userWrap flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md border border-white/70 p-4 rounded-2xl animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gray-200" />
@@ -217,28 +217,29 @@ export default function BlogTagPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md p-4 animate-pulse">
+          {/* HASHTAG HEADER SKELETON */}
+          <div className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md p-4 animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="w-56 h-4 bg-gray-200 rounded mb-3" />
             <div className="w-32 h-3 bg-gray-100 rounded" />
           </div>
 
-          <PostCardSkeleton />
-          <PostCardSkeleton />
+          {/* FEED SKELETON */}
+          <SmartPostSkeletonFeed mode="initial" />
         </div>
       )}
 
       {isReady && (
         <>
           <BlogUserCard
-  user={user}
-  role={role}
-  fullName={fullName}
-  email={email}
-  avatar={avatar}
-  className="mb-5"
-  onOpenCreatePost={() => setOpen(true)}
-  onOpenLogin={() => setShowLogin(true)}
-/>
+            user={user}
+            role={role}
+            fullName={fullName}
+            email={email}
+            avatar={avatar}
+            className="mb-5"
+            onOpenCreatePost={() => setOpen(true)}
+            onOpenLogin={() => setShowLogin(true)}
+          />
 
           {/* BOX THÔNG BÁO HASHTAG */}
           <div className="mb-7 rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md px-5 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
@@ -273,17 +274,12 @@ export default function BlogTagPage() {
             </p>
           )}
 
-          {loading && (
-            <div className="space-y-0">
-              <PostCardSkeleton />
-              <PostCardSkeleton />
-              <PostCardSkeleton />
-            </div>
-          )}
+          {loading && <SmartPostSkeletonFeed mode="initial" />}
 
           {!loading && posts.length === 0 && (
             <div className="text-center text-gray-500 py-8">
-              Chưa có bài viết nào với hashtag <span className="font-medium">{displayTag}</span> 🧐
+              Chưa có bài viết nào với hashtag{" "}
+              <span className="font-medium">{displayTag}</span> 🧐
             </div>
           )}
 
@@ -299,11 +295,7 @@ export default function BlogTagPage() {
             />
           ))}
 
-          {loadingMore && (
-            <div className="w-full">
-              <PostCardSkeleton />
-            </div>
-          )}
+          {loadingMore && <SmartPostSkeletonFeed mode="loadMore" />}
 
           <div ref={loadMoreRef}></div>
 
