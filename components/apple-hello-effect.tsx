@@ -39,7 +39,7 @@ function AppleHelloVietnameseEffect({
 
   return (
     <motion.svg
-      className={cn("xl:h-24 lg:h-22 md:h-20 h-18 mx-auto", className)}
+      className={cn("xl:h-22 lg:h-20 md:h-18 h-18 mx-auto", className)}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 1009 200"
       fill="none"

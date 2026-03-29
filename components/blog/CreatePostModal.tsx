@@ -831,7 +831,7 @@ const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
                 {loading ? (
                   <>
                     <i className="fa-duotone fa-spinner-third fa-spin text-base" />
-                    <span>{isEditMode ? "Đang lưu" : "Đang đăng..."}</span>
+                    <span>{isEditMode ? "Đang lưu" : "Đang đăng"}</span>
                   </>
                 ) : (
                   <>

@@ -63,8 +63,8 @@ export default function Navbar() {
         <div
           className={`
             relative flex items-center justify-between
-            rounded-2xl border border-white/70
-            bg-white/80 backdrop-blur-xl
+            rounded-2xl border border-white/60
+            bg-white/60 backdrop-blur-xl
             shadow-[0_8px_30px_rgba(0,0,0,0.05)]
             transition-all duration-700 ease-out
             ${scrolled ? "px-3 py-2.5" : "px-3 py-3"}
@@ -167,7 +167,7 @@ export default function Navbar() {
           }`}
         >
           {/* OVERLAY */}
-          <div className="absolute inset-0 bg-black/10 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px]" />
 
           {/* SLIDE PANEL */}
           <div
@@ -190,9 +190,9 @@ export default function Navbar() {
                   priority
                 />
                 <div>
-                  <p className="font-semibold text-gray-900 leading-5">
-                    Blog
-                  </p>
+                  <Link href="/" className="font-semibold text-gray-900 leading-5">
+                    {title}
+                  </Link>
                 </div>
               </div>
 
@@ -222,19 +222,19 @@ export default function Navbar() {
                       ${
                         active
                           ? "bg-gray-900 text-white shadow-sm"
-                          : "bg-white/60 text-gray-700 hover:bg-white"
+                          : "bg-white/60 text-gray-700 hover:bg-gray-200 active:scale-95"
                       }
                     `}
                   >
                     <div className="flex items-center gap-3">
-                      <i className={`${item.icon} text-[15px]`} />
+                      <i className={`${item.icon} text-base`} />
                       <span>{item.name}</span>
                     </div>
 
                     {active ? (
                       <span className="w-2 h-2 rounded-full bg-white/90" />
                     ) : (
-                      <i className="fa-duotone fa-angle-right text-gray-400 text-xs" />
+                      <i className="fa-duotone fa-arrow-right text-gray-400 text-xs" />
                     )}
                   </Link>
                 );

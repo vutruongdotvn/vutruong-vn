@@ -35,11 +35,11 @@ export default function PostCardSkeleton({
 }: Props) {
   return (
     <article className="timelineItem relative">
-      <div className="grid grid-cols-[40px_1fr] gap-2 md:gap-3">
+      <div className="grid md:grid-cols-[40px_1fr] grid-cols-[33px_1fr] gap-2 md:gap-3">
         {/* LEFT TIMELINE */}
         <div className="relative flex flex-col items-center">
           {/* Avatar */}
-          <div className="relative z-20 mt-2 w-10 h-10 rounded-full bg-gradient-to-br from-gray-300 to-gray-200 animate-pulse" />
+          <div className="relative z-20 mt-2 w-[33px] h-[33px] md:w-[40px] md:h-[40px] rounded-full bg-gradient-to-br from-gray-300 to-gray-200 animate-pulse" />
 
           {/* Line */}
           <div

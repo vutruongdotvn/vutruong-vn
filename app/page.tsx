@@ -54,7 +54,7 @@ export default function Page() {
 
           {/* Tagline */}
           <div className="mt-6 space-y-2">
-            <p className="text-lg font-semibold text-gray-800">Welcome to...</p>
+            <p className="text-base md:text-lg font-semibold text-gray-800">Welcome to...</p>
             <p className="mx-auto max-w-2xl text-sm leading-7 text-gray-600 md:text-base">
               Hệ sinh thái số cá nhân của mình trên Internet,
               <br />
