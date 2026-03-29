@@ -103,11 +103,14 @@ export default function PostBody({
         })}
       </div>
 
-      <PostImages
-        images={images}
-        postId={postId}
-        priority={priority}
-      />
+      {Array.isArray(images) &&
+  images.some((img) => typeof img === "string" && img.trim() !== "") && (
+    <PostImages
+      images={images}
+      postId={postId}
+      priority={priority}
+    />
+)}
     </>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
-import { createPost, updatePost } from "@/services/postService";
+import { createPost, updatePost, getPostById } from "@/services/postService";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/useToast";
 import {
@@ -62,6 +62,7 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   editingPost?: any | null;
+  onSuccess?: (updatedPost: any) => void;
 };
 
 type SortableImageCardProps = {
@@ -162,6 +163,7 @@ export default function CreatePostModal({
   isOpen,
   onClose,
   editingPost,
+  onSuccess,
 }: Props) {
   const [content, setContent] = useState("");
   const [originalContent, setOriginalContent] = useState("");
@@ -516,7 +518,7 @@ const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
       return;
     }
 
-    let result;
+    let result: any;
 
     if (isEditMode && editingPost) {
       console.log("🧩 editingPost.images:", editingPost.images);
@@ -544,16 +546,33 @@ const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     setLoading(false);
 
     if (result?.success) {
-      onClose();
-      window.location.reload();
-    } else {
-      showToast(
-        result?.error ||
-          (isEditMode ? "Không thể cập nhật bài viết" : "Không thể đăng bài"),
-        "error"
-      );
-      console.error(result);
+  // ✏️ EDIT REALTIME
+  if (isEditMode && editingPost) {
+    const freshPost = await getPostById(editingPost.id);
+
+    if (freshPost) {
+      onSuccess?.(freshPost);
     }
+  }
+
+  // 🆕 CREATE REALTIME
+  if (!isEditMode) {
+    const freshPost = await getPostById(result.id);
+
+    if (freshPost) {
+      onSuccess?.(freshPost);
+    }
+  }
+
+  onClose();
+} else {
+  showToast(
+    result?.error ||
+      (isEditMode ? "Không thể cập nhật bài viết" : "Không thể đăng bài"),
+    "error"
+  );
+  console.error(result);
+}
   };
 
   return createPortal(

@@ -137,28 +137,31 @@ export const createPost = async ({
     const hashtags = content.match(/#[\wÀ-ỹ]+/g) || [];
     const id = generateNumericId();
 
-    const { error: insertError } = await supabase.from("posts").insert([
-      {
-        id,
-        content,
-        images: imageUrls,
-        public_ids: publicIds,
-        hashtags,
-        user_id: user.id,
-        visibility,
-        cover_image: imageUrls?.[0] || null,
-      },
-    ]);
+const { error: insertError } = await supabase.from("posts").insert([
+  {
+    id,
+    content,
+    images: imageUrls,
+    public_ids: publicIds,
+    hashtags,
+    user_id: user.id,
+    visibility,
+    cover_image: imageUrls?.[0] || null,
+  },
+]);
 
-    if (insertError) {
-      console.error("Lỗi insert:", insertError);
-      return {
-        success: false,
-        error: insertError.message,
-      };
-    }
+if (insertError) {
+  console.error("Lỗi insert:", insertError);
+  return {
+    success: false,
+    error: insertError.message,
+  };
+}
 
-    return { success: true };
+return {
+  success: true,
+  id, // 👈 thêm dòng này để modal fetch lại bài mới tạo
+};
   } catch (err: any) {
     console.error("Lỗi hệ thống:", err);
     return {
@@ -214,17 +217,60 @@ export const deletePost = async (postId: string, public_ids: string[]) => {
 
 // 📌 PIN / UNPIN POST
 export const pinPost = async (postId: string, currentPinned: boolean) => {
-  const { error } = await supabase
-    .from("posts")
-    .update({ is_pinned: !currentPinned })
-    .eq("id", postId);
+  try {
+    // 👉 Nếu đang GHIM -> bấm lần nữa là BỎ GHIM
+    if (currentPinned) {
+      const { error } = await supabase
+        .from("posts")
+        .update({ is_pinned: false })
+        .eq("id", postId);
 
-  if (error) {
-    console.error("Lỗi pinPost:", error);
-    return { success: false, error: error.message };
+      if (error) {
+        console.error("Lỗi unpin post:", error);
+        return { success: false, error: error.message };
+      }
+
+      return {
+        success: true,
+        mode: "unpin",
+      };
+    }
+
+    // 👉 Nếu đang CHƯA GHIM -> phải đảm bảo chỉ còn 1 bài pinned duy nhất
+
+    // 1) Bỏ ghim tất cả bài đang ghim
+    const { error: unpinAllError } = await supabase
+      .from("posts")
+      .update({ is_pinned: false })
+      .eq("is_pinned", true);
+
+    if (unpinAllError) {
+      console.error("Lỗi unpin all posts:", unpinAllError);
+      return { success: false, error: unpinAllError.message };
+    }
+
+    // 2) Ghim bài target
+    const { error: pinError } = await supabase
+      .from("posts")
+      .update({ is_pinned: true })
+      .eq("id", postId);
+
+    if (pinError) {
+      console.error("Lỗi pin target post:", pinError);
+      return { success: false, error: pinError.message };
+    }
+
+    return {
+      success: true,
+      mode: "pin",
+    };
+  } catch (err: any) {
+    console.error("Lỗi pinPost:", err);
+    return {
+      success: false,
+      error: "Lỗi hệ thống",
+    };
   }
-
-  return { success: true };
 };
 
 // ✏️ UPDATE POST (TEXT + IMAGE + REORDER)
@@ -477,3 +523,27 @@ export async function countPostsByHashtag(tag: string) {
 
   return count || 0;
 }
+
+export const getPostById = async (postId: string) => {
+  const { data: post, error } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("id", postId)
+    .single();
+
+  if (error || !post) {
+    console.error("Lỗi getPostById:", error);
+    return null;
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("id, name, avatar")
+    .eq("id", post.user_id)
+    .single();
+
+  return {
+    ...post,
+    profiles: profile || null,
+  };
+};

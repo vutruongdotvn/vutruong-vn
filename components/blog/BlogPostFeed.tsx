@@ -22,39 +22,102 @@ export default function BlogPostFeed() {
   const LIMIT = 3;
 
   const { user, role } = useUser();
-  const { showToast } = useToastContext();
+  const { showToast, removeToast } = useToastContext();
+
+  const mergeNewPostToTop = (prevPosts: any[], newPost: any) => {
+  const filtered = prevPosts.filter((p) => p.id !== newPost.id);
+
+  // bài mới tạo hiện tại mặc định không pinned
+  // nên chỉ cần chèn đầu và giữ pinned bài cũ ở trên nếu có
+  const merged = [newPost, ...filtered];
+
+  return sortPostsByPinnedAndDate(merged);
+};
+
+  const sortPostsByPinnedAndDate = (posts: any[]) => {
+  return [...posts].sort((a, b) => {
+    // 📌 pinned luôn đứng trước
+    if (a.is_pinned !== b.is_pinned) {
+      return a.is_pinned ? -1 : 1;
+    }
+
+    // 🕒 cùng trạng thái pinned thì sort theo created_at mới nhất trước
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+};
 
   const handlePin = async (post: any) => {
-    const res = await pinPost(post.id, post.is_pinned);
+  const pinningToastId = showToast(
+    post.is_pinned ? "Đang bỏ ghim bài viết" : "Đang ghim bài viết",
+    "warning",
+    0
+  );
 
-    if (!res.success) {
-      alert(res.error);
-      return;
+  const res = await pinPost(post.id, post.is_pinned);
+
+  if (!res.success) {
+    removeToast(pinningToastId);
+    showToast(res.error || "Cập nhật ghim bài viết thất bại!", "error", 3200);
+    return;
+  }
+
+  setPosts((prev) => {
+    let updatedPosts;
+
+    // 🔓 BỎ GHIM
+    if (post.is_pinned) {
+      updatedPosts = prev.map((p) =>
+        p.id === post.id ? { ...p, is_pinned: false } : p
+      );
+    } else {
+      // 📌 GHIM MỚI -> chỉ còn đúng 1 bài pinned
+      updatedPosts = prev.map((p) => ({
+        ...p,
+        is_pinned: p.id === post.id,
+      }));
     }
 
-    window.location.reload();
-  };
+    return sortPostsByPinnedAndDate(updatedPosts);
+  });
+
+  removeToast(pinningToastId);
+  showToast(
+    post.is_pinned ? "Đã bỏ ghim bài viết" : "Đã ghim bài viết",
+    "success",
+    2200
+  );
+};
 
   const handleDelete = async (post: any) => {
-    if (!confirm("Xác nhận xóa bài viết này?")) return;
+  if (!confirm("Xác nhận xóa bài viết này?")) return;
 
-    showToast("Đang xóa bài viết", "warning", 0);
+  const deletingToastId = showToast("Đang xóa bài viết", "warning", 0);
 
-    const res = await deletePost(post.id, post.public_ids);
+  const res = await deletePost(post.id, post.public_ids);
 
-    if (!res.success) {
-      showToast(res.error || "Xóa bài viết thất bại!", "error", 3200);
-      return;
-    }
+  if (!res.success) {
+    removeToast(deletingToastId);
+    showToast(res.error || "Xóa bài viết thất bại!", "error", 3200);
+    return;
+  }
 
-    console.log("🔥 DELETE RESULT:", res);
-    window.location.reload();
-  };
+  console.log("🔥 DELETE RESULT:", res);
+
+  setPosts((prev) => prev.filter((p) => p.id !== post.id));
+  removeToast(deletingToastId);
+  showToast("Đã xóa bài viết", "success", 2200);
+};
 
   const handleEdit = (post: any) => {
     setEditingPost(post);
     setOpen(true);
   };
+
+  const handleEditSuccess = (updatedPost: any) => {
+  setPosts((prev) =>
+    prev.map((p) => (p.id === updatedPost.id ? updatedPost : p))
+  );
+};
 
   const fetchPosts = async () => {
     if (!hasMore) return;
@@ -93,6 +156,24 @@ export default function BlogPostFeed() {
   useEffect(() => {
     fetchPosts();
   }, []);
+
+  useEffect(() => {
+  const handleCreatedPost = (event: Event) => {
+    const customEvent = event as CustomEvent;
+    const newPost = customEvent.detail;
+
+    if (!newPost) return;
+
+    setPosts((prev) => mergeNewPostToTop(prev, newPost));
+    setLoading(false);
+  };
+
+  window.addEventListener("blog-post-created", handleCreatedPost);
+
+  return () => {
+    window.removeEventListener("blog-post-created", handleCreatedPost);
+  };
+}, []);
 
   useEffect(() => {
     if (!loadMoreRef.current) return;
@@ -137,13 +218,14 @@ export default function BlogPostFeed() {
 
       {user && role === "admin" && (
         <CreatePostModal
-          isOpen={open}
-          editingPost={editingPost}
-          onClose={() => {
-            setOpen(false);
-            setEditingPost(null);
-          }}
-        />
+  isOpen={open}
+  editingPost={editingPost}
+  onSuccess={handleEditSuccess}
+  onClose={() => {
+    setOpen(false);
+    setEditingPost(null);
+  }}
+/>
       )}
     </>
   );

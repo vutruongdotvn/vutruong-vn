@@ -122,14 +122,21 @@ export default function BlogUserPanel() {
       )}
 
       {user && role === "admin" && (
-        <CreatePostModal
-          isOpen={open}
-          editingPost={null}
-          onClose={() => {
-            setOpen(false);
-          }}
-        />
-      )}
+  <CreatePostModal
+    isOpen={open}
+    editingPost={null}
+    onSuccess={(newPost) => {
+      window.dispatchEvent(
+        new CustomEvent("blog-post-created", {
+          detail: newPost,
+        })
+      );
+    }}
+    onClose={() => {
+      setOpen(false);
+    }}
+  />
+)}
 
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
     </>

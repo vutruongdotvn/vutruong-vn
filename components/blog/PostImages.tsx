@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 
 type Props = {
-  images: string[];
+  images?: string[];
   postId: string;
   priority?: boolean;
 };
@@ -14,19 +14,35 @@ type ImageMeta = {
   height: number;
 };
 
-export default function PostImages({ images, postId, priority = false }: Props) {
-  const count = images.length;
-  if (count === 0) return null;
+export default function PostImages({
+  images = [],
+  postId,
+  priority = false,
+}: Props) {
+  // Memo để tránh tạo array mới mỗi render
+  const safeImages = useMemo(() => {
+    return Array.isArray(images)
+      ? images.filter((img) => typeof img === "string" && img.trim() !== "")
+      : [];
+  }, [images]);
 
+  const count = safeImages.length;
   const group = `post-${postId}`;
   const [imageMeta, setImageMeta] = useState<Record<string, ImageMeta>>({});
 
   useEffect(() => {
+    if (count === 0) {
+      setImageMeta((prev) => (Object.keys(prev).length ? {} : prev));
+      return;
+    }
+
+    let isMounted = true;
+
     const loadImageSizes = async () => {
       const results: Record<string, ImageMeta> = {};
 
       await Promise.all(
-        images.map(
+        safeImages.map(
           (src) =>
             new Promise<void>((resolve) => {
               const img = new window.Image();
@@ -51,11 +67,21 @@ export default function PostImages({ images, postId, priority = false }: Props) 
         )
       );
 
-      setImageMeta(results);
+      if (!isMounted) return;
+
+      setImageMeta((prev) => {
+        const prevStr = JSON.stringify(prev);
+        const nextStr = JSON.stringify(results);
+        return prevStr === nextStr ? prev : results;
+      });
     };
 
     loadImageSizes();
-  }, [images]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [safeImages, count]);
 
   const getRatio = (src: string) => {
     const meta = imageMeta[src];
@@ -65,14 +91,13 @@ export default function PostImages({ images, postId, priority = false }: Props) 
 
   const isLandscape = (src: string) => getRatio(src) >= 1.15;
 
-  // ===== SMART HERO PICKER =====
   const heroIndex = useMemo(() => {
     if (count < 3) return 0;
 
     let bestIndex = 0;
     let bestScore = -999;
 
-    images.forEach((img, i) => {
+    safeImages.forEach((img, i) => {
       const ratio = getRatio(img);
       let score = 0;
 
@@ -95,17 +120,19 @@ export default function PostImages({ images, postId, priority = false }: Props) 
     });
 
     return bestIndex;
-  }, [count, images, imageMeta]);
+  }, [count, safeImages, imageMeta]);
 
   const orderedImages = useMemo(() => {
-    if (count < 3) return images;
-    const cloned = [...images];
+    if (count < 3) return safeImages;
+    const cloned = [...safeImages];
     const [hero] = cloned.splice(heroIndex, 1);
     return [hero, ...cloned];
-  }, [images, heroIndex, count]);
+  }, [safeImages, heroIndex, count]);
 
   const visibleImages = count <= 5 ? orderedImages : orderedImages.slice(0, 5);
   const hiddenImages = count > 5 ? orderedImages.slice(5) : [];
+
+  if (count === 0) return null;
 
   const renderImage = (
     img: string,
@@ -130,42 +157,31 @@ export default function PostImages({ images, postId, priority = false }: Props) 
         className="object-cover object-center transition-transform duration-900 ease-out group-hover:scale-[1.05]"
         title="Bấm để xem ảnh chất lượng cao"
       />
-
-      {/* Cinematic overlay */}
-      <div className="hidden pointer-events-none absolute inset-0 bg-gradient-to-t from-black/[0.15] via-transparent to-white/[0.04]" />
-
       {overlay}
     </a>
   );
 
-  // ===== SINGLE IMAGE =====
-  const firstImage = images[0];
+  const firstImage = safeImages[0];
   const firstMeta = imageMeta[firstImage];
 
   const getSingleImageClass = () => {
     if (!firstMeta) return "w-full aspect-[4/3]";
-
     const ratio = firstMeta.width / firstMeta.height;
-
     if (ratio >= 1) return "w-full";
     return "w-full aspect-[3/4]";
   };
 
   const getSingleImageStyle = () => {
     if (!firstMeta) return undefined;
-
     const ratio = firstMeta.width / firstMeta.height;
-
     if (ratio >= 1) {
       return {
         aspectRatio: `${firstMeta.width} / ${firstMeta.height}`,
       };
     }
-
     return undefined;
   };
 
-  // ===== SMART LAYOUT DETECT =====
   const smartLayout = useMemo(() => {
     if (count === 3) {
       const hasLandscape = orderedImages.some((img) => isLandscape(img));
@@ -180,7 +196,6 @@ export default function PostImages({ images, postId, priority = false }: Props) 
 
   return (
     <>
-      {/* 1 IMAGE */}
       {count === 1 && (
         <div
           className={`postImages relative mt-3 overflow-hidden select-none max-h-[78vh] px-3 sm:px-5 ${getSingleImageClass()}`}
@@ -195,10 +210,9 @@ export default function PostImages({ images, postId, priority = false }: Props) 
         </div>
       )}
 
-      {/* 2 IMAGES */}
       {count === 2 && (
         <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
-          {images.map((img, i) =>
+          {safeImages.map((img, i) =>
             renderImage(
               img,
               i,
@@ -209,7 +223,6 @@ export default function PostImages({ images, postId, priority = false }: Props) 
         </div>
       )}
 
-      {/* 3 IMAGES - TOP HERO */}
       {count === 3 && smartLayout === "3-top-hero" && (
         <div className="postImages mt-3 grid gap-[6px] select-none overflow-hidden px-3 sm:px-5">
           <div className="relative w-full aspect-[16/9]">
@@ -234,9 +247,8 @@ export default function PostImages({ images, postId, priority = false }: Props) 
         </div>
       )}
 
-      {/* 3 IMAGES - LEFT HERO */}
       {count === 3 && smartLayout === "3-left-hero" && (
-        <div className="postImages grid grid-cols-2 gap-[6px] 3 select-none aspect-[4/3] overflow-hidden px-3 sm:px-5 mt-3">
+        <div className="postImages grid grid-cols-2 gap-[6px] select-none aspect-[4/3] overflow-hidden px-3 sm:px-5 mt-3">
           {renderImage(
             orderedImages[0],
             0,
@@ -257,10 +269,9 @@ export default function PostImages({ images, postId, priority = false }: Props) 
         </div>
       )}
 
-      {/* 4 IMAGES */}
       {count === 4 && (
         <div className="postImages grid grid-cols-2 sm:grid-cols-4 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
-          {images.slice(0, 4).map((img, i) =>
+          {orderedImages.slice(0, 4).map((img, i) =>
             renderImage(
               img,
               i,
@@ -271,18 +282,16 @@ export default function PostImages({ images, postId, priority = false }: Props) 
         </div>
       )}
 
-      {/* 5+ IMAGES */}
       {count >= 5 && (
         <div className="postImages grid grid-cols-2 sm:grid-cols-4 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
-          {images.slice(0, 4).map((img, i) =>
+          {visibleImages.slice(0, 4).map((img, i) =>
             renderImage(
               img,
               i,
               "aspect-[4/3] sm:aspect-square",
               "(max-width:768px) 50vw, 400px",
               i === 3 ? (
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center
-                text-white text-lg pointer-events-none">
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-lg pointer-events-none">
                   +{count - 4}
                 </div>
               ) : null
@@ -291,7 +300,6 @@ export default function PostImages({ images, postId, priority = false }: Props) 
         </div>
       )}
 
-      {/* Hidden fancybox images */}
       {hiddenImages.length > 0 && (
         <div className="hidden">
           {hiddenImages.map((img, i) => (
