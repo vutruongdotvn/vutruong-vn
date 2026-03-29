@@ -23,43 +23,54 @@ export default function BlogUserPanel() {
   const lastFetchedUserId = useRef<string | null>(null);
 
   const fetchProfile = async () => {
-    if (!user) {
-      setProfile(null);
-      setProfileLoading(false);
-      return;
-    }
+  if (!user) {
+    setProfile(null);
+    setProfileLoading(false);
+    return;
+  }
 
+  try {
     const { data, error } = await supabase
       .from("profiles")
       .select("name, avatar")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
 
-    if (!error) {
-      setProfile(data);
-    }
-
-    setProfileLoading(false);
-  };
-
-  useEffect(() => {
-    // ⛔ Khi auth đang load thì chưa làm gì
-    if (userLoading) return;
-
-    // 👤 Chưa login → hoàn tất luôn
-    if (!user) {
+    if (error) {
+      console.error("BlogUserPanel fetchProfile error:", error);
       setProfile(null);
-      setProfileLoading(false);
       return;
     }
 
-    // 🔥 Nếu đã fetch đúng user này rồi thì không fetch lại
-    if (lastFetchedUserId.current === user.id) return;
+    setProfile(data || null);
+  } catch (err) {
+    console.error("BlogUserPanel fetchProfile crash:", err);
+    setProfile(null);
+  } finally {
+    setProfileLoading(false);
+  }
+};
 
-    lastFetchedUserId.current = user.id;
-    setProfileLoading(true);
-    fetchProfile();
-  }, [user, userLoading]);
+
+  useEffect(() => {
+  if (userLoading) return;
+
+  if (!user) {
+    lastFetchedUserId.current = null;
+    setProfile(null);
+    setProfileLoading(false);
+    return;
+  }
+
+  if (lastFetchedUserId.current === user.id) {
+    setProfileLoading(false);
+    return;
+  }
+
+  lastFetchedUserId.current = user.id;
+  setProfileLoading(true);
+  fetchProfile();
+}, [user, userLoading]);
 
   // ✅ Chỉ đánh dấu "đã load xong lần đầu" 1 lần duy nhất
   useEffect(() => {

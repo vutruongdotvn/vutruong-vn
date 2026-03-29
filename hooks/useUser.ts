@@ -25,21 +25,27 @@ export function useUser() {
     let mounted = true;
 
     const init = async () => {
-      setLoading(true);
+      try {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
 
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
+        if (error) {
+          console.error("useUser getSession error:", error);
+        }
 
-      if (error) {
-        console.error("getSession error:", error);
+        if (!mounted) return;
+
+        applyUser(session?.user ?? null);
+      } catch (err) {
+        console.error("useUser init crash:", err);
+
+        if (!mounted) return;
+        applyUser(null);
+      } finally {
+        if (mounted) setLoading(false);
       }
-
-      if (!mounted) return;
-
-      applyUser(session?.user ?? null);
-      setLoading(false);
     };
 
     init();
@@ -47,6 +53,8 @@ export function useUser() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session: Session | null) => {
+      if (!mounted) return;
+
       applyUser(session?.user ?? null);
       setLoading(false);
     });
