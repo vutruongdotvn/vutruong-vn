@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import BlogUserCard from "@/components/blog/BlogUserCard";
+import BlogUserCardSkeleton from "@/components/blog/BlogUserCardSkeleton";
 import CreatePostModal from "@/components/blog/CreatePostModal";
 import LoginModal from "@/components/auth/LoginModal";
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
 import { optimizeCloudinaryImage } from "@/lib/cloudinary";
-import BlogUserCardSkeleton from "@/components/blog/BlogUserCardSkeleton";
 
 export default function BlogUserPanel() {
   const [open, setOpen] = useState(false);
@@ -15,82 +15,68 @@ export default function BlogUserPanel() {
   const [profile, setProfile] = useState<any>(null);
   const [profileLoading, setProfileLoading] = useState(true);
 
-  // ✅ Chỉ cho skeleton hiện 1 lần duy nhất lúc mới vào trang
+  // chỉ hiện skeleton 1 lần đầu duy nhất
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
-  const [forceUnlock, setForceUnlock] = useState(false);
 
   const { user, role, loading: userLoading } = useUser();
-
-  // ✅ Tránh fetch lặp vô ích khi cùng 1 user
   const lastFetchedUserId = useRef<string | null>(null);
 
   const fetchProfile = async () => {
-  if (!user) {
-    setProfile(null);
-    setProfileLoading(false);
-    return;
-  }
-
-  try {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("name, avatar")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (error) {
-      console.error("BlogUserPanel fetchProfile error:", error);
+    if (!user) {
       setProfile(null);
+      setProfileLoading(false);
       return;
     }
 
-    setProfile(data || null);
-  } catch (err) {
-    console.error("BlogUserPanel fetchProfile crash:", err);
-    setProfile(null);
-  } finally {
-    setProfileLoading(false);
-  }
-};
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("name, avatar")
+        .eq("id", user.id)
+        .maybeSingle();
 
+      if (error) {
+        console.error("BlogUserPanel fetchProfile error:", error);
+        setProfile(null);
+        return;
+      }
+
+      setProfile(data || null);
+    } catch (err) {
+      console.error("BlogUserPanel fetchProfile crash:", err);
+      setProfile(null);
+    } finally {
+      setProfileLoading(false);
+    }
+  };
 
   useEffect(() => {
-  if (userLoading) return;
+    if (userLoading) return;
 
-  if (!user) {
-    lastFetchedUserId.current = null;
-    setProfile(null);
-    setProfileLoading(false);
-    return;
-  }
+    if (!user) {
+      lastFetchedUserId.current = null;
+      setProfile(null);
+      setProfileLoading(false);
+      return;
+    }
 
-  if (lastFetchedUserId.current === user.id) {
-    setProfileLoading(false);
-    return;
-  }
+    if (lastFetchedUserId.current === user.id) {
+      setProfileLoading(false);
+      return;
+    }
 
-  lastFetchedUserId.current = user.id;
-  setProfileLoading(true);
-  fetchProfile();
-}, [user, userLoading]);
+    lastFetchedUserId.current = user.id;
+    setProfileLoading(true);
+    fetchProfile();
+  }, [user, userLoading]);
 
-  // ✅ Chỉ đánh dấu "đã load xong lần đầu" 1 lần duy nhất
   useEffect(() => {
     if (!userLoading && !profileLoading && !hasLoadedOnce) {
       setHasLoadedOnce(true);
     }
   }, [userLoading, profileLoading, hasLoadedOnce]);
 
-  useEffect(() => {
-  const timeout = setTimeout(() => {
-    setForceUnlock(true);
-    setProfileLoading(false);
-  }, 3000);
-
-  return () => clearTimeout(timeout);
-}, []);
-
-  const fullName = user ? profile?.name || "Người dùng" : "Xin chào! 👋";
+  const fullName = user ? profile?.name || "User" : "Xin chào! 👋";
   const email = user?.email || "";
 
   const avatar = user
@@ -102,9 +88,7 @@ export default function BlogUserPanel() {
       }) || "/images/default.jpg"
     : "/images/default.jpg";
 
-  // ✅ Skeleton chỉ hiện trong lần load đầu tiên
-  const showInitialSkeleton =
-  !forceUnlock && !hasLoadedOnce && (userLoading || profileLoading);
+  const showInitialSkeleton = !hasLoadedOnce && (userLoading || profileLoading);
 
   return (
     <>
@@ -124,7 +108,7 @@ export default function BlogUserPanel() {
           />
 
           {user && role !== "admin" && (
-            <p className="text-center text-gray-500 text-sm mb-6 hidden">
+            <p className="text-center text-gray-500 text-sm mb-6">
               Bạn chỉ có quyền xem bài viết 👀
             </p>
           )}
@@ -132,21 +116,19 @@ export default function BlogUserPanel() {
       )}
 
       {user && role === "admin" && (
-  <CreatePostModal
-    isOpen={open}
-    editingPost={null}
-    onSuccess={(newPost) => {
-      window.dispatchEvent(
-        new CustomEvent("blog-post-created", {
-          detail: newPost,
-        })
-      );
-    }}
-    onClose={() => {
-      setOpen(false);
-    }}
-  />
-)}
+        <CreatePostModal
+          isOpen={open}
+          editingPost={null}
+          onSuccess={(newPost) => {
+            window.dispatchEvent(
+              new CustomEvent("blog-post-created", {
+                detail: newPost,
+              })
+            );
+          }}
+          onClose={() => setOpen(false)}
+        />
+      )}
 
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
     </>
