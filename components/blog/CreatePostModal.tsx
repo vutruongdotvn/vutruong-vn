@@ -576,7 +576,7 @@ const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[9998] flex items-center justify-center p-3 sm:p-5">
+    <div className="fixed inset-0 z-[9998] flex items-center justify-center p-0 sm:p-5">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/30 backdrop-blur-[3px]"
@@ -585,7 +585,8 @@ const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
 
       {/* Modal */}
       <div
-        className="relative z-10 flex w-full max-w-4xl max-h-[94vh] flex-col overflow-hidden rounded-xl border border-white/60 bg-white/95 shadow-[0_25px_80px_rgba(0,0,0,0.18)] animate-fadeIn"
+        className="relative z-10 flex w-full max-w-4xl max-h-screen md:max-h-[94vh] flex-col overflow-hidden
+        rounded-0 md:rounded-3xl border border-white/60 bg-white/95 shadow-[0_25px_80px_rgba(0,0,0,0.18)] animate-fadeIn"
         onDragEnter={(e) => {
           e.preventDefault();
           e.stopPropagation();
