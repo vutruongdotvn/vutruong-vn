@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
-import FloatingSymbols from "@/components/ui/FloatingSymbols";
 import { createClient } from "@supabase/supabase-js";
 import Cropper from "react-easy-crop";
 import { useToast } from "@/hooks/useToast";
@@ -241,7 +240,6 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
-        <FloatingSymbols />
         <PremiumGlassCard
           className="max-w-5xl"
           contentClassName="p-8 sm:p-10"
@@ -284,7 +282,6 @@ export default function ProfilePage() {
   if (!user) {
     return (
       <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
-        <FloatingSymbols />
         <PremiumGlassCard
           className="max-w-md"
           contentClassName="p-10 sm:p-12 text-center"
@@ -317,7 +314,6 @@ export default function ProfilePage() {
 
   return (
     <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
-      <FloatingSymbols />
 
       {cropImage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">

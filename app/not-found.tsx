@@ -1,6 +1,5 @@
 import Link from "next/link";
 import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
-import FloatingSymbols from "@/components/ui/FloatingSymbols";
 
 export default function NotFound() {
   return (
@@ -8,7 +7,6 @@ export default function NotFound() {
       <title>Lỗi!</title>
 
       <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
-        <FloatingSymbols />
 
         <div className="mx-auto flex min-h-full max-w-4xl flex-col items-center justify-center">
           <PremiumGlassCard

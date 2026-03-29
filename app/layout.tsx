@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   authors: [
     {
       name: "Vũ Trường",
-      url: "https://vutruong.vn",
+      url: "https://www.vutruong.vn",
     },
   ],
 
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "VT Zone",
     description: "Hệ sinh thái số của Vũ Trường",
-    url: "https://vutruong.vn",
+    url: "https://www.vutruong.vn",
     siteName: "VT Zone",
     images: [
       {
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "VT Zone",
-    description: "Hệ sinh thái số cá nhân",
+    description: "Hệ sinh thái số cá nhân của Vũ Trường",
     images: ["/og.png"],
   },
 
@@ -97,64 +97,22 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="VT Zone" />
         <link rel="apple-touch-icon" href="/app.jpg" />
-        <link
-          rel="stylesheet"
-          href="//kit-pro.fontawesome.com/releases/v7.2.0/css/pro.min.css"
-        />
+        <link rel="stylesheet" href="//kit-pro.fontawesome.com/releases/v7.2.0/css/pro.min.css"/>
       </head>
 
-      <body className={`${roboto.className} antialiased`}>
-  <ToastProvider>
-    <LayoutShell>
-      <PageTransition>
-        <div className="relative min-h-screen overflow-hidden bg-[#f2f3f5]">
-          {/* ===== Global Ambient Background ===== */}
-          <div className="pointer-events-none absolute inset-0">
-            {/* Soft atmospheric glows */}
-            <div className="absolute -top-32 -left-32 h-[36rem] w-[36rem] rounded-full bg-blue-200/30 blur-3xl" />
-            <div className="absolute top-[12%] -right-40 h-[38rem] w-[38rem] rounded-full bg-violet-200/25 blur-3xl" />
-            <div className="absolute bottom-[-10rem] left-1/2 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-cyan-100/30 blur-3xl" />
-
-            {/* Light beam top */}
-            <div className="absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-white/75 via-white/20 to-transparent" />
-
-            {/* Bottom softness */}
-            <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-white/30 to-transparent" />
-
-            {/* Soft grid */}
-            <div
-              className="absolute inset-0 opacity-[0.05]"
-              style={{
-                backgroundImage: `
-                  linear-gradient(to right, #000 1px, transparent 1px),
-                  linear-gradient(to bottom, #000 1px, transparent 1px)
-                `,
-                backgroundSize: "0px", // Sửa BG ô vuông ở đây
-              }}
-            />
-
-            {/* Fine noise texture */}
-            <div
-              className="absolute inset-0 opacity-[0.022] mix-blend-multiply"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle, rgba(0,0,0,0.9) 0.6px, transparent 0.6px)",
-                backgroundSize: "18px 18px",
-              }}
-            />
-
-            {/* Center soft radial wash */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.5),transparent_55%)]" />
-          </div>
-
-          <AuthProvider>
-            <div className="relative z-10">{children}</div>
-          </AuthProvider>
-        </div>
-      </PageTransition>
-    </LayoutShell>
-  </ToastProvider>
-</body>
+      <body className={`${roboto.className} antialiased bg-[#f2f3f5]`}>
+        <ToastProvider>
+          <LayoutShell>
+            <PageTransition>
+              <div className="relative min-h-screen overflow-hidden">
+                <AuthProvider>
+                  <div className="relative z-10">{children}</div>
+                </AuthProvider>
+              </div>
+            </PageTransition>
+          </LayoutShell>
+        </ToastProvider>
+      </body>
     </html>
   );
 }

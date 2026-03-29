@@ -3,9 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { AppleHelloVietnameseEffect } from "@/components/apple-hello-effect";
 import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
-import FloatingSymbols from "@/components/ui/FloatingSymbols";
 
-const rotatingWords = ["code", "cà phê", "âm nhạc", "guitar", "du lịch"];
+const rotatingWords = ["code 🧑‍💻", "cà phê ☕", "âm nhạc 🎵🎤", "guitar 🎸", "du lịch 🌊"];
 
 export default function Page() {
   const [helloKey, setHelloKey] = useState(0);
@@ -31,11 +30,10 @@ export default function Page() {
 
   return (
     <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
-      <FloatingSymbols />
 
       <div className="mx-auto flex min-h-full max-w-4xl flex-col items-center justify-center">
         <PremiumGlassCard
-          className="max-w-2xl"
+          className="max-w-2xl pointer-events-none select-none"
           contentClassName="p-12 px-24 text-center"
         >
           {/* Badge */}
@@ -56,26 +54,28 @@ export default function Page() {
 
           {/* Tagline */}
           <div className="mt-6 space-y-2">
-            <p className="mx-auto max-w-2xl text-sm leading-7 text-neutral-500 md:text-base">
-              Đây là không gian của mình trên Internet.
+            <p className="text-lg font-semibold text-gray-800">Welcome to...</p>
+            <p className="mx-auto max-w-2xl text-sm leading-7 text-gray-600 md:text-base">
+              Hệ sinh thái số cá nhân của mình trên Internet,
               <br />
-              Xây dựng những thứ mình thích chỉ với các dòng code.
+              Xây dựng những thứ mình thích chỉ với những dòng code.
             </p>
 
             <div className="overflow-hidden">
-              <p className="mt-5 text-sm text-neutral-500 md:text-base">
+              <p className="mt-5 text-sm text-gray-600 md:text-base">
                 Cuộc sống đơn giản với{" "}
                 <span
                   key={activeWord}
-                  className="inline-block min-w-[max-content] animate-fade-word font-semibold text-neutral-900"
+                  className="inline-block min-w-[max-content] animate-fade-word font-semibold text-gray-800"
                 >
                   {activeWord}
                 </span>
-                <span> 😊</span>
               </p>
             </div>
           </div>
         </PremiumGlassCard>
+
+        <p className="mt-8 text-sm/6 text-gray-400 pointer-events-none select-none">Built with Next.js - Vercel | Cloundinary | Supabase</p>
 
       </div>
     </main>

@@ -167,37 +167,36 @@ export default function BlogPage() {
       <FancyboxWrapper />
 
       {!isReady && (
-  <div className="space-y-4 md:space-y-4">
-    <div className="userWrap flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md border border-white/70 p-4 rounded-2xl animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gray-200" />
-        <div>
-          <div className="w-32 h-3 bg-gray-200 rounded mb-2" />
-          <div className="w-24 h-3 bg-gray-200 rounded" />
-        </div>
-      </div>
-      <div className="flex gap-2">
-        <div className="w-10 h-10 rounded-full bg-gray-200" />
-        <div className="w-10 h-10 rounded-full bg-gray-200" />
-      </div>
-    </div>
+        <div className="space-y-4 md:space-y-4">
+          <div className="userWrap flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md border border-white/70 p-4 rounded-2xl animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gray-200" />
+              <div>
+                <div className="w-32 h-3 bg-gray-200 rounded mb-2" />
+                <div className="w-24 h-3 bg-gray-200 rounded" />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <div className="w-10 h-10 rounded-full bg-gray-200" />
+            </div>
+          </div>
 
-    <SmartPostSkeletonFeed mode="initial" />
-  </div>
-)}
+          <SmartPostSkeletonFeed mode="initial" />
+        </div>
+      )}
 
       {isReady && (
         <>
           <BlogUserCard
-  user={user}
-  role={role}
-  fullName={fullName}
-  email={email}
-  avatar={avatar}
-  className="mb-8"
-  onOpenCreatePost={() => setOpen(true)}
-  onOpenLogin={() => setShowLogin(true)}
-/>
+            user={user}
+            role={role}
+            fullName={fullName}
+            email={email}
+            avatar={avatar}
+            className="mb-8"
+            onOpenCreatePost={() => setOpen(true)}
+            onOpenLogin={() => setShowLogin(true)}
+          />
 
           {user && role !== "admin" && (
             <p className="text-center text-gray-500 text-sm">
@@ -234,9 +233,7 @@ export default function BlogPage() {
 
           {/* 🔥 HẾT BÀI VIẾT */}
           {!loading && posts.length > 0 && !hasMore && (
-            <div className="text-center text-sm text-gray-400 mt-5">
-              Hết!
-            </div>
+            <div className="text-center text-sm text-gray-400 mt-5">Hết!</div>
           )}
 
           {user && role === "admin" && (
