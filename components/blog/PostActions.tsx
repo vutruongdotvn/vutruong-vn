@@ -51,7 +51,7 @@ export default function PostActions({
 
   return (
     <div className="postAction flex items-center gap-3 px-5 py-4">
-      <button
+      {/*<button
       onClick={() => showToast("Tính năng Yêu thích đang được phát triển", "warning")}
       className="cursor-pointer text-gray-500 transition hover:text-black active:scale-95 active:text-red-600"
     >
@@ -62,11 +62,11 @@ export default function PostActions({
       className="cursor-pointer text-gray-500 transition hover:text-black active:scale-95 active:text-red-600"
     >
       <i className="fa-duotone fa-comment" />
-    </button>
+    </button>*/}
       <button
         onClick={handleShare}
         disabled={sharing}
-        className="cursor-pointer text-gray-500 transition hover:text-black active:scale-95 active:text-red-600 disabled:opacity-50"
+        className="cursor-pointer text-gray-500 transition hover:text-black active:scale-90 active:text-red-600 disabled:opacity-50"
         title="Chia sẻ"
       >
         <i

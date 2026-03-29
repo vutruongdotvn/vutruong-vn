@@ -44,22 +44,23 @@ export default async function BlogDetailPage({
   return (
     <>
       <FancyboxWrapper />
-      <div className="actionFooter mb-3 text-center sm:text-start">
-        <Link href="/blog" className="flex md:inline-flex items-center gap-2 text-sm text-gray-600 hover:text-black
-        bg-0 sm:bg-white px-4 py-2 rounded-0 sm:rounded-md md:shadow-xs">
+
+      <article className="fullPost rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md
+              shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300
+              hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)]">
+      <div className="actionFooter px-4 pt-4 text-center sm:text-start">
+        <Link href="/blog" className="flex items-center gap-2 text-sm text-gray-600 hover:text-black">
         <i className="fa-duotone fa-arrow-left text-xs"/>
         Quay lại
         </Link>
       </div>
 
-      <article className="fullPost bg-white rounded-0 md:rounded-xl shadow-xs m-0 p-0">
-        
         {/* HEADER */}
         <PostHeader
           name={name}
           avatar={avatar}
           createdAt={post.created_at}
-          showMenu={true}
+          showMenu={false}
         />
 
         <PostBody
