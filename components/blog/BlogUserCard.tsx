@@ -38,7 +38,6 @@ export default function BlogUserCard({
             alt="avatar"
             src={avatar}
             className="w-10 h-10 rounded-full object-cover shadow-sm bg-white"
-            unoptimized={false}
           />
         </Link>
 
@@ -81,9 +80,15 @@ export default function BlogUserCard({
         ) : (
           <button
             onClick={async () => {
-              await supabase.auth.signOut();
-              // location.reload();
-            }}
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    console.error("Sign out error:", error);
+    return;
+  }
+
+  // window.location.reload();
+}}
             className="w-11 h-11 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 active:scale-90 cursor-pointer"
             title="Đăng xuất"
           >

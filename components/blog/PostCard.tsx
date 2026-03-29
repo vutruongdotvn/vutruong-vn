@@ -42,7 +42,6 @@ export default function PostCard({
               width={40}
               height={40}
               className="w-full h-full rounded-full object-cover shadow-sm bg-white"
-              unoptimized={false}
             />
           </div>
 

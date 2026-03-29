@@ -43,6 +43,8 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
       return;
     }
 
+    if (loading) return;
+
     setLoading(true);
 
     const { error } = await supabase.auth.signInWithPassword({
@@ -50,16 +52,16 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
       password,
     });
 
-    setLoading(false);
-
     if (error) {
+      console.error("Login error:", error);
       showToast("Email hoặc mật khẩu không đúng", "error");
+      setLoading(false);
       return;
-    } else {
-      showToast("Đăng nhập thành công", "success");
-      onClose();
-      // window.location.reload();
     }
+
+    showToast("Đăng nhập thành công", "success");
+    setLoading(false);
+    onClose();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -98,6 +100,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
             placeholder="admin@vutruong.vn"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="w-full border rounded-xl px-3 py-2 outline-none focus:ring-1 focus:ring-gray-200"
           />
 
@@ -119,13 +122,6 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
             className="flex-2 bg-blue-500 hover:bg-blue-600 active:bg-blue-800 transition text-white py-2 rounded-xl font-semibold disabled:opacity-50 cursor-pointer"
           >
             {loading ? "Đang xác thực" : "Đăng nhập"}
-          </button>
-
-          <button
-            onClick={onClose}
-            className="hidden flex-1 bg-gray-200 hover:bg-gray-300 active:bg-gray-400 text-gray-600 py-2 rounded-xl font-semibold cursor-pointer"
-          >
-            Đóng
           </button>
         </div>
       </div>

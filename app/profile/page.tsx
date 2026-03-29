@@ -3,14 +3,9 @@
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
-import { createClient } from "@supabase/supabase-js";
 import Cropper from "react-easy-crop";
 import { useToast } from "@/hooks/useToast";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { supabase } from "@/lib/supabase";
 
 const DEFAULT_AVATAR = "/images/default.jpg";
 
@@ -392,6 +387,7 @@ export default function ProfilePage() {
                     src={safeAvatar}
                     alt="avatar"
                     fill
+                    sizes="144px"
                     className="relative rounded-full object-cover border border-white/80 shadow-[0_14px_50px_rgba(0,0,0,0.18)]"
                     onError={() => setAvatar(DEFAULT_AVATAR)}
                   />

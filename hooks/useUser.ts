@@ -2,50 +2,58 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import type { Session, User } from "@supabase/supabase-js";
 
 export function useUser() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<"admin" | "user" | null>(null);
-  const [loading, setLoading] = useState(true); // 👈 THÊM
+  const [loading, setLoading] = useState(true);
+
+  const applyUser = (currentUser: User | null) => {
+    setUser(currentUser);
+
+    if (currentUser?.email === "admin@vutruong.vn") {
+      setRole("admin");
+    } else if (currentUser) {
+      setRole("user");
+    } else {
+      setRole(null);
+    }
+  };
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data } = await supabase.auth.getUser();
+    let mounted = true;
 
-      const currentUser = data.user;
-      setUser(currentUser);
+    const init = async () => {
+      setLoading(true);
 
-      // 👉 CHECK ADMIN (hard-code trước)
-      if (currentUser?.email === "admin@vutruong.vn") {
-        setRole("admin");
-      } else if (currentUser) {
-        setRole("user");
-      } else {
-        setRole(null);
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+
+      if (error) {
+        console.error("getSession error:", error);
       }
-      setLoading(false); // 👈 QUAN TRỌNG
+
+      if (!mounted) return;
+
+      applyUser(session?.user ?? null);
+      setLoading(false);
     };
 
-    getUser();
+    init();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        const currentUser = session?.user || null;
-        setUser(currentUser);
-
-        if (currentUser?.email === "admin@vutruong.vn") {
-          setRole("admin");
-        } else if (currentUser) {
-          setRole("user");
-        } else {
-          setRole(null);
-        }
-        setLoading(false); // 👈 thêm luôn
-      }
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session: Session | null) => {
+      applyUser(session?.user ?? null);
+      setLoading(false);
+    });
 
     return () => {
-      listener.subscription.unsubscribe();
+      mounted = false;
+      subscription.unsubscribe();
     };
   }, []);
 

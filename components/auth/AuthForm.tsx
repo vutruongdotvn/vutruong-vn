@@ -27,6 +27,8 @@ export default function AuthForm() {
       return;
     }
 
+    if (loading) return;
+
     setLoading(true);
 
     const { error } = await supabase.auth.signInWithPassword({
@@ -34,13 +36,15 @@ export default function AuthForm() {
       password,
     });
 
-    setLoading(false);
-
     if (error) {
+      console.error("Login error:", error);
       showToast("Email hoặc mật khẩu không đúng", "error");
-    } else {
-      showToast("Đăng nhập thành công", "success");
+      setLoading(false);
+      return;
     }
+
+    showToast("Đăng nhập thành công", "success");
+    setLoading(false);
   };
 
   return (
