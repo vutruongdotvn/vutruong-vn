@@ -7,6 +7,7 @@ import LoginModal from "@/components/auth/LoginModal";
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
 import { optimizeCloudinaryImage } from "@/lib/cloudinary";
+import BlogUserCardSkeleton from "@/components/blog/BlogUserCardSkeleton";
 
 export default function BlogUserPanel() {
   const [open, setOpen] = useState(false);
@@ -16,6 +17,7 @@ export default function BlogUserPanel() {
 
   // ✅ Chỉ cho skeleton hiện 1 lần duy nhất lúc mới vào trang
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+  const [forceUnlock, setForceUnlock] = useState(false);
 
   const { user, role, loading: userLoading } = useUser();
 
@@ -79,6 +81,15 @@ export default function BlogUserPanel() {
     }
   }, [userLoading, profileLoading, hasLoadedOnce]);
 
+  useEffect(() => {
+  const timeout = setTimeout(() => {
+    setForceUnlock(true);
+    setProfileLoading(false);
+  }, 3000);
+
+  return () => clearTimeout(timeout);
+}, []);
+
   const fullName = user ? profile?.name || "Người dùng" : "Xin chào! 👋";
   const email = user?.email || "";
 
@@ -92,25 +103,13 @@ export default function BlogUserPanel() {
     : "/images/default.jpg";
 
   // ✅ Skeleton chỉ hiện trong lần load đầu tiên
-  const showInitialSkeleton = !hasLoadedOnce && (userLoading || profileLoading);
+  const showInitialSkeleton =
+  !forceUnlock && !hasLoadedOnce && (userLoading || profileLoading);
 
   return (
     <>
       {showInitialSkeleton ? (
-        <div className="space-y-4 md:space-y-4 mb-8">
-          <div className="userWrap flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md border border-white/70 p-4 rounded-2xl animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gray-200" />
-              <div>
-                <div className="w-32 h-3 bg-gray-200 rounded mb-2" />
-                <div className="w-24 h-3 bg-gray-200 rounded" />
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <div className="w-10 h-10 rounded-full bg-gray-200" />
-            </div>
-          </div>
-        </div>
+        <BlogUserCardSkeleton className="mb-8" />
       ) : (
         <>
           <BlogUserCard
@@ -125,7 +124,7 @@ export default function BlogUserPanel() {
           />
 
           {user && role !== "admin" && (
-            <p className="text-center text-gray-500 text-sm mb-6">
+            <p className="text-center text-gray-500 text-sm mb-6 hidden">
               Bạn chỉ có quyền xem bài viết 👀
             </p>
           )}

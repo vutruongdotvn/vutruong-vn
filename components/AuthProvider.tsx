@@ -13,14 +13,18 @@ export default function AuthProvider({
     let mounted = true;
 
     const init = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-      if (!mounted) return;
+        if (!mounted) return;
 
-      if (session?.user) {
-        await createProfileIfNotExists();
+        if (session?.user) {
+          await createProfileIfNotExists();
+        }
+      } catch (err) {
+        console.error("AuthProvider init error:", err);
       }
     };
 
@@ -30,7 +34,11 @@ export default function AuthProvider({
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
-        await createProfileIfNotExists();
+        try {
+          await createProfileIfNotExists();
+        } catch (err) {
+          console.error("AuthProvider SIGNED_IN error:", err);
+        }
       }
     });
 
