@@ -245,10 +245,9 @@ export default function BlogTagPage() {
           <div className="mb-7 rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md px-5 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div>
-                <p className="text-sm text-gray-500 mb-1">Bộ lọc hashtag</p>
-                <h1 className="text-base sm:text-lg font-semibold text-gray-900">
-                  Các bài viết có hashtag{" "}
-                  <span className="text-gray-800">{displayTag}</span>
+                <h1 className="text-base sm:text-lg text-gray-900">
+                  Các bài viết có {" "}
+                  <span className="text-gray-800 font-semibold">{displayTag}</span>
                 </h1>
               </div>
 
@@ -263,7 +262,7 @@ export default function BlogTagPage() {
 
             <p className="text-sm text-gray-500 mt-2">
               {totalPosts > 0
-                ? `${totalPosts} bài viết được tìm thấy`
+                ? `${totalPosts} bài viết`
                 : `Chưa tìm thấy bài viết nào với hashtag ${displayTag}`}
             </p>
           </div>

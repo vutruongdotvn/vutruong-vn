@@ -95,7 +95,7 @@ export default function PostBody({
                   onClick={() => setIsExpanded(!isExpanded)}
                   className="ml-1 inline whitespace-nowrap font-medium text-gray-800 hover:underline cursor-pointer"
                 >
-                  {isExpanded ? "Thu gọn" : "Xem thêm"}
+                  {isExpanded ? "" : "Xem thêm"}
                 </button>
               )}
             </p>

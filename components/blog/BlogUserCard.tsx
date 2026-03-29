@@ -63,7 +63,7 @@ export default function BlogUserCard({
         {user && role === "admin" && (
           <button
             onClick={onOpenCreatePost}
-            className="w-11 h-11 flex items-center justify-center rounded-full bg-white/70 hover:bg-white transition border border-gray-100 shadow-sm cursor-pointer"
+            className="w-11 h-11 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
             title="Đăng bài"
           >
             <i className="fa-duotone fa-pen-to-square text-gray-600"></i>
@@ -73,7 +73,7 @@ export default function BlogUserCard({
         {!user ? (
           <button
             onClick={onOpenLogin}
-            className="w-11 h-11 flex items-center justify-center rounded-full bg-white/70 hover:bg-white transition border border-gray-100 shadow-sm cursor-pointer"
+            className="w-11 h-11 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
             title="Đăng nhập"
           >
             <i className="fa-duotone fa-user-gear text-gray-600"></i>
@@ -82,9 +82,9 @@ export default function BlogUserCard({
           <button
             onClick={async () => {
               await supabase.auth.signOut();
-              location.reload();
+              // location.reload();
             }}
-            className="w-11 h-11 flex items-center justify-center rounded-full bg-white/70 hover:bg-white transition border border-gray-100 shadow-sm cursor-pointer"
+            className="w-11 h-11 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
             title="Đăng xuất"
           >
             <i className="fa-duotone fa-arrow-right-from-bracket text-gray-600"></i>

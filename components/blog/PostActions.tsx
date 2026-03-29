@@ -50,17 +50,29 @@ export default function PostActions({
   };
 
   return (
-    <div className="postAction flex items-center gap-4 px-5 py-4">
+    <div className="postAction flex items-center gap-3 px-5 py-4">
+      <button
+      onClick={() => showToast("Tính năng Yêu thích đang được phát triển", "warning")}
+      className="cursor-pointer text-gray-500 transition hover:text-black active:scale-95 active:text-red-600"
+    >
+      <i className="fa-duotone fa-heart" />
+    </button>
+      <button
+      onClick={() => showToast("Tính năng Bình luận đang được phát triển", "warning")}
+      className="cursor-pointer text-gray-500 transition hover:text-black active:scale-95 active:text-red-600"
+    >
+      <i className="fa-duotone fa-comment" />
+    </button>
       <button
         onClick={handleShare}
         disabled={sharing}
-        className="cursor-pointer text-gray-500 transition hover:text-black active:scale-95 disabled:opacity-50"
+        className="cursor-pointer text-gray-500 transition hover:text-black active:scale-95 active:text-red-600 disabled:opacity-50"
         title="Chia sẻ"
       >
         <i
           className={
             sharing
-              ? "fa-duotone fa-loader-third fa-spin"
+              ? "fa-duotone fa-spinner-third fa-spin"
               : "fa-duotone fa-share"
           }
         />
