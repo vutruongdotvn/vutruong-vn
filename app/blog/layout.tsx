@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/image";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,7 +14,6 @@ export default function BlogLayout({
   return (
     <main className="relative min-h-screen py-28">
       <div className="max-w-2xl w-screen mx-auto px-5 sm:px-0">
-          {/* LEFT SIDEBAR DELETED */}
 
           {/* MAIN FEED */}
           <section className="postFeeds space-y-8">
