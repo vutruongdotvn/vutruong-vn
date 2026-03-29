@@ -43,7 +43,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     (
       message: string,
       type: ToastType = "success",
-      duration: number = 2600
+      duration: number = 5000
     ) => {
       const id = Date.now() + Math.floor(Math.random() * 10000);
 
@@ -103,7 +103,7 @@ function PremiumToast({
         "border-emerald-200/70 bg-white/85 text-emerald-800 shadow-emerald-100/60",
       progress: "bg-emerald-500",
       iconWrap: "bg-emerald-100 text-emerald-700",
-      title: "Thành công",
+      // title: "Thành công",
     },
     error: {
       icon: "fa-duotone fa-circle-xmark",
@@ -111,7 +111,7 @@ function PremiumToast({
         "border-red-200/70 bg-white/85 text-red-800 shadow-red-100/60",
       progress: "bg-red-500",
       iconWrap: "bg-red-100 text-red-700",
-      title: "Có lỗi xảy ra",
+      // title: "Có lỗi xảy ra",
     },
     info: {
       icon: "fa-duotone fa-circle-info",
@@ -119,15 +119,15 @@ function PremiumToast({
         "border-sky-200/70 bg-white/85 text-sky-800 shadow-sky-100/60",
       progress: "bg-sky-500",
       iconWrap: "bg-sky-100 text-sky-700",
-      title: "Thông báo",
+      // title: "Thông báo",
     },
     warning: {
-      icon: "fa-duotone fa-triangle-exclamation",
+      icon: "fa-duotone fa-exclamation",
       container:
         "border-amber-200/70 bg-white/85 text-amber-800 shadow-amber-100/60",
       progress: "bg-amber-500",
       iconWrap: "bg-amber-100 text-amber-700",
-      title: "Lưu ý",
+      // title: "Lưu ý",
     },
   };
 
@@ -135,13 +135,13 @@ function PremiumToast({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 18, scale: 0.96 }}
+      initial={{ opacity: 0, y: 0, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 12, scale: 0.97 }}
-      transition={{ duration: 0.22, ease: "easeOut" }}
+      exit={{ opacity: 0, y: 0, scale: 0.9 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
       className={`pointer-events-auto relative overflow-hidden rounded-xl border backdrop-blur-2xl shadow-2xl ${current.container}`}
     >
-      <div className="flex items-start gap-3 p-4">
+      <div className="flex items-center gap-3 p-4">
         <div
           className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${current.iconWrap}`}
         >
@@ -149,8 +149,8 @@ function PremiumToast({
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold leading-5">{current.title}</p>
-          <p className="mt-0.5 break-words text-sm leading-5 text-black/75">
+          {/*<p className="text-sm font-semibold leading-5">{current.title}</p>*/}
+          <p className="break-words text-sm leading-6 text-black/75">
             {toast.message}
           </p>
         </div>

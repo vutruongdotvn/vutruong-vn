@@ -23,7 +23,7 @@ export function useToast() {
       lastToastRef.current &&
       lastToastRef.current.message === message &&
       lastToastRef.current.type === type &&
-      now - lastToastRef.current.time < 1200
+      now - lastToastRef.current.time < 1500
     ) {
       return;
     }
