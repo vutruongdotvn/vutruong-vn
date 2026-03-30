@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import PostCard from "@/components/blog/PostCard";
 import SmartPostSkeletonFeed from "@/components/blog/SmartPostSkeletonFeed";
@@ -25,6 +25,7 @@ import {
 } from "@/services/postService";
 
 export default function BlogTagPage() {
+  const router = useRouter();
   const params = useParams();
   const rawTag = Array.isArray(params?.tag) ? params.tag[0] : params?.tag || "";
   const tagName = decodeURIComponent(rawTag).trim().toLowerCase();
@@ -47,11 +48,59 @@ export default function BlogTagPage() {
   const [profileLoading, setProfileLoading] = useState(true);
 
   const { user, role, loading: userLoading } = useUser();
-  const { showToast } = useToastContext();
+  const { showToast, removeToast } = useToastContext();
 
   const displayTag = useMemo(() => {
     return tagName.startsWith("#") ? tagName : `#${tagName}`;
   }, [tagName]);
+
+  const normalizeHashtags = (hashtags: any): string[] => {
+    if (!Array.isArray(hashtags)) return [];
+    return hashtags
+      .map((tag) => String(tag).trim().toLowerCase().replace(/^#/, ""))
+      .filter(Boolean);
+  };
+
+  const postHasCurrentTag = (post: any) => {
+    const normalized = normalizeHashtags(post?.hashtags);
+    return normalized.includes(tagName.replace(/^#/, ""));
+  };
+
+  useEffect(() => {
+  const handleCreatedPost = (event: Event) => {
+    const customEvent = event as CustomEvent;
+    const newPost = customEvent.detail;
+
+    if (!newPost) return;
+    if (!postHasCurrentTag(newPost)) return;
+
+    setPosts((prev) => {
+      if (prev.some((p) => p.id === newPost.id)) return prev;
+      return sortPosts([newPost, ...prev]);
+    });
+
+    setTotalPosts((prev) => prev + 1);
+    setLoading(false);
+  };
+
+  window.addEventListener("blog-post-created", handleCreatedPost);
+
+  return () => {
+    window.removeEventListener("blog-post-created", handleCreatedPost);
+  };
+}, [tagName]);
+
+  const sortPosts = (list: any[]) => {
+    return [...list].sort((a, b) => {
+      if (a.is_pinned !== b.is_pinned) {
+        return a.is_pinned ? -1 : 1;
+      }
+
+      return (
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+    });
+  };
 
   const fetchProfile = async () => {
     if (!user) {
@@ -72,35 +121,89 @@ export default function BlogTagPage() {
     setProfileLoading(false);
   };
 
+  const fetchTotalPosts = async () => {
+    if (!tagName) return;
+    const total = await countPostsByHashtag(tagName);
+    setTotalPosts(total);
+  };
+
   const handlePin = async (post: any) => {
+    const pinningToastId = showToast(
+      post.is_pinned ? "Đang bỏ ghim bài viết" : "Đang ghim bài viết",
+      "warning",
+      0
+    );
+
     const res = await pinPost(post.id, post.is_pinned);
 
     if (!res.success) {
-      alert(res.error);
+      removeToast(pinningToastId);
+      showToast(res.error || "Cập nhật ghim bài viết thất bại!", "error", 3200);
       return;
     }
 
-    window.location.reload();
+    setPosts((prev) =>
+      sortPosts(
+        prev.map((p) =>
+          p.id === post.id ? { ...p, is_pinned: !p.is_pinned } : p
+        )
+      )
+    );
+
+    removeToast(pinningToastId);
+    showToast(
+      post.is_pinned ? "Đã bỏ ghim bài viết" : "Đã ghim bài viết",
+      "success",
+      2200
+    );
+
+    router.refresh();
   };
 
   const handleDelete = async (post: any) => {
     if (!confirm("Xác nhận xóa bài viết này?")) return;
 
-    showToast("Đang xóa bài viết", "warning", 0);
+    const deletingToastId = showToast("Đang xóa bài viết", "warning", 0);
 
     const res = await deletePost(post.id, post.public_ids);
 
     if (!res.success) {
+      removeToast(deletingToastId);
       showToast(res.error || "Xóa bài viết thất bại!", "error", 3200);
       return;
     }
 
-    window.location.reload();
+    setPosts((prev) => prev.filter((p) => p.id !== post.id));
+    setTotalPosts((prev) => Math.max(0, prev - 1));
+
+    removeToast(deletingToastId);
+    showToast("Đã xóa bài viết", "success", 2200);
+
+    router.refresh();
   };
 
   const handleEdit = (post: any) => {
     setEditingPost(post);
     setOpen(true);
+  };
+
+  const handleEditSuccess = async (updatedPost: any) => {
+    const stillHasTag = postHasCurrentTag(updatedPost);
+
+    if (!stillHasTag) {
+      setPosts((prev) => prev.filter((p) => p.id !== updatedPost.id));
+      setTotalPosts((prev) => Math.max(0, prev - 1));
+    } else {
+      setPosts((prev) =>
+        sortPosts(
+          prev.map((p) => (p.id === updatedPost.id ? updatedPost : p))
+        )
+      );
+    }
+
+    setEditingPost(updatedPost);
+    router.refresh();
+    fetchTotalPosts();
   };
 
   const fetchPosts = async () => {
@@ -122,24 +225,18 @@ export default function BlogTagPage() {
     }
 
     setPosts((prev) => {
-      if (page === 0) return data || [];
+      if (page === 0) return sortPosts(data || []);
 
       const newPosts = data.filter(
         (newPost: any) => !prev.some((p) => p.id === newPost.id)
       );
 
-      return [...prev, ...newPosts];
+      return sortPosts([...prev, ...newPosts]);
     });
 
     setPage((prev) => prev + 1);
     setLoading(false);
     setLoadingMore(false);
-  };
-
-  const fetchTotalPosts = async () => {
-    if (!tagName) return;
-    const total = await countPostsByHashtag(tagName);
-    setTotalPosts(total);
   };
 
   useEffect(() => {
@@ -159,7 +256,7 @@ export default function BlogTagPage() {
         setHasMore(false);
       }
 
-      setPosts(firstBatch || []);
+      setPosts(sortPosts(firstBatch || []));
       setPage(1);
       setLoading(false);
     })();
@@ -183,6 +280,103 @@ export default function BlogTagPage() {
     return () => observer.disconnect();
   }, [hasMore, loadingMore, page, loading, tagName]);
 
+  useEffect(() => {
+    if (!tagName) return;
+
+    const normalizedTag = tagName.replace(/^#/, "");
+
+    const channel = supabase
+      .channel(`blog-tag-${normalizedTag}`)
+
+      .on(
+  "postgres_changes",
+  {
+    event: "INSERT",
+    schema: "public",
+    table: "posts",
+  },
+  async (payload) => {
+    const inserted = payload.new as any;
+
+    if (!postHasCurrentTag(inserted)) return;
+
+    const { data: freshPost } = await supabase
+      .from("posts")
+      .select("*")
+      .eq("id", inserted.id)
+      .maybeSingle();
+
+    if (!freshPost) return;
+
+    setPosts((prev) => {
+      if (prev.some((p) => p.id === freshPost.id)) return prev;
+      return sortPosts([freshPost, ...prev]);
+    });
+
+    setTotalPosts((prev) => prev + 1);
+    router.refresh();
+  }
+)
+
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "posts",
+        },
+        async (payload) => {
+          const updatedPost = payload.new as any;
+          const stillHasTag = postHasCurrentTag(updatedPost);
+
+          setPosts((prev) => {
+            const exists = prev.some((p) => p.id === updatedPost.id);
+
+            if (exists && !stillHasTag) {
+              return prev.filter((p) => p.id !== updatedPost.id);
+            }
+
+            if (exists && stillHasTag) {
+              return sortPosts(
+                prev.map((p) => (p.id === updatedPost.id ? updatedPost : p))
+              );
+            }
+
+            if (!exists && stillHasTag) {
+              return sortPosts([updatedPost, ...prev]);
+            }
+
+            return prev;
+          });
+
+          fetchTotalPosts();
+          router.refresh();
+        }
+      )
+
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "posts",
+        },
+        (payload) => {
+          const deletedPost = payload.old as any;
+
+          setPosts((prev) => prev.filter((p) => p.id !== deletedPost.id));
+          fetchTotalPosts();
+          router.refresh();
+        }
+      )
+
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [tagName, router]);
+
   const fullName = user ? profile?.name || "Người dùng" : "Xin chào! 👋";
   const email = user?.email || "";
 
@@ -202,21 +396,19 @@ export default function BlogTagPage() {
       <FancyboxWrapper />
 
       {!isReady && (
-  <>
-    <BlogUserCardSkeleton />
+        <>
+          <BlogUserCardSkeleton />
 
-    <div className="space-y-4 md:space-y-4 pb-28 md:pb-32">
-      {/* HASHTAG HEADER SKELETON */}
-      <div className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md p-4 animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-        <div className="w-56 h-4 bg-gray-200 rounded mb-3" />
-        <div className="w-32 h-3 bg-gray-100 rounded" />
-      </div>
+          <div className="space-y-4 md:space-y-4 pb-28 md:pb-32">
+            <div className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md p-4 animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+              <div className="w-56 h-4 bg-gray-200 rounded mb-3" />
+              <div className="w-32 h-3 bg-gray-100 rounded" />
+            </div>
 
-      {/* FEED SKELETON */}
-      <SmartPostSkeletonFeed mode="initial" />
-    </div>
-  </>
-)}
+            <SmartPostSkeletonFeed mode="initial" />
+          </div>
+        </>
+      )}
 
       {isReady && (
         <>
@@ -231,17 +423,18 @@ export default function BlogTagPage() {
             onOpenLogin={() => setShowLogin(true)}
           />
 
-          {/* BOX THÔNG BÁO HASHTAG */}
           <div className="mb-7 rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md px-5 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div>
                 <h1 className="text-base sm:text-lg text-gray-900">
-                  <span className="">
-              {totalPosts > 0
-                ? `${totalPosts} bài viết có `
-                : `Hông có bài viết nào có `}
-            </span>
-                  <span className="text-gray-800 font-semibold">{displayTag}</span>
+                  <span>
+                    {totalPosts > 0
+                      ? `${totalPosts} bài viết có `
+                      : `Hông có bài viết nào có `}
+                  </span>
+                  <span className="text-gray-800 font-semibold">
+                    {displayTag}
+                  </span>
                 </h1>
               </div>
 
@@ -253,7 +446,6 @@ export default function BlogTagPage() {
                 Quay lại Blog
               </Link>
             </div>
-
           </div>
 
           {user && role !== "admin" && (
@@ -288,21 +480,30 @@ export default function BlogTagPage() {
           <div ref={loadMoreRef}></div>
 
           {!loading && posts.length > 0 && !hasMore && (
-            <div className="text-center text-sm text-gray-400 mt-5">
-              Hết!
-            </div>
+            <div className="text-center text-sm text-gray-400 mt-5">Hết!</div>
           )}
 
           {user && role === "admin" && (
-            <CreatePostModal
-              isOpen={open}
-              editingPost={editingPost}
-              onClose={() => {
-                setOpen(false);
-                setEditingPost(null);
-              }}
-            />
-          )}
+  <CreatePostModal
+    isOpen={open}
+    editingPost={editingPost}
+    onSuccess={(savedPost) => {
+      if (editingPost) {
+        handleEditSuccess(savedPost);
+      } else {
+        window.dispatchEvent(
+          new CustomEvent("blog-post-created", {
+            detail: savedPost,
+          })
+        );
+      }
+    }}
+    onClose={() => {
+      setOpen(false);
+      setEditingPost(null);
+    }}
+  />
+)}
 
           {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
         </>
