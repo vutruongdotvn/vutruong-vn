@@ -145,7 +145,7 @@ export default function PostImages({
       key={`${img}-${i}`}
       href={img}
       data-fancybox={group}
-      className={`relative block overflow-hidden rounded-2xl group ${className}`}
+      className={`relative block overflow-hidden rounded-0 sm:rounded-lg group ${className}`}
     >
       <Image
         loading="eager"
@@ -198,7 +198,7 @@ export default function PostImages({
     <>
       {count === 1 && (
         <div
-          className={`postImages relative mt-3 overflow-hidden select-none max-h-[78vh] px-3 sm:px-5 ${getSingleImageClass()}`}
+          className={`postImages relative mt-3 overflow-hidden select-none max-h-[78vh] px-0 sm:px-5 ${getSingleImageClass()}`}
           style={getSingleImageStyle()}
         >
           {renderImage(
@@ -211,7 +211,7 @@ export default function PostImages({
       )}
 
       {count === 2 && (
-        <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
+        <div className="postImages grid grid-cols-2 gap-[2px] sm:gap-[6px] mt-3 select-none overflow-hidden px-0 sm:px-5">
           {safeImages.map((img, i) =>
             renderImage(
               img,
@@ -224,7 +224,7 @@ export default function PostImages({
       )}
 
       {count === 3 && smartLayout === "3-top-hero" && (
-        <div className="postImages mt-3 grid gap-[6px] select-none overflow-hidden px-3 sm:px-5">
+        <div className="postImages mt-3 grid gap-[2px] sm:gap-[6px] select-none overflow-hidden px-0 sm:px-5">
           <div className="relative w-full aspect-[16/9]">
             {renderImage(
               orderedImages[0],
@@ -234,7 +234,7 @@ export default function PostImages({
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-[6px]">
+          <div className="grid grid-cols-2 gap-[2px] sm:gap-[6px]">
             {orderedImages.slice(1, 3).map((img, idx) =>
               renderImage(
                 img,
@@ -248,7 +248,7 @@ export default function PostImages({
       )}
 
       {count === 3 && smartLayout === "3-left-hero" && (
-        <div className="postImages grid grid-cols-2 gap-[6px] select-none aspect-[4/3] overflow-hidden px-3 sm:px-5 mt-3">
+        <div className="postImages grid grid-cols-2 gap-[2px] sm:gap-[6px] select-none aspect-[4/3] overflow-hidden px-0 sm:px-5 mt-3">
           {renderImage(
             orderedImages[0],
             0,
@@ -256,7 +256,7 @@ export default function PostImages({
             "(max-width:768px) 50vw, 400px"
           )}
 
-          <div className="grid grid-rows-2 gap-[6px] h-full">
+          <div className="grid grid-rows-2 gap-[2px] sm:gap-[6px] h-full">
             {orderedImages.slice(1, 3).map((img, idx) =>
               renderImage(
                 img,
@@ -270,12 +270,12 @@ export default function PostImages({
       )}
 
       {count === 4 && (
-        <div className="postImages grid grid-cols-2 sm:grid-cols-4 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
+        <div className="postImages grid grid-cols-2 sm:grid-cols-4 gap-[2px] sm:gap-[6px] mt-3 select-none overflow-hidden px-0 sm:px-5">
           {orderedImages.slice(0, 4).map((img, i) =>
             renderImage(
               img,
               i,
-              "aspect-[4/3] sm:aspect-square",
+              "aspect-[4/3] sm:aspect-[3/4]",
               "(max-width:768px) 50vw, 400px"
             )
           )}
@@ -283,12 +283,12 @@ export default function PostImages({
       )}
 
       {count >= 5 && (
-        <div className="postImages grid grid-cols-2 sm:grid-cols-4 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
+        <div className="postImages grid grid-cols-2 sm:grid-cols-4 gap-[2px] sm:gap-[6px] mt-3 select-none overflow-hidden px-0 sm:px-5">
           {visibleImages.slice(0, 4).map((img, i) =>
             renderImage(
               img,
               i,
-              "aspect-[4/3] sm:aspect-square",
+              "aspect-[4/3] sm:aspect-[3/4]",
               "(max-width:768px) 50vw, 400px",
               i === 3 ? (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-lg pointer-events-none">

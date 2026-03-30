@@ -10,6 +10,7 @@ import CreatePostModal from "@/components/blog/CreatePostModal";
 import FancyboxWrapper from "@/components/blog/FancyboxWrapper";
 import LoginModal from "@/components/auth/LoginModal";
 import BlogUserCard from "@/components/blog/BlogUserCard";
+import BlogUserCardSkeleton from "@/components/blog/BlogUserCardSkeleton";
 
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
@@ -201,32 +202,21 @@ export default function BlogTagPage() {
       <FancyboxWrapper />
 
       {!isReady && (
-        <div className="space-y-4 md:space-y-4">
-          {/* USER CARD SKELETON */}
-          <div className="userWrap flex items-center justify-between gap-3 bg-white/80 backdrop-blur-md border border-white/70 p-4 rounded-2xl animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gray-200" />
-              <div>
-                <div className="w-32 h-3 bg-gray-200 rounded mb-2" />
-                <div className="w-24 h-3 bg-gray-200 rounded" />
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <div className="w-10 h-10 rounded-full bg-gray-200" />
-              <div className="w-10 h-10 rounded-full bg-gray-200" />
-            </div>
-          </div>
+  <>
+    <BlogUserCardSkeleton />
 
-          {/* HASHTAG HEADER SKELETON */}
-          <div className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md p-4 animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-            <div className="w-56 h-4 bg-gray-200 rounded mb-3" />
-            <div className="w-32 h-3 bg-gray-100 rounded" />
-          </div>
+    <div className="space-y-4 md:space-y-4 pb-28 md:pb-32">
+      {/* HASHTAG HEADER SKELETON */}
+      <div className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md p-4 animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+        <div className="w-56 h-4 bg-gray-200 rounded mb-3" />
+        <div className="w-32 h-3 bg-gray-100 rounded" />
+      </div>
 
-          {/* FEED SKELETON */}
-          <SmartPostSkeletonFeed mode="initial" />
-        </div>
-      )}
+      {/* FEED SKELETON */}
+      <SmartPostSkeletonFeed mode="initial" />
+    </div>
+  </>
+)}
 
       {isReady && (
         <>
@@ -243,10 +233,14 @@ export default function BlogTagPage() {
 
           {/* BOX THÔNG BÁO HASHTAG */}
           <div className="mb-7 rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md px-5 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-            <div className="flex items-start justify-between gap-3 flex-wrap">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
               <div>
                 <h1 className="text-base sm:text-lg text-gray-900">
-                  Các bài viết có {" "}
+                  <span className="">
+              {totalPosts > 0
+                ? `${totalPosts} bài viết có `
+                : `Hông có bài viết nào có `}
+            </span>
                   <span className="text-gray-800 font-semibold">{displayTag}</span>
                 </h1>
               </div>
@@ -260,11 +254,6 @@ export default function BlogTagPage() {
               </Link>
             </div>
 
-            <p className="text-sm text-gray-500 mt-2">
-              {totalPosts > 0
-                ? `${totalPosts} bài viết`
-                : `Chưa tìm thấy bài viết nào với hashtag ${displayTag}`}
-            </p>
           </div>
 
           {user && role !== "admin" && (
@@ -277,8 +266,8 @@ export default function BlogTagPage() {
 
           {!loading && posts.length === 0 && (
             <div className="text-center text-gray-500 py-8">
-              Chưa có bài viết nào với hashtag{" "}
-              <span className="font-medium">{displayTag}</span> 🧐
+              Chưa có bài viết nào có hashtag{" "}
+              <span className="font-medium">{displayTag}</span> cả 🧐
             </div>
           )}
 

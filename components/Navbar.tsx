@@ -152,12 +152,12 @@ export default function Navbar() {
                   prefetch
                   className={`
                     group relative flex items-center gap-2
-                    rounded-full px-4 py-2.5
-                    text-sm font-medium transition-all duration-300
+                    rounded-full px-4 py-2.5 active:scale-95
+                    text-sm font-medium duration-300
                     ${
                       active
                         ? "bg-gray-900 text-white shadow-sm"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/80"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/100"
                     }
                   `}
                 >

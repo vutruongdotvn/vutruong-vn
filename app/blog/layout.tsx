@@ -16,7 +16,7 @@ export default function BlogLayout({
       <div className="max-w-2xl w-screen mx-auto px-5 sm:px-0">
 
           {/* MAIN FEED */}
-          <section className="postFeeds space-y-8">
+          <section className="postFeeds space-y-3 md:space-y-8">
             {children}
           </section>
 

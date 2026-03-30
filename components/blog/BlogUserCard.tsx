@@ -79,7 +79,7 @@ export default function BlogUserCard({
         ${className}
       `}
       style={{
-        bottom: "max(0px, env(safe-area-inset-bottom))",
+        bottom: "env(safe-area-inset-bottom)",
       }}
     >
       <div

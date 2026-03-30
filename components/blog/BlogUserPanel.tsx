@@ -93,7 +93,7 @@ export default function BlogUserPanel() {
   return (
     <>
       {showInitialSkeleton ? (
-        <BlogUserCardSkeleton className="mb-8" />
+        <BlogUserCardSkeleton className="mb-5 md:mb-4" />
       ) : (
         <>
           <BlogUserCard
@@ -102,16 +102,16 @@ export default function BlogUserPanel() {
             fullName={fullName}
             email={email}
             avatar={avatar}
-            className="mb-8"
+            className="mb-5 md:mb-4"
             onOpenCreatePost={() => setOpen(true)}
             onOpenLogin={() => setShowLogin(true)}
           />
 
-          {user && role !== "admin" && (
+          {/*{user && role !== "admin" && (
             <p className="text-center text-gray-500 text-sm mb-6">
               Bạn chỉ có quyền xem bài viết 👀
             </p>
-          )}
+          )}*/}
         </>
       )}
 

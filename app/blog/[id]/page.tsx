@@ -49,7 +49,7 @@ export default async function BlogDetailPage({
               shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300
               hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)]">
       <div className="actionFooter md:px-4 px-3 md:pt-4 pt-3">
-        <Link href="/blog" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-black">
+        <Link href="/blog" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-black active:scale-97">
         <i className="fa-duotone fa-arrow-left text-xs"/>
         Quay lại
         </Link>

@@ -75,7 +75,7 @@ export default function PostHeader({
         )}
 
         <div className="leading-6 flex items-center gap-1 min-w-0 flex-wrap">
-          <div className="flex items-center gap-[3px] min-w-0 bg-olive-100 border border-olive-300 hover:border-olive-400 px-3 py-1 rounded-full cursor-pointer">
+          <div className="flex items-center gap-[3px] min-w-0 bg-olive-100 border border-olive-300 hover:border-olive-400 px-3 py-1 rounded-full cursor-pointer active:scale-97">
             <span className="text-sm text-olive-800 font-medium">
               {name}
             </span>
@@ -87,7 +87,7 @@ export default function PostHeader({
 
 
           {showLink && postId ? (
-            <Link className="ms-[4px]" href={`/blog/${postId}`}>{renderTimeContent()}</Link>
+            <Link className="ms-[4px] active:scale-97" href={`/blog/${postId}`}>{renderTimeContent()}</Link>
           ) : (
             renderTimeContent()
           )}
