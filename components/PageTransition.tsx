@@ -20,7 +20,7 @@ export default function PageTransition({
           duration: 0.5,
           ease: "easeInOut",
         }}
-        className="min-h-screen will-change-opacity will-change-transform will-change-auto"
+        className="min-h-screen will-change-opacity"
       >
         {children}
       </motion.div>

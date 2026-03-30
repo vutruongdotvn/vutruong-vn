@@ -75,12 +75,12 @@ export default function PostHeader({
         )}
 
         <div className="leading-6 flex items-center gap-1 min-w-0 flex-wrap">
-          <div className="flex items-center gap-[3px] min-w-0 bg-neutral-100 border border-neutral-300 hover:border-neutral-400 px-3 py-1 rounded-full cursor-pointer">
-            <span className="text-sm text-neutral-800 font-medium">
+          <div className="flex items-center gap-[3px] min-w-0 bg-olive-100 border border-olive-300 hover:border-olive-400 px-3 py-1 rounded-full cursor-pointer">
+            <span className="text-sm text-olive-800 font-medium">
               {name}
             </span>
             <i
-              className="fa-solid fa-badge-check text-neutral-500 hover:text-neutral-600 text-xs cursor-pointer shrink-0"
+              className="fa-solid fa-badge-check text-olive-500 hover:text-olive-600 text-xs cursor-pointer shrink-0"
               title="Tài khoản đã xác thực"
             />
           </div>

@@ -81,10 +81,10 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
       />
 
       {/* Modal */}
-      <div className="relative bg-white w-full max-w-md rounded-xl shadow-xl p-4 mx-2 z-10 animate-fadeIn">
+      <div className="relative bg-white w-full max-w-md rounded-xl shadow-2xl p-4 mx-2 z-10 animate-fadeIn">
         {/* HEADER */}
         <div className="flex items-center justify-between border-b pb-3">
-          <h2 className="font-semibold text-lg">Đăng nhập</h2>
+          <h2 className="font-semibold text-lg"><i className="fa-duotone fa-solid fa-arrow-left-to-arc mr-2"></i>Đăng nhập</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-black cursor-pointer"
@@ -119,7 +119,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="flex-2 bg-blue-500 hover:bg-blue-600 active:bg-blue-800 transition text-white py-2 rounded-xl font-semibold disabled:opacity-50 cursor-pointer"
+            className="flex-2 bg-blue-500 hover:bg-blue-600 active:bg-blue-800 active:scale-98 transition text-white py-2 rounded-full font-semibold disabled:opacity-50 cursor-pointer"
           >
             {loading ? "Đang xác thực" : "Đăng nhập"}
           </button>

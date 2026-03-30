@@ -8,8 +8,12 @@ import { usePathname } from "next/navigation";
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [visible, setVisible] = useState(true);
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const lastScrollY = useRef(0);
+  const ticking = useRef(false);
 
   // MENU CONFIG
   const menu = [
@@ -45,19 +49,54 @@ export default function Navbar() {
     };
   }, [open]);
 
-  // SCROLL STATE
+  // SCROLL STATE + AUTO HIDE / SHOW
   useEffect(() => {
+    lastScrollY.current = window.scrollY;
+
     const onScroll = () => {
-      setScrolled(window.scrollY > 18);
+      const currentScrollY = window.scrollY;
+      setScrolled(currentScrollY > 18);
+
+      // Khi menu mobile đang mở -> luôn hiện navbar, tránh bug UX
+      if (open) {
+        setVisible(true);
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      if (!ticking.current) {
+        window.requestAnimationFrame(() => {
+          const diff = currentScrollY - lastScrollY.current;
+
+          // Luôn hiện khi ở gần đầu trang
+          if (currentScrollY < 120) {
+            setVisible(true);
+          }
+          // Scroll xuống -> ẩn
+          else if (diff > 5) {
+            setVisible(false);
+          }
+          // Scroll lên -> hiện
+          else if (diff < -5) {
+            setVisible(true);
+          }
+
+          lastScrollY.current = currentScrollY;
+          ticking.current = false;
+        });
+
+        ticking.current = true;
+      }
     };
 
     onScroll();
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [open]);
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 flex justify-center px-4 pt-4 select-none">
+    <header className="fixed top-0 left-0 w-full z-40 flex justify-center px-4 pt-4 select-none">
       <div className="w-full max-w-2xl">
         {/* NAVBAR */}
         <div
@@ -66,8 +105,9 @@ export default function Navbar() {
             rounded-2xl border border-white/60
             bg-white/60 backdrop-blur-xl
             shadow-[0_8px_30px_rgba(0,0,0,0.05)]
-            transition-all duration-700 ease-out
-            ${scrolled ? "px-3 py-2.5" : "px-3 py-3"}
+            transition-all duration-500 ease-out will-change-transform
+            ${scrolled ? "px-3 py-3" : "px-3 py-3"}
+            ${visible ? "translate-y-0 opacity-100" : "-translate-y-3 opacity-0 pointer-events-none"}
           `}
         >
           {/* LIGHT GLOW */}
@@ -85,7 +125,7 @@ export default function Navbar() {
               height={40}
               className={`
                 pointer-events-none transition-all duration-300
-                ${scrolled ? "w-9 h-9" : "w-10 h-10"}
+                ${scrolled ? "w-10 h-10" : "w-10 h-10"}
               `}
               priority
             />
@@ -93,7 +133,7 @@ export default function Navbar() {
             <span
               className={`
                 font-bold tracking-wide text-gray-900 transition-all duration-300
-                ${scrolled ? "text-lg" : "text-xl"}
+                ${scrolled ? "text-xl" : "text-xl"}
               `}
             >
               {title}
@@ -129,7 +169,6 @@ export default function Navbar() {
 
                   <span>{item.name}</span>
 
-                  {/* Active Dot */}
                   {active && (
                     <span className="inline-block w-1.5 h-1.5 rounded-full bg-white/90" />
                   )}

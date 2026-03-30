@@ -104,11 +104,9 @@ export default function RootLayout({
         <ToastProvider>
           <LayoutShell>
             <PageTransition>
-              <div className="relative min-h-screen overflow-hidden">
-                <AuthProvider>
-                  <div className="relative z-10">{children}</div>
-                </AuthProvider>
-              </div>
+              <AuthProvider>
+                {children}
+              </AuthProvider>
             </PageTransition>
           </LayoutShell>
         </ToastProvider>

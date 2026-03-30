@@ -12,7 +12,7 @@ export default function BlogLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="relative min-h-screen py-28">
+    <main className="centerMain py-28">
       <div className="max-w-2xl w-screen mx-auto px-5 sm:px-0">
 
           {/* MAIN FEED */}
