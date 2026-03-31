@@ -400,7 +400,7 @@ export default function BlogTagPage() {
           <BlogUserCardSkeleton />
 
           <div className="space-y-4 md:space-y-4 pb-28 md:pb-32">
-            <div className="rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md p-4 animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+            <div className="rounded-2xl bg-white/80 backdrop-blur-md p-4 animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
               <div className="w-56 h-4 bg-gray-200 rounded mb-3" />
               <div className="w-32 h-3 bg-gray-100 rounded" />
             </div>
@@ -423,7 +423,7 @@ export default function BlogTagPage() {
             onOpenLogin={() => setShowLogin(true)}
           />
 
-          <div className="mb-7 rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md px-5 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="mb-7 rounded-2xl bg-white/80 backdrop-blur-md px-5 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div>
                 <h1 className="text-base sm:text-lg text-gray-900">
