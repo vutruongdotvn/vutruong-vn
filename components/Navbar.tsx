@@ -128,21 +128,19 @@ export default function Navbar() {
 
   return (
     <header className="fixed top-0 left-0 w-full z-40 flex justify-center px-4 pt-4 select-none">
-      <div className="w-full max-w-2xl">
+      <div className="w-[calc(100%-0rem)] max-w-3xl">
         {/* NAVBAR */}
         <div
           className={`
             relative flex items-center justify-between
-            rounded-2xl border border-white/60
+            rounded-full border border-white/60
             bg-white/60 backdrop-blur-xl
             shadow-[0_8px_30px_rgba(0,0,0,0.05)]
             transition-all duration-500 ease-out will-change-transform
-            ${scrolled ? "px-3 py-3" : "px-3 py-3"}
+            ${scrolled ? "p-2" : "p-3"}
             ${visible ? "translate-y-0 opacity-100" : "-translate-y-3 opacity-0 pointer-events-none"}
           `}
         >
-          {/* LIGHT GLOW */}
-          <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-r from-white/40 via-transparent to-white/30" />
 
           {/* LOGO + TITLE */}
           <Link

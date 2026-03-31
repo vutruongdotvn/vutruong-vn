@@ -399,10 +399,10 @@ export default function BlogTagPage() {
         <>
           <BlogUserCardSkeleton />
 
-          <div className="space-y-4 md:space-y-4 pb-28 md:pb-32">
-            <div className="rounded-2xl bg-white/80 backdrop-blur-md p-4 animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-              <div className="w-56 h-4 bg-gray-200 rounded mb-3" />
-              <div className="w-32 h-3 bg-gray-100 rounded" />
+          <div className="space-y-6">
+            <div className="flex items-center justify-between rounded-2xl bg-white/80 backdrop-blur-md px-4 py-5 animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+              <div className="w-40 h-5 bg-gray-200 rounded-xl" />
+              <div className="w-25 h-5 bg-gray-200 rounded-xl" />
             </div>
 
             <SmartPostSkeletonFeed mode="initial" />
@@ -426,13 +426,14 @@ export default function BlogTagPage() {
           <div className="mb-7 rounded-2xl bg-white/80 backdrop-blur-md px-5 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div>
-                <h1 className="text-base sm:text-lg text-gray-900">
+                <h1 className="text-base text-gray-800">
                   <span>
+                    <i className="fa-duotone fa-tags me-2"/>
                     {totalPosts > 0
                       ? `${totalPosts} bài viết có `
                       : `Hông có bài viết nào có `}
                   </span>
-                  <span className="text-gray-800 font-semibold">
+                  <span className="text-gray-800 font-semibold hover:text-black">
                     {displayTag}
                   </span>
                 </h1>
@@ -440,7 +441,7 @@ export default function BlogTagPage() {
 
               <Link
                 href="/blog"
-                className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-black transition"
+                className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-black active:scale-97 transition"
               >
                 <i className="fa-duotone fa-arrow-left" />
                 Quay lại Blog

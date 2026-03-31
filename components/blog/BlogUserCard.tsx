@@ -73,7 +73,7 @@ export default function BlogUserCard({
       className={`
         userWrap
         fixed left-1/2 -translate-x-1/2 z-49
-        w-[calc(100%-24px)] max-w-md
+        w-[calc(100%-0rem)] max-w-xs sm:max-w-sm
         transition-all duration-300 ease-out will-change-transform
         ${visible ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0 pointer-events-none"}
         ${className}
@@ -85,10 +85,10 @@ export default function BlogUserCard({
       <div
         className="
           flex items-center justify-between gap-3
-          rounded-2xl border border-white/70 bg-white/80 backdrop-blur-md
-          shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300
-          hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)]
-          px-4 py-3
+          rounded-full border border-white/70 bg-white/80 backdrop-blur-md
+          shadow-[0_8px_30px_rgba(0,0,0,0.05)] transition-all duration-300
+          hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)]
+          px-3 py-2
         "
       >
         {/* LEFT */}
@@ -99,23 +99,23 @@ export default function BlogUserCard({
               width={44}
               alt="avatar"
               src={avatar}
-              className="w-11 h-11 rounded-full object-cover shadow-sm bg-white"
+              className="size-11 rounded-full object-cover"
             />
           </Link>
 
           <div className="min-w-0 flex-1">
-            <p className="font-semibold text-sm sm:text-base text-gray-900 flex items-center gap-[4px] leading-5 truncate">
+            <p className="font-semibold text-base text-gray-900 flex items-center gap-[3px] leading-5 truncate">
               <span className="truncate">{fullName}</span>
 
               {user && role === "admin" && (
                 <i
-                  className="fa-solid fa-badge-check text-neutral-500 hover:text-neutral-600 cursor-pointer text-xs shrink-0"
+                  className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 cursor-pointer text-xs shrink-0"
                   title="Tài khoản đã xác thực"
                 ></i>
               )}
             </p>
 
-            <p className="text-xs sm:text-sm font-normal text-gray-500 leading-5 truncate">
+            <p className="text-sm font-normal text-gray-500 leading-5 truncate">
               {user ? email : ""}
             </p>
           </div>
@@ -126,20 +126,20 @@ export default function BlogUserCard({
           {user && role === "admin" && (
             <button
               onClick={onOpenCreatePost}
-              className="w-11 h-11 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all cursor-pointer"
+              className="w-11 h-11 flex items-center justify-center rounded-full bg-white hover:bg-gray-800 hover:text-white active:scale-90 transition-all cursor-pointer"
               title="Đăng bài"
             >
-              <i className="fa-duotone fa-pen-to-square text-gray-600"></i>
+              <i className="fa-duotone fa-pen-to-square"></i>
             </button>
           )}
 
           {!user ? (
             <button
               onClick={onOpenLogin}
-              className="w-11 h-11 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all cursor-pointer"
+              className="w-11 h-11 flex items-center justify-center rounded-full bg-white hover:bg-gray-800 hover:text-white active:scale-90 transition-all cursor-pointer"
               title="Đăng nhập"
             >
-              <i className="fa-duotone fa-user-gear text-gray-600"></i>
+              <i className="fa-duotone fa-user-gear"></i>
             </button>
           ) : (
             <button
@@ -153,10 +153,10 @@ export default function BlogUserCard({
 
                 // window.location.reload();
               }}
-              className="w-11 h-11 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all cursor-pointer"
+              className="w-11 h-11 flex items-center justify-center rounded-full bg-white hover:bg-gray-800 hover:text-white active:scale-90 transition-all cursor-pointer"
               title="Đăng xuất"
             >
-              <i className="fa-duotone fa-arrow-right-from-bracket text-gray-600"></i>
+              <i className="fa-duotone fa-arrow-right-from-bracket"></i>
             </button>
           )}
         </div>
