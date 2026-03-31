@@ -75,7 +75,7 @@ export default function Page() {
           </div>
         </PremiumGlassCard>
 
-        <p className="mt-8 text-sm/6 text-gray-400 pointer-events-none select-none">Built with Next.js - Vercel | Cloundinary | Supabase</p>
+        <p className="mt-8 text-sm/6 text-gray-400 pointer-events-none select-none">Vibes & Clean | Powered by Next.js, Vercel, Cloudinary & Supabase.</p>
 
       </div>
     </main>
