@@ -33,7 +33,7 @@ export default function PostActions({
     try {
       if (navigator.share) {
         await navigator.share(shareData);
-        // showToast("Đã mở bảng chia sẻ", "success");
+        showToast("Chia sẻ thành công!", "success");
         return;
       }
 
@@ -50,23 +50,23 @@ export default function PostActions({
   };
 
   return (
-    <div className="postAction flex items-center gap-3 px-5 py-4">
-      {/*<button
-      onClick={() => showToast("Tính năng Yêu thích đang được phát triển", "warning")}
-      className="cursor-pointer text-gray-500 transition hover:text-black active:scale-95 active:text-red-600"
+    <div className="postAction flex items-center gap-4 px-5 py-4">
+      <button
+      onClick={() => showToast("Đăng nhập để Thích bài viết này.", "warning")}
+      className="likeBtn cursor-pointer text-gray-500 transition hover:text-black active:scale-80"
     >
       <i className="fa-duotone fa-heart" />
     </button>
       <button
-      onClick={() => showToast("Tính năng Bình luận đang được phát triển", "warning")}
-      className="cursor-pointer text-gray-500 transition hover:text-black active:scale-95 active:text-red-600"
+      onClick={() => showToast("Bình luận đã bị tắt cho bài viết này.", "error")}
+      className="commentBtn cursor-pointer text-gray-500 transition hover:text-black active:scale-80"
     >
-      <i className="fa-duotone fa-comment" />
-    </button>*/}
+      <i className="fa-duotone fa-comment-slash" />
+    </button>
       <button
         onClick={handleShare}
         disabled={sharing}
-        className="cursor-pointer text-gray-500 transition hover:text-black active:scale-90 active:text-red-600 disabled:opacity-50"
+        className="shareBtn cursor-pointer text-gray-500 transition hover:text-black active:scale-80 disabled:opacity-50"
         title="Chia sẻ"
       >
         <i
