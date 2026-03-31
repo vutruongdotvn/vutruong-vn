@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import PostImages from "./PostImages";
 import {
@@ -24,93 +24,124 @@ export default function PostBody({
   images = [],
   postId,
   truncate = false,
-  maxLength = 120,
+  maxLength = 100,
   priority = false,
 }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const normalizedContent = normalizePostContent(content);
+  const normalizedContent = useMemo(() => normalizePostContent(content), [content]);
   const isLong = normalizedContent.length > maxLength;
+  const isCollapsed = truncate && isLong && !isExpanded;
 
-  const displayContent =
-    truncate && isLong && !isExpanded
-      ? smartTruncatePostContent(normalizedContent, maxLength)
-      : normalizedContent;
+  // Full content giữ nguyên format paragraph
+  const fullParagraphs = useMemo(
+    () => getPostParagraphs(normalizedContent),
+    [normalizedContent]
+  );
 
-  const paragraphs = getPostParagraphs(displayContent);
+  // Preview content kiểu Facebook: flatten toàn bộ về 1 dòng logic
+  const previewText = useMemo(() => {
+    const flat = fullParagraphs
+      .map((p) => p.trim())
+      .filter(Boolean)
+      .join(" ");
+
+    return smartTruncatePostContent(flat, maxLength);
+  }, [fullParagraphs, maxLength]);
+
+  const renderInlineParts = (text: string) => {
+    const inlineParts = parsePostInline(text);
+
+    return inlineParts.map((part, partIndex) => {
+      if (part.type === "bold") {
+        return (
+          <strong key={partIndex} className="font-semibold">
+            {part.value}
+          </strong>
+        );
+      }
+
+      if (part.type === "link") {
+        return (
+          <Link
+            key={partIndex}
+            href={part.value}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sky-800 font-medium hover:text-black break-words"
+          >
+            {part.value}
+          </Link>
+        );
+      }
+
+      if (part.type === "hashtag") {
+        const tagName = part.value.replace(/^#/, "").trim().toLowerCase();
+
+        return (
+          <Link
+            key={partIndex}
+            href={`/blog/tag/${encodeURIComponent(tagName)}`}
+            className="text-gray-800 font-medium hover:underline active:text-sky-700 break-words"
+          >
+            {part.value}
+          </Link>
+        );
+      }
+
+      return <span key={partIndex}>{part.value}</span>;
+    });
+  };
 
   return (
     <>
-      <div className="postBody text-base/8 text-left pt-3 px-3 sm:px-5 text-gray-800">
-        {paragraphs.map((paragraph, index) => {
-          const isLast = index === paragraphs.length - 1;
-          const inlineParts = parsePostInline(paragraph);
+      <div className="postBody text-left pt-3 px-3 sm:px-5 text-gray-800">
+  {isCollapsed ? (
+    <div className="text-sm/5 sm:text-base/7 break-words overflow-hidden">
+      {renderInlineParts(previewText)}
 
-          return (
-            <p
-              key={index}
-              className="mb-2.5 sm:mb-4 text-sm/5 sm:text-base/7 whitespace-pre-line last:mb-0"
+      <button
+        title="Xem toàn bộ bài viết"
+        onClick={() => setIsExpanded(true)}
+        className="ml-1 inline-flex items-center gap-1 align-baseline whitespace-nowrap font-medium text-gray-800 hover:underline cursor-pointer"
+      >
+        <span>Xem thêm</span>
+      </button>
+    </div>
+  ) : (
+    fullParagraphs.map((paragraph, index) => {
+      const isLast = index === fullParagraphs.length - 1;
+
+      return (
+        <p
+          key={index}
+          className="mb-2.5 sm:mb-4 text-sm/5 sm:text-base/7 whitespace-pre-line break-words last:mb-0"
+        >
+          {renderInlineParts(paragraph)}
+
+          {isLast && truncate && isLong && (
+            <button
+              title="Thu gọn"
+              onClick={() => setIsExpanded(false)}
+              className="ml-1 align-baseline whitespace-nowrap font-medium text-gray-800 hover:text-black cursor-pointer"
             >
-              {inlineParts.map((part, partIndex) => {
-                if (part.type === "bold") {
-                  return (
-                    <strong key={partIndex} className="font-semibold">
-                      {part.value}
-                    </strong>
-                  );
-                }
-
-                if (part.type === "link") {
-                  return (
-                    <Link
-                      key={partIndex}
-                      href={part.value}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sky-800 font-medium hover:text-black break-all"
-                    >
-                      {part.value}
-                    </Link>
-                  );
-                }
-
-                if (part.type === "hashtag") {
-                  const tagName = part.value.replace(/^#/, "").trim().toLowerCase();
-                   return (
-                   <Link
-                   key={partIndex}
-                   href={`/blog/tag/${encodeURIComponent(tagName)}`}
-                   className="text-gray-800 font-medium hover:underline active:text-sky-700"
-                   >
-                    {part.value}
-                    </Link>
-                    );
-                  }
-
-                return <span key={partIndex}>{part.value}</span>;
-              })}
-
-              {isLast && truncate && isLong && (
-                <button
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="ml-1 inline whitespace-nowrap font-medium text-gray-800 hover:underline cursor-pointer"
-                >
-                  {isExpanded ? "" : "Xem thêm"}
-                </button>
-              )}
-            </p>
-          );
-        })}
-      </div>
+              <i className="fa-duotone fa-angle-up text-sm" />
+            </button>
+          )}
+        </p>
+      );
+    })
+  )}
+</div>
 
       {Array.isArray(images) &&
-  images.some((img) => typeof img === "string" && img.trim() !== "") && (
-    <PostImages
-      images={images}
-      postId={postId}
-      priority={priority}
-    />
-)}
+        images.some((img) => typeof img === "string" && img.trim() !== "") && (
+          <PostImages
+            images={images}
+            postId={postId}
+            priority={priority}
+          />
+        )}
     </>
   );
 }
