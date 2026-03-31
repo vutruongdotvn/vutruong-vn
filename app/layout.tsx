@@ -15,7 +15,7 @@ const roboto = Roboto({
 
 // 🌐 SEO GLOBAL
 export const metadata: Metadata = {
-  metadataBase: new URL("https://vutruong.vn"),
+  metadataBase: new URL("https://www.vutruong.vn"),
 
   title: {
     default: "VT Zone",

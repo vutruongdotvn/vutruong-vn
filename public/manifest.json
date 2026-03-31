@@ -2,7 +2,7 @@
   "name": "VT Zone",
   "short_name": "VT Zone",
   "description": "Hệ sinh thái số của Vũ Trường",
-  "start_url": "/",
+  "start_url": "/blog",
   "display": "standalone",
   "background_color": "#f2f3f5",
   "theme_color": "#000000",
