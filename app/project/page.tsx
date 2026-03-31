@@ -47,14 +47,14 @@ export default function ProjectPage() {
     {
       name: "VT Blog",
       description: "Blog cá nhân - lưu giữ những điều giá trị",
-      href: "https://blog.vutruong.vn",
+      href: "/blog",
       icon: "fa-duotone fa-pen-nib",
       gradient: "from-pink-400 to-rose-500",
     },
     {
       name: "VT Secret",
       description: "Lưu trữ những tài khoản quan trọng",
-      href: "https://id.vutruong.vn",
+      href: "/secret",
       icon: "fa-duotone fa-shield-keyhole",
       gradient: "from-gray-600 to-black",
     },
