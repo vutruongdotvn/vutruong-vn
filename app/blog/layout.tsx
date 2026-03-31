@@ -12,7 +12,7 @@ export default function BlogLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="centerMain py-30">
+    <main className="V_T_Z_O_N_E_B_L_O_G py-26">
       <div className="max-w-2xl w-screen mx-auto px-5 sm:px-0">
 
           {/* MAIN FEED */}

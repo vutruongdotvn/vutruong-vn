@@ -285,7 +285,7 @@ const [showRefreshSkeleton, setShowRefreshSkeleton] = useState(false);
         rounded-full border border-white/80
         bg-white/80 backdrop-blur-xl
         px-4 py-2.5
-        shadow-[0_10px_35px_rgba(0,0,0,0.08)]
+        shadow-[0_10px_35px_rgba(0,0,0,0.15)]
         text-sm font-normal text-gray-800
         transition-all duration-800
         animate-in fade-in slide-in-from-top-2 duration-300
