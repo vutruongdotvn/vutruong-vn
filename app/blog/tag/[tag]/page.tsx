@@ -14,7 +14,7 @@ import BlogUserCardSkeleton from "@/components/blog/BlogUserCardSkeleton";
 
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
-import { optimizeCloudinaryImage } from "@/lib/cloudinary";
+import { buildCloudinaryImage } from "@/lib/cloudinary";
 import { useToastContext } from "@/components/ui/ToastProvider";
 
 import {
@@ -381,7 +381,7 @@ export default function BlogTagPage() {
   const email = user?.email || "";
 
   const avatar = user
-    ? optimizeCloudinaryImage(profile?.avatar, {
+    ? buildCloudinaryImage(profile?.avatar, {
         width: 80,
         height: 80,
         quality: 80,

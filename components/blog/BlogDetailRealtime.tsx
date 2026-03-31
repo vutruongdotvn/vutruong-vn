@@ -12,7 +12,7 @@ import PostActions from "@/components/blog/PostActions";
 import CreatePostModal from "@/components/blog/CreatePostModal";
 
 import { extractPostTitle, extractPostDescription } from "@/lib/postMeta";
-import { optimizeCloudinaryImage } from "@/lib/cloudinary";
+import { buildCloudinaryImage } from "@/lib/cloudinary";
 import { useUser } from "@/hooks/useUser";
 import { useToastContext } from "@/components/ui/ToastProvider";
 import { pinPost, deletePost } from "@/services/postService";
@@ -41,7 +41,7 @@ export default function BlogDetailRealtime({
   const name = profile?.name || post?.author_name || "Người dùng";
   const avatar = useMemo(() => {
     return (
-      optimizeCloudinaryImage(profile?.avatar || post?.author_avatar, {
+      buildCloudinaryImage(profile?.avatar || post?.author_avatar, {
         width: 80,
         height: 80,
         quality: 80,
