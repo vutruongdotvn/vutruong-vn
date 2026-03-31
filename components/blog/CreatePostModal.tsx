@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { createPost, updatePost, getPostById } from "@/services/postService";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/useToast";
+import { compressImage } from "@/lib/compressImage";
 import {
   DndContext,
   closestCenter,
@@ -91,6 +92,27 @@ const getOptimizedPreviewUrl = (
     `/upload/f_auto,q_auto,c_fill,w_${width},h_${height}/`
   );
 };
+
+// compress ảnh trước khi upload để tối ưu tài nguyên và dữ liệu
+const compressFilesBeforeUpload = async (files: File[]) => {
+  const processed = await Promise.all(
+    files.map(async (file) => {
+      const shouldCompress =
+        file.size > 450 * 1024 || /image\/(jpeg|jpg|png|webp)/i.test(file.type);
+
+      if (!shouldCompress) return file;
+
+      return await compressImage(file, {
+        maxSizeMB: 1.4,
+        maxWidthOrHeight: 2200,
+        initialQuality: 0.84,
+      });
+    })
+  );
+
+  return processed;
+};
+
 
 function SortableImageCard({
   img,

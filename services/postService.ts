@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { uploadImage } from "@/lib/cloudinary";
+import { compressImage } from "@/lib/compressImage";
 
 function normalizePublicIds(value: any): string[] {
   if (Array.isArray(value)) return value.filter(Boolean);
@@ -27,6 +28,23 @@ function generateNumericId(length = 20) {
 
   return result;
 }
+
+// nén ảnh trước khi upload
+async function compressAndUploadImage(file: File) {
+  const isCompressibleImage = /image\/(jpeg|jpg|png|webp)/i.test(file.type);
+  const shouldCompress = isCompressibleImage && file.size > 450 * 1024;
+
+  const finalFile = shouldCompress
+    ? await compressImage(file, {
+        maxSizeMB: 1.4,
+        maxWidthOrHeight: 2200,
+        initialQuality: 0.84,
+      })
+    : file;
+
+  return await uploadImage(finalFile);
+}
+
 
 // 📥 GET POSTS (có pagination)
 export const getPosts = async (from?: number, to?: number) => {
@@ -107,18 +125,18 @@ export const createPost = async ({
     }
 
     const uploadPromises = files.map(async (file) => {
-      try {
-        const result = await uploadImage(file);
+  try {
+    const result = await compressAndUploadImage(file);
 
-        return {
-          url: result.url, // giữ nguyên ảnh gốc
-          public_id: result.public_id,
-        };
-      } catch (err) {
-        console.error("Upload lỗi:", err);
-        throw err;
-      }
-    });
+    return {
+      url: result.url, // giữ nguyên ảnh gốc
+      public_id: result.public_id,
+    };
+  } catch (err) {
+    console.error("Upload lỗi:", err);
+    throw err;
+  }
+});
 
     let uploadedImages;
 
@@ -374,16 +392,16 @@ export const updatePost = async ({
     if (newItems.length > 0) {
       try {
         const uploadedResults = await Promise.all(
-          newItems.map(async (item) => {
-            const result = await uploadImage(item.file);
+  newItems.map(async (item) => {
+    const result = await compressAndUploadImage(item.file);
 
-            return {
-              id: item.id,
-              url: result.url,
-              public_id: result.public_id,
-            };
-          })
-        );
+    return {
+      id: item.id,
+      url: result.url,
+      public_id: result.public_id,
+    };
+  })
+);
 
         uploadedResults.forEach((img) => {
           uploadMap.set(img.id, {
