@@ -3,13 +3,14 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [visible, setVisible] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
 
   const lastScrollY = useRef(0);
@@ -27,6 +28,36 @@ export default function Navbar() {
   const isActive = (href: string) => {
     return href === "/" ? pathname === "/" : pathname.startsWith(href);
   };
+
+  // CLICK LINK REFRESH
+  const handleNavClick = (
+  e: React.MouseEvent<HTMLAnchorElement>,
+  href: string
+) => {
+  const isCurrentBlog = pathname === "/blog" && href === "/blog";
+
+  if (isCurrentBlog) {
+    e.preventDefault();
+
+    // Đóng menu mobile nếu đang mở
+    setOpen(false);
+
+    // Scroll về đầu trang
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
+    // Bắn event để BlogPostFeed tự refresh dữ liệu
+    setTimeout(() => {
+      window.dispatchEvent(new Event("refresh-blog-feed"));
+    }, 250);
+
+    // Nếu sau này /blog có Server Components fetch data
+    // có thể bật thêm dòng này:
+    // router.refresh();
+  }
+};
 
   // AUTO TITLE
   const current = menu.find((item) => pathname.startsWith(item.href));
@@ -150,6 +181,7 @@ export default function Navbar() {
                   key={item.name}
                   href={item.href}
                   prefetch
+                  onClick={(e) => handleNavClick(e, item.href)}
                   className={`
                     group relative flex items-center gap-2
                     rounded-full px-4 py-2.5 active:scale-95
@@ -253,7 +285,13 @@ export default function Navbar() {
                   <Link
                     key={item.name}
                     href={item.href}
-                    onClick={() => setOpen(false)}
+                    onClick={(e) => {
+    handleNavClick(e, item.href);
+
+    if (!(pathname === "/blog" && item.href === "/blog")) {
+      setOpen(false);
+    }
+  }}
                     className={`
                       flex items-center justify-between
                       rounded-2xl px-4 py-3.5

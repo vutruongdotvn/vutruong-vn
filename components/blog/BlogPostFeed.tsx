@@ -17,7 +17,9 @@ export default function BlogPostFeed() {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-
+const [refreshing, setRefreshing] = useState(false);
+const [refreshDone, setRefreshDone] = useState(false);
+const [showRefreshSkeleton, setShowRefreshSkeleton] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   // ✅ Chống request chồng nhau / stale closure
@@ -120,63 +122,97 @@ export default function BlogPostFeed() {
     );
   };
 
-  const fetchPosts = useCallback(async () => {
-    if (isFetchingRef.current) return;
-    if (!hasMoreRef.current) return;
+  const fetchPosts = useCallback(
+    async (forceRefresh = false) => {
+      if (isFetchingRef.current) return;
+      if (!hasMoreRef.current && !forceRefresh) return;
 
-    isFetchingRef.current = true;
+      isFetchingRef.current = true;
 
-    const currentPage = pageRef.current;
-    const from = currentPage * LIMIT;
-    const to = from + LIMIT - 1;
+      const currentPage = forceRefresh ? 0 : pageRef.current;
+      const from = currentPage * LIMIT;
+      const to = from + LIMIT - 1;
 
-    if (currentPage === 0) {
-      setLoading(true);
-    } else {
-      setLoadingMore(true);
+      if (forceRefresh) {
+  setRefreshDone(false);
+  setRefreshing(true);
+  setShowRefreshSkeleton(true);
+} else if (currentPage === 0) {
+  setLoading(true);
+} else {
+  setLoadingMore(true);
+}
+
+      try {
+        const data = await getPosts(from, to);
+
+        if (!mountedRef.current) return;
+
+        const safeData = Array.isArray(data) ? data : [];
+
+        if (forceRefresh) {
+  setPosts(safeData);
+  setHasMore(safeData.length >= LIMIT);
+  hasMoreRef.current = safeData.length >= LIMIT;
+  pageRef.current = 1;
+  setPage(1);
+
+  setShowRefreshSkeleton(false);
+  setRefreshing(false);
+  setRefreshDone(true);
+
+  setTimeout(() => {
+    if (mountedRef.current) {
+      setRefreshDone(false);
     }
+  }, 1200);
 
-    try {
-      const data = await getPosts(from, to);
+  return;
+}
 
-      if (!mountedRef.current) return;
-
-      const safeData = Array.isArray(data) ? data : [];
-
-      if (safeData.length < LIMIT) {
-        setHasMore(false);
-        hasMoreRef.current = false;
-      }
-
-      setPosts((prev) => {
-        if (currentPage === 0) {
-          return safeData;
+        if (safeData.length < LIMIT) {
+          setHasMore(false);
+          hasMoreRef.current = false;
         }
 
-        const newPosts = safeData.filter(
-          (newPost) => !prev.some((p) => p.id === newPost.id)
-        );
+        setPosts((prev) => {
+          if (currentPage === 0) {
+            return safeData;
+          }
 
-        return [...prev, ...newPosts];
-      });
+          const newPosts = safeData.filter(
+            (newPost) => !prev.some((p) => p.id === newPost.id)
+          );
 
-      pageRef.current = currentPage + 1;
-      setPage(currentPage + 1);
-    } catch (err) {
-      console.error("BlogPostFeed fetchPosts error:", err);
+          return [...prev, ...newPosts];
+        });
 
-      if (mountedRef.current) {
-        showToast("Không thể tải bài viết. Vui lòng thử lại.", "error", 3200);
+        pageRef.current = currentPage + 1;
+        setPage(currentPage + 1);
+      } catch (err) {
+  console.error("BlogPostFeed fetchPosts error:", err);
+
+  if (mountedRef.current) {
+    setShowRefreshSkeleton(false);
+    setRefreshing(false);
+    setRefreshDone(false);
+    showToast("Không thể tải bài viết. Vui lòng thử lại.", "error", 3200);
+  }
+} finally {
+        if (mountedRef.current) {
+          setLoading(false);
+          setLoadingMore(false);
+
+          if (!forceRefresh) {
+            setRefreshing(false);
+          }
+        }
+
+        isFetchingRef.current = false;
       }
-    } finally {
-      if (mountedRef.current) {
-        setLoading(false);
-        setLoadingMore(false);
-      }
-
-      isFetchingRef.current = false;
-    }
-  }, [showToast]);
+    },
+    [showToast]
+  );
 
   useEffect(() => {
     mountedRef.current = true;
@@ -205,6 +241,21 @@ export default function BlogPostFeed() {
     };
   }, []);
 
+  // Refresh Feeds Post
+  useEffect(() => {
+    const handleRefreshBlogFeed = async () => {
+      if (isFetchingRef.current) return;
+      await fetchPosts(true);
+    };
+
+    window.addEventListener("refresh-blog-feed", handleRefreshBlogFeed);
+
+    return () => {
+      window.removeEventListener("refresh-blog-feed", handleRefreshBlogFeed);
+    };
+  }, [fetchPosts]);
+  // End
+
   useEffect(() => {
     if (!loadMoreRef.current) return;
 
@@ -226,6 +277,41 @@ export default function BlogPostFeed() {
 
   return (
     <>
+      {(refreshing || refreshDone) && (
+        <div className="fixed top-33 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+          <div
+            className={`
+        flex items-center gap-2
+        rounded-full border border-white/80
+        bg-white/80 backdrop-blur-xl
+        px-4 py-2.5
+        shadow-[0_10px_35px_rgba(0,0,0,0.08)]
+        text-sm font-normal text-gray-800
+        transition-all duration-800
+        animate-in fade-in slide-in-from-top-2 duration-300
+      `}
+          >
+            <div className="flex items-center justify-center">
+              {refreshing ? (
+                <i className="fa-duotone fa-spinner-third fa-spin text-teal-600" />
+              ) : (
+                <i className="fa-duotone fa-circle-check text-green-600" />
+              )}
+            </div>
+
+            <span>
+              {refreshing ? "Đang tải dữ liệu" : "Đã làm mới"}
+            </span>
+          </div>
+        </div>
+      )}
+
+{showRefreshSkeleton && (
+  <div className="mb-0">
+    <SmartPostSkeletonFeed mode="loadMore" />
+  </div>
+)}
+
       {loading && <SmartPostSkeletonFeed mode="initial" />}
 
       {!loading && posts.length === 0 && (
