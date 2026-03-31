@@ -18,6 +18,7 @@ export default function Navbar() {
 
   // MENU CONFIG
   const menu = [
+    { name: "Trang chủ", href: "/", icon: "fa-duotone fa-house" },
     { name: "Bio", href: "/bio", icon: "fa-duotone fa-users" },
     { name: "Dự án", href: "/project", icon: "fa-duotone fa-code" },
     { name: "Liên hệ", href: "/contact", icon: "fa-duotone fa-envelope" },
@@ -29,39 +30,52 @@ export default function Navbar() {
     return href === "/" ? pathname === "/" : pathname.startsWith(href);
   };
 
-  // CLICK LINK REFRESH
+  // CLICK LINK REFRESH / SAME PAGE LOGIC
   const handleNavClick = (
-  e: React.MouseEvent<HTMLAnchorElement>,
-  href: string
-) => {
-  const isCurrentBlog = pathname === "/blog" && href === "/blog";
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
+    const isSamePage = pathname === href;
+    const isCurrentBlog = pathname === "/blog" && href === "/blog";
 
-  if (isCurrentBlog) {
-    e.preventDefault();
+    // Nếu đang ở đúng /blog -> refresh feed
+    if (isCurrentBlog) {
+      e.preventDefault();
 
-    // Đóng menu mobile nếu đang mở
-    setOpen(false);
+      // Đóng menu mobile nếu đang mở
+      setOpen(false);
 
-    // Scroll về đầu trang
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+      // Scroll về đầu trang
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
 
-    // Bắn event để BlogPostFeed tự refresh dữ liệu
-    setTimeout(() => {
-      window.dispatchEvent(new Event("refresh-blog-feed"));
-    }, 250);
+      // Bắn event để BlogPostFeed tự refresh dữ liệu
+      setTimeout(() => {
+        window.dispatchEvent(new Event("refresh-blog-feed"));
+      }, 250);
 
-    // Nếu sau này /blog có Server Components fetch data
-    // có thể bật thêm dòng này:
-    // router.refresh();
-  }
-};
+      // Nếu sau này /blog có Server Components fetch data
+      // có thể bật thêm dòng này:
+      // router.refresh();
+
+      return;
+    }
+
+    // Nếu click lại đúng trang hiện tại (không phải blog) -> không làm gì cả
+    if (isSamePage) {
+      e.preventDefault();
+      setOpen(false);
+    }
+  };
 
   // AUTO TITLE
-  const current = menu.find((item) => pathname.startsWith(item.href));
-  const title = pathname === "/" ? "VT Zone" : current?.name || "VT Zone";
+  const current = menu.find((item) => isActive(item.href));
+  const title = current?.name || "VT Zone";
+
+  // LINK hiện tại của chính trang đang đứng
+  const currentPageHref = current?.href || pathname || "/";
 
   // CLICK OUTSIDE
   useEffect(() => {
@@ -138,13 +152,17 @@ export default function Navbar() {
             shadow-[0_8px_30px_rgba(0,0,0,0.05)]
             transition-all duration-500 ease-out will-change-transform
             ${scrolled ? "p-2" : "p-3"}
-            ${visible ? "translate-y-0 opacity-100" : "-translate-y-3 opacity-0 pointer-events-none"}
+            ${
+              visible
+                ? "translate-y-0 opacity-100"
+                : "-translate-y-3 opacity-0 pointer-events-none"
+            }
           `}
         >
-
           {/* LOGO + TITLE */}
           <Link
-            href="/"
+            href={currentPageHref}
+            onClick={(e) => handleNavClick(e, currentPageHref)}
             className="relative z-10 flex items-center gap-2.5 pl-1"
           >
             <Image
@@ -187,7 +205,7 @@ export default function Navbar() {
                     ${
                       active
                         ? "bg-gray-900 text-white shadow-sm"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/100"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-white"
                     }
                   `}
                 >
@@ -259,7 +277,11 @@ export default function Navbar() {
                   priority
                 />
                 <div>
-                  <Link href="/" className="font-semibold text-gray-900 leading-5">
+                  <Link
+                    href={currentPageHref}
+                    onClick={(e) => handleNavClick(e, currentPageHref)}
+                    className="font-semibold text-gray-900 leading-5"
+                  >
                     {title}
                   </Link>
                 </div>
@@ -284,12 +306,12 @@ export default function Navbar() {
                     key={item.name}
                     href={item.href}
                     onClick={(e) => {
-    handleNavClick(e, item.href);
+                      handleNavClick(e, item.href);
 
-    if (!(pathname === "/blog" && item.href === "/blog")) {
-      setOpen(false);
-    }
-  }}
+                      if (!(pathname === "/blog" && item.href === "/blog")) {
+                        setOpen(false);
+                      }
+                    }}
                     className={`
                       flex items-center justify-between
                       rounded-2xl px-4 py-3.5

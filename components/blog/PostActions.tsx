@@ -51,7 +51,7 @@ export default function PostActions({
 
   return (
     <div className="postAction flex items-center gap-4 px-5 py-4">
-      <button
+      {/*<button
       onClick={() => showToast("Đăng nhập để Thích bài viết này.", "warning")}
       className="likeBtn cursor-pointer text-gray-500 transition hover:text-black active:scale-80"
     >
@@ -62,7 +62,7 @@ export default function PostActions({
       className="commentBtn cursor-pointer text-gray-500 transition hover:text-black active:scale-80"
     >
       <i className="fa-duotone fa-comment-slash" />
-    </button>
+    </button>*/}
       <button
         onClick={handleShare}
         disabled={sharing}
