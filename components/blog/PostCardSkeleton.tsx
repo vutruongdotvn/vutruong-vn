@@ -43,7 +43,7 @@ export default function PostCardSkeleton({
 
           {/* Line */}
           <div
-            className={`absolute mt-3 top-15 w-[2px] bg-gradient-to-b from-gray-300 via-gray-200 to-transparent z-0 ${
+            className={`absolute mt-3 top-15 w-[2px] bg-gradient-to-b from-gray-200 via-gray-200 to-gray-200 z-0 ${
               isLast ? "bottom-8" : "bottom-[-10px]"
             }`}
           />
