@@ -24,7 +24,7 @@ export default function PostBody({
   images = [],
   postId,
   truncate = false,
-  maxLength = 100,
+  maxLength = 130,
   priority = false,
 }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
