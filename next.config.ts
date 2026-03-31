@@ -18,8 +18,12 @@ const nextConfig: NextConfig = {
       },
     ],
 
-    deviceSizes: [640, 750, 828, 1080],
-    imageSizes: [32, 48, 64, 96, 128, 256, 384],
+    formats: ["image/avif", "image/webp"],
+
+    deviceSizes: [640, 768, 828, 1080],
+    imageSizes: [80, 160, 240, 400, 420, 800, 860, 960],
+
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 ngày
   },
 };
 

@@ -7,7 +7,8 @@ import CreatePostModal from "@/components/blog/CreatePostModal";
 import LoginModal from "@/components/auth/LoginModal";
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
-import { optimizeCloudinaryImage } from "@/lib/cloudinary";
+import { getAvatarImage } from "@/lib/cloudinary";
+
 
 export default function BlogUserPanel() {
   const [open, setOpen] = useState(false);
@@ -80,13 +81,8 @@ export default function BlogUserPanel() {
   const email = user?.email || "";
 
   const avatar = user
-    ? optimizeCloudinaryImage(profile?.avatar, {
-        width: 80,
-        height: 80,
-        quality: 80,
-        crop: "fill",
-      }) || "/images/default.jpg"
-    : "/images/default.jpg";
+  ? getAvatarImage(profile?.avatar) || "/images/default.jpg"
+  : "/images/default.jpg";
 
   const showInitialSkeleton = !hasLoadedOnce && (userLoading || profileLoading);
 

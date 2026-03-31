@@ -9,7 +9,7 @@ import {
   extractPostTitle,
   extractPostDescription,
 } from "@/lib/postMeta";
-import { optimizeCloudinaryImage } from "@/lib/cloudinary";
+import { getAvatarImage } from "@/lib/cloudinary";
 
 export default function PostCard({
   post,
@@ -20,13 +20,7 @@ export default function PostCard({
   onEdit,
 }: any) {
   const name = post.profiles?.name;
-  const avatar = optimizeCloudinaryImage(post.profiles?.avatar, {
-    width: 80,
-    height: 80,
-    quality: 80,
-    crop: "fill",
-  });
-
+  const avatar = getAvatarImage(post.profiles?.avatar);
   const { role } = useUser();
 
   return (

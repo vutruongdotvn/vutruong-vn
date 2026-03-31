@@ -1,7 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  cloudinaryLoader,
+  extractCloudinaryMeta,
+  getFeedImage,
+  getLightboxImage,
+} from "@/lib/cloudinary";
 
 type Props = {
   images?: string[];
@@ -29,59 +35,87 @@ export default function PostImages({
   const count = safeImages.length;
   const group = `post-${postId}`;
   const [imageMeta, setImageMeta] = useState<Record<string, ImageMeta>>({});
+  const imageMetaCacheRef = useRef<Record<string, ImageMeta>>({});
 
   useEffect(() => {
-    if (count === 0) {
-      setImageMeta((prev) => (Object.keys(prev).length ? {} : prev));
-      return;
-    }
+  if (count === 0) {
+    setImageMeta((prev) => (Object.keys(prev).length ? {} : prev));
+    imageMetaCacheRef.current = {};
+    return;
+  }
 
-    let isMounted = true;
+  let isMounted = true;
 
-    const loadImageSizes = async () => {
-      const results: Record<string, ImageMeta> = {};
+  const loadImageSizes = async () => {
+    const results: Record<string, ImageMeta> = {};
 
-      await Promise.all(
-        safeImages.map(
-          (src) =>
-            new Promise<void>((resolve) => {
-              const img = new window.Image();
-              img.src = src;
+    await Promise.all(
+      safeImages.map(
+        (src) =>
+          new Promise<void>((resolve) => {
+            // 1) Nếu đã có cache -> dùng luôn
+            if (imageMetaCacheRef.current[src]) {
+              results[src] = imageMetaCacheRef.current[src];
+              resolve();
+              return;
+            }
 
-              img.onload = () => {
-                results[src] = {
-                  width: img.naturalWidth,
-                  height: img.naturalHeight,
-                };
-                resolve();
+            // 2) Nếu parse được metadata từ URL transform -> dùng luôn
+            const parsed = extractCloudinaryMeta(src);
+            if (parsed) {
+              results[src] = parsed;
+              imageMetaCacheRef.current[src] = parsed;
+              resolve();
+              return;
+            }
+
+            // 3) Fallback thật sự cần mới load ảnh
+            const img = new window.Image();
+            img.decoding = "async";
+            // img.loading = "eager";
+            img.src = getFeedImage(src);
+
+            img.onload = () => {
+              const meta = {
+                width: img.naturalWidth || 1200,
+                height: img.naturalHeight || 900,
               };
 
-              img.onerror = () => {
-                results[src] = {
-                  width: 1200,
-                  height: 900,
-                };
-                resolve();
+              results[src] = meta;
+              imageMetaCacheRef.current[src] = meta;
+              resolve();
+            };
+
+            img.onerror = () => {
+              const fallback = {
+                width: 1200,
+                height: 900,
               };
-            })
-        )
-      );
 
-      if (!isMounted) return;
+              results[src] = fallback;
+              imageMetaCacheRef.current[src] = fallback;
+              resolve();
+            };
+          })
+      )
+    );
 
-      setImageMeta((prev) => {
-        const prevStr = JSON.stringify(prev);
-        const nextStr = JSON.stringify(results);
-        return prevStr === nextStr ? prev : results;
-      });
-    };
+    if (!isMounted) return;
 
-    loadImageSizes();
+    setImageMeta((prev) => {
+      const prevStr = JSON.stringify(prev);
+      const nextStr = JSON.stringify(results);
+      return prevStr === nextStr ? prev : results;
+    });
+  };
 
-    return () => {
-      isMounted = false;
-    };
-  }, [safeImages, count]);
+  loadImageSizes();
+
+  return () => {
+    isMounted = false;
+  };
+}, [safeImages, count]);
+// End optimize image postcard
 
   const getRatio = (src: string) => {
     const meta = imageMeta[src];
@@ -135,31 +169,37 @@ export default function PostImages({
   if (count === 0) return null;
 
   const renderImage = (
-    img: string,
-    i: number,
-    className: string,
-    sizes: string,
-    overlay?: React.ReactNode
-  ) => (
+  img: string,
+  i: number,
+  className: string,
+  sizes: string,
+  overlay?: React.ReactNode
+) => {
+  const lightboxUrl = getLightboxImage(img);
+  const isPriorityImage = priority && i === 0;
+
+  return (
     <a
       key={`${img}-${i}`}
-      href={img}
+      href={lightboxUrl}
       data-fancybox={group}
       className={`relative block overflow-hidden rounded-0 sm:rounded-lg group ${className}`}
     >
       <Image
-        loading="eager"
+        loader={cloudinaryLoader}
         src={img}
         alt="post"
         fill
         sizes={sizes}
-        priority={priority && i === 0}
+        priority={isPriorityImage}
+        loading={isPriorityImage ? "eager" : "lazy"}
         className="object-cover object-center transition-transform duration-900 ease-out group-hover:scale-[1.05]"
         title="Bấm để xem ảnh chất lượng cao"
       />
       {overlay}
     </a>
   );
+};
 
   const firstImage = safeImages[0];
   const firstMeta = imageMeta[firstImage];
@@ -192,7 +232,7 @@ export default function PostImages({
     if (count >= 5) return "4-grid";
 
     return null;
-  }, [count, orderedImages, imageMeta]);
+  }, [count, orderedImages]);
 
   return (
     <>
