@@ -35,7 +35,7 @@ export default function PostHeader({
   const time = formatTimeAgo(createdAt);
 
   const renderTimeContent = () => (
-    <span className="postPublish text-xs text-gray-500 hover:text-black font-normal flex items-center gap-1">
+    <span className="postPublish text-xs text-gray-500 hover:text-black font-normal gap-1">
       {time}
 
       {isPinned && (
@@ -75,12 +75,12 @@ export default function PostHeader({
         )}
 
         <div className="leading-6 flex items-center gap-1 min-w-0 flex-wrap">
-          <div className="flex items-center gap-[3px] min-w-0 bg-olive-100 border border-olive-300 hover:border-olive-400 px-3 py-1 rounded-full cursor-pointer active:scale-97">
-            <span className="text-sm text-olive-800 font-medium">
+          <div className="flex items-center justify-center gap-[3px] min-w-0 bg-slate-100 border border-slate-300 hover:border-slate-400 px-3 py-1 rounded-full cursor-pointer active:scale-97">
+            <span className="text-sm text-slate-800 font-medium">
               {name}
             </span>
             <i
-              className="fa-solid fa-badge-check text-olive-500 hover:text-olive-600 text-xs cursor-pointer shrink-0"
+              className="fa-duotone fa-badge-check text-slate-500 hover:text-slate-600 text-xs cursor-pointer shrink-0"
               title="Tài khoản đã xác thực"
             />
           </div>
