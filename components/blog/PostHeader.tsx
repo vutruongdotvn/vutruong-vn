@@ -118,13 +118,13 @@ const fullTime = `${date.toLocaleDateString("vi-VN", {
           </button>
 
           {open && (
-            <div className="absolute right-0 w-44 bg-white shadow-xl rounded-2xl z-50 border border-gray-100 overflow-hidden">
+            <div className="animate-fadeIn absolute top-0 right-0 w-55 bg-white shadow-2xl rounded-xl z-50 py-2 px-1 overflow-hidden">
               <button
                 onClick={() => {
                   onPin?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:text-green-600 text-sm flex items-center gap-2 cursor-pointer"
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 active:bg-gray-200 rounded-lg text-sm flex items-center gap-3 cursor-pointer"
               >
                 <i
                   className={`fa-duotone ${
@@ -139,7 +139,7 @@ const fullTime = `${date.toLocaleDateString("vi-VN", {
                   onEdit?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:text-amber-600 text-sm flex items-center gap-2 cursor-pointer"
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 active:bg-gray-200 rounded-lg text-sm flex items-center gap-3 cursor-pointer"
               >
                 <i className="fa-duotone fa-edit" />
                 <span>Chỉnh sửa</span>
@@ -150,7 +150,7 @@ const fullTime = `${date.toLocaleDateString("vi-VN", {
                   onDelete?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:text-red-600 text-sm flex items-center gap-2 cursor-pointer"
+                className="w-full text-left px-4 py-2 hover:bg-red-50 hover:text-red-600 active:bg-red-100 rounded-lg text-sm flex items-center gap-3 cursor-pointer"
               >
                 <i className="fa-duotone fa-trash" />
                 <span>Xóa</span>
