@@ -313,7 +313,7 @@ export default function ContactForm() {
               <div className="space-y-3">
                 <label
                   htmlFor="humanCheck"
-                  className="flex cursor-pointer items-start gap-3"
+                  className="flex cursor-pointer items-center gap-2"
                 >
                   <input
                     id="humanCheck"
@@ -322,7 +322,7 @@ export default function ContactForm() {
                     required
                     checked={formData.humanCheck}
                     onChange={handleChange}
-                    className="mt-1 h-4 w-4 cursor-pointer rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                    className="h-4 w-4 cursor-pointer rounded border-gray-300 text-sky-600 focus:ring-sky-500"
                   />
                   <span className="text-sm font-medium text-gray-700">
                     Xác nhận gửi <span className="text-red-500">*</span>
@@ -330,8 +330,7 @@ export default function ContactForm() {
                 </label>
 
                 <p className="text-sm leading-6 text-gray-500">
-                  Có phát hiện chống spam cơ bản. Vui lòng kiểm tra kỹ thông
-                  tin trước khi gửi.
+                  Vui lòng kiểm tra kỹ thông tin trước khi gửi.
                 </p>
               </div>
 

@@ -10,10 +10,10 @@ export default function BioPage() {
       {/* Title */}
       <div>
         <h1 className="text-2xl font-semibold text-gray-900">
-          Kết nối với mình
+          Biography
         </h1>
         <p className="text-gray-500 text-sm">
-          Qua mạng xã hội
+          Liên kết mạng xã hội
         </p>
       </div>
 

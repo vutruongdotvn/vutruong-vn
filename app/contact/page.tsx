@@ -37,14 +37,14 @@ export default function ContactPage() {
       {/* Header */}
       <div className="text-center">
         <h1 className="font-semibold text-gray-900 text-2xl">
-          Liên hệ với mình
+          Liên hệ
         </h1>
         <p className="text-sm text-gray-500">
-          Qua các kênh bên dưới hoặc gửi biểu mẫu trực tiếp
+          Trao đổi công việc | Cộng tác | Tài trợ
         </p>
       </div>
 
-      {/* Contact cards */}
+      {/* Contact cards 
       <div className="space-y-4 text-left">
         {socials.map((item, index) => (
           <ContactCard
@@ -57,6 +57,7 @@ export default function ContactPage() {
           />
         ))}
       </div>
+      */}
 
       {/* Contact form */}
       <ContactForm />
