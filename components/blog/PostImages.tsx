@@ -193,8 +193,7 @@ export default function PostImages({
         sizes={sizes}
         priority={isPriorityImage}
         loading={isPriorityImage ? "eager" : "lazy"}
-        className="object-cover object-center transition-transform duration-900 ease-out group-hover:scale-[1.05]"
-        title="Bấm để xem ảnh chất lượng cao"
+        className="object-cover object-center transition-transform duration-1200 ease-out group-hover:scale-[1.05]"
       />
       {overlay}
     </a>

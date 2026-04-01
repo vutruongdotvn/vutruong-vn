@@ -24,7 +24,7 @@ export default function PostBody({
   images = [],
   postId,
   truncate = false,
-  maxLength = 90,
+  maxLength = 180,
   priority = false,
 }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -82,7 +82,7 @@ export default function PostBody({
           <Link
             key={partIndex}
             href={`/blog/tag/${encodeURIComponent(tagName)}`}
-            className="text-gray-800 font-medium hover:underline active:text-sky-700 break-words"
+            className="text-gray-800 font-medium hover:underline active:scale-97 inline-flex break-words"
           >
             {part.value}
           </Link>
@@ -97,7 +97,7 @@ export default function PostBody({
     <>
       <div className="postBody text-left pt-3 px-3 sm:px-5 text-gray-800">
   {isCollapsed ? (
-    <div className="text-sm/5 sm:text-base/7 break-words overflow-hidden">
+    <div className="text-sm/6 sm:text-base/6 break-words overflow-hidden">
       {renderInlineParts(previewText)}
 
       <button

@@ -43,7 +43,7 @@ export default function PostCardSkeleton({
 
           {/* Line */}
           <div
-            className={`absolute mt-3 top-15 w-[2px] bg-gradient-to-b from-gray-200 via-gray-200 to-gray-200 z-0 ${
+            className={`absolute mt-3 top-15 w-[2px] bg-gradient-to-b from-gray-300 via-gray-200 to-transparent z-0 ${
               isLast ? "bottom-8" : "bottom-[-10px]"
             }`}
           />
@@ -64,7 +64,7 @@ export default function PostCardSkeleton({
             <div className="flex items-center justify-between px-3 sm:px-5 pt-3 sm:pt-5 select-none">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="leading-6 flex items-center gap-2 min-w-0 flex-wrap">
-                  <div className="h-[34px] w-[122px] rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse border border-neutral-200" />
+                  <div className="h-[34px] w-[100px] rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse border border-neutral-200" />
                   <div className="h-4 w-24 rounded-xl bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
                 </div>
               </div>
@@ -76,7 +76,6 @@ export default function PostCardSkeleton({
             <div className="px-0 sm:px-5 pt-4">
               {/* Title / text */}
               <div className="px-3 sm:px-0 space-y-3">
-                <SkeletonLine width="w-[82%]" height="h-6" />
                 <SkeletonLine width="w-[96%]" />
                 <SkeletonLine width="w-[88%]" />
                 <SkeletonLine width="w-[72%]" />
