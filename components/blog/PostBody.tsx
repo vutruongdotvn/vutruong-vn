@@ -97,7 +97,7 @@ export default function PostBody({
     <>
       <div className="postBody text-left pt-3 px-3 sm:px-5 text-gray-800">
   {isCollapsed ? (
-    <div className="text-sm/6 sm:text-base/6 break-words overflow-hidden">
+    <div className="postShortPreview text-sm/6 sm:text-base/6 break-words overflow-hidden">
       {renderInlineParts(previewText)}
 
       <button
@@ -115,7 +115,7 @@ export default function PostBody({
       return (
         <p
           key={index}
-          className="mb-2.5 sm:mb-4 text-sm/5 sm:text-base/7 whitespace-pre-line break-words last:mb-0"
+          className="postParagraph mb-3 sm:mb-4 text-sm/6 sm:text-base/6 whitespace-pre-line break-words last:mb-0"
         >
           {renderInlineParts(paragraph)}
 
