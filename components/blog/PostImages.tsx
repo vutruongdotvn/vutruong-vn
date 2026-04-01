@@ -125,6 +125,33 @@ export default function PostImages({
 
   const isLandscape = (src: string) => getRatio(src) >= 1.15;
 
+  const isPortrait = (src: string) => getRatio(src) <= 0.9;
+
+const getTwoImageAspectClass = () => {
+  if (safeImages.length !== 2) return "aspect-square";
+
+  const [img1, img2] = safeImages;
+
+  const firstIsPortrait = isPortrait(img1);
+  const secondIsPortrait = isPortrait(img2);
+
+  const firstIsLandscape = isLandscape(img1);
+  const secondIsLandscape = isLandscape(img2);
+
+  // Cả 2 đều dọc
+  if (firstIsPortrait && secondIsPortrait) {
+    return "aspect-[3/4]";
+  }
+
+  // Cả 2 đều ngang
+  if (firstIsLandscape && secondIsLandscape) {
+    return "aspect-[4/3]";
+  }
+
+  // 1 dọc 1 ngang hoặc tỉ lệ không đồng bộ
+  return "aspect-square";
+};
+
   const heroIndex = useMemo(() => {
     if (count < 3) return 0;
 
@@ -250,17 +277,17 @@ export default function PostImages({
       )}
 
       {count === 2 && (
-        <div className="postImages grid grid-cols-2 gap-[2px] sm:gap-[6px] mt-3 select-none overflow-hidden px-0 sm:px-5">
-          {safeImages.map((img, i) =>
-            renderImage(
-              img,
-              i,
-              "aspect-[4/3]",
-              "(max-width:768px) 50vw, 400px"
-            )
-          )}
-        </div>
-      )}
+  <div className="postImages grid grid-cols-2 gap-[2px] sm:gap-[6px] mt-3 select-none overflow-hidden px-0 sm:px-5">
+    {safeImages.map((img, i) =>
+      renderImage(
+        img,
+        i,
+        getTwoImageAspectClass(),
+        "(max-width:768px) 50vw, 400px"
+      )
+    )}
+  </div>
+)}
 
       {count === 3 && smartLayout === "3-top-hero" && (
         <div className="postImages mt-3 grid gap-[2px] sm:gap-[6px] select-none overflow-hidden px-0 sm:px-5">
