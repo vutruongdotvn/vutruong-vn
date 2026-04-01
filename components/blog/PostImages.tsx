@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
 import {
   cloudinaryLoader,
   extractCloudinaryMeta,
@@ -37,85 +38,150 @@ export default function PostImages({
   const [imageMeta, setImageMeta] = useState<Record<string, ImageMeta>>({});
   const imageMetaCacheRef = useRef<Record<string, ImageMeta>>({});
 
+  /**
+   * ==============================
+   * SLIDER CONFIG (DỄ CHỈNH)
+   * ==============================
+   *
+   * flex-basis của mỗi slide theo breakpoint:
+   * - mobile: càng lớn => mỗi lần thấy ít ảnh hơn
+   * - desktop: càng nhỏ => mỗi lần thấy nhiều ảnh hơn
+   *
+   * Ví dụ:
+   * - "78%"  -> màn nhỏ thấy ~1.2 ảnh
+   * - "48%"  -> tablet thấy ~2 ảnh
+   * - "32%"  -> desktop thấy ~3 ảnh
+   * - "24%"  -> desktop lớn thấy ~4 ảnh
+   */
+  const sliderBasisClass = `
+    min-w-0 flex-[0_0_38%]
+    sm:flex-[0_0_38%]
+    lg:flex-[0_0_28%]
+    xl:flex-[0_0_28%]
+  `;
+
+  // Embla dùng cho 4+ ảnh
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "start",
+    dragFree: false,
+    containScroll: "trimSnaps",
+  });
+
   useEffect(() => {
-  if (count === 0) {
-    setImageMeta((prev) => (Object.keys(prev).length ? {} : prev));
-    imageMetaCacheRef.current = {};
-    return;
-  }
+    if (count === 0) {
+      setImageMeta((prev) => (Object.keys(prev).length ? {} : prev));
+      imageMetaCacheRef.current = {};
+      return;
+    }
 
-  let isMounted = true;
+    let isMounted = true;
 
-  const loadImageSizes = async () => {
-    const results: Record<string, ImageMeta> = {};
+    const loadImageSizes = async () => {
+      const results: Record<string, ImageMeta> = {};
 
-    await Promise.all(
-      safeImages.map(
-        (src) =>
-          new Promise<void>((resolve) => {
-            // 1) Nếu đã có cache -> dùng luôn
-            if (imageMetaCacheRef.current[src]) {
-              results[src] = imageMetaCacheRef.current[src];
-              resolve();
-              return;
-            }
+      await Promise.all(
+        safeImages.map(
+          (src) =>
+            new Promise<void>((resolve) => {
+              // 1) Nếu đã có cache -> dùng luôn
+              if (imageMetaCacheRef.current[src]) {
+                results[src] = imageMetaCacheRef.current[src];
+                resolve();
+                return;
+              }
 
-            // 2) Nếu parse được metadata từ URL transform -> dùng luôn
-            const parsed = extractCloudinaryMeta(src);
-            if (parsed) {
-              results[src] = parsed;
-              imageMetaCacheRef.current[src] = parsed;
-              resolve();
-              return;
-            }
+              // 2) Nếu parse được metadata từ URL transform -> dùng luôn
+              const parsed = extractCloudinaryMeta(src);
+              if (parsed) {
+                results[src] = parsed;
+                imageMetaCacheRef.current[src] = parsed;
+                resolve();
+                return;
+              }
 
-            // 3) Fallback thật sự cần mới load ảnh
-            const img = new window.Image();
-            img.decoding = "async";
-            // img.loading = "eager";
-            img.src = getFeedImage(src);
+              // 3) Fallback thật sự cần mới load ảnh
+              const img = new window.Image();
+              img.decoding = "async";
+              img.src = getFeedImage(src);
 
-            img.onload = () => {
-              const meta = {
-                width: img.naturalWidth || 1200,
-                height: img.naturalHeight || 900,
+              img.onload = () => {
+                const meta = {
+                  width: img.naturalWidth || 1200,
+                  height: img.naturalHeight || 900,
+                };
+
+                results[src] = meta;
+                imageMetaCacheRef.current[src] = meta;
+                resolve();
               };
 
-              results[src] = meta;
-              imageMetaCacheRef.current[src] = meta;
-              resolve();
-            };
+              img.onerror = () => {
+                const fallback = {
+                  width: 1200,
+                  height: 900,
+                };
 
-            img.onerror = () => {
-              const fallback = {
-                width: 1200,
-                height: 900,
+                results[src] = fallback;
+                imageMetaCacheRef.current[src] = fallback;
+                resolve();
               };
+            })
+        )
+      );
 
-              results[src] = fallback;
-              imageMetaCacheRef.current[src] = fallback;
-              resolve();
-            };
-          })
-      )
-    );
+      if (!isMounted) return;
 
-    if (!isMounted) return;
+      setImageMeta((prev) => {
+        const prevStr = JSON.stringify(prev);
+        const nextStr = JSON.stringify(results);
+        return prevStr === nextStr ? prev : results;
+      });
+    };
 
-    setImageMeta((prev) => {
-      const prevStr = JSON.stringify(prev);
-      const nextStr = JSON.stringify(results);
-      return prevStr === nextStr ? prev : results;
-    });
-  };
+    loadImageSizes();
 
-  loadImageSizes();
+    return () => {
+      isMounted = false;
+    };
+  }, [safeImages, count]);
 
-  return () => {
-    isMounted = false;
-  };
-}, [safeImages, count]);
-// End optimize image postcard
+  /**
+   * Desktop wheel scroll cho slider 4+ ảnh
+   * - Fix lỗi emblaApi.scrollBy không tồn tại
+   * - Dùng scrollTo(selectedSnap +/- 1) an toàn hơn
+   */
+  useEffect(() => {
+    if (!emblaApi || count < 4) return;
+
+    const container = emblaApi.containerNode();
+
+    const handleWheel = (e: WheelEvent) => {
+      const isDesktopLike = window.matchMedia("(pointer: fine)").matches;
+      if (!isDesktopLike) return;
+
+      const delta =
+        Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+
+      if (delta === 0) return;
+
+      e.preventDefault();
+
+      const currentIndex = emblaApi.selectedScrollSnap();
+      const snapCount = emblaApi.scrollSnapList().length;
+
+      if (delta > 0) {
+        emblaApi.scrollTo(Math.min(currentIndex + 1, snapCount - 1));
+      } else {
+        emblaApi.scrollTo(Math.max(currentIndex - 1, 0));
+      }
+    };
+
+    container.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      container.removeEventListener("wheel", handleWheel);
+    };
+  }, [emblaApi, count]);
 
   const getRatio = (src: string) => {
     const meta = imageMeta[src];
@@ -124,33 +190,32 @@ export default function PostImages({
   };
 
   const isLandscape = (src: string) => getRatio(src) >= 1.15;
-
   const isPortrait = (src: string) => getRatio(src) <= 0.9;
 
-const getTwoImageAspectClass = () => {
-  if (safeImages.length !== 2) return "aspect-square";
+  const getTwoImageAspectClass = () => {
+    if (safeImages.length !== 2) return "aspect-square";
 
-  const [img1, img2] = safeImages;
+    const [img1, img2] = safeImages;
 
-  const firstIsPortrait = isPortrait(img1);
-  const secondIsPortrait = isPortrait(img2);
+    const firstIsPortrait = isPortrait(img1);
+    const secondIsPortrait = isPortrait(img2);
 
-  const firstIsLandscape = isLandscape(img1);
-  const secondIsLandscape = isLandscape(img2);
+    const firstIsLandscape = isLandscape(img1);
+    const secondIsLandscape = isLandscape(img2);
 
-  // Cả 2 đều dọc
-  if (firstIsPortrait && secondIsPortrait) {
-    return "aspect-[3/4]";
-  }
+    // Cả 2 đều dọc
+    if (firstIsPortrait && secondIsPortrait) {
+      return "aspect-[3/4]";
+    }
 
-  // Cả 2 đều ngang
-  if (firstIsLandscape && secondIsLandscape) {
-    return "aspect-[4/3]";
-  }
+    // Cả 2 đều ngang
+    if (firstIsLandscape && secondIsLandscape) {
+      return "aspect-[4/3]";
+    }
 
-  // 1 dọc 1 ngang hoặc tỉ lệ không đồng bộ
-  return "aspect-square";
-};
+    // 1 dọc 1 ngang hoặc tỉ lệ không đồng bộ
+    return "aspect-square";
+  };
 
   const heroIndex = useMemo(() => {
     if (count < 3) return 0;
@@ -190,42 +255,39 @@ const getTwoImageAspectClass = () => {
     return [hero, ...cloned];
   }, [safeImages, heroIndex, count]);
 
-  const visibleImages = count <= 5 ? orderedImages : orderedImages.slice(0, 5);
-  const hiddenImages = count > 5 ? orderedImages.slice(5) : [];
-
   if (count === 0) return null;
 
   const renderImage = (
-  img: string,
-  i: number,
-  className: string,
-  sizes: string,
-  overlay?: React.ReactNode
-) => {
-  const lightboxUrl = getLightboxImage(img);
-  const isPriorityImage = priority && i === 0;
+    img: string,
+    i: number,
+    className: string,
+    sizes: string,
+    overlay?: React.ReactNode
+  ) => {
+    const lightboxUrl = getLightboxImage(img);
+    const isPriorityImage = priority && i === 0;
 
-  return (
-    <a
-      key={`${img}-${i}`}
-      href={lightboxUrl}
-      data-fancybox={group}
-      className={`relative block overflow-hidden rounded-0 sm:rounded-lg group ${className}`}
-    >
-      <Image
-        loader={cloudinaryLoader}
-        src={img}
-        alt="post"
-        fill
-        sizes={sizes}
-        priority={isPriorityImage}
-        loading={isPriorityImage ? "eager" : "lazy"}
-        className="object-cover object-center transition-transform duration-1200 ease-out group-hover:scale-[1.05]"
-      />
-      {overlay}
-    </a>
-  );
-};
+    return (
+      <a
+        key={`${img}-${i}`}
+        href={lightboxUrl}
+        data-fancybox={group}
+        className={`relative block overflow-hidden rounded-0 sm:rounded-lg group ${className}`}
+      >
+        <Image
+          loader={cloudinaryLoader}
+          src={img}
+          alt="post"
+          fill
+          sizes={sizes}
+          priority={isPriorityImage}
+          loading={isPriorityImage ? "eager" : "lazy"}
+          className="object-cover object-center transition-transform duration-1200 ease-out group-hover:scale-[1.05]"
+        />
+        {overlay}
+      </a>
+    );
+  };
 
   const firstImage = safeImages[0];
   const firstMeta = imageMeta[firstImage];
@@ -254,9 +316,7 @@ const getTwoImageAspectClass = () => {
       return hasLandscape ? "3-top-hero" : "3-left-hero";
     }
 
-    if (count === 4) return "4-grid";
-    if (count >= 5) return "4-grid";
-
+    if (count >= 4) return "slider";
     return null;
   }, [count, orderedImages]);
 
@@ -277,17 +337,17 @@ const getTwoImageAspectClass = () => {
       )}
 
       {count === 2 && (
-  <div className="postImages grid grid-cols-2 gap-[2px] sm:gap-[6px] mt-3 select-none overflow-hidden px-0 sm:px-5">
-    {safeImages.map((img, i) =>
-      renderImage(
-        img,
-        i,
-        getTwoImageAspectClass(),
-        "(max-width:768px) 50vw, 400px"
-      )
-    )}
-  </div>
-)}
+        <div className="postImages grid grid-cols-2 gap-[2px] sm:gap-[6px] mt-3 select-none overflow-hidden px-0 sm:px-5">
+          {safeImages.map((img, i) =>
+            renderImage(
+              img,
+              i,
+              getTwoImageAspectClass(),
+              "(max-width:768px) 50vw, 400px"
+            )
+          )}
+        </div>
+      )}
 
       {count === 3 && smartLayout === "3-top-hero" && (
         <div className="postImages mt-3 grid gap-[2px] sm:gap-[6px] select-none overflow-hidden px-0 sm:px-5">
@@ -335,42 +395,24 @@ const getTwoImageAspectClass = () => {
         </div>
       )}
 
-      {count === 4 && (
-        <div className="postImages grid grid-cols-2 sm:grid-cols-4 gap-[2px] sm:gap-[6px] mt-3 select-none overflow-hidden px-0 sm:px-5">
-          {orderedImages.slice(0, 4).map((img, i) =>
-            renderImage(
-              img,
-              i,
-              "aspect-[4/3] sm:aspect-[3/4]",
-              "(max-width:768px) 50vw, 400px"
-            )
-          )}
-        </div>
-      )}
-
-      {count >= 5 && (
-        <div className="postImages grid grid-cols-2 sm:grid-cols-4 gap-[2px] sm:gap-[6px] mt-3 select-none overflow-hidden px-0 sm:px-5">
-          {visibleImages.slice(0, 4).map((img, i) =>
-            renderImage(
-              img,
-              i,
-              "aspect-[4/3] sm:aspect-[3/4]",
-              "(max-width:768px) 50vw, 400px",
-              i === 3 ? (
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-lg pointer-events-none">
-                  +{count - 4}
+      {count >= 4 && smartLayout === "slider" && (
+        <div className="postImages mt-3 select-none overflow-hidden px-0 sm:px-5">
+          <div ref={emblaRef} className="overflow-hidden">
+            <div className="flex gap-[2px] sm:gap-[6px]">
+              {orderedImages.map((img, i) => (
+                <div key={`${img}-${i}`} className={sliderBasisClass}>
+                  <div className="relative aspect-[3/4]">
+                    {renderImage(
+                      img,
+                      i,
+                      "w-full h-full",
+                      "(max-width:640px) 78vw, (max-width:1024px) 48vw, 24vw"
+                    )}
+                  </div>
                 </div>
-              ) : null
-            )
-          )}
-        </div>
-      )}
-
-      {hiddenImages.length > 0 && (
-        <div className="hidden">
-          {hiddenImages.map((img, i) => (
-            <a key={`hidden-${i}`} href={img} data-fancybox={group} />
-          ))}
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </>
