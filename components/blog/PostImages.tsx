@@ -53,7 +53,7 @@ export default function PostImages({
    * Muốn thấy nhiều ảnh hơn -> giảm %
    */
   const sliderBasisClass = `
-    min-w-0 flex-[0_0_40%]
+    min-w-0 flex-[0_0_69%]
     sm:flex-[0_0_36%]
     lg:flex-[0_0_36%]
     xl:flex-[0_0_36%]
