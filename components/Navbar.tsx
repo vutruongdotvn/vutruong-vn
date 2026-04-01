@@ -180,7 +180,7 @@ export default function Navbar() {
             <span
               className={`
                 font-bold tracking-wide text-gray-900 transition-all duration-300
-                ${scrolled ? "text-xl" : "text-xl"}
+                ${scrolled ? "text-lg" : "text-lg"}
               `}
             >
               {title}
