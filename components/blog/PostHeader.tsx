@@ -34,19 +34,15 @@ export default function PostHeader({
 }: Props) {
   const time = formatTimeAgo(createdAt);
 
-  const renderTimeContent = () => (
-    <span className="postPublish text-xs text-gray-500 hover:text-black font-normal gap-1">
-      {time}
-
-      {isPinned && (
-        <>
-          <span className="text-gray-500 font-normal flex items-center gap-[4px] ml-1" title="Bài ghim">
-            <i className="fa-duotone fa-thumbtack text-sm" />
-          </span>
-        </>
-      )}
-    </span>
-  );
+  const date = new Date(createdAt);
+const fullTime = `${date.toLocaleDateString("vi-VN", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+})} lúc ${date.toLocaleTimeString("vi-VN", {
+  hour: "2-digit",
+  minute: "2-digit",
+})}`;
 
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -85,12 +81,30 @@ export default function PostHeader({
             />
           </div>
 
+          <div className="flex items-center gap-1 ms-[4px] min-w-0 flex-wrap">
+            {showLink && postId ? (
+              <Link
+  className="postPublish text-xs text-gray-500 hover:text-black font-normal active:scale-97"
+  href={`/blog/${postId}`}
+  title={fullTime}
+>
+  {time}
+</Link>
+            ) : (
+              <span
+  className="postPublish text-xs text-gray-500 font-normal"
+  title={fullTime}
+>
+  {time}
+</span>
+            )}
 
-          {showLink && postId ? (
-            <Link className="ms-[4px] active:scale-97" href={`/blog/${postId}`}>{renderTimeContent()}</Link>
-          ) : (
-            renderTimeContent()
-          )}
+            {isPinned && (
+              <span className="text-gray-600 hover:text-black text-sm active:scale-95 cursor-pointer" title="Bài ghim">
+                <i className="fa-duotone fa-thumbtack" />
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
