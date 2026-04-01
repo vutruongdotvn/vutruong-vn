@@ -26,7 +26,6 @@ export default function PostImages({
   postId,
   priority = false,
 }: Props) {
-  // Memo để tránh tạo array mới mỗi render
   const safeImages = useMemo(() => {
     return Array.isArray(images)
       ? images.filter((img) => typeof img === "string" && img.trim() !== "")
@@ -40,30 +39,35 @@ export default function PostImages({
 
   /**
    * ==============================
-   * SLIDER CONFIG (DỄ CHỈNH)
+   * SLIDER WIDTH CONFIG (DỄ CHỈNH)
    * ==============================
    *
-   * flex-basis của mỗi slide theo breakpoint:
-   * - mobile: càng lớn => mỗi lần thấy ít ảnh hơn
-   * - desktop: càng nhỏ => mỗi lần thấy nhiều ảnh hơn
+   * Chỉnh tại đây để quyết định mỗi màn hình hiển thị khoảng bao nhiêu ảnh:
    *
-   * Ví dụ:
-   * - "78%"  -> màn nhỏ thấy ~1.2 ảnh
-   * - "48%"  -> tablet thấy ~2 ảnh
-   * - "32%"  -> desktop thấy ~3 ảnh
-   * - "24%"  -> desktop lớn thấy ~4 ảnh
+   * - mobile: flex-[0_0_78%]   -> ~1.2 ảnh
+   * - sm:     flex-[0_0_48%]   -> ~2 ảnh
+   * - lg:     flex-[0_0_32%]   -> ~3 ảnh
+   * - xl:     flex-[0_0_24%]   -> ~4 ảnh
+   *
+   * Muốn ảnh to hơn -> tăng %
+   * Muốn thấy nhiều ảnh hơn -> giảm %
    */
   const sliderBasisClass = `
-    min-w-0 flex-[0_0_38%]
-    sm:flex-[0_0_38%]
-    lg:flex-[0_0_28%]
-    xl:flex-[0_0_28%]
+    min-w-0 flex-[0_0_40%]
+    sm:flex-[0_0_36%]
+    lg:flex-[0_0_36%]
+    xl:flex-[0_0_36%]
   `;
 
-  // Embla dùng cho 4+ ảnh
+  /**
+   * Embla cho 4+ ảnh
+   *
+   * dragFree: true
+   * => cảm giác kéo/cuộn tự nhiên, không bị "snap cứng từng ảnh"
+   */
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
-    dragFree: false,
+    dragFree: true,
     containScroll: "trimSnaps",
   });
 
@@ -83,14 +87,14 @@ export default function PostImages({
         safeImages.map(
           (src) =>
             new Promise<void>((resolve) => {
-              // 1) Nếu đã có cache -> dùng luôn
+              // 1) cache local
               if (imageMetaCacheRef.current[src]) {
                 results[src] = imageMetaCacheRef.current[src];
                 resolve();
                 return;
               }
 
-              // 2) Nếu parse được metadata từ URL transform -> dùng luôn
+              // 2) parse metadata từ Cloudinary URL
               const parsed = extractCloudinaryMeta(src);
               if (parsed) {
                 results[src] = parsed;
@@ -99,7 +103,7 @@ export default function PostImages({
                 return;
               }
 
-              // 3) Fallback thật sự cần mới load ảnh
+              // 3) fallback load thật
               const img = new window.Image();
               img.decoding = "async";
               img.src = getFeedImage(src);
@@ -146,13 +150,21 @@ export default function PostImages({
   }, [safeImages, count]);
 
   /**
-   * Desktop wheel scroll cho slider 4+ ảnh
-   * - Fix lỗi emblaApi.scrollBy không tồn tại
-   * - Dùng scrollTo(selectedSnap +/- 1) an toàn hơn
+   * WHEEL SCROLL MƯỢT CHO DESKTOP
+   * --------------------------------
+   * Đây là phần sửa chuẩn nhất:
+   * - KHÔNG dùng emblaApi.scrollBy() nữa (gây lỗi đỏ runtime)
+   * - KHÔNG dùng scrollTo từng snap (gây khựng / nhảy từng ảnh)
+   * - Dùng native horizontal scroll trên viewport/container để giữ cảm giác mượt
+   *
+   * Kết quả:
+   * - PC cuộn chuột ngang rất tự nhiên
+   * - mobile / tablet vẫn vuốt bằng Embla như bình thường
    */
   useEffect(() => {
     if (!emblaApi || count < 4) return;
 
+    const viewport = emblaApi.rootNode();
     const container = emblaApi.containerNode();
 
     const handleWheel = (e: WheelEvent) => {
@@ -162,24 +174,25 @@ export default function PostImages({
       const delta =
         Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
 
-      if (delta === 0) return;
+      if (Math.abs(delta) < 1) return;
 
-      e.preventDefault();
+      const maxScrollLeft = container.scrollWidth - viewport.clientWidth;
+      const currentScrollLeft = viewport.scrollLeft;
 
-      const currentIndex = emblaApi.selectedScrollSnap();
-      const snapCount = emblaApi.scrollSnapList().length;
+      const canScrollLeft = currentScrollLeft > 0;
+      const canScrollRight = currentScrollLeft < maxScrollLeft - 1;
 
-      if (delta > 0) {
-        emblaApi.scrollTo(Math.min(currentIndex + 1, snapCount - 1));
-      } else {
-        emblaApi.scrollTo(Math.max(currentIndex - 1, 0));
+      // Chỉ chặn scroll dọc của page khi slider còn khả năng cuộn ngang
+      if ((delta < 0 && canScrollLeft) || (delta > 0 && canScrollRight)) {
+        e.preventDefault();
+        viewport.scrollLeft += delta;
       }
     };
 
-    container.addEventListener("wheel", handleWheel, { passive: false });
+    viewport.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
-      container.removeEventListener("wheel", handleWheel);
+      viewport.removeEventListener("wheel", handleWheel);
     };
   }, [emblaApi, count]);
 
@@ -203,17 +216,14 @@ export default function PostImages({
     const firstIsLandscape = isLandscape(img1);
     const secondIsLandscape = isLandscape(img2);
 
-    // Cả 2 đều dọc
     if (firstIsPortrait && secondIsPortrait) {
       return "aspect-[3/4]";
     }
 
-    // Cả 2 đều ngang
     if (firstIsLandscape && secondIsLandscape) {
       return "aspect-[4/3]";
     }
 
-    // 1 dọc 1 ngang hoặc tỉ lệ không đồng bộ
     return "aspect-square";
   };
 
@@ -397,7 +407,7 @@ export default function PostImages({
 
       {count >= 4 && smartLayout === "slider" && (
         <div className="postImages mt-3 select-none overflow-hidden px-0 sm:px-5">
-          <div ref={emblaRef} className="overflow-hidden">
+          <div ref={emblaRef} className="overflow-hidden cursor-grab active:cursor-grabbing">
             <div className="flex gap-[2px] sm:gap-[6px]">
               {orderedImages.map((img, i) => (
                 <div key={`${img}-${i}`} className={sliderBasisClass}>
