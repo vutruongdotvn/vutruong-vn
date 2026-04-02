@@ -42,7 +42,7 @@ export default function SmartPostSkeletonFeed({
   const pattern = pickPattern(mode);
 
   return (
-    <div className={`space-y-6 w-full ${className}`}>
+    <div className={`space-y-3 sm:space-y-6 mb-3 sm:mb-6 w-full ${className}`}>
       {pattern.map((variant, index) => (
         <PostCardSkeleton
           key={`${mode}-${variant}-${index}`}
