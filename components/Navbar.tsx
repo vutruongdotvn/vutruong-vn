@@ -18,10 +18,10 @@ export default function Navbar() {
 
   // MENU CONFIG
   const menu = [
-    { name: "Trang chủ", href: "/", icon: "fa-duotone fa-house" },
+    { name: "Home", href: "/", icon: "fa-duotone fa-house" },
     { name: "Bio", href: "/bio", icon: "fa-duotone fa-users" },
-    { name: "Dự án", href: "/project", icon: "fa-duotone fa-code" },
-    { name: "Liên hệ", href: "/contact", icon: "fa-duotone fa-envelope" },
+    { name: "Project", href: "/project", icon: "fa-duotone fa-code" },
+    { name: "Contact", href: "/contact", icon: "fa-duotone fa-envelope" },
     { name: "Blog", href: "/blog", icon: "fa-duotone fa-comment-pen" },
   ];
 
@@ -201,11 +201,11 @@ export default function Navbar() {
                   className={`
                     group relative flex items-center gap-2
                     rounded-full px-4 py-2.5 active:scale-95
-                    text-sm font-medium duration-300
+                    text-sm font-medium
                     ${
                       active
-                        ? "bg-gray-900 text-white shadow-sm"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-white"
+                        ? "bg-slate-600 text-white shadow-sm hover:shadow-lg"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-white hover:shadow-xs"
                     }
                   `}
                 >
@@ -319,7 +319,7 @@ export default function Navbar() {
                       ${
                         active
                           ? "bg-gray-900 text-white shadow-sm"
-                          : "bg-white/60 text-gray-700 hover:bg-gray-200 active:scale-95"
+                          : "bg-white/60 text-gray-700 hover:bg-gray-200"
                       }
                     `}
                   >
