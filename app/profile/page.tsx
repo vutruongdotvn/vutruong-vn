@@ -23,6 +23,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [avatarLoading, setAvatarLoading] = useState(true);
+  const [deletingAvatarId, setDeletingAvatarId] = useState<string | number | null>(null);
 
   const [cropImage, setCropImage] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
