@@ -30,8 +30,8 @@ export default function BlogPostFeed() {
   const postsRef = useRef<any[]>([]);
 
   // ⚙️ Cấu hình số lượng bài viết
-  const INITIAL_LIMIT = 3; // mặc định 3 bài
-  const LOAD_MORE_LIMIT = 3; // fetch thêm 3 bài
+  const INITIAL_LIMIT = 5; // mặc định 3 bài
+  const LOAD_MORE_LIMIT = 5; // fetch thêm 3 bài
 
   const { user, role } = useUser();
   const { showToast, removeToast } = useToastContext();
