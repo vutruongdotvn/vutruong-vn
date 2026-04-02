@@ -269,10 +269,10 @@ export default function ProfilePage() {
       }
 
       setAvatars((prev) => prev.filter((a) => a.id !== item.id));
-      showToast("Da xoa avatar", "success");
+      showToast("Đã xóa Avatar cũ", "success");
     } catch (error) {
       console.error(error);
-      showToast("Xoa avatar that bai", "error");
+      showToast("Xóa Avatar thất bại", "error");
     } finally {
       setDeletingAvatarId(null);
     }
