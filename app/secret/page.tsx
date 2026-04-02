@@ -1,130 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import SecretCard, { type SecretItem } from "./SecretCard";
+import SecretForm, { type SecretPayload } from "./SecretForm";
 
 type AuthState = "loading" | "unauthorized" | "forbidden" | "authorized";
-
-type SecretItem = {
-  id: string;
-  created_at: string;
-  updated_at: string;
-  user_id: string;
-
-  brand: string;
-  title: string;
-
-  username: string | null;
-  password: string | null;
-  email: string | null;
-  phone: string | null;
-
-  secondary_password: string | null;
-  pin_code: string | null;
-  security_question: string | null;
-  security_answer: string | null;
-  backup_email: string | null;
-  backup_phone: string | null;
-  recovery_codes: string | null;
-  twofa_secret: string | null;
-
-  login_url: string | null;
-  note: string | null;
-
-  tags: string[];
-  status: string;
-  priority: string;
-
-  is_pinned: boolean;
-  is_archived: boolean;
-
-  last_used_at: string | null;
-  last_viewed_at: string | null;
-};
-
-function CopyButton({ value }: { value: string }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {}
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      className="rounded-lg border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-100 transition"
-    >
-      {copied ? "Đã copy" : "Copy"}
-    </button>
-  );
-}
-
-function SecretField({
-  label,
-  value,
-  hidden = false,
-}: {
-  label: string;
-  value?: string | null;
-  hidden?: boolean;
-}) {
-  const [revealed, setRevealed] = useState(false);
-
-  if (!value) return null;
-
-  const displayValue = hidden && !revealed ? "••••••••••••••••" : value;
-
-  return (
-    <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3">
-      <div className="flex items-start justify-between gap-3">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">
-          {label}
-        </p>
-
-        <div className="flex items-center gap-2">
-          {hidden && (
-            <button
-              type="button"
-              onClick={() => setRevealed((prev) => !prev)}
-              className="rounded-lg border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-100 transition"
-            >
-              {revealed ? "Ẩn" : "Hiện"}
-            </button>
-          )}
-
-          <CopyButton value={value} />
-        </div>
-      </div>
-
-      <p className="mt-2 whitespace-pre-wrap break-words text-sm text-zinc-800">
-        {displayValue}
-      </p>
-    </div>
-  );
-}
-
-function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="mt-5">
-      <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-        {title}
-      </h3>
-      <div className="grid gap-3 md:grid-cols-2">{children}</div>
-    </section>
-  );
-}
+type FilterMode = "all" | "pinned" | "active" | "archived";
 
 export default function SecretPage() {
   const router = useRouter();
@@ -133,6 +16,32 @@ export default function SecretPage() {
   const [items, setItems] = useState<SecretItem[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [editingItem, setEditingItem] = useState<SecretItem | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const [search, setSearch] = useState("");
+  const [filterMode, setFilterMode] = useState<FilterMode>("all");
+
+  const loadSecrets = async () => {
+    setLoadingData(true);
+    setErrorMessage("");
+
+    const { data, error } = await supabase
+      .from("secret")
+      .select("*")
+      .order("is_pinned", { ascending: false })
+      .order("updated_at", { ascending: false });
+
+    if (error) {
+      setErrorMessage(error.message || "Không thể tải dữ liệu secret.");
+      setLoadingData(false);
+      return;
+    }
+
+    setItems((data as SecretItem[]) || []);
+    setLoadingData(false);
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -156,25 +65,124 @@ export default function SecretPage() {
       }
 
       setAuthState("authorized");
-
-      const { data, error: fetchError } = await supabase
-        .from("secret")
-        .select("*")
-        .order("is_pinned", { ascending: false })
-        .order("updated_at", { ascending: false });
-
-      if (fetchError) {
-        setErrorMessage(fetchError.message || "Không thể tải dữ liệu secret.");
-        setLoadingData(false);
-        return;
-      }
-
-      setItems((data as SecretItem[]) || []);
-      setLoadingData(false);
+      await loadSecrets();
     };
 
     init();
   }, [router]);
+
+  const handleSave = async (payload: SecretPayload) => {
+    setSaving(true);
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      alert("Phiên đăng nhập không hợp lệ.");
+      setSaving(false);
+      return;
+    }
+
+    if (editingItem) {
+      const { error } = await supabase
+        .from("secret")
+        .update({
+          ...payload,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", editingItem.id);
+
+      if (error) {
+        alert(error.message || "Không thể cập nhật secret.");
+        setSaving(false);
+        return;
+      }
+
+      setEditingItem(null);
+      await loadSecrets();
+      setSaving(false);
+      return;
+    }
+
+    const id =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `secret-${Date.now()}`;
+
+    const { error } = await supabase.from("secret").insert({
+      id,
+      user_id: user.id,
+      ...payload,
+    });
+
+    if (error) {
+      alert(error.message || "Không thể thêm secret.");
+      setSaving(false);
+      return;
+    }
+
+    await loadSecrets();
+    setSaving(false);
+  };
+
+  const handleDelete = async (item: SecretItem) => {
+    const confirmed = window.confirm(`Xóa "${item.title}"?`);
+    if (!confirmed) return;
+
+    setDeletingId(item.id);
+
+    const { error } = await supabase.from("secret").delete().eq("id", item.id);
+
+    if (error) {
+      alert(error.message || "Không thể xóa secret.");
+      setDeletingId(null);
+      return;
+    }
+
+    if (editingItem?.id === item.id) {
+      setEditingItem(null);
+    }
+
+    await loadSecrets();
+    setDeletingId(null);
+  };
+
+  const filteredItems = useMemo(() => {
+    const keyword = search.trim().toLowerCase();
+
+    return items.filter((item) => {
+      const matchesFilter =
+        filterMode === "all"
+          ? true
+          : filterMode === "pinned"
+          ? item.is_pinned
+          : filterMode === "active"
+          ? item.status === "active" && !item.is_archived
+          : filterMode === "archived"
+          ? item.is_archived
+          : true;
+
+      if (!matchesFilter) return false;
+
+      if (!keyword) return true;
+
+      const haystack = [
+        item.title,
+        item.brand,
+        item.username,
+        item.email,
+        item.phone,
+        item.note,
+        ...(item.tags || []),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(keyword);
+    });
+  }, [items, search, filterMode]);
 
   if (authState === "loading") {
     return (
@@ -206,6 +214,52 @@ export default function SecretPage() {
         </p>
       </div>
 
+      <SecretForm
+        editingItem={editingItem}
+        saving={saving}
+        onSubmit={handleSave}
+        onCancel={() => setEditingItem(null)}
+      />
+
+      <section className="mb-6 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+        <div className="grid gap-4 md:grid-cols-[1fr_auto]">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Tìm theo title, brand, username, email, note, tag..."
+            className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm outline-none focus:border-zinc-400"
+          />
+
+          <div className="flex flex-wrap gap-2">
+            <FilterButton
+              label="All"
+              active={filterMode === "all"}
+              onClick={() => setFilterMode("all")}
+            />
+            <FilterButton
+              label="Pinned"
+              active={filterMode === "pinned"}
+              onClick={() => setFilterMode("pinned")}
+            />
+            <FilterButton
+              label="Active"
+              active={filterMode === "active"}
+              onClick={() => setFilterMode("active")}
+            />
+            <FilterButton
+              label="Archived"
+              active={filterMode === "archived"}
+              onClick={() => setFilterMode("archived")}
+            />
+          </div>
+        </div>
+
+        <p className="mt-3 text-sm text-zinc-500">
+          Hiển thị <span className="font-medium text-zinc-800">{filteredItems.length}</span> /{" "}
+          <span className="font-medium text-zinc-800">{items.length}</span> secret
+        </p>
+      </section>
+
       {loadingData ? (
         <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
           <p className="text-sm text-zinc-500">Đang tải dữ liệu...</p>
@@ -215,89 +269,49 @@ export default function SecretPage() {
           <h2 className="text-lg font-semibold text-red-600">Lỗi tải dữ liệu</h2>
           <p className="mt-2 text-sm text-zinc-700">{errorMessage}</p>
         </div>
-      ) : items.length === 0 ? (
+      ) : filteredItems.length === 0 ? (
         <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-          <p className="text-sm text-zinc-500">Chưa có dữ liệu trong bảng secret.</p>
+          <p className="text-sm text-zinc-500">
+            Không có secret nào khớp với bộ lọc hiện tại.
+          </p>
         </div>
       ) : (
         <div className="grid gap-5">
-          {items.map((item) => (
-            <article
+          {filteredItems.map((item) => (
+            <SecretCard
               key={item.id}
-              className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm"
-            >
-              <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="text-xl font-semibold text-zinc-900">
-                      {item.title}
-                    </h2>
-
-                    {item.is_pinned && (
-                      <span className="rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-700">
-                        Pinned
-                      </span>
-                    )}
-
-                    {item.is_archived && (
-                      <span className="rounded-full bg-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-700">
-                        Archived
-                      </span>
-                    )}
-                  </div>
-
-                  <p className="mt-1 text-sm text-zinc-500">{item.brand}</p>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-700">
-                    {item.status}
-                  </span>
-                  <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-700">
-                    {item.priority}
-                  </span>
-                </div>
-              </div>
-
-              {item.tags?.length > 0 && (
-                <div className="mb-4 flex flex-wrap gap-2">
-                  {item.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs text-zinc-600"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              <Section title="Đăng nhập">
-                <SecretField label="Username" value={item.username} />
-                <SecretField label="Password" value={item.password} hidden />
-                <SecretField label="Email" value={item.email} />
-                <SecretField label="Phone" value={item.phone} />
-                <SecretField label="Secondary Password" value={item.secondary_password} hidden />
-                <SecretField label="PIN Code" value={item.pin_code} hidden />
-                <SecretField label="Login URL" value={item.login_url} />
-              </Section>
-
-              <Section title="Khôi phục & bảo mật">
-                <SecretField label="Security Question" value={item.security_question} />
-                <SecretField label="Security Answer" value={item.security_answer} hidden />
-                <SecretField label="Backup Email" value={item.backup_email} />
-                <SecretField label="Backup Phone" value={item.backup_phone} />
-                <SecretField label="Recovery Codes" value={item.recovery_codes} hidden />
-                <SecretField label="2FA Secret" value={item.twofa_secret} hidden />
-              </Section>
-
-              <Section title="Ghi chú & khác">
-                <SecretField label="Note" value={item.note} />
-              </Section>
-            </article>
+              item={item}
+              onEdit={setEditingItem}
+              onDelete={handleDelete}
+              deleting={deletingId === item.id}
+            />
           ))}
         </div>
       )}
     </main>
+  );
+}
+
+function FilterButton({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
+        active
+          ? "bg-zinc-900 text-white"
+          : "border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"
+      }`}
+    >
+      {label}
+    </button>
   );
 }
