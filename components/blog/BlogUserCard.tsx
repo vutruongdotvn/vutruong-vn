@@ -109,7 +109,7 @@ export default function BlogUserCard({
 
               {user && role === "admin" && (
                 <i
-                  className="fa-solid fa-badge-check text-blue-500 hover:text-blue-600 cursor-pointer text-xs shrink-0"
+                  className="fa-duotone fa-badge-check text-blue-500 hover:text-blue-600 cursor-pointer text-xs shrink-0"
                   title="Tài khoản đã xác thực"
                 ></i>
               )}

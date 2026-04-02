@@ -150,7 +150,7 @@ const fullTime = `${date.toLocaleDateString("vi-VN", {
                   onDelete?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-red-50 hover:text-red-600 active:bg-red-100 rounded-lg text-sm flex items-center gap-3 cursor-pointer"
+                className="w-full text-left px-4 py-2 hover:bg-red-50 hover:text-red-600 active:bg-red-100 active:text-red-600 rounded-lg text-sm flex items-center gap-3 cursor-pointer"
               >
                 <i className="fa-duotone fa-trash" />
                 <span>Xóa</span>

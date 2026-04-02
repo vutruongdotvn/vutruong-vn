@@ -149,53 +149,6 @@ export default function PostImages({
     };
   }, [safeImages, count]);
 
-  /**
-   * WHEEL SCROLL MƯỢT CHO DESKTOP
-   * --------------------------------
-   * Đây là phần sửa chuẩn nhất:
-   * - KHÔNG dùng emblaApi.scrollBy() nữa (gây lỗi đỏ runtime)
-   * - KHÔNG dùng scrollTo từng snap (gây khựng / nhảy từng ảnh)
-   * - Dùng native horizontal scroll trên viewport/container để giữ cảm giác mượt
-   *
-   * Kết quả:
-   * - PC cuộn chuột ngang rất tự nhiên
-   * - mobile / tablet vẫn vuốt bằng Embla như bình thường
-   */
-  useEffect(() => {
-    if (!emblaApi || count < 4) return;
-
-    const viewport = emblaApi.rootNode();
-    const container = emblaApi.containerNode();
-
-    const handleWheel = (e: WheelEvent) => {
-      const isDesktopLike = window.matchMedia("(pointer: fine)").matches;
-      if (!isDesktopLike) return;
-
-      const delta =
-        Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-
-      if (Math.abs(delta) < 1) return;
-
-      const maxScrollLeft = container.scrollWidth - viewport.clientWidth;
-      const currentScrollLeft = viewport.scrollLeft;
-
-      const canScrollLeft = currentScrollLeft > 0;
-      const canScrollRight = currentScrollLeft < maxScrollLeft - 1;
-
-      // Chỉ chặn scroll dọc của page khi slider còn khả năng cuộn ngang
-      if ((delta < 0 && canScrollLeft) || (delta > 0 && canScrollRight)) {
-        e.preventDefault();
-        viewport.scrollLeft += delta;
-      }
-    };
-
-    viewport.addEventListener("wheel", handleWheel, { passive: false });
-
-    return () => {
-      viewport.removeEventListener("wheel", handleWheel);
-    };
-  }, [emblaApi, count]);
-
   const getRatio = (src: string) => {
     const meta = imageMeta[src];
     if (!meta) return 1.333;
@@ -411,7 +364,7 @@ export default function PostImages({
             <div className="flex gap-[2px] sm:gap-[6px]">
               {orderedImages.map((img, i) => (
                 <div key={`${img}-${i}`} className={sliderBasisClass}>
-                  <div className="relative aspect-[3/4]">
+                  <div title="Vuốt để xem thêm" className="relative aspect-[3/4]">
                     {renderImage(
                       img,
                       i,

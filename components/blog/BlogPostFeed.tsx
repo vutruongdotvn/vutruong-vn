@@ -380,25 +380,25 @@ export default function BlogPostFeed() {
         <div className="fixed top-33 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
           <div
             className={`
-        flex items-center gap-2
-        rounded-full border border-white/80
-        bg-white/80 backdrop-blur-xl
-        px-4 py-2.5
-        shadow-[0_10px_35px_rgba(0,0,0,0.15)]
+        flex items-center justify-center gap-2
+        rounded-full 
+        bg-white/60 backdrop-blur-2xl
+        w-12 h-12 text-center mx-auto
+        shadow-[0_10px_35px_rgba(0,0,0,0.3)]
         text-sm font-normal text-gray-800
         transition-all duration-800
         animate-in fade-in slide-in-from-top-2 duration-300
       `}
           >
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center text-3xl">
               {refreshing ? (
-                <i className="fa-duotone fa-spinner-third fa-spin text-teal-600" />
+                <i className="fa-duotone fa-spinner-third fa-spin text-green-600" />
               ) : (
                 <i className="fa-duotone fa-circle-check text-green-600" />
               )}
             </div>
 
-            <span>{refreshing ? "Đang tải dữ liệu" : "Đã làm mới"}</span>
+            {/*<span>{refreshing ? "Đang tải dữ liệu" : "Đã làm mới"}</span>*/}
           </div>
         </div>
       )}
