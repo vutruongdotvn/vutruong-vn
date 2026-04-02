@@ -216,6 +216,68 @@ export default function ProfilePage() {
     showToast("Đã chọn lại avatar cũ", "success");
   };
 
+  const handleDeleteAvatar = async (item: any) => {
+    if (!item?.id || deletingAvatarId) return;
+
+    setDeletingAvatarId(item.id);
+
+    try {
+      const isCurrentAvatar = item.url === avatar || item.url === originalAvatar;
+
+      const response = await fetch("/api/delete-images", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ public_ids: [item.public_id] }),
+      });
+
+      const result = await response.json();
+      const deleteResult = result?.results?.[0]?.result;
+
+      if (
+        !response.ok ||
+        !result?.success ||
+        (deleteResult &&
+          deleteResult !== "ok" &&
+          deleteResult !== "not found")
+      ) {
+        throw new Error(result?.error || "Delete avatar failed");
+      }
+
+      const { error: deleteAvatarError } = await supabase
+        .from("user_avatars")
+        .delete()
+        .eq("id", item.id);
+
+      if (deleteAvatarError) {
+        throw deleteAvatarError;
+      }
+
+      if (isCurrentAvatar && user?.id) {
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .update({ avatar: DEFAULT_AVATAR })
+          .eq("id", user.id);
+
+        if (profileError) {
+          throw profileError;
+        }
+
+        setAvatar(DEFAULT_AVATAR);
+        setOriginalAvatar(DEFAULT_AVATAR);
+      }
+
+      setAvatars((prev) => prev.filter((a) => a.id !== item.id));
+      showToast("Da xoa avatar", "success");
+    } catch (error) {
+      console.error(error);
+      showToast("Xoa avatar that bai", "error");
+    } finally {
+      setDeletingAvatarId(null);
+    }
+  };
+
   const handleDelete = async (item: any) => {
     if (item.url === avatar) {
       setAvatar(DEFAULT_AVATAR);
@@ -517,15 +579,17 @@ export default function ProfilePage() {
 
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/55 opacity-0 transition group-hover/avatar:opacity-100">
                         <button
-                          className="rounded-full bg-white/95 px-5 py-2 text-sm font-medium text-neutral-900 shadow-sm transition hover:scale-[1.02] cursor-pointer"
+                          className="rounded-full bg-white/95 px-5 py-2 text-sm font-medium text-transparent shadow-sm transition hover:scale-[1.02] cursor-pointer before:content-['Sử_dụng_lại'] before:text-neutral-900"
                           onClick={() => handleReuse(item.url)}
                         >
                           Sử dụng
                         </button>
 
                         <button
-                          className="rounded-full bg-red-500/95 px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:scale-[1.02] hidden"
-                          onClick={() => handleDelete(item)}
+                          className="rounded-full bg-red-500/95 px-5 py-2 text-sm font-medium text-transparent shadow-sm transition hover:scale-[1.02] cursor-pointer disabled:cursor-not-allowed disabled:opacity-70 before:text-white before:content-[attr(data-label)]"
+                          disabled={deletingAvatarId === item.id}
+                          data-label={deletingAvatarId === item.id ? "Đang xóa" : "Xóa"}
+                          onClick={() => handleDeleteAvatar(item)}
                         >
                           Xoá
                         </button>
