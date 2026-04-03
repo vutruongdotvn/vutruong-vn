@@ -204,8 +204,8 @@ export default function Navbar() {
                     text-sm font-medium
                     ${
                       active
-                        ? "bg-slate-600 text-white shadow-sm hover:shadow-lg"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-white hover:shadow-xs"
+                        ? "bg-black text-white shadow-lg hover:shadow-xl"
+                        : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
                     }
                   `}
                 >
