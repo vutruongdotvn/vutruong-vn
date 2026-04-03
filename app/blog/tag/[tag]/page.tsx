@@ -444,16 +444,16 @@ export default function BlogTagPage() {
                 className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-black active:scale-97 transition"
               >
                 <i className="fa-duotone fa-arrow-left" />
-                Quay lại Blog
+                Quay lại
               </Link>
             </div>
           </div>
 
-          {user && role !== "admin" && (
+          {/*user && role !== "admin" && (
             <p className="text-center text-gray-500 text-sm">
               Bạn chỉ có quyền xem bài viết 👀
             </p>
-          )}
+          )*/}
 
           {loading && <SmartPostSkeletonFeed mode="initial" />}
 

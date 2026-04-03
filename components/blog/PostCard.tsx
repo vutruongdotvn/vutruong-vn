@@ -35,7 +35,7 @@ export default function PostCard({
               alt={name || "avatar"}
               width={40}
               height={40}
-              className="w-full h-full rounded-full object-cover shadow-lg"
+              className="w-full h-full rounded-full object-cover shadow-lg bg-white"
             />
           </div>
 
@@ -43,15 +43,11 @@ export default function PostCard({
           <div className="absolute mt-3 top-10 sm:top-15 bottom-[-10px] w-[2px] bg-gradient-to-b from-gray-300 via-gray-200 to-transparent z-0" />
 
           {/* Dot */}
-
-{post.is_pinned ? (
-  <span className="relative z-1 mt-3 flex size-3">
-    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gray-400 opacity-75" />
-    <span className="relative inline-flex size-3 rounded-full border-2 border-white bg-gray-400 shadow-sm" />
-  </span>
-) : (
-  <div className="relative z-1 mt-3 size-3 rounded-full border-2 border-white bg-gray-400 shadow-sm" />
-)}
+          <div
+            className={`relative z-10 mt-3 size-3 rounded-full border-2 border-white shadow-sm ${
+              post.is_pinned ? "bg-neutral-400" : "bg-gray-400"
+            }`}
+          />
         </div>
 
         {/* RIGHT CONTENT */}
