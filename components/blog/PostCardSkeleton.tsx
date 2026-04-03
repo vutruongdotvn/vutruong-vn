@@ -82,27 +82,29 @@ export default function PostCardSkeleton({
               </div>
 
               {/* MEDIA */}
+              {/* SMART SKELETON THEO POST */}
               {variant === "single" && (
-                <div className="mt-4">
-                  <div className="w-full aspect-video rounded-0 sm:rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+                <div className="mt-4 px-3 sm:px-0">
+                  <div className="w-full aspect-video rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
                 </div>
               )}
 
               {variant === "double" && (
-                <div className="grid grid-cols-2 gap-[2px] md:gap-[6px] mt-4">
-                  <div className="aspect-[4/3] rounded-0 sm:rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
-                  <div className="aspect-[4/3] rounded-0 sm:rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+                <div className="grid grid-cols-2 gap-[6px] mt-4 px-3 sm:px-0">
+                  <div className="aspect-[4/3] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+                  <div className="aspect-[4/3] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
                 </div>
               )}
 
               {variant === "grid" && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-[2px] md:gap-[6px] mt-4">
-                  <div className="aspect-[4/3] sm:aspect-[3/4] rounded-0 sm:rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
-                  <div className="aspect-[4/3] sm:aspect-[3/4] rounded-0 sm:rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
-                  <div className="aspect-[4/3] sm:aspect-[3/4] rounded-0 sm:rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
-                  <div className="aspect-[4/3] sm:aspect-[3/4] rounded-0 sm:rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-[6px] mt-4 px-3 sm:px-0">
+                  <div className="aspect-[4/3] sm:aspect-[3/4] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+                  <div className="aspect-[4/3] sm:aspect-[3/4] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+                  <div className="aspect-[4/3] sm:aspect-[3/4] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+                  <div className="aspect-[4/3] sm:aspect-[3/4] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
                 </div>
               )}
+              
 
               {/* ACTIONS */}
               <div className="flex items-center gap-5 pt-5 pb-4 px-5 sm:px-0">
