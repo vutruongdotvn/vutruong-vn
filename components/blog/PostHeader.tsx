@@ -71,20 +71,20 @@ const fullTime = `${date.toLocaleDateString("vi-VN", {
         )}
 
         <div className="leading-6 flex items-center gap-1 min-w-0 flex-wrap">
-          <div className="flex items-center justify-center gap-[3px] min-w-0 bg-slate-100 border border-slate-300 hover:border-slate-400 px-3 py-0.75 rounded-full cursor-pointer active:scale-97">
-            <span className="text-sm text-slate-800 font-medium">
+          <div className="flex items-center justify-center gap-[3px] min-w-0 bg-neutral-100 border border-neutral-300 hover:border-neutral-400 px-3 py-0.75 rounded-full cursor-pointer active:scale-97">
+            <span className="text-sm text-neutral-800 font-medium">
               {name}
             </span>
             <i
-              className="fa-duotone fa-badge-check text-slate-500 hover:text-slate-600 text-xs cursor-pointer shrink-0"
+              className="fad fa-badge-check text-neutral-600 hover:text-neutral-600 text-xs cursor-pointer shrink-0"
               title="Tài khoản đã xác thực"
             />
           </div>
 
-          <div className="flex items-center gap-1 ms-[4px] min-w-0 flex-wrap">
+          <div className="min-w-0 ml-1.5">
             {showLink && postId ? (
               <Link
-  className="postPublish text-xs text-gray-500 hover:text-black font-normal active:scale-97"
+  className="postPublish text-xs text-gray-500 hover:text-black font-normal active:scale-97 inline-block"
   href={`/blog/${postId}`}
   title={fullTime}
 >
@@ -100,7 +100,7 @@ const fullTime = `${date.toLocaleDateString("vi-VN", {
             )}
 
             {isPinned && (
-              <span className="text-gray-600 hover:text-black text-sm active:scale-95 cursor-pointer" title="Bài ghim">
+              <span className="inline-block ml-1.5 text-gray-600 hover:text-black text-sm active:scale-95 cursor-pointer" title="Bài ghim">
                 <i className="fa-duotone fa-thumbtack" />
               </span>
             )}

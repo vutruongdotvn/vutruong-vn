@@ -210,7 +210,7 @@ export default function Navbar() {
                   `}
                 >
                   <i
-                    className={`${item.icon} text-[14px] transition-transform duration-300 ${
+                    className={`${item.icon} text-base transition-transform duration-300 ${
                       active ? "" : "group-hover:scale-105"
                     }`}
                   />
@@ -254,7 +254,7 @@ export default function Navbar() {
           }`}
         >
           {/* OVERLAY */}
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px]" />
+          <div className="absolute inset-0 bg-black/50" />
 
           {/* SLIDE PANEL */}
           <div
