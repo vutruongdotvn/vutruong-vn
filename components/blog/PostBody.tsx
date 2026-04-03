@@ -80,9 +80,10 @@ export default function PostBody({
 
         return (
           <Link
+            title={`Xem hashtag #${encodeURIComponent(tagName)}`}
             key={partIndex}
             href={`/blog/tag/${encodeURIComponent(tagName)}`}
-            className="text-gray-800 font-medium hover:underline active:scale-97 inline-flex break-words"
+            className="text-gray-800 font-medium hover:text-sky-800 active:scale-97 inline-flex break-words"
           >
             {part.value}
           </Link>
@@ -95,7 +96,7 @@ export default function PostBody({
 
   return (
     <>
-      <div className="postBody text-left pt-3 px-3 sm:px-5 text-gray-800">
+      <div className="postBody text-left pt-3 px-3 sm:px-5 text-gray-900">
   {isCollapsed ? (
     <div className="postShortPreview text-sm/6 sm:text-base/6 break-words overflow-hidden">
       {renderInlineParts(previewText)}
@@ -115,11 +116,11 @@ export default function PostBody({
       return (
         <p
           key={index}
-          className="postParagraph mb-3 sm:mb-4 text-sm/6 sm:text-base/6 whitespace-pre-line break-words last:mb-0"
+          className="postParagraph mb-3 text-sm/6 sm:text-base/6 whitespace-pre-line break-words last:mb-0"
         >
           {renderInlineParts(paragraph)}
 
-          {isLast && truncate && isLong && (
+          {/*isLast && truncate && isLong && (
             <button
               title="Thu gọn"
               onClick={() => setIsExpanded(false)}
@@ -127,7 +128,7 @@ export default function PostBody({
             >
               <i className="fa-duotone fa-angle-up text-sm" />
             </button>
-          )}
+          )*/}
         </p>
       );
     })

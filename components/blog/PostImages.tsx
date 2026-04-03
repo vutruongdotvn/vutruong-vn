@@ -220,7 +220,7 @@ const getTwoImageAspectClass = () => {
         sizes={sizes}
         priority={isPriorityImage}
         loading={isPriorityImage ? "eager" : "lazy"}
-        className="object-cover object-center transition-transform duration-1200 ease-out group-hover:scale-[1.05]"
+        className="object-cover transition-transform duration-3000 ease-out group-hover:scale-[1.15]"
       />
       {overlay}
     </a>
@@ -336,12 +336,12 @@ const getTwoImageAspectClass = () => {
       )}
 
       {count === 4 && (
-        <div className="postImages grid grid-cols-2 sm:grid-cols-4 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
+        <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
           {orderedImages.slice(0, 4).map((img, i) =>
             renderImage(
               img,
               i,
-              "aspect-[4/3] sm:aspect-[3/4]",
+              "aspect-[4/3]",
               "(max-width:768px) 50vw, 400px"
             )
           )}
@@ -349,12 +349,12 @@ const getTwoImageAspectClass = () => {
       )}
 
       {count >= 5 && (
-        <div className="postImages grid grid-cols-2 sm:grid-cols-4 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
+        <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
           {visibleImages.slice(0, 4).map((img, i) =>
             renderImage(
               img,
               i,
-              "aspect-[4/3] sm:aspect-[3/4]",
+              "aspect-[4/3]",
               "(max-width:768px) 50vw, 400px",
               i === 3 ? (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-lg pointer-events-none">

@@ -26,7 +26,7 @@ export default function PostActions({
 
     const shareData = {
       title: postTitle?.trim() || "VT Zone",
-      text: postDescription?.trim() || postTitle?.trim() || "Xem bài viết này nhé",
+      // text: postDescription?.trim() || postTitle?.trim() || "Xem bài viết này nhé",
       url,
     };
 

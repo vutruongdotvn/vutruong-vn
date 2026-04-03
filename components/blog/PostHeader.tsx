@@ -71,7 +71,7 @@ const fullTime = `${date.toLocaleDateString("vi-VN", {
         )}
 
         <div className="leading-6 flex items-center gap-1 min-w-0 flex-wrap">
-          <div className="flex items-center justify-center gap-[3px] min-w-0 bg-slate-100 border border-slate-300 hover:border-slate-400 px-3 py-1 rounded-full cursor-pointer active:scale-97">
+          <div className="flex items-center justify-center gap-[3px] min-w-0 bg-slate-100 border border-slate-300 hover:border-slate-400 px-3 py-0.75 rounded-full cursor-pointer active:scale-97">
             <span className="text-sm text-slate-800 font-medium">
               {name}
             </span>

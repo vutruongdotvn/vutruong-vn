@@ -64,7 +64,7 @@ export default function PostCardSkeleton({
             <div className="flex items-center justify-between px-3 sm:px-5 pt-3 sm:pt-5 select-none">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="leading-6 flex items-center gap-2 min-w-0 flex-wrap">
-                  <div className="h-[34px] w-[100px] rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse border border-neutral-200" />
+                  <div className="h-[28px] w-[100px] rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse border border-neutral-200" />
                   <div className="h-4 w-24 rounded-xl bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
                 </div>
               </div>
