@@ -1,5 +1,3 @@
-
-import ProjectCard from "@/components/project/ProjectCard";
 import { createMetadata } from "@/lib/metadata";
 
 export const metadata = createMetadata({
@@ -12,7 +10,7 @@ export default function ProjectPage() {
     {
       name: "VT Zone",
       description: "Hệ sinh thái số cá nhân",
-      href: "https://vutruong.vn",
+      href: "/",
       icon: "fa-duotone fa-earth-asia",
       gradient: "from-olive-400 to-olive-600",
     },
@@ -62,33 +60,52 @@ export default function ProjectPage() {
 
   return (
     <div className="text-center space-y-8">
-
       {/* Logo */}
 
       {/* Title */}
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900">
-          Dự án
-        </h1>
-        <p className="text-gray-500 text-sm">
-          Những sản phẩm đã làm
-        </p>
+        <h1 className="text-2xl font-semibold text-gray-900">Dự án</h1>
+        <p className="text-gray-500 text-sm">Những sản phẩm đã làm</p>
       </div>
 
       {/* List */}
       <div className="space-y-4 text-left">
-        {projects.map((item, index) => (
-          <ProjectCard
-            key={index}
-            name={item.name}
-            description={item.description}
-            href={item.href}
-            icon={item.icon}
-            gradient={item.gradient}
-          />
-        ))}
-      </div>
+        {projects.map((project, index) => {
+          const isExternal = project.href.startsWith("http");
 
+          return (
+            <a
+              key={index}
+              href={project.href}
+              target={isExternal ? "_blank" : undefined}
+              rel={isExternal ? "noopener noreferrer" : undefined}
+              className="group block rounded-xl border border-white/50 bg-white/70 p-5 shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white/90 hover:shadow-xl"
+            >
+              <div className="flex items-center gap-4">
+                {/* ICON */}
+                <div
+                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${project.gradient} text-2xl text-white shadow-inner`}
+                >
+                  <i className={project.icon} />
+                </div>
+
+                {/* TEXT */}
+                <div className="flex-1">
+                  <p className="font-semibold leading-tight text-gray-900">
+                    {project.name}
+                  </p>
+                  <p className="mt-1 text-sm leading-tight text-gray-500">
+                    {project.description}
+                  </p>
+                </div>
+
+                {/* ARROW */}
+                <i className="fa-duotone fa-arrow-up-right text-gray-400 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-gray-600" />
+              </div>
+            </a>
+          );
+        })}
+      </div>
     </div>
   );
 }
