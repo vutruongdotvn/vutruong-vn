@@ -573,25 +573,25 @@ export default function ProfilePage() {
 
                       {item.url === avatar && (
                         <div className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-medium text-neutral-700 shadow-sm backdrop-blur">
-                          Đang dùng
+                          Hiện tại
                         </div>
                       )}
 
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/55 opacity-0 transition group-hover/avatar:opacity-100">
                         <button
-                          className="rounded-full bg-white/95 px-5 py-2 text-sm font-medium text-transparent shadow-sm transition hover:scale-[1.02] cursor-pointer before:content-['Sử_dụng_lại'] before:text-neutral-900"
+                          className="rounded-full bg-white/95 px-5 py-2 text-sm font-medium shadow-sm transition hover:scale-[1.02] cursor-pointer"
                           onClick={() => handleReuse(item.url)}
                         >
                           Sử dụng
                         </button>
 
                         <button
-                          className="rounded-full bg-red-500/95 px-5 py-2 text-sm font-medium text-transparent shadow-sm transition hover:scale-[1.02] cursor-pointer disabled:cursor-not-allowed disabled:opacity-70 before:text-white before:content-[attr(data-label)]"
+                          className="rounded-full bg-red-500/95 px-5 py-2 text-sm font-medium shadow-sm transition hover:scale-[1.02] cursor-pointer disabled:cursor-not-allowed disabled:opacity-70 text-white"
                           disabled={deletingAvatarId === item.id}
                           data-label={deletingAvatarId === item.id ? "Đang xóa" : "Xóa"}
                           onClick={() => handleDeleteAvatar(item)}
                         >
-                          Xoá
+                          <i className="fa-duotone fa-trash"/>
                         </button>
                       </div>
                     </div>

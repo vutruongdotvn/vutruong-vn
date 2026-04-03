@@ -73,7 +73,7 @@ export default function BlogUserCard({
       className={`
         userWrap
         fixed left-1/2 -translate-x-1/2 z-49
-        w-[calc(100%-0rem)] max-w-xs sm:max-w-sm
+        w-[calc(100%-0rem)] max-w-[275px] sm:max-w-sm
         transition-all duration-300 ease-out will-change-transform
         ${visible ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0 pointer-events-none"}
         ${className}
@@ -88,23 +88,23 @@ export default function BlogUserCard({
           rounded-full border border-white/70 bg-white/80 backdrop-blur-md
           shadow-[0_8px_30px_rgba(0,0,0,0.05)] transition-all duration-300
           hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)]
-          px-3 py-2
+          sm:px-3 sm:py-2 px-2 py-1
         "
       >
         {/* LEFT */}
-        <div className="flex items-center gap-3 min-w-0 flex-1">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
           <Link href="/profile" className="shrink-0">
             <Image
               height={44}
               width={44}
               alt="avatar"
               src={avatar}
-              className="size-11 rounded-full object-cover"
+              className="sm:size-11 size-9 rounded-full object-cover shadow-lg"
             />
           </Link>
 
           <div className="min-w-0 flex-1">
-            <p className="font-semibold text-base text-gray-900 flex items-center gap-[3px] leading-5 truncate">
+            <p className="font-semibold sm:text-base text-sm text-gray-900 flex items-center gap-[3px] leading-5 truncate">
               <span className="truncate">{fullName}</span>
 
               {user && role === "admin" && (
@@ -115,18 +115,18 @@ export default function BlogUserCard({
               )}
             </p>
 
-            <p className="text-sm font-normal text-gray-500 leading-5 truncate">
+            <p className="sm:text-sm text-xs text-gray-600 leading-5 truncate">
               {user ? email : ""}
             </p>
           </div>
         </div>
 
         {/* RIGHT */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {user && role === "admin" && (
             <button
               onClick={onOpenCreatePost}
-              className="w-11 h-11 flex items-center justify-center rounded-full bg-white hover:bg-gray-800 hover:text-white active:scale-90 transition-all cursor-pointer"
+              className="sm:w-11 sm:h-11 w-9 h-9 flex items-center justify-center rounded-full bg-white hover:bg-gray-800 hover:text-white active:scale-90 transition-all cursor-pointer"
               title="Đăng bài"
             >
               <i className="fa-duotone fa-pen-to-square"></i>
@@ -136,7 +136,7 @@ export default function BlogUserCard({
           {!user ? (
             <button
               onClick={onOpenLogin}
-              className="w-11 h-11 flex items-center justify-center rounded-full bg-white hover:bg-gray-800 hover:text-white active:scale-90 transition-all cursor-pointer"
+              className="sm:w-11 sm:h-11 w-9 h-9 flex items-center justify-center rounded-full bg-white hover:bg-gray-800 hover:text-white active:scale-90 transition-all cursor-pointer"
               title="Đăng nhập"
             >
               <i className="fa-duotone fa-user-gear"></i>
@@ -153,7 +153,7 @@ export default function BlogUserCard({
 
                 // window.location.reload();
               }}
-              className="w-11 h-11 flex items-center justify-center rounded-full bg-white hover:bg-gray-800 hover:text-white active:scale-90 transition-all cursor-pointer"
+              className="sm:w-11 sm:h-11 w-9 h-9 flex items-center justify-center rounded-full bg-white hover:bg-gray-800 hover:text-white active:scale-90 transition-all cursor-pointer"
               title="Đăng xuất"
             >
               <i className="fa-duotone fa-arrow-right-from-bracket"></i>
