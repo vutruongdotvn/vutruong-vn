@@ -81,8 +81,8 @@ export default function BlogUserPanel() {
   const email = user?.email || "";
 
   const avatar = user
-  ? getAvatarImage(profile?.avatar) || "/images/default.jpg"
-  : "/images/default.jpg";
+    ? getAvatarImage(profile?.avatar) || "/images/default.jpg"
+    : "/images/default.jpg";
 
   const showInitialSkeleton = !hasLoadedOnce && (userLoading || profileLoading);
 

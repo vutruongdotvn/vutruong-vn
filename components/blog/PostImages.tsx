@@ -38,84 +38,84 @@ export default function PostImages({
   const imageMetaCacheRef = useRef<Record<string, ImageMeta>>({});
 
   useEffect(() => {
-  if (count === 0) {
-    setImageMeta((prev) => (Object.keys(prev).length ? {} : prev));
-    imageMetaCacheRef.current = {};
-    return;
-  }
+    if (count === 0) {
+      setImageMeta((prev) => (Object.keys(prev).length ? {} : prev));
+      imageMetaCacheRef.current = {};
+      return;
+    }
 
-  let isMounted = true;
+    let isMounted = true;
 
-  const loadImageSizes = async () => {
-    const results: Record<string, ImageMeta> = {};
+    const loadImageSizes = async () => {
+      const results: Record<string, ImageMeta> = {};
 
-    await Promise.all(
-      safeImages.map(
-        (src) =>
-          new Promise<void>((resolve) => {
-            // 1) Nếu đã có cache -> dùng luôn
-            if (imageMetaCacheRef.current[src]) {
-              results[src] = imageMetaCacheRef.current[src];
-              resolve();
-              return;
-            }
+      await Promise.all(
+        safeImages.map(
+          (src) =>
+            new Promise<void>((resolve) => {
+              // 1) Nếu đã có cache -> dùng luôn
+              if (imageMetaCacheRef.current[src]) {
+                results[src] = imageMetaCacheRef.current[src];
+                resolve();
+                return;
+              }
 
-            // 2) Nếu parse được metadata từ URL transform -> dùng luôn
-            const parsed = extractCloudinaryMeta(src);
-            if (parsed) {
-              results[src] = parsed;
-              imageMetaCacheRef.current[src] = parsed;
-              resolve();
-              return;
-            }
+              // 2) Nếu parse được metadata từ URL transform -> dùng luôn
+              const parsed = extractCloudinaryMeta(src);
+              if (parsed) {
+                results[src] = parsed;
+                imageMetaCacheRef.current[src] = parsed;
+                resolve();
+                return;
+              }
 
-            // 3) Fallback thật sự cần mới load ảnh
-            const img = new window.Image();
-            img.decoding = "async";
-            // img.loading = "eager";
-            img.src = getFeedImage(src);
+              // 3) Fallback thật sự cần mới load ảnh
+              const img = new window.Image();
+              img.decoding = "async";
+              // img.loading = "eager";
+              img.src = getFeedImage(src);
 
-            img.onload = () => {
-              const meta = {
-                width: img.naturalWidth || 1200,
-                height: img.naturalHeight || 900,
+              img.onload = () => {
+                const meta = {
+                  width: img.naturalWidth || 1200,
+                  height: img.naturalHeight || 900,
+                };
+
+                results[src] = meta;
+                imageMetaCacheRef.current[src] = meta;
+                resolve();
               };
 
-              results[src] = meta;
-              imageMetaCacheRef.current[src] = meta;
-              resolve();
-            };
+              img.onerror = () => {
+                const fallback = {
+                  width: 1200,
+                  height: 900,
+                };
 
-            img.onerror = () => {
-              const fallback = {
-                width: 1200,
-                height: 900,
+                results[src] = fallback;
+                imageMetaCacheRef.current[src] = fallback;
+                resolve();
               };
+            })
+        )
+      );
 
-              results[src] = fallback;
-              imageMetaCacheRef.current[src] = fallback;
-              resolve();
-            };
-          })
-      )
-    );
+      if (!isMounted) return;
 
-    if (!isMounted) return;
+      setImageMeta((prev) => {
+        const prevStr = JSON.stringify(prev);
+        const nextStr = JSON.stringify(results);
+        return prevStr === nextStr ? prev : results;
+      });
+    };
 
-    setImageMeta((prev) => {
-      const prevStr = JSON.stringify(prev);
-      const nextStr = JSON.stringify(results);
-      return prevStr === nextStr ? prev : results;
-    });
-  };
+    loadImageSizes();
 
-  loadImageSizes();
-
-  return () => {
-    isMounted = false;
-  };
-}, [safeImages, count]);
-// End optimize image postcard
+    return () => {
+      isMounted = false;
+    };
+  }, [safeImages, count]);
+  // End optimize image postcard
 
   const getRatio = (src: string) => {
     const meta = imageMeta[src];
@@ -127,30 +127,30 @@ export default function PostImages({
 
   const isPortrait = (src: string) => getRatio(src) <= 0.9;
 
-const getTwoImageAspectClass = () => {
-  if (safeImages.length !== 2) return "aspect-square";
+  const getTwoImageAspectClass = () => {
+    if (safeImages.length !== 2) return "aspect-square";
 
-  const [img1, img2] = safeImages;
+    const [img1, img2] = safeImages;
 
-  const firstIsPortrait = isPortrait(img1);
-  const secondIsPortrait = isPortrait(img2);
+    const firstIsPortrait = isPortrait(img1);
+    const secondIsPortrait = isPortrait(img2);
 
-  const firstIsLandscape = isLandscape(img1);
-  const secondIsLandscape = isLandscape(img2);
+    const firstIsLandscape = isLandscape(img1);
+    const secondIsLandscape = isLandscape(img2);
 
-  // Cả 2 đều dọc
-  if (firstIsPortrait && secondIsPortrait) {
-    return "aspect-[3/4]";
-  }
+    // Cả 2 đều dọc
+    if (firstIsPortrait && secondIsPortrait) {
+      return "aspect-[3/4]";
+    }
 
-  // Cả 2 đều ngang
-  if (firstIsLandscape && secondIsLandscape) {
-    return "aspect-[4/3]";
-  }
+    // Cả 2 đều ngang
+    if (firstIsLandscape && secondIsLandscape) {
+      return "aspect-[4/3]";
+    }
 
-  // 1 dọc 1 ngang hoặc tỉ lệ không đồng bộ
-  return "aspect-square";
-};
+    // 1 dọc 1 ngang hoặc tỉ lệ không đồng bộ
+    return "aspect-square";
+  };
 
   const heroIndex = useMemo(() => {
     if (count < 3) return 0;
@@ -196,36 +196,36 @@ const getTwoImageAspectClass = () => {
   if (count === 0) return null;
 
   const renderImage = (
-  img: string,
-  i: number,
-  className: string,
-  sizes: string,
-  overlay?: React.ReactNode
-) => {
-  const lightboxUrl = getLightboxImage(img);
-  const isPriorityImage = priority && i === 0;
+    img: string,
+    i: number,
+    className: string,
+    sizes: string,
+    overlay?: React.ReactNode
+  ) => {
+    const lightboxUrl = getLightboxImage(img);
+    const isPriorityImage = priority && i === 0;
 
-  return (
-    <a
-      key={`${img}-${i}`}
-      href={lightboxUrl}
-      data-fancybox={group}
-      className={`relative block overflow-hidden rounded-xl group ${className}`}
-    >
-      <Image
-        loader={cloudinaryLoader}
-        src={img}
-        alt="post"
-        fill
-        sizes={sizes}
-        priority={isPriorityImage}
-        loading={isPriorityImage ? "eager" : "lazy"}
-        className="object-cover transition-transform duration-3000 ease-out group-hover:scale-[1.15]"
-      />
-      {overlay}
-    </a>
-  );
-};
+    return (
+      <a
+        key={`${img}-${i}`}
+        href={lightboxUrl}
+        data-fancybox={group}
+        className={`relative block overflow-hidden rounded-xl group ${className}`}
+      >
+        <Image
+          loader={cloudinaryLoader}
+          src={img}
+          alt="post"
+          fill
+          sizes={sizes}
+          priority={isPriorityImage}
+          loading={isPriorityImage ? "eager" : "lazy"}
+          className="object-cover transition-transform duration-3000 ease-out group-hover:scale-[1.15]"
+        />
+        {overlay}
+      </a>
+    );
+  };
 
   const firstImage = safeImages[0];
   const firstMeta = imageMeta[firstImage];
@@ -277,17 +277,17 @@ const getTwoImageAspectClass = () => {
       )}
 
       {count === 2 && (
-  <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
-    {safeImages.map((img, i) =>
-      renderImage(
-        img,
-        i,
-        getTwoImageAspectClass(),
-        "(max-width:768px) 50vw, 400px"
-      )
-    )}
-  </div>
-)}
+        <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
+          {safeImages.map((img, i) =>
+            renderImage(
+              img,
+              i,
+              getTwoImageAspectClass(),
+              "(max-width:768px) 50vw, 400px"
+            )
+          )}
+        </div>
+      )}
 
       {count === 3 && smartLayout === "3-top-hero" && (
         <div className="postImages mt-3 grid gap-[6px]select-none overflow-hidden px-3 sm:px-5">

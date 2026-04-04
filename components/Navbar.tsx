@@ -146,16 +146,12 @@ export default function Navbar() {
         {/* NAVBAR */}
         <div
           className={`
-            relative flex items-center justify-between
-            rounded-full border border-white/60
-            bg-white/60 backdrop-blur-xl
-            shadow-[0_8px_30px_rgba(0,0,0,0.05)]
-            transition-all duration-500 ease-out will-change-transform
+            relative flex items-center justify-between rounded-full border border-white/60
+            bg-white/60 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.05)] transition-all duration-500 ease-out will-change-transform
             ${scrolled ? "p-2" : "p-3"}
-            ${
-              visible
-                ? "translate-y-0 opacity-100"
-                : "-translate-y-3 opacity-0 pointer-events-none"
+            ${visible
+              ? "translate-y-0 opacity-100"
+              : "-translate-y-3 opacity-0 pointer-events-none"
             }
           `}
         >
@@ -199,20 +195,16 @@ export default function Navbar() {
                   prefetch
                   onClick={(e) => handleNavClick(e, item.href)}
                   className={`
-                    group relative flex items-center gap-2
-                    rounded-full px-4 py-2.5 active:scale-95
-                    text-sm font-medium
-                    ${
-                      active
-                        ? "bg-black text-white shadow-lg hover:shadow-xl"
-                        : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
+                    group relative flex items-center gap-2 rounded-full px-4 py-2.5 active:scale-95 text-sm font-medium
+                    ${active
+                      ? "bg-black text-white shadow-lg hover:shadow-xl"
+                      : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
                     }
                   `}
                 >
                   <i
-                    className={`${item.icon} text-base transition-transform duration-300 ${
-                      active ? "" : "group-hover:scale-105"
-                    }`}
+                    className={`${item.icon} text-base transition-transform duration-300 ${active ? "" : "group-hover:scale-105"
+                      }`}
                   />
 
                   <span>{item.name}</span>
@@ -229,29 +221,22 @@ export default function Navbar() {
           <button
             onClick={() => setOpen(!open)}
             className="
-              relative z-10 md:hidden
-              w-11 h-11 flex items-center justify-center
-              rounded-full border border-gray-100
-              bg-white/70 hover:bg-white
-              shadow-sm transition-all duration-300
-              text-gray-700 hover:text-black
-              cursor-pointer
+              relative z-10 md:hidden w-11 h-11 flex items-center justify-center rounded-full border border-gray-100 bg-white/70 hover:bg-white
+              shadow-sm transition-all duration-300 text-gray-700 hover:text-black cursor-pointer
             "
             aria-label="Open menu"
           >
             <i
-              className={`fa-duotone transition-all duration-300 ${
-                open ? "fa-xmark text-[18px]" : "fa-bars text-[18px]"
-              }`}
+              className={`fa-duotone transition-all duration-300 ${open ? "fa-xmark text-[18px]" : "fa-bars text-[18px]"
+                }`}
             />
           </button>
         </div>
 
         {/* MOBILE MENU */}
         <div
-          className={`fixed inset-0 z-40 md:hidden transition-all duration-500 ${
-            open ? "visible opacity-100" : "invisible opacity-0"
-          }`}
+          className={`fixed inset-0 z-40 md:hidden transition-all duration-500 ${open ? "visible opacity-100" : "invisible opacity-0"
+            }`}
         >
           {/* OVERLAY */}
           <div className="absolute inset-0 bg-black/50" />
@@ -259,11 +244,9 @@ export default function Navbar() {
           {/* SLIDE PANEL */}
           <div
             ref={menuRef}
-            className={`absolute top-0 right-0 h-full w-80 max-w-[88vw]
-            bg-white/88 backdrop-blur-xl border-l border-white/70
-            shadow-2xl p-5 transform transition-transform duration-300 ${
-              open ? "translate-x-0" : "translate-x-full"
-            }`}
+            className={`absolute top-0 right-0 h-full w-80 max-w-[88vw] bg-white/88 backdrop-blur-xl border-l border-white/70
+            shadow-2xl p-5 transform transition-transform duration-300 ${open ? "translate-x-0" : "translate-x-full"
+              }`}
           >
             {/* MOBILE TOP */}
             <div className="flex items-center justify-between mb-6 mt-1">
@@ -316,10 +299,9 @@ export default function Navbar() {
                       flex items-center justify-between
                       rounded-2xl px-4 py-3.5
                       text-sm font-medium transition-all duration-300
-                      ${
-                        active
-                          ? "bg-gray-900 text-white shadow-sm"
-                          : "bg-white/60 text-gray-700 hover:bg-gray-200"
+                      ${active
+                        ? "bg-gray-900 text-white shadow-sm"
+                        : "bg-white/60 text-gray-700 hover:bg-gray-200"
                       }
                     `}
                   >

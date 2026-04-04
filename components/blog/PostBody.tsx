@@ -97,30 +97,30 @@ export default function PostBody({
   return (
     <>
       <div className="postBody text-left pt-3 px-3 sm:px-5 text-gray-900">
-  {isCollapsed ? (
-    <div className="postShortPreview text-sm/6 sm:text-base/6 break-words overflow-hidden">
-      {renderInlineParts(previewText)}
+        {isCollapsed ? (
+          <div className="postShortPreview text-sm/6 sm:text-base/6 break-words overflow-hidden">
+            {renderInlineParts(previewText)}
 
-      <button
-        title="Xem toàn bộ bài viết"
-        onClick={() => setIsExpanded(true)}
-        className="ml-1 inline-flex items-center gap-1 align-baseline whitespace-nowrap font-medium text-gray-800 hover:underline cursor-pointer"
-      >
-        <span>Xem thêm</span>
-      </button>
-    </div>
-  ) : (
-    fullParagraphs.map((paragraph, index) => {
-      const isLast = index === fullParagraphs.length - 1;
+            <button
+              title="Xem toàn bộ bài viết"
+              onClick={() => setIsExpanded(true)}
+              className="ml-1 inline-flex items-center gap-1 align-baseline whitespace-nowrap font-medium text-gray-800 hover:underline cursor-pointer"
+            >
+              <span>Xem thêm</span>
+            </button>
+          </div>
+        ) : (
+          fullParagraphs.map((paragraph, index) => {
+            const isLast = index === fullParagraphs.length - 1;
 
-      return (
-        <p
-          key={index}
-          className="postParagraph mb-3 text-sm/6 sm:text-base/6 whitespace-pre-line break-words last:mb-0"
-        >
-          {renderInlineParts(paragraph)}
+            return (
+              <p
+                key={index}
+                className="postParagraph mb-3 text-sm/6 sm:text-base/6 whitespace-pre-line break-words last:mb-0"
+              >
+                {renderInlineParts(paragraph)}
 
-          {/*isLast && truncate && isLong && (
+                {/*isLast && truncate && isLong && (
             <button
               title="Thu gọn"
               onClick={() => setIsExpanded(false)}
@@ -129,11 +129,11 @@ export default function PostBody({
               <i className="fa-duotone fa-angle-up text-sm" />
             </button>
           )*/}
-        </p>
-      );
-    })
-  )}
-</div>
+              </p>
+            );
+          })
+        )}
+      </div>
 
       {Array.isArray(images) &&
         images.some((img) => typeof img === "string" && img.trim() !== "") && (

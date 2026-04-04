@@ -44,9 +44,8 @@ export default function PostCard({
 
           {/* Dot */}
           <div
-            className={`relative z-10 mt-3 size-3 rounded-full border-2 border-white shadow-sm ${
-              post.is_pinned ? "bg-neutral-400" : "bg-gray-400"
-            }`}
+            className={`relative z-10 mt-3 size-3 rounded-full border-2 border-white shadow-sm ${post.is_pinned ? "bg-neutral-400" : "bg-gray-400"
+              }`}
           />
         </div>
 

@@ -137,16 +137,15 @@ function SortableImageCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm transition select-none ${
-        isDragging ? "z-20 scale-[1.03] shadow-xl opacity-90" : "hover:shadow-md"
-      }`}
+      className={`group relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm transition select-none ${isDragging ? "z-20 scale-[1.03] shadow-xl opacity-90" : "hover:shadow-md"
+        }`}
     >
       <img
-  src={getOptimizedPreviewUrl(img.url, 240, 180)}
-  alt={`preview-${index}`}
-  loading="lazy"
-  className="h-40 w-full object-cover transition duration-300 group-hover:scale-[1.03] pointer-events-none"
-/>
+        src={getOptimizedPreviewUrl(img.url, 240, 180)}
+        alt={`preview-${index}`}
+        loading="lazy"
+        className="h-40 w-full object-cover transition duration-300 group-hover:scale-[1.03] pointer-events-none"
+      />
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
 
@@ -154,8 +153,8 @@ function SortableImageCard({
         {index === 0
           ? "Ảnh bìa"
           : img.type === "existing"
-          ? "Ảnh cũ"
-          : "Ảnh mới"}
+            ? "Ảnh cũ"
+            : "Ảnh mới"}
       </div>
 
       {/* Drag handle */}
@@ -200,9 +199,9 @@ export default function CreatePostModal({
   const editorWrapRef = useRef<HTMLDivElement | null>(null);
 
   const [selectionHint, setSelectionHint] = useState<{
-  visible: boolean;
-  top: number;
-  left: number;
+    visible: boolean;
+    top: number;
+    left: number;
   } | null>(null);
 
   const { showToast } = useToast();
@@ -260,7 +259,7 @@ export default function CreatePostModal({
       .filter((item): item is ExistingImageItem => item.type === "existing")
       .map((item) => item.public_id)
       .join("|") !==
-      originalExistingImages.map((item) => item.public_id).join("|");
+    originalExistingImages.map((item) => item.public_id).join("|");
 
   const hasImagesChanged =
     removedExistingPublicIds.length > 0 ||
@@ -284,10 +283,10 @@ export default function CreatePostModal({
   }, []);
 
   useEffect(() => {
-  if (!isOpen) {
-    setSelectionHint(null);
-  }
-}, [isOpen]);
+    if (!isOpen) {
+      setSelectionHint(null);
+    }
+  }, [isOpen]);
 
   // lock scroll
   useEffect(() => {
@@ -346,12 +345,12 @@ export default function CreatePostModal({
 
   // auto resize textarea
   useLayoutEffect(() => {
-  const textarea = textareaRef.current;
-  if (!textarea) return;
+    const textarea = textareaRef.current;
+    if (!textarea) return;
 
-  textarea.style.height = "auto";
-  textarea.style.height = `${textarea.scrollHeight}px`;
-}, [content, isOpen]);
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, [content, isOpen]);
 
   if (!isOpen || !mounted) return null;
 
@@ -435,96 +434,96 @@ export default function CreatePostModal({
   };
 
   const updateSelectionHint = () => {
-  const textarea = textareaRef.current;
-  const wrap = editorWrapRef.current;
+    const textarea = textareaRef.current;
+    const wrap = editorWrapRef.current;
 
-  if (!textarea || !wrap) {
+    if (!textarea || !wrap) {
+      setSelectionHint(null);
+      return;
+    }
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+
+    if (start === end) {
+      setSelectionHint(null);
+      return;
+    }
+
+    const selectedText = textarea.value.slice(start, end).trim();
+
+    if (!selectedText) {
+      setSelectionHint(null);
+      return;
+    }
+
+    const textareaRect = textarea.getBoundingClientRect();
+    const wrapRect = wrap.getBoundingClientRect();
+
+    // đặt hint ở góc trên phải textarea cho nhẹ, ổn định, không cần đo caret phức tạp
+    setSelectionHint({
+      visible: true,
+      top: textareaRect.top - wrapRect.top + 10,
+      left: textareaRect.right - wrapRect.left - 110,
+    });
+  };
+
+  const handleWrapBold = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+
+    if (start === end) return;
+
+    const selected = content.slice(start, end);
+    const alreadyBold =
+      selected.startsWith("**") && selected.endsWith("**") && selected.length >= 4;
+
+    let nextContent = "";
+    let nextSelectionStart = start;
+    let nextSelectionEnd = end;
+
+    if (alreadyBold) {
+      const unwrapped = selected.slice(2, -2);
+      nextContent =
+        content.slice(0, start) + unwrapped + content.slice(end);
+
+      nextSelectionStart = start;
+      nextSelectionEnd = start + unwrapped.length;
+    } else {
+      nextContent =
+        content.slice(0, start) + `**${selected}**` + content.slice(end);
+
+      nextSelectionStart = start + 2;
+      nextSelectionEnd = end + 2;
+    }
+
+    setContent(nextContent);
     setSelectionHint(null);
-    return;
-  }
 
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
+    requestAnimationFrame(() => {
+      textarea.focus();
+      textarea.setSelectionRange(nextSelectionStart, nextSelectionEnd);
+    });
+  };
 
-  if (start === end) {
-    setSelectionHint(null);
-    return;
-  }
+  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const items = Array.from(e.clipboardData?.items || []);
 
-  const selectedText = textarea.value.slice(start, end).trim();
+    const imageFiles = items
+      .filter((item) => item.type.startsWith("image/"))
+      .map((item) => item.getAsFile())
+      .filter((file): file is File => !!file);
 
-  if (!selectedText) {
-    setSelectionHint(null);
-    return;
-  }
-
-  const textareaRect = textarea.getBoundingClientRect();
-  const wrapRect = wrap.getBoundingClientRect();
-
-  // đặt hint ở góc trên phải textarea cho nhẹ, ổn định, không cần đo caret phức tạp
-  setSelectionHint({
-    visible: true,
-    top: textareaRect.top - wrapRect.top + 10,
-    left: textareaRect.right - wrapRect.left - 110,
-  });
-};
-
-const handleWrapBold = () => {
-  const textarea = textareaRef.current;
-  if (!textarea) return;
-
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-
-  if (start === end) return;
-
-  const selected = content.slice(start, end);
-  const alreadyBold =
-    selected.startsWith("**") && selected.endsWith("**") && selected.length >= 4;
-
-  let nextContent = "";
-  let nextSelectionStart = start;
-  let nextSelectionEnd = end;
-
-  if (alreadyBold) {
-    const unwrapped = selected.slice(2, -2);
-    nextContent =
-      content.slice(0, start) + unwrapped + content.slice(end);
-
-    nextSelectionStart = start;
-    nextSelectionEnd = start + unwrapped.length;
-  } else {
-    nextContent =
-      content.slice(0, start) + `**${selected}**` + content.slice(end);
-
-    nextSelectionStart = start + 2;
-    nextSelectionEnd = end + 2;
-  }
-
-  setContent(nextContent);
-  setSelectionHint(null);
-
-  requestAnimationFrame(() => {
-    textarea.focus();
-    textarea.setSelectionRange(nextSelectionStart, nextSelectionEnd);
-  });
-};
-
-const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-  const items = Array.from(e.clipboardData?.items || []);
-
-  const imageFiles = items
-    .filter((item) => item.type.startsWith("image/"))
-    .map((item) => item.getAsFile())
-    .filter((file): file is File => !!file);
-
-  if (imageFiles.length > 0) {
-    e.preventDefault();
-    appendFiles(imageFiles);
-    showToast(`Đã dán ${imageFiles.length} ảnh`, "success");
-    return;
-  }
-};
+    if (imageFiles.length > 0) {
+      e.preventDefault();
+      appendFiles(imageFiles);
+      showToast(`Đã dán ${imageFiles.length} ảnh`, "success");
+      return;
+    }
+  };
 
   const handleSubmit = async () => {
     if (!canSubmitCreate && !canSubmitEdit) return;
@@ -568,33 +567,33 @@ const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     setLoading(false);
 
     if (result?.success) {
-  // ✏️ EDIT REALTIME
-  if (isEditMode && editingPost) {
-    const freshPost = await getPostById(editingPost.id);
+      // ✏️ EDIT REALTIME
+      if (isEditMode && editingPost) {
+        const freshPost = await getPostById(editingPost.id);
 
-    if (freshPost) {
-      onSuccess?.(freshPost);
+        if (freshPost) {
+          onSuccess?.(freshPost);
+        }
+      }
+
+      // 🆕 CREATE REALTIME
+      if (!isEditMode) {
+        const freshPost = await getPostById(result.id);
+
+        if (freshPost) {
+          onSuccess?.(freshPost);
+        }
+      }
+
+      onClose();
+    } else {
+      showToast(
+        result?.error ||
+        (isEditMode ? "Không thể cập nhật bài viết" : "Không thể đăng bài"),
+        "error"
+      );
+      console.error(result);
     }
-  }
-
-  // 🆕 CREATE REALTIME
-  if (!isEditMode) {
-    const freshPost = await getPostById(result.id);
-
-    if (freshPost) {
-      onSuccess?.(freshPost);
-    }
-  }
-
-  onClose();
-} else {
-  showToast(
-    result?.error ||
-      (isEditMode ? "Không thể cập nhật bài viết" : "Không thể đăng bài"),
-    "error"
-  );
-  console.error(result);
-}
   };
 
   return createPortal(
@@ -651,9 +650,8 @@ const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 shadow-sm">
                 <i
-                  className={`fa-duotone ${
-                    isEditMode ? "fa-pen-to-square" : "fa-feather-pointed"
-                  } text-lg`}
+                  className={`fa-duotone ${isEditMode ? "fa-pen-to-square" : "fa-feather-pointed"
+                    } text-lg`}
                 />
               </div>
 
@@ -700,75 +698,75 @@ const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
 
               <div ref={editorWrapRef} className="relative p-4 sm:p-5">
                 <textarea
-  ref={textareaRef}
-  value={content}
-  onChange={(e) => {
-    setContent(e.target.value);
-    setSelectionHint(null);
-  }}
-  onPaste={handlePaste}
-  onMouseUp={updateSelectionHint}
-  onKeyUp={updateSelectionHint}
-  onSelect={updateSelectionHint}
-  onBlur={() => {
-    setTimeout(() => setSelectionHint(null), 120);
-  }}
-  placeholder={
-    isEditMode
-      ? "Chỉnh sửa nội dung bài viết..."
-      : "Bạn đang nghĩ gì?"
-  }
-  className="w-full bg-transparent text-base/6 text-gray-900 placeholder:text-gray-400 outline-none resize-none overflow-hidden min-h-[1rem] align-top"
-/>
+                  ref={textareaRef}
+                  value={content}
+                  onChange={(e) => {
+                    setContent(e.target.value);
+                    setSelectionHint(null);
+                  }}
+                  onPaste={handlePaste}
+                  onMouseUp={updateSelectionHint}
+                  onKeyUp={updateSelectionHint}
+                  onSelect={updateSelectionHint}
+                  onBlur={() => {
+                    setTimeout(() => setSelectionHint(null), 120);
+                  }}
+                  placeholder={
+                    isEditMode
+                      ? "Chỉnh sửa nội dung bài viết..."
+                      : "Bạn đang nghĩ gì?"
+                  }
+                  className="w-full bg-transparent text-base/6 text-gray-900 placeholder:text-gray-400 outline-none resize-none overflow-hidden min-h-[1rem] align-top"
+                />
 
-{selectionHint?.visible && (
-  <button
-    type="button"
-    onMouseDown={(e) => e.preventDefault()}
-    onClick={handleWrapBold}
-    className="absolute z-20 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/95 px-3 py-2 text-xs font-medium text-gray-700 shadow-lg backdrop-blur-sm transition hover:bg-gray-50 opacity-0 pointer-events-none"
-    style={{
-      top: selectionHint.top,
-      left: selectionHint.left,
-    }}
-  >
-    <i className="fa-duotone fa-bold" />
-    **In đậm**
-  </button>
-)}
+                {selectionHint?.visible && (
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={handleWrapBold}
+                    className="absolute z-20 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/95 px-3 py-2 text-xs font-medium text-gray-700 shadow-lg backdrop-blur-sm transition hover:bg-gray-50 opacity-0 pointer-events-none"
+                    style={{
+                      top: selectionHint.top,
+                      left: selectionHint.left,
+                    }}
+                  >
+                    <i className="fa-duotone fa-bold" />
+                    **In đậm**
+                  </button>
+                )}
 
 
-<div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
-  <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
-    <button
-      type="button"
-      onClick={handleWrapBold}
-      className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 transition hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
-    >
-      <i className="fa-duotone fa-bold" />
-      In đậm
-    </button>
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                    <button
+                      type="button"
+                      onClick={handleWrapBold}
+                      className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 transition hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
+                    >
+                      <i className="fa-duotone fa-bold" />
+                      In đậm
+                    </button>
 
-    <button
-      type="button"
-      onClick={() => fileInputRef.current?.click()}
-      className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 transition hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
-    >
-      <i className="fa-duotone fa-image" />
-      Ảnh
-    </button>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 transition hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
+                    >
+                      <i className="fa-duotone fa-image" />
+                      Ảnh
+                    </button>
 
-    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
-      <i className="fa-duotone fa-paste" />
-      Dán ảnh
-    </span>
+                    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
+                      <i className="fa-duotone fa-paste" />
+                      Dán ảnh
+                    </span>
 
-    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
-      <i className="fa-duotone fa-hashtag" />
-      Auto Hashtag
-    </span>
-  </div>
-</div>
+                    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
+                      <i className="fa-duotone fa-hashtag" />
+                      Auto Hashtag
+                    </span>
+                  </div>
+                </div>
 
               </div>
             </div>
@@ -878,9 +876,8 @@ const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
                 ) : (
                   <>
                     <i
-                      className={`fa-duotone ${
-                        isEditMode ? "fa-floppy-disk" : "fa-paper-plane-top"
-                      } text-sm`}
+                      className={`fa-duotone ${isEditMode ? "fa-floppy-disk" : "fa-paper-plane-top"
+                        } text-sm`}
                     />
                     <span>{isEditMode ? "Lưu" : "Đăng"}</span>
                   </>

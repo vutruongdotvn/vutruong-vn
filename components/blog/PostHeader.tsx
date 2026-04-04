@@ -35,14 +35,14 @@ export default function PostHeader({
   const time = formatTimeAgo(createdAt);
 
   const date = new Date(createdAt);
-const fullTime = `${date.toLocaleDateString("vi-VN", {
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-})} lúc ${date.toLocaleTimeString("vi-VN", {
-  hour: "2-digit",
-  minute: "2-digit",
-})}`;
+  const fullTime = `${date.toLocaleDateString("vi-VN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })} lúc ${date.toLocaleTimeString("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+  })}`;
 
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -84,19 +84,19 @@ const fullTime = `${date.toLocaleDateString("vi-VN", {
           <div className="min-w-0 ml-1.5">
             {showLink && postId ? (
               <Link
-  className="postPublish text-xs text-gray-500 hover:text-black font-normal active:scale-97 inline-block"
-  href={`/blog/${postId}`}
-  title={fullTime}
->
-  {time}
-</Link>
+                className="postPublish text-xs text-gray-500 hover:text-black font-normal active:scale-97 inline-block"
+                href={`/blog/${postId}`}
+                title={fullTime}
+              >
+                {time}
+              </Link>
             ) : (
               <span
-  className="postPublish text-xs text-gray-500 font-normal"
-  title={fullTime}
->
-  {time}
-</span>
+                className="postPublish text-xs text-gray-500 font-normal"
+                title={fullTime}
+              >
+                {time}
+              </span>
             )}
 
             {isPinned && (
@@ -127,9 +127,8 @@ const fullTime = `${date.toLocaleDateString("vi-VN", {
                 className="w-full text-left px-4 py-2 hover:bg-gray-100 active:bg-gray-200 rounded-lg text-sm flex items-center gap-3 cursor-pointer"
               >
                 <i
-                  className={`fa-duotone ${
-                    isPinned ? "fa-thumbtack-slash" : "fa-thumbtack"
-                  }`}
+                  className={`fa-duotone ${isPinned ? "fa-thumbtack-slash" : "fa-thumbtack"
+                    }`}
                 />
                 <span>{isPinned ? "Bỏ ghim" : "Ghim"}</span>
               </button>
