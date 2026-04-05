@@ -97,7 +97,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
         <div className="mt-4 space-y-3">
           <input
             type="email"
-            placeholder="admin@vutruong.vn"
+            placeholder="Email hoặc tên đăng nhập"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={handleKeyDown}
