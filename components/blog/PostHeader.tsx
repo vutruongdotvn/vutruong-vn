@@ -64,18 +64,19 @@ export default function PostHeader({
           <Image
             src={avatar || "/images/default.jpg"}
             alt="avatar"
-            width={28}
-            height={28}
-            className="size-7 rounded-full object-cover"
+            width={30}
+            height={30}
+            className="size-8 rounded-full object-cover"
           />
         )}
 
         <div className="flex min-w-0 items-center gap-2">
           <Link
             href="/bio"
-            className="flex items-center rounded-full border border-neutral-300 bg-neutral-100 px-3 py-1 text-sm font-medium text-neutral-600 hover:border-neutral-400 active:scale-97"
+            className="flex items-center gap-1 rounded-full border border-slate-300 bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600 hover:border-slate-400 active:scale-97"
           >
             {name}
+            <i className="fadt fa-badge-check text-xs text-slate-600 hover:text-blue-600" title="Tài khoản đã được xác thực"/>
           </Link>
 
           {showLink && postId ? (
@@ -122,7 +123,7 @@ export default function PostHeader({
                   onPin?.();
                   setOpen(false);
                 }}
-                className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-gray-100 active:bg-gray-200 cursor-pointer"
+                className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
               >
                 <i className={`fa-duotone ${isPinned ? "fa-thumbtack-slash" : "fa-thumbtack"}`} />
                 <span>{isPinned ? "Bỏ ghim" : "Ghim"}</span>
@@ -133,7 +134,7 @@ export default function PostHeader({
                   onEdit?.();
                   setOpen(false);
                 }}
-                className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-gray-100 active:bg-gray-200 cursor-pointer"
+                className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
               >
                 <i className="fa-duotone fa-edit" />
                 <span>Chỉnh sửa</span>
@@ -144,7 +145,7 @@ export default function PostHeader({
                   onDelete?.();
                   setOpen(false);
                 }}
-                className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-red-50 hover:text-red-600 active:bg-red-100 active:text-red-600 cursor-pointer"
+                className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-red-100 hover:text-red-600 active:bg-red-200 active:text-red-600 cursor-pointer"
               >
                 <i className="fa-duotone fa-trash" />
                 <span>Xóa</span>

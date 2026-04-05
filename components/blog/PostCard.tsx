@@ -35,9 +35,9 @@ export default function PostCard({
               alt={name || "avatar"}
               width={40}
               height={40}
-              className="w-full h-full rounded-full object-cover shadow-xl"
+              className="w-full h-full rounded-full object-cover shadow-xl pointer-events-none"
             />
-            <i className="fa-solid fa-badge-check absolute bottom-[-8px] left-[50%] translate-x-[-50%] z-33 text-sm text-blue-600" />
+            <i className="fa-solid fa-badge-check absolute bottom-[-8px] left-[50%] translate-x-[-50%] z-33 text-sm text-slate-600" />
           </div>
 
           {/* Line */}
