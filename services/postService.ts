@@ -36,10 +36,10 @@ async function compressAndUploadImage(file: File) {
 
   const finalFile = shouldCompress
     ? await compressImage(file, {
-        maxSizeMB: 1.4,
-        maxWidthOrHeight: 2200,
-        initialQuality: 0.84,
-      })
+      maxSizeMB: 1.4,
+      maxWidthOrHeight: 2200,
+      initialQuality: 0.84,
+    })
     : file;
 
   return await uploadImage(finalFile);
@@ -125,18 +125,18 @@ export const createPost = async ({
     }
 
     const uploadPromises = files.map(async (file) => {
-  try {
-    const result = await compressAndUploadImage(file);
+      try {
+        const result = await compressAndUploadImage(file);
 
-    return {
-      url: result.url, // giữ nguyên ảnh gốc
-      public_id: result.public_id,
-    };
-  } catch (err) {
-    console.error("Upload lỗi:", err);
-    throw err;
-  }
-});
+        return {
+          url: result.url, // giữ nguyên ảnh gốc
+          public_id: result.public_id,
+        };
+      } catch (err) {
+        console.error("Upload lỗi:", err);
+        throw err;
+      }
+    });
 
     let uploadedImages;
 
@@ -155,31 +155,31 @@ export const createPost = async ({
     const hashtags = content.match(/#[\wÀ-ỹ]+/g) || [];
     const id = generateNumericId();
 
-const { error: insertError } = await supabase.from("posts").insert([
-  {
-    id,
-    content,
-    images: imageUrls,
-    public_ids: publicIds,
-    hashtags,
-    user_id: user.id,
-    visibility,
-    cover_image: imageUrls?.[0] || null,
-  },
-]);
+    const { error: insertError } = await supabase.from("posts").insert([
+      {
+        id,
+        content,
+        images: imageUrls,
+        public_ids: publicIds,
+        hashtags,
+        user_id: user.id,
+        visibility,
+        cover_image: imageUrls?.[0] || null,
+      },
+    ]);
 
-if (insertError) {
-  console.error("Lỗi insert:", insertError);
-  return {
-    success: false,
-    error: insertError.message,
-  };
-}
+    if (insertError) {
+      console.error("Lỗi insert:", insertError);
+      return {
+        success: false,
+        error: insertError.message,
+      };
+    }
 
-return {
-  success: true,
-  id, // 👈 thêm dòng này để modal fetch lại bài mới tạo
-};
+    return {
+      success: true,
+      id, // 👈 thêm dòng này để modal fetch lại bài mới tạo
+    };
   } catch (err: any) {
     console.error("Lỗi hệ thống:", err);
     return {
@@ -303,17 +303,17 @@ export const updatePost = async ({
   removedPublicIds?: string[];
   orderedImageItems?: Array<
     | {
-        id: string;
-        type: "existing";
-        url: string;
-        public_id: string;
-      }
+      id: string;
+      type: "existing";
+      url: string;
+      public_id: string;
+    }
     | {
-        id: string;
-        type: "new";
-        url: string;
-        file: File;
-      }
+      id: string;
+      type: "new";
+      url: string;
+      file: File;
+    }
   >;
 }) => {
   try {
@@ -392,16 +392,16 @@ export const updatePost = async ({
     if (newItems.length > 0) {
       try {
         const uploadedResults = await Promise.all(
-  newItems.map(async (item) => {
-    const result = await compressAndUploadImage(item.file);
+          newItems.map(async (item) => {
+            const result = await compressAndUploadImage(item.file);
 
-    return {
-      id: item.id,
-      url: result.url,
-      public_id: result.public_id,
-    };
-  })
-);
+            return {
+              id: item.id,
+              url: result.url,
+              public_id: result.public_id,
+            };
+          })
+        );
 
         uploadedResults.forEach((img) => {
           uploadMap.set(img.id, {

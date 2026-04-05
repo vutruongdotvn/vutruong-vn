@@ -58,53 +58,51 @@ export default function PostHeader({
   }, []);
 
   return (
-    <div className="flex items-center justify-between px-3 sm:px-5 pt-3 sm:pt-5 select-none">
-      <div className="flex items-center gap-2 min-w-0">
+    <div className="flex items-center justify-between px-3 pt-3 select-none sm:px-5 sm:pt-5">
+      <div className="flex min-w-0 items-center gap-2">
         {!hideAvatar && (
           <Image
             src={avatar || "/images/default.jpg"}
             alt="avatar"
-            width={40}
-            height={40}
-            className="rounded-full object-cover aspect-square"
+            width={28}
+            height={28}
+            className="size-7 rounded-full object-cover"
           />
         )}
 
-        <div className="leading-6 flex items-center gap-1 min-w-0 flex-wrap">
-          <div className="flex items-center justify-center gap-[3px] min-w-0 bg-neutral-100 border border-neutral-300 hover:border-neutral-400 px-3 py-0.75 rounded-full cursor-pointer active:scale-97">
-            <span className="text-sm text-neutral-800 font-medium">
-              {name}
+        <div className="flex min-w-0 items-center gap-2">
+          <Link
+            href="/bio"
+            className="flex items-center rounded-full border border-neutral-300 bg-neutral-100 px-3 py-1 text-sm font-medium text-neutral-600 hover:border-neutral-400 active:scale-97"
+          >
+            {name}
+          </Link>
+
+          {showLink && postId ? (
+            <Link
+              href={`/blog/${postId}`}
+              title={fullTime}
+              className="postPublish inline-flex items-center text-xs font-normal text-gray-600 hover:text-black active:scale-97"
+            >
+              {time}
+            </Link>
+          ) : (
+            <span
+              title={fullTime}
+              className="postPublish inline-flex items-center text-xs font-normal text-gray-500"
+            >
+              {time}
             </span>
-            <i
-              className="fad fa-badge-check text-neutral-600 hover:text-neutral-600 text-xs cursor-pointer shrink-0"
-              title="Tài khoản đã xác thực"
-            />
-          </div>
+          )}
 
-          <div className="min-w-0 ml-1.5">
-            {showLink && postId ? (
-              <Link
-                className="postPublish text-xs text-gray-500 hover:text-black font-normal active:scale-97 inline-block"
-                href={`/blog/${postId}`}
-                title={fullTime}
-              >
-                {time}
-              </Link>
-            ) : (
-              <span
-                className="postPublish text-xs text-gray-500 font-normal"
-                title={fullTime}
-              >
-                {time}
-              </span>
-            )}
-
-            {isPinned && (
-              <span className="inline-block ml-1.5 text-gray-600 hover:text-black text-sm active:scale-95 cursor-pointer" title="Bài ghim">
-                <i className="fa-duotone fa-thumbtack" />
-              </span>
-            )}
-          </div>
+          {isPinned && (
+            <span
+              title="Bài ghim"
+              className="inline-flex items-center text-sm text-gray-600 hover:text-black active:scale-95 cursor-pointer"
+            >
+              <i className="fa-duotone fa-thumbtack-angle" />
+            </span>
+          )}
         </div>
       </div>
 
@@ -112,24 +110,21 @@ export default function PostHeader({
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setOpen(!open)}
-            className="text-gray-400 hover:text-gray-700 cursor-pointer px-3"
+            className="inline-flex items-center justify-center px-3 text-gray-400 hover:text-gray-700 cursor-pointer"
           >
-            <i className="fa-duotone fa-ellipsis"></i>
+            <i className="fa-duotone fa-ellipsis" />
           </button>
 
           {open && (
-            <div className="animate-fadeIn absolute top-0 right-0 w-55 bg-white shadow-2xl rounded-xl z-50 py-2 px-1 overflow-hidden">
+            <div className="animate-fadeIn absolute top-0 right-0 z-50 w-55 overflow-hidden rounded-xl bg-white px-1 py-2 shadow-2xl">
               <button
                 onClick={() => {
                   onPin?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 active:bg-gray-200 rounded-lg text-sm flex items-center gap-3 cursor-pointer"
+                className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-gray-100 active:bg-gray-200 cursor-pointer"
               >
-                <i
-                  className={`fa-duotone ${isPinned ? "fa-thumbtack-slash" : "fa-thumbtack"
-                    }`}
-                />
+                <i className={`fa-duotone ${isPinned ? "fa-thumbtack-slash" : "fa-thumbtack"}`} />
                 <span>{isPinned ? "Bỏ ghim" : "Ghim"}</span>
               </button>
 
@@ -138,7 +133,7 @@ export default function PostHeader({
                   onEdit?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 active:bg-gray-200 rounded-lg text-sm flex items-center gap-3 cursor-pointer"
+                className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-gray-100 active:bg-gray-200 cursor-pointer"
               >
                 <i className="fa-duotone fa-edit" />
                 <span>Chỉnh sửa</span>
@@ -149,7 +144,7 @@ export default function PostHeader({
                   onDelete?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-red-50 hover:text-red-600 active:bg-red-100 active:text-red-600 rounded-lg text-sm flex items-center gap-3 cursor-pointer"
+                className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-red-50 hover:text-red-600 active:bg-red-100 active:text-red-600 cursor-pointer"
               >
                 <i className="fa-duotone fa-trash" />
                 <span>Xóa</span>
