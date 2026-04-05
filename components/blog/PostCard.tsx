@@ -29,7 +29,7 @@ export default function PostCard({
         {/* LEFT TIMELINE */}
         <div className="relative flex flex-col items-center">
           {/* Avatar */}
-          <div className="relative z-20 mt-2">
+          <div className="relative z-20 mt-3.5">
             <Image
               src={avatar || "/images/default.jpg"}
               alt={name || "avatar"}
@@ -37,7 +37,6 @@ export default function PostCard({
               height={40}
               className="w-full h-full rounded-full object-cover shadow-xl pointer-events-none"
             />
-            <i className="fa-solid fa-badge-check absolute bottom-[-8px] left-[50%] translate-x-[-50%] z-33 text-sm text-slate-600" />
           </div>
 
           {/* Line */}

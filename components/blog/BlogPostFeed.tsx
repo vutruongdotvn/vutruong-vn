@@ -392,7 +392,7 @@ export default function BlogPostFeed() {
           >
             <div className="flex items-center justify-center text-3xl">
               {refreshing ? (
-                <i className="fa-duotone fa-spinner-third fa-spin text-green-600" />
+                <i className="fa-duotone fa-spinner-third fa-spin text-slate-600" />
               ) : (
                 <i className="fa-duotone fa-circle-check text-green-600" />
               )}
@@ -438,16 +438,16 @@ export default function BlogPostFeed() {
           <button
             type="button"
             onClick={() => fetchPosts()}
-            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/80 backdrop-blur-md px-4 py-2.5 text-sm font-medium text-gray-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 hover:bg-white hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] active:scale-97 cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/80 backdrop-blur-md px-5 py-2.5 text-sm font-medium text-gray-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 hover:bg-white hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)] cursor-pointer"
           >
             <i className="fa-duotone fa-arrow-down" />
-            Tải thêm
+            Xem thêm
           </button>
         </div>
       )}
 
       {!loading && !loadingMore && !hasMore && posts.length > 0 && (
-        <p className="text-center text-sm text-gray-500 pt-6">Hết!</p>
+        <p className="text-center text-sm text-gray-400 pt-6">Hết</p>
       )}
 
       {user && role === "admin" && (

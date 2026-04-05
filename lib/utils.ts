@@ -37,7 +37,8 @@ export const formatTimeAgo = (date: string) => {
   const minutes = postDate.getMinutes().toString().padStart(2, "0");
 
   // return `${day} tháng ${month}, ${year} lúc ${hours}:${minutes}`;
-  return `${day}/${month}/${year}`;
+  // return `${day}/${month}/${year}`;
+  return `${day} tháng ${month}`;
 };
 
 // =========================

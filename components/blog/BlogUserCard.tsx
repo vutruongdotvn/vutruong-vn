@@ -93,6 +93,7 @@ export default function BlogUserCard({
       >
         {/* LEFT */}
         <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+          {user ? (
           <Link href="/profile" className="shrink-0">
             <Image
               height={44}
@@ -102,6 +103,15 @@ export default function BlogUserCard({
               className="sm:size-11 size-9 rounded-full object-cover shadow-lg"
             />
           </Link>
+          ) : (
+            <Image
+              height={44}
+              width={44}
+              alt="avatar"
+              src={avatar}
+              className="sm:size-11 size-9 rounded-full object-cover shadow-lg pointer-events-none"
+            />
+          )}
 
           <div className="min-w-0 flex-1">
             <p className="font-semibold sm:text-base text-sm text-gray-900 flex items-center gap-[3px] leading-5 truncate">
