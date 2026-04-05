@@ -10,7 +10,8 @@ export default function LayoutShell({
 }) {
   const pathname = usePathname();
 
-  const hideNavbar = pathname === "/welcome";
+  const hideNavbar =
+    pathname === "/welcome" || pathname.startsWith("/watch");
 
   return (
     <>

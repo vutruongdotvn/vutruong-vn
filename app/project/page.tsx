@@ -36,9 +36,9 @@ export default function ProjectPage() {
       gradient: "from-emerald-400 to-green-600",
     },
     {
-      name: "VT Films",
+      name: "VT Watch",
       description: "Trang xem phim cá nhân - nội bộ",
-      href: "https://films.vutruong.vn",
+      href: "/watch",
       icon: "fa-duotone fa-film",
       gradient: "from-purple-400 to-indigo-600",
     },
