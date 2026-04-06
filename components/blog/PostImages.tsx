@@ -190,8 +190,9 @@ export default function PostImages({
     return [hero, ...cloned];
   }, [safeImages, heroIndex, count]);
 
-  const visibleImages = count <= 5 ? orderedImages : orderedImages.slice(0, 5);
-  const hiddenImages = count > 5 ? orderedImages.slice(5) : [];
+  // Luôn hiển thị 4 ảnh trong layout 4+; hidden = tất cả từ ảnh thứ 5 trở đi
+  const visibleImages = orderedImages.slice(0, 4);
+  const hiddenImages = count > 4 ? orderedImages.slice(4) : [];
 
   if (count === 0) return null;
 
@@ -350,7 +351,7 @@ export default function PostImages({
 
       {count >= 5 && (
         <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
-          {visibleImages.slice(0, 4).map((img, i) =>
+          {visibleImages.map((img, i) =>
             renderImage(
               img,
               i,
@@ -369,7 +370,7 @@ export default function PostImages({
       {hiddenImages.length > 0 && (
         <div className="hidden">
           {hiddenImages.map((img, i) => (
-            <a key={`hidden-${i}`} href={img} data-fancybox={group} />
+            <a key={`hidden-${i}`} href={getLightboxImage(img)} data-fancybox={group} />
           ))}
         </div>
       )}
