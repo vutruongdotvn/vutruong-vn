@@ -24,7 +24,7 @@ function SkeletonLine({
 function SkeletonAction() {
   return (
     <div className="flex items-center gap-[6px]">
-      <div className="w-[18px] h-[18px] rounded-full bg-gray-200 animate-pulse" />
+      <div className="w-[22px] h-[22px] rounded-full bg-gray-200 animate-pulse" />
     </div>
   );
 }
@@ -98,10 +98,10 @@ export default function PostCardSkeleton({
 
               {variant === "grid" && (
                 <div className="grid grid-cols-2 gap-[6px] mt-4 px-3 sm:px-0">
-                  <div className="aspect-[4/3] sm:aspect-[3/4] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
-                  <div className="aspect-[4/3] sm:aspect-[3/4] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
-                  <div className="aspect-[4/3] sm:aspect-[3/4] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
-                  <div className="aspect-[4/3] sm:aspect-[3/4] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+                  <div className="aspect-[4/3] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+                  <div className="aspect-[4/3] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+                  <div className="aspect-[4/3] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+                  <div className="aspect-[4/3] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
                 </div>
               )}
               
