@@ -13,7 +13,6 @@ import { useUser } from "@/hooks/useUser";
 //   "button" → hiển thị nút "Xem thêm", người dùng bấm để tải
 //   "scroll" → tự động tải khi cuộn đến cuối danh sách (Infinity Scroll)
 const FEED_MODE: "button" | "scroll" = "scroll";
-// ---------------------------------- chỉ đỏi ở đây
 
 export default function BlogPostFeed() {
   const [posts, setPosts] = useState<any[]>([]);
