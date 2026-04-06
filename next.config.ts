@@ -16,6 +16,22 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "res.cloudinary.com",
       },
+      {
+        protocol: "https",
+        hostname: "img.ophim.live",
+      },
+      {
+        protocol: "https",
+        hostname: "ophim1.com",
+      },
+      {
+        protocol: "https",
+        hostname: "image.tmdb.org",
+      },
+      {
+        protocol: "https",
+        hostname: "placehold.co",
+      },
     ],
 
     formats: ["image/avif", "image/webp"],
