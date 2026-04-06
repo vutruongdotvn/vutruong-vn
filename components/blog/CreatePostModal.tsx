@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef, useLayoutEffect } from "react";
+import { useState, useEffect, useMemo, useRef, useLayoutEffect, memo } from "react";
 import { createPortal } from "react-dom";
 import { createPost, updatePost, getPostById } from "@/services/postService";
 import { supabase } from "@/lib/supabase";
@@ -14,6 +14,8 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -22,7 +24,6 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
 function safeParseArray(value: any): string[] {
   if (Array.isArray(value)) return value;
 
@@ -114,7 +115,7 @@ const compressFilesBeforeUpload = async (files: File[]) => {
 };
 
 
-function SortableImageCard({
+const SortableImageCard = memo(function SortableImageCard({
   img,
   index,
   onRemove,
@@ -130,31 +131,34 @@ function SortableImageCard({
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: isDragging ? undefined : transition,
+    willChange: "transform",
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`group relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm transition select-none ${isDragging ? "z-20 scale-[1.03] shadow-xl opacity-90" : "hover:shadow-md"
-        }`}
+      className={`group relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm select-none touch-none ${
+        isDragging ? "z-20 opacity-90" : "hover:shadow-md"
+      }`}
     >
       <img
-        src={getOptimizedPreviewUrl(img.url, 240, 180)}
+        src={getOptimizedPreviewUrl(img.url, 220, 160)}
         alt={`preview-${index}`}
         loading="lazy"
-        className="h-40 w-full object-cover transition duration-300 group-hover:scale-[1.03] pointer-events-none"
+        draggable={false}
+        className="h-40 w-full object-cover pointer-events-none"
       />
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
 
-      <div className="absolute left-3 bottom-3 rounded-full bg-black/65 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm">
+      <div className="absolute left-3 bottom-3 rounded-full bg-black/65 px-3 py-1.5 text-[11px] font-medium text-white">
         {index === 0
           ? "Ảnh bìa"
           : img.type === "existing"
-            ? "Ảnh cũ"
-            : "Ảnh mới"}
+          ? "Ảnh cũ"
+          : "Ảnh mới"}
       </div>
 
       {/* Drag handle */}
@@ -162,7 +166,7 @@ function SortableImageCard({
         type="button"
         {...attributes}
         {...listeners}
-        className="absolute left-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition hover:scale-105 hover:bg-black/80 cursor-grab active:cursor-grabbing"
+        className="absolute left-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white cursor-grab active:cursor-grabbing"
         title="Kéo để sắp xếp"
       >
         <i className="fa-duotone fa-grip-dots text-xs" />
@@ -172,13 +176,13 @@ function SortableImageCard({
       <button
         type="button"
         onClick={() => onRemove(index)}
-        className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition hover:bg-red-400 cursor-pointer"
+        className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white hover:bg-red-400 cursor-pointer"
       >
         <i className="fa-duotone fa-xmark text-xs" />
       </button>
     </div>
   );
-}
+});
 
 export default function CreatePostModal({
   isOpen,
@@ -192,6 +196,7 @@ export default function CreatePostModal({
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+const [activeDragId, setActiveDragId] = useState<string | null>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -277,7 +282,10 @@ export default function CreatePostModal({
 
   const canSubmitCreate =
     !isEditMode && (trimmedContent.length > 0 || newFiles.length > 0);
-
+const activeDragItem = useMemo(
+  () => imageItems.find((item) => item.id === activeDragId) || null,
+  [imageItems, activeDragId]
+);
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -417,21 +425,24 @@ export default function CreatePostModal({
     const droppedFiles = Array.from(e.dataTransfer.files || []);
     appendFiles(droppedFiles);
   };
+const handleDragStart = (event: DragStartEvent) => {
+  setActiveDragId(String(event.active.id));
+};
+ const handleDragEnd = (event: DragEndEvent) => {
+  const { active, over } = event;
+  setActiveDragId(null);
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
+  if (!over || active.id === over.id) return;
 
-    if (!over || active.id === over.id) return;
+  setImageItems((prev) => {
+    const oldIndex = prev.findIndex((item) => item.id === active.id);
+    const newIndex = prev.findIndex((item) => item.id === over.id);
 
-    setImageItems((prev) => {
-      const oldIndex = prev.findIndex((item) => item.id === active.id);
-      const newIndex = prev.findIndex((item) => item.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return prev;
 
-      if (oldIndex === -1 || newIndex === -1) return prev;
-
-      return arrayMove(prev, oldIndex, newIndex);
-    });
-  };
+    return arrayMove(prev, oldIndex, newIndex);
+  });
+};
 
   const updateSelectionHint = () => {
     const textarea = textareaRef.current;
@@ -792,10 +803,11 @@ export default function CreatePostModal({
 
               {imageItems.length > 0 ? (
                 <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
+  sensors={sensors}
+  collisionDetection={closestCenter}
+  onDragStart={handleDragStart}
+  onDragEnd={handleDragEnd}
+>
                   <SortableContext
                     items={imageItems.map((item) => item.id)}
                     strategy={rectSortingStrategy}
@@ -811,6 +823,18 @@ export default function CreatePostModal({
                       ))}
                     </div>
                   </SortableContext>
+                  <DragOverlay>
+  {activeDragItem ? (
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-lg opacity-95 w-full max-w-[260px]">
+      <img
+        src={getOptimizedPreviewUrl(activeDragItem.url, 240, 180)}
+        alt=""
+        className="h-40 w-full object-cover pointer-events-none"
+        draggable={false}
+      />
+    </div>
+  ) : null}
+</DragOverlay>
                 </DndContext>
               ) : (
                 <div
