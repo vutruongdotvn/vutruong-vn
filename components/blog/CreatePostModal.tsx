@@ -139,9 +139,8 @@ const SortableImageCard = memo(function SortableImageCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm select-none touch-none ${
-        isDragging ? "z-20 opacity-90" : "hover:shadow-md"
-      }`}
+      className={`group relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm select-none touch-none ${isDragging ? "z-20 opacity-90" : "hover:shadow-md"
+        }`}
     >
       <img
         src={getOptimizedPreviewUrl(img.url, 220, 160)}
@@ -157,8 +156,8 @@ const SortableImageCard = memo(function SortableImageCard({
         {index === 0
           ? "Ảnh bìa"
           : img.type === "existing"
-          ? "Ảnh cũ"
-          : "Ảnh mới"}
+            ? "Ảnh cũ"
+            : "Ảnh mới"}
       </div>
 
       {/* Drag handle */}
@@ -196,7 +195,7 @@ export default function CreatePostModal({
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -282,10 +281,10 @@ const [activeDragId, setActiveDragId] = useState<string | null>(null);
 
   const canSubmitCreate =
     !isEditMode && (trimmedContent.length > 0 || newFiles.length > 0);
-const activeDragItem = useMemo(
-  () => imageItems.find((item) => item.id === activeDragId) || null,
-  [imageItems, activeDragId]
-);
+  const activeDragItem = useMemo(
+    () => imageItems.find((item) => item.id === activeDragId) || null,
+    [imageItems, activeDragId]
+  );
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -425,24 +424,24 @@ const activeDragItem = useMemo(
     const droppedFiles = Array.from(e.dataTransfer.files || []);
     appendFiles(droppedFiles);
   };
-const handleDragStart = (event: DragStartEvent) => {
-  setActiveDragId(String(event.active.id));
-};
- const handleDragEnd = (event: DragEndEvent) => {
-  const { active, over } = event;
-  setActiveDragId(null);
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveDragId(String(event.active.id));
+  };
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveDragId(null);
 
-  if (!over || active.id === over.id) return;
+    if (!over || active.id === over.id) return;
 
-  setImageItems((prev) => {
-    const oldIndex = prev.findIndex((item) => item.id === active.id);
-    const newIndex = prev.findIndex((item) => item.id === over.id);
+    setImageItems((prev) => {
+      const oldIndex = prev.findIndex((item) => item.id === active.id);
+      const newIndex = prev.findIndex((item) => item.id === over.id);
 
-    if (oldIndex === -1 || newIndex === -1) return prev;
+      if (oldIndex === -1 || newIndex === -1) return prev;
 
-    return arrayMove(prev, oldIndex, newIndex);
-  });
-};
+      return arrayMove(prev, oldIndex, newIndex);
+    });
+  };
 
   const updateSelectionHint = () => {
     const textarea = textareaRef.current;
@@ -803,11 +802,11 @@ const handleDragStart = (event: DragStartEvent) => {
 
               {imageItems.length > 0 ? (
                 <DndContext
-  sensors={sensors}
-  collisionDetection={closestCenter}
-  onDragStart={handleDragStart}
-  onDragEnd={handleDragEnd}
->
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                >
                   <SortableContext
                     items={imageItems.map((item) => item.id)}
                     strategy={rectSortingStrategy}
@@ -824,17 +823,17 @@ const handleDragStart = (event: DragStartEvent) => {
                     </div>
                   </SortableContext>
                   <DragOverlay>
-  {activeDragItem ? (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-lg opacity-95 w-full max-w-[260px]">
-      <img
-        src={getOptimizedPreviewUrl(activeDragItem.url, 240, 180)}
-        alt=""
-        className="h-40 w-full object-cover pointer-events-none"
-        draggable={false}
-      />
-    </div>
-  ) : null}
-</DragOverlay>
+                    {activeDragItem ? (
+                      <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-lg opacity-95 w-full max-w-[260px]">
+                        <img
+                          src={getOptimizedPreviewUrl(activeDragItem.url, 240, 180)}
+                          alt=""
+                          className="h-40 w-full object-cover pointer-events-none"
+                          draggable={false}
+                        />
+                      </div>
+                    ) : null}
+                  </DragOverlay>
                 </DndContext>
               ) : (
                 <div
