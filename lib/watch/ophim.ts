@@ -1,8 +1,6 @@
 import type {
   OPhimCategory,
-  OPhimCategoryResponse,
   OPhimCountry,
-  OPhimCountryResponse,
   OPhimDetailResponse,
   OPhimListResponse,
   OPhimListType,
@@ -20,6 +18,7 @@ export function getMovieImage(path?: string, base = FALLBACK_CDN) {
   if (!path || typeof path !== "string") {
     return "https://placehold.co/1280x720?text=No+Image";
   }
+
   return path.startsWith("http") ? path : `${base}${path}`;
 }
 
@@ -31,16 +30,23 @@ async function fetchJson<T>(url: string): Promise<T | null> {
     });
 
     if (!res.ok) return null;
-    return res.json();
+
+    return (await res.json()) as T;
   } catch {
     return null;
   }
 }
 
-export async function getHomeMovies() {
+export async function getHomeMovies(): Promise<{
+  items: OPhimMovie[];
+  cdn: string;
+}> {
   const data = await fetchJson<OPhimListResponse>(`${API_BASE}/home`);
-  const items = data?.data?.items ?? [];
-  const cdn = `${data?.data?.APP_DOMAIN_CDN_IMAGE || "https://img.ophim.live"}/uploads/movies/`;
+
+  const items = Array.isArray(data?.data?.items) ? data.data.items : [];
+  const cdn = `${
+    data?.data?.APP_DOMAIN_CDN_IMAGE || "https://img.ophim.live"
+  }/uploads/movies/`;
 
   return {
     items,
@@ -48,11 +54,18 @@ export async function getHomeMovies() {
   };
 }
 
-export async function getMovieDetail(slug: string) {
+export async function getMovieDetail(
+  slug: string
+): Promise<OPhimDetailResponse | null> {
   return fetchJson<OPhimDetailResponse>(`${API_BASE}/phim/${slug}`);
 }
 
-export async function getHeroMovies() {
+export async function getHeroMovies(): Promise<
+  (OPhimMovie & {
+    _bgUrl: string;
+    _thumbUrl: string;
+  })[]
+> {
   const { items, cdn } = await getHomeMovies();
   const newestItems = items.slice(0, 10);
 
@@ -61,75 +74,96 @@ export async function getHeroMovies() {
   );
 
   const enriched = newestItems.map((item, idx) => {
-    const detail = detailResults[idx]?.data?.item || {};
-    const detailCdn = `${detailResults[idx]?.data?.APP_DOMAIN_CDN_IMAGE || "https://img.ophim.live"}/uploads/movies/`;
+    const detail = detailResults[idx]?.data?.item ?? null;
+
+    const detailCdn = `${
+      detailResults[idx]?.data?.APP_DOMAIN_CDN_IMAGE || "https://img.ophim.live"
+    }/uploads/movies/`;
 
     return {
       ...item,
-      ...detail,
+      ...(detail ?? {}),
       _bgUrl: getMovieImage(
-        detail.poster_url ||
-          detail.thumb_url ||
+        detail?.poster_url ||
+          detail?.thumb_url ||
           item.poster_url ||
           item.thumb_url,
         detailCdn
       ),
       _thumbUrl: getMovieImage(item.thumb_url || item.poster_url, cdn),
-    } as OPhimMovie & {
-      _bgUrl: string;
-      _thumbUrl: string;
     };
   });
 
   return enriched;
 }
 
-export async function getSectionMovies(apiPath: string) {
-  const data = await fetchJson<OPhimListResponse>(`${API_BASE}${apiPath}?page=1`);
-  return data?.data?.items ?? [];
+export async function getSectionMovies(apiPath: string): Promise<OPhimMovie[]> {
+  const data = await fetchJson<OPhimListResponse>(
+    `${API_BASE}${apiPath}?page=1`
+  );
+
+  return Array.isArray(data?.data?.items) ? data.data.items : [];
 }
 
 /**
  * Dynamic navbar data
  */
 export async function getCategories(): Promise<OPhimCategory[]> {
-  const data = await fetchJson<any>(`${API_BASE}/the-loai`);
+  const data = await fetchJson<unknown>(`${API_BASE}/the-loai`);
 
   const rawItems =
-    data?.items ||
-    data?.data?.items ||
-    data?.data ||
+    (data as { items?: unknown[] })?.items ||
+    (data as { data?: { items?: unknown[] } })?.data?.items ||
+    (data as { data?: unknown[] })?.data ||
     [];
 
   if (!Array.isArray(rawItems)) return [];
 
   return rawItems
-    .map((item: any) => ({
-      id: item?._id || item?.id || item?.slug,
-      name: item?.name || "",
-      slug: item?.slug || "",
-    }))
-    .filter((item: OPhimCategory) => item.name && item.slug);
+    .map((item) => {
+      const obj = item as {
+        _id?: string;
+        id?: string;
+        slug?: string;
+        name?: string;
+      };
+
+      return {
+        id: obj._id || obj.id || obj.slug || "",
+        name: obj.name || "",
+        slug: obj.slug || "",
+      };
+    })
+    .filter((item) => item.name && item.slug);
 }
 
 export async function getCountries(): Promise<OPhimCountry[]> {
-  const data = await fetchJson<any>(`${API_BASE}/quoc-gia`);
+  const data = await fetchJson<unknown>(`${API_BASE}/quoc-gia`);
 
   const rawItems =
-    data?.items ||
-    data?.data?.items ||
-    data?.data ||
+    (data as { items?: unknown[] })?.items ||
+    (data as { data?: { items?: unknown[] } })?.data?.items ||
+    (data as { data?: unknown[] })?.data ||
     [];
 
   if (!Array.isArray(rawItems)) return [];
 
   return rawItems
-    .map((item: any) => ({
-      id: item?._id || item?.id || item?.slug,
-      name: item?.name || "",
-      slug: item?.slug || "",
-    }))
-    .filter((item: OPhimCountry) => item.name && item.slug);
+    .map((item) => {
+      const obj = item as {
+        _id?: string;
+        id?: string;
+        slug?: string;
+        name?: string;
+      };
+
+      return {
+        id: obj._id || obj.id || obj.slug || "",
+        name: obj.name || "",
+        slug: obj.slug || "",
+      };
+    })
+    .filter((item) => item.name && item.slug);
 }
 
 /**
