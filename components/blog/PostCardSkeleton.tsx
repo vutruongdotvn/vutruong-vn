@@ -97,7 +97,7 @@ export default function PostCardSkeleton({
               )}
 
               {variant === "grid" && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-[6px] mt-4 px-3 sm:px-0">
+                <div className="grid grid-cols-2 gap-[6px] mt-4 px-3 sm:px-0">
                   <div className="aspect-[4/3] sm:aspect-[3/4] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
                   <div className="aspect-[4/3] sm:aspect-[3/4] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
                   <div className="aspect-[4/3] sm:aspect-[3/4] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />

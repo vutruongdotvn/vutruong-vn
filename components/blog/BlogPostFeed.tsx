@@ -57,7 +57,7 @@ export default function BlogPostFeed() {
    *
    * Tăng giá trị này để giảm tần suất gọi API; giảm để phản hồi nhanh hơn.
    */
-  const SCROLL_FETCH_DELAY = 800;
+  const SCROLL_FETCH_DELAY = 1200;
 
   const { user, role } = useUser();
   const { showToast, removeToast } = useToastContext();
@@ -372,10 +372,12 @@ export default function BlogPostFeed() {
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        if (!entry.isIntersecting)    return;
-        if (isFetchingRef.current)    return;
+        if (!entry.isIntersecting)      return;
+        if (isFetchingRef.current)      return;
         if (isScrollPendingRef.current) return;
-        if (!hasMoreRef.current)      return;
+        if (!hasMoreRef.current)        return;
+        // Bug 3 fix: guard – chưa có bài nào thì chưa fetch thêm
+        if (postsRef.current.length === 0) return;
 
         // ① Khoá trigger kép
         isScrollPendingRef.current = true;
@@ -399,9 +401,9 @@ export default function BlogPostFeed() {
             return;
           }
 
-          // ④ Gọi fetchPosts – hàm sẽ tự quản lý loadingMore và isFetchingRef
-          //    Đặt loadingMore về false trước để fetchPosts reset đúng trạng thái
-          setLoadingMore(false);
+          // ④ Gọi fetchPosts – KHÔNG setLoadingMore(false) ở đây.
+          //    Skeleton đang hiển thị (từ bước ②); fetchPosts sẽ tự
+          //    setLoadingMore(false) sau khi fetch xong → không bị flash.
           await fetchPosts();
         }, SCROLL_FETCH_DELAY);
       },
@@ -488,8 +490,13 @@ export default function BlogPostFeed() {
         </div>
       )}
 
-      {/* Sentinel cho infinity scroll – vô hình, đặt ngay sau skeleton */}
-      {FEED_MODE === "scroll" && !loading && (
+      {/*
+        Sentinel cho infinity scroll – luôn có trong DOM khi FEED_MODE = "scroll".
+        KHÔNG bọc !loading: khi mount (loading=true) sentinel sẽ chưa có trong DOM
+        → sentinelRef.current = null → IntersectionObserver setup thất bại → scroll không hoạt động.
+        Guard "đang loading / chưa có bài" được xử lý bên trong observer callback.
+      */}
+      {FEED_MODE === "scroll" && (
         <div ref={sentinelRef} aria-hidden="true" className="h-1 w-full" />
       )}
 
