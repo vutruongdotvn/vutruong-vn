@@ -8,6 +8,13 @@ import { getPosts, pinPost, deletePost } from "@/services/postService";
 import { useToastContext } from "@/components/ui/ToastProvider";
 import { useUser } from "@/hooks/useUser";
 
+// ─── Cấu hình chế độ tải bài viết ────────────────────────────────────────────
+// Thay đổi giá trị này để chuyển đổi chế độ tải bài viết:
+//   "button" → hiển thị nút "Xem thêm", người dùng bấm để tải
+//   "scroll" → tự động tải khi cuộn đến cuối danh sách (Infinity Scroll)
+const FEED_MODE: "button" | "scroll" = "scroll";
+// ---------------------------------- chỉ đỏi ở đây
+
 export default function BlogPostFeed() {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,28 +30,46 @@ export default function BlogPostFeed() {
   const [feedVersion, setFeedVersion] = useState(0);
 
   // ✅ Chống request chồng nhau / stale closure
-  const isFetchingRef = useRef(false);
-  const pageRef = useRef(0);
-  const hasMoreRef = useRef(true);
-  const mountedRef = useRef(true);
-  const postsRef = useRef<any[]>([]);
+  const isFetchingRef    = useRef(false);
+  const pageRef          = useRef(0);
+  const hasMoreRef       = useRef(true);
+  const mountedRef       = useRef(true);
+  const postsRef         = useRef<any[]>([]);
+
+  // ─── Infinity scroll refs ────────────────────────────────────────────────────
+  /** Phần tử sentinel ở cuối danh sách, được IntersectionObserver theo dõi */
+  const sentinelRef        = useRef<HTMLDivElement>(null);
+  /** Cờ bảo vệ: ngăn kích hoạt lại trong thời gian chờ delay */
+  const isScrollPendingRef = useRef(false);
+  /** Timer ID của delay trước khi fetch */
+  const scrollTimerRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ⚙️ Cấu hình số lượng bài viết
-  const INITIAL_LIMIT = 5; // mặc định 3 bài
-  const LOAD_MORE_LIMIT = 5; // fetch thêm 3 bài
+  const INITIAL_LIMIT   = 5;
+  const LOAD_MORE_LIMIT = 5;
+
+  /**
+   * ⚙️ Độ trễ (ms) áp dụng cho chế độ infinity scroll.
+   *
+   * Luồng hoạt động khi scroll chạm sentinel:
+   *   1. SmartPostSkeletonFeed hiển thị ngay lập tức (setLoadingMore → true)
+   *   2. Chờ SCROLL_FETCH_DELAY ms
+   *   3. Gọi fetchPosts() → thực sự lấy dữ liệu từ API/database
+   *
+   * Tăng giá trị này để giảm tần suất gọi API; giảm để phản hồi nhanh hơn.
+   */
+  const SCROLL_FETCH_DELAY = 800;
 
   const { user, role } = useUser();
   const { showToast, removeToast } = useToastContext();
 
+  // ─── Helpers (không thay đổi) ────────────────────────────────────────────────
   const sortPostsByPinnedAndDate = (items: any[]) => {
     return [...items].sort((a, b) => {
       if (a.is_pinned !== b.is_pinned) {
         return a.is_pinned ? -1 : 1;
       }
-
-      return (
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
   };
 
@@ -54,41 +79,35 @@ export default function BlogPostFeed() {
 
   const syncFeedMeta = (nextPosts: any[]) => {
     postsRef.current = nextPosts;
-
-    const loadedCount = nextPosts.length;
+    const loadedCount  = nextPosts.length;
     const currentLimit = LOAD_MORE_LIMIT > 0 ? LOAD_MORE_LIMIT : 1;
-
     const nextPage =
       loadedCount <= INITIAL_LIMIT
-        ? loadedCount > 0
-          ? 1
-          : 0
+        ? loadedCount > 0 ? 1 : 0
         : 1 + Math.ceil((loadedCount - INITIAL_LIMIT) / currentLimit);
-
     pageRef.current = nextPage;
     setPage(nextPage);
   };
 
   const resetFeedMetaToInitial = (nextPosts: any[]) => {
-    postsRef.current = nextPosts;
-    pageRef.current = nextPosts.length > 0 ? 1 : 0;
+    postsRef.current    = nextPosts;
+    pageRef.current     = nextPosts.length > 0 ? 1 : 0;
     setPage(nextPosts.length > 0 ? 1 : 0);
   };
 
   const mergeNewPostToTop = (prevPosts: any[], newPost: any) => {
     const filtered = prevPosts.filter((p) => p.id !== newPost.id);
-    const merged = [newPost, ...filtered];
+    const merged   = [newPost, ...filtered];
     return sortPostsByPinnedAndDate(merged);
   };
 
-  // ✅ Soft sync: giữ số bài hiện đang xem
+  // ─── refreshCurrentWindow (không thay đổi) ───────────────────────────────────
   const refreshCurrentWindow = useCallback(
     async (options?: { resetUi?: boolean; showRefreshUi?: boolean }) => {
-      const resetUi = options?.resetUi ?? false;
+      const resetUi      = options?.resetUi      ?? false;
       const showRefreshUi = options?.showRefreshUi ?? false;
 
       if (isFetchingRef.current) return;
-
       isFetchingRef.current = true;
 
       const visibleCount = Math.max(postsRef.current.length, INITIAL_LIMIT);
@@ -100,11 +119,10 @@ export default function BlogPostFeed() {
       }
 
       try {
-        const data = await getPosts(0, visibleCount - 1);
-
+        const data     = await getPosts(0, visibleCount - 1);
         if (!mountedRef.current) return;
 
-        const safeData = Array.isArray(data) ? data : [];
+        const safeData   = Array.isArray(data) ? data : [];
         const sortedData = sortPostsByPinnedAndDate(safeData);
 
         setPosts(sortedData);
@@ -113,24 +131,18 @@ export default function BlogPostFeed() {
         setHasMore(safeData.length >= visibleCount);
         hasMoreRef.current = safeData.length >= visibleCount;
 
-        if (resetUi) {
-          resetPostUiState();
-        }
+        if (resetUi) resetPostUiState();
 
         if (showRefreshUi) {
           setShowRefreshSkeleton(false);
           setRefreshing(false);
           setRefreshDone(true);
-
           setTimeout(() => {
-            if (mountedRef.current) {
-              setRefreshDone(false);
-            }
+            if (mountedRef.current) setRefreshDone(false);
           }, 1200);
         }
       } catch (err) {
         console.error("BlogPostFeed refreshCurrentWindow error:", err);
-
         if (mountedRef.current) {
           setShowRefreshSkeleton(false);
           setRefreshing(false);
@@ -144,10 +156,9 @@ export default function BlogPostFeed() {
     [showToast]
   );
 
-  // ✅ Hard refresh: reset feed về trạng thái mới tinh như lúc đầu
+  // ─── hardRefreshFeed (không thay đổi) ────────────────────────────────────────
   const hardRefreshFeed = useCallback(async () => {
     if (isFetchingRef.current) return;
-
     isFetchingRef.current = true;
 
     setRefreshDone(false);
@@ -155,11 +166,10 @@ export default function BlogPostFeed() {
     setShowRefreshSkeleton(true);
 
     try {
-      const data = await getPosts(0, INITIAL_LIMIT - 1);
-
+      const data     = await getPosts(0, INITIAL_LIMIT - 1);
       if (!mountedRef.current) return;
 
-      const safeData = Array.isArray(data) ? data : [];
+      const safeData   = Array.isArray(data) ? data : [];
       const sortedData = sortPostsByPinnedAndDate(safeData);
 
       setPosts(sortedData);
@@ -169,19 +179,14 @@ export default function BlogPostFeed() {
       hasMoreRef.current = safeData.length >= INITIAL_LIMIT;
 
       resetPostUiState();
-
       setShowRefreshSkeleton(false);
       setRefreshing(false);
       setRefreshDone(true);
-
       setTimeout(() => {
-        if (mountedRef.current) {
-          setRefreshDone(false);
-        }
+        if (mountedRef.current) setRefreshDone(false);
       }, 1200);
     } catch (err) {
       console.error("BlogPostFeed hardRefreshFeed error:", err);
-
       if (mountedRef.current) {
         setShowRefreshSkeleton(false);
         setRefreshing(false);
@@ -197,6 +202,7 @@ export default function BlogPostFeed() {
     }
   }, [showToast]);
 
+  // ─── fetchPosts (không thay đổi) ─────────────────────────────────────────────
   const fetchPosts = useCallback(
     async (forceRefresh = false) => {
       if (forceRefresh) {
@@ -205,15 +211,14 @@ export default function BlogPostFeed() {
       }
 
       if (isFetchingRef.current) return;
-      if (!hasMoreRef.current) return;
+      if (!hasMoreRef.current)   return;
 
       isFetchingRef.current = true;
 
       const currentCount = postsRef.current.length;
-      const limit = currentCount === 0 ? INITIAL_LIMIT : LOAD_MORE_LIMIT;
-
-      const from = currentCount;
-      const to = from + limit - 1;
+      const limit        = currentCount === 0 ? INITIAL_LIMIT : LOAD_MORE_LIMIT;
+      const from         = currentCount;
+      const to           = from + limit - 1;
 
       if (currentCount === 0) {
         setLoading(true);
@@ -222,8 +227,7 @@ export default function BlogPostFeed() {
       }
 
       try {
-        const data = await getPosts(from, to);
-
+        const data     = await getPosts(from, to);
         if (!mountedRef.current) return;
 
         const safeData = Array.isArray(data) ? data : [];
@@ -239,18 +243,15 @@ export default function BlogPostFeed() {
             syncFeedMeta(sortedData);
             return sortedData;
           }
-
           const newPosts = safeData.filter(
             (newPost) => !prev.some((p) => p.id === newPost.id)
           );
-
           const merged = [...prev, ...newPosts];
           syncFeedMeta(merged);
           return merged;
         });
       } catch (err) {
         console.error("BlogPostFeed fetchPosts error:", err);
-
         if (mountedRef.current) {
           showToast("Không thể tải bài viết. Vui lòng thử lại.", "error", 3200);
         }
@@ -259,54 +260,45 @@ export default function BlogPostFeed() {
           setLoading(false);
           setLoadingMore(false);
         }
-
         isFetchingRef.current = false;
       }
     },
     [hardRefreshFeed, showToast]
   );
 
+  // ─── Handlers (không thay đổi) ───────────────────────────────────────────────
   const handlePin = async (post: any) => {
     const pinningToastId = showToast(
       post.is_pinned ? "Đang bỏ ghim bài viết" : "Đang ghim bài viết",
       "warning",
       0
     );
-
     const res = await pinPost(post.id, post.is_pinned);
-
     if (!res.success) {
       removeToast(pinningToastId);
       showToast(res.error || "Cập nhật ghim bài viết thất bại!", "error", 3200);
       return;
     }
-
     removeToast(pinningToastId);
     showToast(
       post.is_pinned ? "Đã bỏ ghim bài viết" : "Đã ghim bài viết",
       "success",
       2200
     );
-
     await refreshCurrentWindow();
   };
 
   const handleDelete = async (post: any) => {
     if (!confirm("Xác nhận xóa bài viết này?")) return;
-
     const deletingToastId = showToast("Đang xóa bài viết", "warning", 0);
-
     const res = await deletePost(post.id, post.public_ids);
-
     if (!res.success) {
       removeToast(deletingToastId);
       showToast(res.error || "Xóa bài viết thất bại!", "error", 3200);
       return;
     }
-
     removeToast(deletingToastId);
     showToast("Đã xóa bài viết", "success", 2200);
-
     await refreshCurrentWindow();
   };
 
@@ -319,10 +311,10 @@ export default function BlogPostFeed() {
     await refreshCurrentWindow();
   };
 
+  // ─── Effects (không thay đổi) ────────────────────────────────────────────────
   useEffect(() => {
     mountedRef.current = true;
     fetchPosts();
-
     return () => {
       mountedRef.current = false;
     };
@@ -335,28 +327,22 @@ export default function BlogPostFeed() {
   useEffect(() => {
     const handleCreatedPost = async (event: Event) => {
       const customEvent = event as CustomEvent;
-      const newPost = customEvent.detail;
-
+      const newPost     = customEvent.detail;
       if (!newPost) return;
 
-      const optimisticMerged = mergeNewPostToTop(postsRef.current, newPost);
-      const cappedOptimistic = optimisticMerged.slice(
+      const optimisticMerged  = mergeNewPostToTop(postsRef.current, newPost);
+      const cappedOptimistic  = optimisticMerged.slice(
         0,
         Math.max(postsRef.current.length, INITIAL_LIMIT)
       );
-
       setPosts(cappedOptimistic);
       syncFeedMeta(cappedOptimistic);
       setLoading(false);
-
       await refreshCurrentWindow();
     };
 
     window.addEventListener("blog-post-created", handleCreatedPost);
-
-    return () => {
-      window.removeEventListener("blog-post-created", handleCreatedPost);
-    };
+    return () => window.removeEventListener("blog-post-created", handleCreatedPost);
   }, [refreshCurrentWindow]);
 
   // Refresh Feeds Post
@@ -365,30 +351,101 @@ export default function BlogPostFeed() {
       if (isFetchingRef.current) return;
       await fetchPosts(true);
     };
-
     window.addEventListener("refresh-blog-feed", handleRefreshBlogFeed);
-
-    return () => {
-      window.removeEventListener("refresh-blog-feed", handleRefreshBlogFeed);
-    };
+    return () => window.removeEventListener("refresh-blog-feed", handleRefreshBlogFeed);
   }, [fetchPosts]);
   // End
 
+  // ─── Infinity scroll – IntersectionObserver ──────────────────────────────────
+  /**
+   * Luồng khi sentinel vào viewport (chế độ "scroll"):
+   *   1. isScrollPendingRef = true  → khóa trigger kép trong thời gian delay
+   *   2. setLoadingMore(true)        → SmartPostSkeletonFeed hiển thị ngay
+   *   3. setTimeout(SCROLL_FETCH_DELAY) → chờ
+   *   4. fetchPosts()                → gọi API, skeleton tắt sau khi xong
+   */
+  useEffect(() => {
+    if (FEED_MODE !== "scroll") return;
+
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry.isIntersecting)    return;
+        if (isFetchingRef.current)    return;
+        if (isScrollPendingRef.current) return;
+        if (!hasMoreRef.current)      return;
+
+        // ① Khoá trigger kép
+        isScrollPendingRef.current = true;
+
+        // ② Hiển thị skeleton ngay lập tức
+        setLoadingMore(true);
+
+        // ③ Huỷ timer cũ (nếu có) rồi tạo timer mới
+        if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+
+        scrollTimerRef.current = setTimeout(async () => {
+          isScrollPendingRef.current = false;
+
+          if (!mountedRef.current) {
+            setLoadingMore(false);
+            return;
+          }
+
+          if (!hasMoreRef.current) {
+            setLoadingMore(false);
+            return;
+          }
+
+          // ④ Gọi fetchPosts – hàm sẽ tự quản lý loadingMore và isFetchingRef
+          //    Đặt loadingMore về false trước để fetchPosts reset đúng trạng thái
+          setLoadingMore(false);
+          await fetchPosts();
+        }, SCROLL_FETCH_DELAY);
+      },
+      {
+        // Kích hoạt trước 200px so với cạnh dưới viewport
+        rootMargin: "0px 0px 200px 0px",
+        threshold: 0,
+      }
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.disconnect();
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+      isScrollPendingRef.current = false;
+    };
+  }, [fetchPosts]);
+
+  // ─── Cleanup scrollTimerRef khi unmount ─────────────────────────────────────
+  useEffect(() => {
+    return () => {
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    };
+  }, []);
+
+  // ─── Render ──────────────────────────────────────────────────────────────────
   return (
     <>
+      {/* Refresh indicator */}
       {(refreshing || refreshDone) && (
         <div className="fixed top-33 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
           <div
             className={`
-        flex items-center justify-center gap-2
-        rounded-full 
-        bg-white/60 backdrop-blur-2xl
-        w-12 h-12 text-center mx-auto
-        shadow-[0_10px_35px_rgba(0,0,0,0.3)]
-        text-sm font-normal text-gray-800
-        transition-all duration-800
-        animate-in fade-in slide-in-from-top-2 duration-300
-      `}
+              flex items-center justify-center gap-2
+              rounded-full
+              bg-white/60 backdrop-blur-2xl
+              w-12 h-12 text-center mx-auto
+              shadow-[0_10px_35px_rgba(0,0,0,0.3)]
+              text-sm font-normal text-gray-800
+              transition-all duration-800
+              animate-in fade-in slide-in-from-top-2 duration-300
+            `}
           >
             <div className="flex items-center justify-center text-3xl">
               {refreshing ? (
@@ -397,8 +454,6 @@ export default function BlogPostFeed() {
                 <i className="fa-duotone fa-circle-check text-green-600" />
               )}
             </div>
-
-            {/*<span>{refreshing ? "Đang tải dữ liệu" : "Đã làm mới"}</span>*/}
           </div>
         </div>
       )}
@@ -427,29 +482,42 @@ export default function BlogPostFeed() {
         />
       ))}
 
+      {/* Skeleton khi tải thêm */}
       {loadingMore && (
         <div className="mt-0">
           <SmartPostSkeletonFeed mode="loadMore" />
         </div>
       )}
 
-      {!loading && !loadingMore && hasMore && (
-        <div className="flex justify-center pt-6">
-          <button
-            type="button"
-            onClick={() => fetchPosts()}
-            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/80 backdrop-blur-md px-5 py-2.5 text-sm font-medium text-gray-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 hover:bg-white hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)] cursor-pointer"
-          >
-            <i className="fa-duotone fa-arrow-down" />
-            Xem thêm
-          </button>
+      {/* Sentinel cho infinity scroll – vô hình, đặt ngay sau skeleton */}
+      {FEED_MODE === "scroll" && !loading && (
+        <div ref={sentinelRef} aria-hidden="true" className="h-1 w-full" />
+      )}
+
+      {/* ── Khu vực "Xem thêm" / end ── */}
+      {!loading && !loadingMore && (
+        <div className="flex flex-col items-center gap-3 pt-6">
+
+          {/* Nút Xem thêm – chỉ hiện ở chế độ button */}
+          {hasMore && FEED_MODE === "button" && (
+            <button
+              type="button"
+              onClick={() => fetchPosts()}
+              className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/80 backdrop-blur-md px-5 py-2.5 text-sm font-medium text-gray-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 hover:bg-white hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)] cursor-pointer"
+            >
+              <i className="fa-duotone fa-arrow-down" />
+              Xem thêm
+            </button>
+          )}
+
+          {/* Hết feed */}
+          {!hasMore && posts.length > 0 && (
+            <p className="text-sm text-gray-400">Hết</p>
+          )}
         </div>
       )}
 
-      {!loading && !loadingMore && !hasMore && posts.length > 0 && (
-        <p className="text-center text-sm text-gray-400 pt-6">Hết</p>
-      )}
-
+      {/* Modal chỉnh sửa bài viết */}
       {user && role === "admin" && (
         <CreatePostModal
           isOpen={open}
