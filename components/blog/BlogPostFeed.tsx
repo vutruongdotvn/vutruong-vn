@@ -57,7 +57,7 @@ export default function BlogPostFeed() {
    *
    * Tăng giá trị này để giảm tần suất gọi API; giảm để phản hồi nhanh hơn.
    */
-  const SCROLL_FETCH_DELAY = 800;
+  const SCROLL_FETCH_DELAY = 1000;
 
   const { user, role } = useUser();
   const { showToast, removeToast } = useToastContext();
@@ -409,7 +409,7 @@ export default function BlogPostFeed() {
       },
       {
         // Kích hoạt trước 200px so với cạnh dưới viewport
-        rootMargin: "0px 0px 200px 0px",
+        rootMargin: "0px 0px 50px 0px",
         threshold: 0,
       }
     );
