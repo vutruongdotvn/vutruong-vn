@@ -14,11 +14,7 @@ const INITIAL_PATTERNS: Variant[][] = [
   ["grid", "text", "single"],
 ];
 
-const LOAD_MORE_PATTERNS: Variant[][] = [
-  ["double", "single"],
-  ["text", "single"],
-  ["single", "double"],
-];
+const LOAD_MORE_PATTERNS: Variant[][] = [["text"]];
 
 function getDailySeed() {
   const now = new Date();

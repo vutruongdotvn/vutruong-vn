@@ -211,7 +211,7 @@ export default function PostImages({
         key={`${img}-${i}`}
         href={lightboxUrl}
         data-fancybox={group}
-        className={`relative block overflow-hidden rounded-xl group ${className}`}
+        className={`relative block overflow-hidden group ${className}`}
       >
         <Image
           loader={cloudinaryLoader}
@@ -265,7 +265,7 @@ export default function PostImages({
     <>
       {count === 1 && (
         <div
-          className={`postImages relative mt-3 overflow-hidden select-none max-h-[78vh] px-3 sm:px-5 ${getSingleImageClass()}`}
+          className={`postImages relative mt-3 overflow-hidden select-none max-h-[78vh] ${getSingleImageClass()}`}
           style={getSingleImageStyle()}
         >
           {renderImage(
@@ -278,7 +278,7 @@ export default function PostImages({
       )}
 
       {count === 2 && (
-        <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
+        <div className="postImages grid grid-cols-2 gap-0.5 mt-3 select-none overflow-hidden">
           {safeImages.map((img, i) =>
             renderImage(
               img,
@@ -291,7 +291,7 @@ export default function PostImages({
       )}
 
       {count === 3 && smartLayout === "3-top-hero" && (
-        <div className="postImages mt-3 grid gap-[6px] select-none overflow-hidden px-3 sm:px-5">
+        <div className="postImages mt-3 grid gap-0.5 select-none overflow-hidden">
           <div className="relative w-full aspect-video">
             {renderImage(
               orderedImages[0],
@@ -301,7 +301,7 @@ export default function PostImages({
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-[6px]">
+          <div className="grid grid-cols-2 gap-0.5">
             {orderedImages.slice(1, 3).map((img, idx) =>
               renderImage(
                 img,
@@ -315,7 +315,7 @@ export default function PostImages({
       )}
 
       {count === 3 && smartLayout === "3-left-hero" && (
-        <div className="postImages grid grid-cols-2 gap-[6px] select-none aspect-[4/3] overflow-hidden px-3 sm:px-5 mt-3">
+        <div className="postImages grid grid-cols-2 gap-0.5 select-none aspect-[4/3] overflow-hidden mt-3">
           {renderImage(
             orderedImages[0],
             0,
@@ -323,7 +323,7 @@ export default function PostImages({
             "(max-width:768px) 50vw, 400px"
           )}
 
-          <div className="grid grid-rows-2 gap-[6px] h-full">
+          <div className="grid grid-rows-2 gap-0.5 h-full">
             {orderedImages.slice(1, 3).map((img, idx) =>
               renderImage(
                 img,
@@ -337,7 +337,7 @@ export default function PostImages({
       )}
 
       {count === 4 && (
-        <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
+        <div className="postImages grid grid-cols-2 gap-0.5 mt-3 select-none overflow-hidden">
           {orderedImages.slice(0, 4).map((img, i) =>
             renderImage(
               img,
@@ -350,7 +350,7 @@ export default function PostImages({
       )}
 
       {count >= 5 && (
-        <div className="postImages grid grid-cols-2 gap-[6px] mt-3 select-none overflow-hidden px-3 sm:px-5">
+        <div className="postImages grid grid-cols-2 gap-0.5 mt-3 select-none overflow-hidden">
           {visibleImages.map((img, i) =>
             renderImage(
               img,

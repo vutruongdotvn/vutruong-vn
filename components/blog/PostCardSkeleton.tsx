@@ -23,7 +23,7 @@ function SkeletonLine({
 
 function SkeletonAction() {
   return (
-    <div className="flex items-center gap-[6px]">
+    <div className="flex items-center gap-0.5">
       <div className="w-[22px] h-[22px] rounded-full bg-gray-200 animate-pulse" />
     </div>
   );
@@ -39,7 +39,7 @@ export default function PostCardSkeleton({
         {/* LEFT TIMELINE */}
         <div className="relative flex flex-col items-center">
           {/* Avatar */}
-          <div className="relative z-20 mt-2 w-[33px] h-[33px] md:w-[40px] md:h-[40px] rounded-full bg-gradient-to-br from-gray-300 to-gray-200 animate-pulse" />
+          <div className="relative z-20 mt-3 w-[33px] h-[33px] md:w-[40px] md:h-[40px] rounded-full bg-gradient-to-br from-gray-300 to-gray-200 animate-pulse" />
 
           {/* Line */}
           <div
@@ -73,9 +73,9 @@ export default function PostCardSkeleton({
             </div>
 
             {/* BODY */}
-            <div className="px-0 sm:px-5 pt-4">
+            <div className="px-0 pt-4">
               {/* Title / text */}
-              <div className="px-3 sm:px-0 space-y-3">
+              <div className="px-3 sm:px-5 space-y-3">
                 <SkeletonLine width="w-[96%]" />
                 <SkeletonLine width="w-[88%]" />
                 <SkeletonLine width="w-[72%]" />
@@ -90,24 +90,24 @@ export default function PostCardSkeleton({
               )}
 
               {variant === "double" && (
-                <div className="grid grid-cols-2 gap-[6px] mt-4 px-3 sm:px-0">
+                <div className="grid grid-cols-2 gap-0.5 mt-4 px-3 sm:px-0">
                   <div className="aspect-[4/3] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
                   <div className="aspect-[4/3] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
                 </div>
               )}
 
               {variant === "grid" && (
-                <div className="grid grid-cols-2 gap-[6px] mt-4 px-3 sm:px-0">
+                <div className="grid grid-cols-2 gap-0.5 mt-4 px-3 sm:px-0">
                   <div className="aspect-[4/3] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
                   <div className="aspect-[4/3] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
                   <div className="aspect-[4/3] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
                   <div className="aspect-[4/3] rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
                 </div>
               )}
-              
+                            
 
               {/* ACTIONS */}
-              <div className="flex items-center gap-5 pt-5 pb-4 px-5 sm:px-0">
+              <div className="flex items-center gap-5 pt-5 pb-4 px-5 sm:px-5">
                 <SkeletonAction />
               </div>
             </div>

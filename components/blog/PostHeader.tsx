@@ -76,7 +76,7 @@ export default function PostHeader({
             className="flex items-center gap-1 rounded-full border border-slate-300 bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600 hover:border-slate-400 active:scale-97"
           >
             {name}
-            <i className="fadt fa-badge-check text-xs text-blue-600" title="Tài khoản đã được xác thực"/>
+            <i className="fad fa-badge-check text-xs text-blue-600" title="Tài khoản đã được xác thực"/>
           </Link>
 
           {showLink && postId ? (

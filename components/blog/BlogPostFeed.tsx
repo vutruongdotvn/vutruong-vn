@@ -44,8 +44,8 @@ export default function BlogPostFeed() {
   const scrollTimerRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ⚙️ Cấu hình số lượng bài viết
-  const INITIAL_LIMIT   = 5;
-  const LOAD_MORE_LIMIT = 5;
+  const INITIAL_LIMIT   = 3;
+  const LOAD_MORE_LIMIT = 3;
 
   /**
    * ⚙️ Độ trễ (ms) áp dụng cho chế độ infinity scroll.
@@ -57,7 +57,7 @@ export default function BlogPostFeed() {
    *
    * Tăng giá trị này để giảm tần suất gọi API; giảm để phản hồi nhanh hơn.
    */
-  const SCROLL_FETCH_DELAY = 1200;
+  const SCROLL_FETCH_DELAY = 800;
 
   const { user, role } = useUser();
   const { showToast, removeToast } = useToastContext();
