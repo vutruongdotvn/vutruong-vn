@@ -1,6 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Google_Sans_Flex } from "next/font/google";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import AuthProvider from "@/components/AuthProvider";
 import LayoutShell from "@/components/LayoutShell";
@@ -8,9 +8,10 @@ import { ToastProvider } from "@/components/ui/ToastProvider";
 import PageTransition from "@/components/PageTransition";
 
 // 🔤 Font
-const roboto = Roboto({
+const googleSansFlex = Google_Sans_Flex({
   subsets: ["latin"],
-  variable: "--font-roboto",
+  variable: "--font-google-sans-flex",
+  display: "swap",
 });
 
 // 🌐 SEO GLOBAL
@@ -56,7 +57,7 @@ export const metadata: Metadata = {
 
   openGraph: {
     title: "VT Zone",
-    description: "Hệ sinh thái số của Vũ Trường",
+    description: "Hệ sinh thái số cá nhân của Vũ Trường trên Internet",
     url: "https://www.vutruong.vn",
     siteName: "VT Zone",
     images: [
@@ -91,22 +92,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi">
+    <html lang="vi" className={googleSansFlex.variable}>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="VT Zone" />
         <link rel="apple-touch-icon" href="/app.jpg" />
-        <link href="/api/fa-pro.css" rel="stylesheet"/>
+        <link href="/api/fa-pro.css" rel="stylesheet" />
       </head>
 
-      <body className={`${roboto.className} antialiased bg-[#f2f3f5]`}>
+      <body className="antialiased bg-[#f2f3f5]">
         <ToastProvider>
           <LayoutShell>
             <PageTransition>
-              <AuthProvider>
-                {children}
-              </AuthProvider>
+              <AuthProvider>{children}</AuthProvider>
             </PageTransition>
           </LayoutShell>
         </ToastProvider>
