@@ -55,7 +55,7 @@ export default function PostBody({
     return inlineParts.map((part, partIndex) => {
       if (part.type === "bold") {
         return (
-          <strong key={partIndex} className="font-semibold">
+          <strong key={partIndex} className="font-medium">
             {part.value}
           </strong>
         );
