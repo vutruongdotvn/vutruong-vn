@@ -1,4 +1,3 @@
-import ContactCard from "@/components/contact/ContactCard";
 import ContactForm from "@/components/contact/ContactForm";
 import { createMetadata } from "@/lib/metadata";
 
@@ -43,21 +42,6 @@ export default function ContactPage() {
           Trao đổi công việc | Cộng tác | Tài trợ
         </p>
       </div>
-
-      {/* Contact cards 
-      <div className="space-y-4 text-left">
-        {socials.map((item, index) => (
-          <ContactCard
-            key={index}
-            name={item.name}
-            display={item.display}
-            href={item.url}
-            icon={item.icon}
-            gradient={item.gradient}
-          />
-        ))}
-      </div>
-      */}
 
       {/* Contact form */}
       <ContactForm />
