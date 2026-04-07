@@ -360,7 +360,7 @@ export default function Navbar() {
       <header className="fixed top-0 left-0 w-full z-50 flex justify-center px-4 pt-4 select-none">
         <div
           className={`
-                topNavbar w-full transition-all duration-500
+                topNavbar w-full transition-all duration-800 ease-in-out
                 ${scrolled ? "max-w-lg" : "max-w-3xl"}
               `}
         >
@@ -370,7 +370,7 @@ export default function Navbar() {
               relative overflow-visible rounded-full border transition-all duration-500 ease-out will-change-transform
               ${scrolled
                 ? "border-white/50 bg-white/72 backdrop-blur-2xl shadow-[0_8px_48px_rgba(0,0,0,0.1)]"
-                : "border-white/60 bg-white/58 backdrop-blur-xl shadow-[0_12px_36px_rgba(0,0,0,0.015)]"
+                : "border-white/60 bg-white/99 backdrop-blur-xl shadow-[0_12px_36px_rgba(0,0,0,0.015)]"
               }
               ${visible
                 ? "translate-y-0 opacity-100"
@@ -564,7 +564,7 @@ export default function Navbar() {
                 </div>
 
                 {/* DESKTOP USER - AVATAR ONLY */}
-                <div className="relative ml-1" ref={userRef}>
+                <div className="relative avatarWrap" ref={userRef}>
                   <button
                     onClick={() => {
                       setUserOpen((prev) => !prev);
@@ -589,7 +589,7 @@ export default function Navbar() {
                         alt="avatar"
                         width={40}
                         height={40}
-                        className="w-10 h-10 rounded-full object-cover shadow-lg cursor-pointer"
+                        className="w-10 h-10 rounded-full object-cover cursor-pointer"
                       />
                     </div>
 
