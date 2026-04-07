@@ -9,8 +9,6 @@ import SmartPostSkeletonFeed from "@/components/blog/SmartPostSkeletonFeed";
 import CreatePostModal from "@/components/blog/CreatePostModal";
 import FancyboxWrapper from "@/components/blog/FancyboxWrapper";
 import LoginModal from "@/components/auth/LoginModal";
-import BlogUserCard from "@/components/blog/BlogUserCard";
-import BlogUserCardSkeleton from "@/components/blog/BlogUserCardSkeleton";
 
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
@@ -397,7 +395,6 @@ export default function BlogTagPage() {
 
       {!isReady && (
         <>
-          <BlogUserCardSkeleton />
 
           <div className="space-y-6">
             <div className="flex items-center justify-between rounded-2xl bg-white/80 backdrop-blur-md px-4 py-5 animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
@@ -412,16 +409,6 @@ export default function BlogTagPage() {
 
       {isReady && (
         <>
-          <BlogUserCard
-            user={user}
-            role={role}
-            fullName={fullName}
-            email={email}
-            avatar={avatar}
-            className="mb-5"
-            onOpenCreatePost={() => setOpen(true)}
-            onOpenLogin={() => setShowLogin(true)}
-          />
 
           <div className="mb-7 rounded-2xl bg-white/80 backdrop-blur-md px-5 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="flex items-center justify-between gap-3 flex-wrap">

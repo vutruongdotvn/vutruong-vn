@@ -24,7 +24,7 @@ export default function PremiumGlassCard({
       {/* Main glass shell */}
       <div
         className={cn(
-          "relative overflow-hidden rounded-[40px] border border-white/45 bg-white/60 shadow-[0_18px_70px_rgba(0,0,0,0.06)] backdrop-blur-2xl transition-all duration-300 hover:shadow-[0_24px_90px_rgba(0,0,0,0.08)]",
+          "relative overflow-hidden rounded-0 sm:rounded-4xl border border-white/45 bg-white/60 shadow-[0_18px_70px_rgba(0,0,0,0.06)] backdrop-blur-2xl transition-all duration-300 hover:shadow-[0_24px_90px_rgba(0,0,0,0.08)]",
           contentClassName
         )}
       >

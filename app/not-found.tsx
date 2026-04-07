@@ -10,14 +10,14 @@ export default function NotFound() {
 
         <div className="mx-auto flex min-h-full max-w-4xl flex-col items-center justify-center">
           <PremiumGlassCard
-            className="max-w-2xl"
+            className="w-screen max-w-2xl"
             contentClassName="p-10 sm:p-12 text-center"
           >
             {/* Badge */}
             <div className="mb-6 flex justify-center">
               <span className="inline-flex items-center gap-2 rounded-full border border-red-300 bg-red-100 px-4 py-1.5 text-xs font-medium text-neutral-600 backdrop-blur">
                 <i className="fa-duotone fa-triangle-exclamation text-red-500" />
-                Error 404
+                404
               </span>
             </div>
 
@@ -30,13 +30,13 @@ export default function NotFound() {
 
             {/* Heading */}
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900">
-              Không tìm thấy trang
+              Lỗi rồi! <i className="far fa-face-pensive"/>
             </h1>
 
             {/* Description */}
             <div className="mt-5 space-y-2">
               <p className="mx-auto max-w-2xl text-sm leading-7 text-neutral-500 md:text-base">
-                Trang không tồn tại hoặc đã bị xóa.
+                Trang này không tồn tại, có thể đã bị xóa,<br/>thay đổi URL hoặc bạn không có quyền truy cập.
               </p>
             </div>
 
