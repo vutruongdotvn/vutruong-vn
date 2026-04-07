@@ -55,8 +55,8 @@ export default function Navbar() {
     { name: "Bio", href: "/bio", icon: "fa-duotone fa-users" },
     { name: "Project", href: "/project", icon: "fa-duotone fa-code" },
     { name: "Contact", href: "/contact", icon: "fa-duotone fa-envelope" },
-    { name: "Watch", href: "/watch", icon: "fa-duotone fa-clapperboard-play" },
-    { name: "Secret", href: "/secret", icon: "fa-duotone fa-lock-keyhole" },
+    // { name: "Watch", href: "/watch", icon: "fa-duotone fa-clapperboard-play" },
+    // { name: "Secret", href: "/secret", icon: "fa-duotone fa-lock-keyhole" },
   ];
 
   const mobileMenu: MenuItem[] = [...mainMenu, ...moreMenu];
@@ -71,8 +71,8 @@ export default function Navbar() {
       "/project": { title: "Project", subtitle: "Dự án đã hoàn thành" },
       "/contact": { title: "Contact", subtitle: "Liên hệ" },
       "/blog": { title: "Blog", subtitle: "Thế giới nội tâm" },
-      "/watch": { title: "Watch", subtitle: "Films & cinema" },
-      "/secret": { title: "Secret", subtitle: "Trang nội bộ" },
+      // "/watch": { title: "Watch", subtitle: "Films & cinema" },
+      // "/secret": { title: "Secret", subtitle: "Trang nội bộ" },
       "/profile": { title: "Profile", subtitle: "Chỉnh sửa thông tin" },
     }),
     []
@@ -439,7 +439,7 @@ export default function Navbar() {
                         className={`
                           relative group flex items-center gap-2 rounded-full px-4 py-2.5
                           text-sm font-medium active:scale-95 transition-colors duration-300
-                          ${active ? "text-white" : "text-gray-600 hover:text-gray-800"}
+                          ${active ? "text-white" : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"}
                         `}
                       >
                         {active && (
@@ -645,7 +645,7 @@ export default function Navbar() {
                                 setUserOpen(false);
                                 setMoreOpen(false);
                               }}
-                              className="flex items-center justify-between rounded-2xl px-4 py-3 text-gray-700 hover:bg-gray-100 transition-all duration-300"
+                              className="flex items-center justify-between rounded-2xl px-4 py-3 text-gray-700 hover:bg-gray-100 active:bg-gray-200 active:scale-97"
                             >
                               <div className="flex items-center gap-3">
                                 <i className="fa-duotone fa-user text-base" />
@@ -663,7 +663,7 @@ export default function Navbar() {
                                 setUserOpen(false);
                                 setShowCreatePost(true);
                               }}
-                              className="flex items-center justify-between rounded-2xl px-4 py-3 text-gray-700 hover:bg-gray-100 transition-all duration-300 cursor-pointer"
+                              className="flex items-center justify-between rounded-2xl px-4 py-3 text-gray-700 hover:bg-gray-100 active:bg-gray-200 active:scale-97 cursor-pointer"
                             >
                               <div className="flex items-center gap-3">
                                 <i className="fa-duotone fa-pen-to-square text-base" />
@@ -681,7 +681,7 @@ export default function Navbar() {
                                 setUserOpen(false);
                                 setShowLogin(true);
                               }}
-                              className="flex items-center justify-between rounded-2xl px-4 py-3 text-gray-700 hover:bg-gray-100 transition-all duration-300 cursor-pointer"
+                              className="flex items-center justify-between rounded-2xl px-4 py-3 text-gray-700 hover:bg-gray-100 active:bg-gray-200 active:scale-97 cursor-pointer"
                             >
                               <div className="flex items-center gap-3">
                                 <i className="fa-duotone fa-user-gear text-base" />
@@ -694,7 +694,7 @@ export default function Navbar() {
                           ) : (
                             <button
                               onClick={handleLogout}
-                              className="flex items-center justify-between rounded-2xl px-4 py-3 text-red-600 hover:bg-red-50 transition-all duration-300 cursor-pointer"
+                              className="flex items-center justify-between rounded-2xl px-4 py-3 text-red-600 hover:bg-red-50 active:bg-red-100 active:scale-97 cursor-pointer"
                             >
                               <div className="flex items-center gap-3">
                                 <i className="fa-duotone fa-arrow-right-from-bracket text-base" />
