@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import PostCard from "@/components/blog/PostCard";
-import SmartPostSkeletonFeed from "@/components/blog/SmartPostSkeletonFeed";
+import SmartPostSkeletonFeed, {
+  buildSkeletonLayoutsFromPosts,
+} from "@/components/blog/SmartPostSkeletonFeed";
 import CreatePostModal from "@/components/blog/CreatePostModal";
 import { getPosts, pinPost, deletePost } from "@/services/postService";
 import { useToastContext } from "@/components/ui/ToastProvider";
@@ -29,23 +31,51 @@ export default function BlogPostFeed() {
   const [feedVersion, setFeedVersion] = useState(0);
 
   // ✅ Chống request chồng nhau / stale closure
-  const isFetchingRef    = useRef(false);
-  const pageRef          = useRef(0);
-  const hasMoreRef       = useRef(true);
-  const mountedRef       = useRef(true);
-  const postsRef         = useRef<any[]>([]);
+  const isFetchingRef = useRef(false);
+  const pageRef = useRef(0);
+  const hasMoreRef = useRef(true);
+  const mountedRef = useRef(true);
+  const postsRef = useRef<any[]>([]);
 
   // ─── Infinity scroll refs ────────────────────────────────────────────────────
   /** Phần tử sentinel ở cuối danh sách, được IntersectionObserver theo dõi */
-  const sentinelRef        = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
   /** Cờ bảo vệ: ngăn kích hoạt lại trong thời gian chờ delay */
   const isScrollPendingRef = useRef(false);
   /** Timer ID của delay trước khi fetch */
-  const scrollTimerRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ⚙️ Cấu hình số lượng bài viết
-  const INITIAL_LIMIT   = 5;
+  const INITIAL_LIMIT = 5;
   const LOAD_MORE_LIMIT = 5;
+
+  const buildFeedSkeletonSnapshot = (items: any[], fallbackCount = 1) => {
+  if (Array.isArray(items) && items.length > 0) {
+    return buildSkeletonLayoutsFromPosts(items);
+  }
+
+  return Array.from({ length: fallbackCount }, (_, index) => ({
+    variant:
+      index === 0
+        ? ("single-landscape" as const)
+        : index === 1
+        ? ("text" as const)
+        : index === 2
+        ? ("triple-top-hero" as const)
+        : ("grid" as const),
+    isPinned: index === 0,
+    textDensity:
+      index === 0
+        ? ("medium" as const)
+        : index === 1
+        ? ("short" as const)
+        : index === 2
+        ? ("long" as const)
+        : ("medium" as const),
+    moreCount: 0,
+  }));
+};
+
 
   /**
    * ⚙️ Độ trễ (ms) áp dụng cho chế độ infinity scroll.
@@ -78,7 +108,7 @@ export default function BlogPostFeed() {
 
   const syncFeedMeta = (nextPosts: any[]) => {
     postsRef.current = nextPosts;
-    const loadedCount  = nextPosts.length;
+    const loadedCount = nextPosts.length;
     const currentLimit = LOAD_MORE_LIMIT > 0 ? LOAD_MORE_LIMIT : 1;
     const nextPage =
       loadedCount <= INITIAL_LIMIT
@@ -89,21 +119,21 @@ export default function BlogPostFeed() {
   };
 
   const resetFeedMetaToInitial = (nextPosts: any[]) => {
-    postsRef.current    = nextPosts;
-    pageRef.current     = nextPosts.length > 0 ? 1 : 0;
+    postsRef.current = nextPosts;
+    pageRef.current = nextPosts.length > 0 ? 1 : 0;
     setPage(nextPosts.length > 0 ? 1 : 0);
   };
 
   const mergeNewPostToTop = (prevPosts: any[], newPost: any) => {
     const filtered = prevPosts.filter((p) => p.id !== newPost.id);
-    const merged   = [newPost, ...filtered];
+    const merged = [newPost, ...filtered];
     return sortPostsByPinnedAndDate(merged);
   };
 
   // ─── refreshCurrentWindow (không thay đổi) ───────────────────────────────────
   const refreshCurrentWindow = useCallback(
     async (options?: { resetUi?: boolean; showRefreshUi?: boolean }) => {
-      const resetUi      = options?.resetUi      ?? false;
+      const resetUi = options?.resetUi ?? false;
       const showRefreshUi = options?.showRefreshUi ?? false;
 
       if (isFetchingRef.current) return;
@@ -118,10 +148,10 @@ export default function BlogPostFeed() {
       }
 
       try {
-        const data     = await getPosts(0, visibleCount - 1);
+        const data = await getPosts(0, visibleCount - 1);
         if (!mountedRef.current) return;
 
-        const safeData   = Array.isArray(data) ? data : [];
+        const safeData = Array.isArray(data) ? data : [];
         const sortedData = sortPostsByPinnedAndDate(safeData);
 
         setPosts(sortedData);
@@ -165,10 +195,10 @@ export default function BlogPostFeed() {
     setShowRefreshSkeleton(true);
 
     try {
-      const data     = await getPosts(0, INITIAL_LIMIT - 1);
+      const data = await getPosts(0, INITIAL_LIMIT - 1);
       if (!mountedRef.current) return;
 
-      const safeData   = Array.isArray(data) ? data : [];
+      const safeData = Array.isArray(data) ? data : [];
       const sortedData = sortPostsByPinnedAndDate(safeData);
 
       setPosts(sortedData);
@@ -210,14 +240,14 @@ export default function BlogPostFeed() {
       }
 
       if (isFetchingRef.current) return;
-      if (!hasMoreRef.current)   return;
+      if (!hasMoreRef.current) return;
 
       isFetchingRef.current = true;
 
       const currentCount = postsRef.current.length;
-      const limit        = currentCount === 0 ? INITIAL_LIMIT : LOAD_MORE_LIMIT;
-      const from         = currentCount;
-      const to           = from + limit - 1;
+      const limit = currentCount === 0 ? INITIAL_LIMIT : LOAD_MORE_LIMIT;
+      const from = currentCount;
+      const to = from + limit - 1;
 
       if (currentCount === 0) {
         setLoading(true);
@@ -226,7 +256,7 @@ export default function BlogPostFeed() {
       }
 
       try {
-        const data     = await getPosts(from, to);
+        const data = await getPosts(from, to);
         if (!mountedRef.current) return;
 
         const safeData = Array.isArray(data) ? data : [];
@@ -326,11 +356,11 @@ export default function BlogPostFeed() {
   useEffect(() => {
     const handleCreatedPost = async (event: Event) => {
       const customEvent = event as CustomEvent;
-      const newPost     = customEvent.detail;
+      const newPost = customEvent.detail;
       if (!newPost) return;
 
-      const optimisticMerged  = mergeNewPostToTop(postsRef.current, newPost);
-      const cappedOptimistic  = optimisticMerged.slice(
+      const optimisticMerged = mergeNewPostToTop(postsRef.current, newPost);
+      const cappedOptimistic = optimisticMerged.slice(
         0,
         Math.max(postsRef.current.length, INITIAL_LIMIT)
       );
@@ -372,10 +402,10 @@ export default function BlogPostFeed() {
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        if (!entry.isIntersecting)      return;
-        if (isFetchingRef.current)      return;
+        if (!entry.isIntersecting) return;
+        if (isFetchingRef.current) return;
         if (isScrollPendingRef.current) return;
-        if (!hasMoreRef.current)        return;
+        if (!hasMoreRef.current) return;
         // Bug 3 fix: guard – chưa có bài nào thì chưa fetch thêm
         if (postsRef.current.length === 0) return;
 
@@ -430,6 +460,18 @@ export default function BlogPostFeed() {
     };
   }, []);
 
+
+  const initialSkeletonLayouts = buildFeedSkeletonSnapshot(
+    postsRef.current.slice(0, INITIAL_LIMIT),
+    INITIAL_LIMIT
+  );
+
+  const loadMoreSkeletonLayouts = buildFeedSkeletonSnapshot(
+    postsRef.current.slice(-LOAD_MORE_LIMIT),
+    Math.min(LOAD_MORE_LIMIT, Math.max(postsRef.current.length, 2))
+  );
+
+
   // ─── Render ──────────────────────────────────────────────────────────────────
   return (
     <>
@@ -461,11 +503,19 @@ export default function BlogPostFeed() {
 
       {showRefreshSkeleton && (
         <div className="mb-0">
-          <SmartPostSkeletonFeed mode="loadMore" />
+          <SmartPostSkeletonFeed
+            mode="loadMore"
+            layouts={initialSkeletonLayouts}
+          />
         </div>
       )}
 
-      {loading && <SmartPostSkeletonFeed mode="initial" />}
+      {loading && (
+        <SmartPostSkeletonFeed
+          mode="initial"
+          layouts={initialSkeletonLayouts}
+        />
+      )}
 
       {!loading && posts.length === 0 && (
         <p className="text-center text-gray-500">Chưa có bài viết nào 🧐</p>
@@ -486,7 +536,10 @@ export default function BlogPostFeed() {
       {/* Skeleton khi tải thêm */}
       {loadingMore && (
         <div className="mt-0">
-          <SmartPostSkeletonFeed mode="loadMore" />
+          <SmartPostSkeletonFeed
+            mode="loadMore"
+            layouts={loadMoreSkeletonLayouts}
+          />
         </div>
       )}
 
