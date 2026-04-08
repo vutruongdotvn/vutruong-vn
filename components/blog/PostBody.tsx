@@ -95,7 +95,7 @@ export default function PostBody({
         return (
           <strong
             key={partIndex}
-            className="font-medium hover:font-semibold transition-all duration-200"
+            className="font-semibold"
           >
             {part.value}
           </strong>
@@ -124,7 +124,7 @@ export default function PostBody({
             title={`Xem hashtag #${encodeURIComponent(tagName)}`}
             key={partIndex}
             href={`/blog/tag/${encodeURIComponent(tagName)}`}
-            className="text-gray-800 font-medium hover:text-sky-800 active:scale-97 inline-flex break-words"
+            className="text-gray-800 font-medium hover:underline active:scale-97 inline-flex break-words"
           >
             {part.value}
           </Link>
