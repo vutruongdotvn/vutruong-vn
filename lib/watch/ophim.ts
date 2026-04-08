@@ -184,3 +184,72 @@ export async function getListTypes(): Promise<OPhimListType[]> {
     { name: "Phim Chiếu Rạp", slug: "phim-chieu-rap" },
   ];
 }
+
+
+export async function getOPhimMovieDetail(slug: string) {
+  const url = `${API_BASE}/phim/${slug}`;
+
+  try {
+    const res = await fetch(url, {
+      next: { revalidate: 1800 },
+      headers: { accept: "application/json" },
+    });
+
+    if (!res.ok) {
+      console.error("[VT FILMS] Detail fetch failed:", {
+        slug,
+        url,
+        status: res.status,
+        statusText: res.statusText,
+      });
+      return null;
+    }
+
+    const raw = await res.json();
+
+    console.log("[VT FILMS] RAW DETAIL RESPONSE:", {
+      slug,
+      url,
+      topLevelKeys: Object.keys(raw || {}),
+      dataKeys: Object.keys(raw?.data || {}),
+      itemKeys: Object.keys(raw?.data?.item || {}),
+      hasItem: !!raw?.data?.item,
+      hasEpisodesInItem: Array.isArray(raw?.data?.item?.episodes),
+      rawPreview: {
+        status: raw?.status,
+        msg: raw?.msg,
+        movieName: raw?.data?.item?.name || null,
+      },
+    });
+
+    const movie = raw?.data?.item ?? null;
+    const episodes = raw?.data?.item?.episodes ?? [];
+    const seoOnPage = raw?.data?.seoOnPage ?? null;
+    const breadCrumb = raw?.data?.breadCrumb ?? [];
+    const cdnBase =
+      raw?.data?.APP_DOMAIN_CDN_IMAGE || "https://img.ophim.live";
+
+    if (!movie) {
+      console.error("[VT FILMS] No movie parsed from detail response:", {
+        slug,
+        url,
+      });
+      return null;
+    }
+
+    return {
+      movie,
+      episodes: Array.isArray(episodes) ? episodes : [],
+      seoOnPage,
+      breadCrumb,
+      cdn: `${cdnBase}/uploads/movies/`,
+    };
+  } catch (error) {
+    console.error("[VT FILMS] Detail fetch exception:", {
+      slug,
+      url,
+      error,
+    });
+    return null;
+  }
+}
