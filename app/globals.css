@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --font-sans: var(--font-google-sans-flex);
+  --font-sans: var(--font-roboto);
 }
 
 html,

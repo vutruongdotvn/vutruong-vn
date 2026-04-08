@@ -1,6 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Google_Sans_Flex } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import AuthProvider from "@/components/AuthProvider";
 import LayoutShell from "@/components/LayoutShell";
@@ -8,9 +8,10 @@ import { ToastProvider } from "@/components/ui/ToastProvider";
 import PageTransition from "@/components/PageTransition";
 
 // 🔤 Font
-const googleSansFlex = Google_Sans_Flex({
+const roboto = Roboto({
   subsets: ["latin"],
-  variable: "--font-google-sans-flex",
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-roboto",
   display: "swap",
 });
 
@@ -92,7 +93,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" className={googleSansFlex.variable}>
+    <html lang="vi" className={roboto.variable}>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -103,11 +104,13 @@ export default function RootLayout({
 
       <body className="antialiased bg-[#f2f3f5]">
         <ToastProvider>
-          <LayoutShell>
-            <PageTransition>
-              <AuthProvider>{children}</AuthProvider>
-            </PageTransition>
-          </LayoutShell>
+          <AuthProvider>
+            <LayoutShell>
+              <PageTransition>
+                {children}
+              </PageTransition>
+            </LayoutShell>
+          </AuthProvider>
         </ToastProvider>
       </body>
     </html>
