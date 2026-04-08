@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import PostImages from "./PostImages";
 import {
@@ -28,9 +28,47 @@ export default function PostBody({
   priority = false,
 }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [responsiveMaxLength, setResponsiveMaxLength] = useState(maxLength);
 
-  const normalizedContent = useMemo(() => normalizePostContent(content), [content]);
-  const isLong = normalizedContent.length > maxLength;
+  useEffect(() => {
+    // Tailwind lg breakpoint: desktop >= 1024px
+    // mobile + tablet: < 1024px
+    const mediaQuery = window.matchMedia("(max-width: 1023px)");
+
+    const updateResponsiveMaxLength = () => {
+      // Chỉ auto responsive khi đang dùng default maxLength = 180
+      // Nếu component cha truyền maxLength custom vào thì giữ nguyên
+      setResponsiveMaxLength(
+        maxLength === 180
+          ? mediaQuery.matches
+            ? 80
+            : 180
+          : maxLength
+      );
+    };
+
+    updateResponsiveMaxLength();
+
+    // Safari cũ fallback
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", updateResponsiveMaxLength);
+      return () => {
+        mediaQuery.removeEventListener("change", updateResponsiveMaxLength);
+      };
+    } else {
+      mediaQuery.addListener(updateResponsiveMaxLength);
+      return () => {
+        mediaQuery.removeListener(updateResponsiveMaxLength);
+      };
+    }
+  }, [maxLength]);
+
+  const normalizedContent = useMemo(
+    () => normalizePostContent(content),
+    [content]
+  );
+
+  const isLong = normalizedContent.length > responsiveMaxLength;
   const isCollapsed = truncate && isLong && !isExpanded;
 
   // Full content giữ nguyên format paragraph
@@ -46,8 +84,8 @@ export default function PostBody({
       .filter(Boolean)
       .join(" ");
 
-    return smartTruncatePostContent(flat, maxLength);
-  }, [fullParagraphs, maxLength]);
+    return smartTruncatePostContent(flat, responsiveMaxLength);
+  }, [fullParagraphs, responsiveMaxLength]);
 
   const renderInlineParts = (text: string) => {
     const inlineParts = parsePostInline(text);
@@ -55,7 +93,10 @@ export default function PostBody({
     return inlineParts.map((part, partIndex) => {
       if (part.type === "bold") {
         return (
-          <strong key={partIndex} className="font-medium hover:font-semibold transition-all duration-200">
+          <strong
+            key={partIndex}
+            className="font-medium hover:font-semibold transition-all duration-200"
+          >
             {part.value}
           </strong>
         );
