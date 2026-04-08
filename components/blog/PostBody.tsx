@@ -33,7 +33,7 @@ export default function PostBody({
   useEffect(() => {
     // Tailwind lg breakpoint: desktop >= 1024px
     // mobile + tablet: < 1024px
-    const mediaQuery = window.matchMedia("(max-width: 1023px)");
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
 
     const updateResponsiveMaxLength = () => {
       // Chỉ auto responsive khi đang dùng default maxLength = 180
@@ -41,8 +41,8 @@ export default function PostBody({
       setResponsiveMaxLength(
         maxLength === 180
           ? mediaQuery.matches
-            ? 80
-            : 180
+            ? 100
+            : 200
           : maxLength
       );
     };
@@ -139,7 +139,7 @@ export default function PostBody({
     <>
       <div className="postBody text-left pt-3 px-3 sm:px-5 text-gray-900">
         {isCollapsed ? (
-          <div className="postShortPreview text-base/6 break-words overflow-hidden">
+          <div className="postShortPreview text-sm/6 sm:text-base/6 break-words overflow-hidden">
             {renderInlineParts(previewText)}
 
             <button
@@ -157,7 +157,7 @@ export default function PostBody({
             return (
               <p
                 key={index}
-                className="postParagraph mb-3 text-base/6 whitespace-pre-line break-words last:mb-0"
+                className="postParagraph mb-3 text-sm/6 sm:text-base/6 whitespace-pre-line break-words last:mb-0"
               >
                 {renderInlineParts(paragraph)}
 
