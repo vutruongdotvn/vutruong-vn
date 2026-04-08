@@ -196,7 +196,7 @@ export async function getOPhimMovieDetail(slug: string) {
     });
 
     if (!res.ok) {
-      console.error("[VT FILMS] Detail fetch failed:", {
+      console.error("[VT Watch] Detail fetch failed:", {
         slug,
         url,
         status: res.status,
@@ -207,7 +207,7 @@ export async function getOPhimMovieDetail(slug: string) {
 
     const raw = await res.json();
 
-    console.log("[VT FILMS] RAW DETAIL RESPONSE:", {
+    console.log("[VT Watch] RAW DETAIL RESPONSE:", {
       slug,
       url,
       topLevelKeys: Object.keys(raw || {}),
@@ -230,7 +230,7 @@ export async function getOPhimMovieDetail(slug: string) {
       raw?.data?.APP_DOMAIN_CDN_IMAGE || "https://img.ophim.live";
 
     if (!movie) {
-      console.error("[VT FILMS] No movie parsed from detail response:", {
+      console.error("[VT Watch] No movie parsed from detail response:", {
         slug,
         url,
       });
@@ -245,7 +245,7 @@ export async function getOPhimMovieDetail(slug: string) {
       cdn: `${cdnBase}/uploads/movies/`,
     };
   } catch (error) {
-    console.error("[VT FILMS] Detail fetch exception:", {
+    console.error("[VT Watch] Detail fetch exception:", {
       slug,
       url,
       error,

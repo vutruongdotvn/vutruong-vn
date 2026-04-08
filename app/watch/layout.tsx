@@ -1,15 +1,37 @@
 import type { Metadata } from "next";
+import WatchNavbar from "@/components/watch/WatchNavbar";
+import {
+  getCategories,
+  getCountries,
+  getListTypes,
+} from "@/lib/watch/ophim";
 
 export const metadata: Metadata = {
   title: "VT Watch!",
   description:
-    "Dự án phim cá nhân của Vũ Trường. Hiện đang nhúng hệ thống films.vutruong.vn và sẽ được phát triển riêng trong tương lai.",
+    "Xem phim miễn phí - tốc độ cao - không quảng cáo và cập nhật liên tục!",
 };
 
-export default function WatchLayout({
+export default async function WatchLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  const [categories, countries, listTypes] = await Promise.all([
+    getCategories(),
+    getCountries(),
+    getListTypes(),
+  ]);
+
+  return (
+    <div className="min-h-screen bg-[#030b1f] text-white">
+      <WatchNavbar
+        categories={categories}
+        countries={countries}
+        listTypes={listTypes}
+      />
+
+      {children}
+    </div>
+  );
 }

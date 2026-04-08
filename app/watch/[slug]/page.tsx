@@ -30,28 +30,28 @@ export async function generateMetadata({ params }: WatchDetailPageProps) {
 
     if (!movie) {
       return {
-        title: "Không tìm thấy phim | VT Films",
+        title: "Không tìm thấy phim | VT Watch",
         description: "Trang phim không tồn tại.",
       };
     }
 
     const plainDescription =
       movie.content?.replace(/<[^>]*>/g, "").slice(0, 160) ||
-      `Xem thông tin phim ${movie.name} trên VT Films.`;
+      `Xem thông tin phim ${movie.name} trên VT Watch.`;
 
     return {
-      title: `${movie.name} | VT Films`,
+      title: `${movie.name} | VT Watch`,
       description: plainDescription,
       openGraph: {
-        title: `${movie.name} | VT Films`,
+        title: `${movie.name} | VT Watch`,
         description: plainDescription,
         images: [getMovieImage(movie.thumb_url || movie.poster_url, data.cdn)],
       },
     };
   } catch {
     return {
-      title: "VT Films",
-      description: "Xem phim tại VT Films",
+      title: "VT Watch",
+      description: "Xem phim tại VT Watch",
     };
   }
 }

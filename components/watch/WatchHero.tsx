@@ -61,7 +61,7 @@ export default function WatchHero({ movies }: Props) {
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-black/45" />
+        <div className="absolute inset-0 bg-black/15" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#020617] via-[#020617]/72 to-[#020617]/18" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#030712] via-[#030712]/18 to-transparent" />
       </div>
@@ -69,13 +69,13 @@ export default function WatchHero({ movies }: Props) {
       <div className="relative z-10 mx-auto flex h-full w-full max-w-[1600px] items-end px-5 pb-10 pt-28 md:px-8 xl:px-12">
         <div className="grid h-full w-full grid-cols-1 lg:grid-cols-[minmax(0,1fr)_230px] lg:gap-8">
           {/* Main content */}
-          <div className="flex h-full flex-col justify-end pb-6">
+          <div className="flex h-full flex-col justify-center">
             <div className="max-w-4xl">
               <div className="inline-flex rounded-full bg-white/10 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-white/55 backdrop-blur">
                 Phim mới cập nhật
               </div>
 
-              <h1 className="mt-5 text-[42px] font-black leading-[0.95] tracking-tight text-white sm:text-[56px] md:text-[72px]">
+              <h1 className="mt-4 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
                 {active.name}
               </h1>
 
@@ -160,8 +160,8 @@ export default function WatchHero({ movies }: Props) {
           </div>
 
           {/* Thumb rail desktop */}
-          <div className="hidden h-full items-end justify-end lg:flex">
-            <div className="flex max-h-[72vh] w-full flex-col gap-3 overflow-y-auto pr-1">
+          <div className="hidden h-full items-center justify-center lg:flex">
+            <div className="flex max-h-[72vh] w-full flex-col gap-3 overflow-y-auto pr-1 scrollbar-hide">
               {movies.map((movie, index) => (
                 <button
                   key={movie.slug}

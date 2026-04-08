@@ -29,7 +29,7 @@ export default function WatchDetailHero({
   return (
     <section
       className={[
-        "relative overflow-hidden border-b border-white/10",
+        "relative overflow-hidden",
         compact ? "min-h-[40vh]" : "min-h-screen",
       ].join(" ")}
     >
@@ -58,7 +58,7 @@ export default function WatchDetailHero({
         </div>
 
         <div className="max-w-4xl flex-1">
-          <div className="flex flex-wrap items-center gap-2 text-xs font-medium tracking-[0.18em] text-white/65 uppercase">
+          <div className="flex flex-wrap items-center sm:justify-start justify-center gap-2 text-xs font-medium tracking-[0.18em] text-white/65 uppercase">
             {movie.quality ? (
               <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1">
                 {movie.quality}
@@ -84,18 +84,18 @@ export default function WatchDetailHero({
             ) : null}
           </div>
 
-          <h1 className="mt-5 text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
+          <h1 className="mt-5 text-3xl text-center sm:text-start font-black tracking-tight text-white sm:text-4xl lg:text-5xl">
             {movie.name}
           </h1>
 
           {movie.origin_name ? (
-            <p className="mt-3 text-base text-white/60 sm:text-lg">
+            <p className="mt-3 text-center sm:text-start text-base text-white/60 sm:text-lg">
               {movie.origin_name}
             </p>
           ) : null}
 
           {(movie.category?.length || movie.country?.length) ? (
-            <div className="mt-6 flex flex-wrap gap-2">
+            <div className="mt-6 flex flex-wrap gap-2 sm:justify-start justify-center">
               {movie.category?.map((item) => (
                 <span
                   key={`cat-${item.slug}`}
@@ -116,10 +116,10 @@ export default function WatchDetailHero({
             </div>
           ) : null}
 
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap gap-3 sm:justify-start justify-center">
             <Link
               href={watchHref}
-              className="inline-flex items-center justify-center rounded-2xl bg-white px-6 py-3 text-base font-semibold text-black transition hover:scale-[1.02] hover:bg-white/90"
+              className="inline-flex items-center justify-center rounded-2xl bg-white px-12 py-3 text-base font-semibold text-black transition hover:scale-[1.02] hover:bg-white/90"
             >
               Xem phim
             </Link>

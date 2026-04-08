@@ -16,7 +16,7 @@ export default function WatchPlayer({
   backdropUrl,
 }: WatchPlayerProps) {
   return (
-    <section className="relative w-full overflow-hidden border-b border-white/10 bg-black">
+    <section className="relative w-full overflow-hidden pt-8">
       <div className="absolute inset-0">
         <Image
           src={backdropUrl}
@@ -31,7 +31,7 @@ export default function WatchPlayer({
 
       <div className="relative mx-auto w-full">
         <div className="overflow-hidden rounded-none border-y border-white/10 bg-black sm:rounded-[2rem] sm:border">
-          <div className="relative aspect-[18/9] w-full bg-black">
+          <div className="relative aspect-[20/9] w-full bg-black mt-18">
             {embedUrl ? (
               <iframe
                 src={embedUrl}
