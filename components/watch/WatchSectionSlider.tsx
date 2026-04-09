@@ -212,7 +212,7 @@ export default function WatchSectionSlider({
     // skeleton hiện ngay, delay 1s rồi mới fetch
     delayTimer = setTimeout(() => {
       fetchMovies();
-    }, 1500);
+    }, 800);
 
     return () => {
       cancelled = true;
