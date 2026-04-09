@@ -13,7 +13,7 @@ export default function WatchMovieCard({ movie }: Props) {
   return (
     <Link
       href={`/watch/${movie.slug}`}
-      className="group block min-w-[205px] max-w-[205px] shrink-0 snap-start"
+      className="group block w-[184px] shrink-0 snap-start"
     >
       <div className="relative overflow-hidden">
         <div className="relative aspect-[2/3] overflow-hidden rounded-[16px]">

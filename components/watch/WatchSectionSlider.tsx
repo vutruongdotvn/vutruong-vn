@@ -212,7 +212,7 @@ export default function WatchSectionSlider({
     // skeleton hiện ngay, delay 1s rồi mới fetch
     delayTimer = setTimeout(() => {
       fetchMovies();
-    }, 800);
+    }, 1000);
 
     return () => {
       cancelled = true;
@@ -306,17 +306,17 @@ export default function WatchSectionSlider({
 
         <div
           ref={trackRef}
-          className="flex snap-x gap-4 overflow-x-auto pb-2 scrollbar-hide scroll-smooth"
+          className="flex snap-x gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth"
         >
           {!loaded ? (
-            Array.from({ length: 8 }).map((_, index) => (
+            Array.from({ length: 9 }).map((_, index) => (
               <div
                 key={index}
-                className="shrink-0 space-y-3 min-w-[205px] max-w-[205px]"
+                className="shrink-0 space-y-3 w-[184px]"
               >
                 <div className="aspect-[2/3] w-full animate-pulse rounded-2xl bg-white/8" />
-                <div className="h-4 w-4/5 animate-pulse rounded-full bg-white/8" />
-                <div className="h-3 w-2/3 animate-pulse rounded-full bg-white/6" />
+                <div className="h-4 w-4/5 animate-pulse rounded-full bg-white/8 mx-auto" />
+                <div className="h-3 w-2/3 animate-pulse rounded-full bg-white/6 mx-auto" />
               </div>
             ))
           ) : movies.length > 0 ? (
