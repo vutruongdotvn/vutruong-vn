@@ -5,6 +5,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useUser } from "@/hooks/useUser";
+import { getAvatarImage } from "@/lib/cloudinary";
+import LoginModal from "@/components/auth/LoginModal";
+import CreatePostModal from "@/components/blog/CreatePostModal";
 import WatchDropdown from "./WatchDropdown";
 import type {
   OPhimCategory,
@@ -64,8 +69,9 @@ function MobileDropdownSection({
         </div>
 
         <i
-          className={`fa-duotone fa-chevron-down text-xs text-white/55 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
-            }`}
+          className={`fa-duotone fa-chevron-down text-xs text-white/55 transition-transform duration-300 ${
+            isOpen ? "rotate-180" : ""
+          }`}
         />
       </button>
 
@@ -78,7 +84,7 @@ function MobileDropdownSection({
             transition={{ duration: 0.24, ease: "easeOut" }}
             className="overflow-hidden"
           >
-            <div className="grid max-h-[260px] grid-cols-1 gap-2 px-2 pb-2 pt-1 overflow-y-auto">
+            <div className="grid max-h-[260px] grid-cols-1 gap-2 overflow-y-auto px-2 pb-2 pt-1">
               {items.map((item) => (
                 <Link
                   key={item.slug}
@@ -110,12 +116,24 @@ export default function WatchNavbar({
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(true);
 
+  const [userOpen, setUserOpen] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showCreatePost, setShowCreatePost] = useState(false);
+
+  const [profile, setProfile] = useState<any>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
+
   // MOBILE DROPDOWN STATE
   const [openMobileSection, setOpenMobileSection] = useState<
     "list" | "category" | "country" | null
   >(null);
 
+  const { user, role, loading: userLoading } = useUser();
+
   const menuRef = useRef<HTMLDivElement>(null);
+  const userRef = useRef<HTMLDivElement>(null);
+  const lastFetchedUserId = useRef<string | null>(null);
+
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
 
@@ -159,8 +177,81 @@ export default function WatchNavbar({
 
   const mobileMenu: MenuItem[] = [...mainMenu];
 
+  // =========================
+  // PROFILE FETCH
+  // =========================
+  const fetchProfile = async () => {
+    if (!user) {
+      setProfile(null);
+      setProfileLoading(false);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("name, avatar")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error("WatchNavbar fetchProfile error:", error);
+        setProfile(null);
+        return;
+      }
+
+      setProfile(data || null);
+    } catch (err) {
+      console.error("WatchNavbar fetchProfile crash:", err);
+      setProfile(null);
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (userLoading) return;
+
+    if (!user) {
+      lastFetchedUserId.current = null;
+      setProfile(null);
+      setProfileLoading(false);
+      return;
+    }
+
+    if (lastFetchedUserId.current === user.id) {
+      setProfileLoading(false);
+      return;
+    }
+
+    lastFetchedUserId.current = user.id;
+    setProfileLoading(true);
+    fetchProfile();
+  }, [user, userLoading]);
+
+  const fullName = user ? profile?.name || "User" : "Xin chào! 👋";
+  const email = user?.email || "";
+  const avatar = user
+    ? getAvatarImage(profile?.avatar) || "/images/default.jpg"
+    : "/images/default.jpg";
+
   const isActive = (href: string) => {
     return href === "/watch" ? pathname === "/watch" : pathname.startsWith(href);
+  };
+
+  const closeDesktopUser = () => {
+    setUserOpen(false);
+  };
+
+  const closeMobileMenu = () => {
+    setOpen(false);
+    setOpenMobileSection(null);
+  };
+
+  const closeAll = () => {
+    setOpen(false);
+    setOpenMobileSection(null);
+    setUserOpen(false);
   };
 
   const handleNavClick = (
@@ -171,7 +262,7 @@ export default function WatchNavbar({
 
     if (isSamePage) {
       e.preventDefault();
-      setOpen(false);
+      closeAll();
 
       window.scrollTo({
         top: 0,
@@ -181,11 +272,12 @@ export default function WatchNavbar({
       return;
     }
 
-    setOpen(false);
+    closeAll();
   };
 
   const handleScrollTop = () => {
-    setOpen(false);
+    closeAll();
+
     window.scrollTo({
       top: 0,
       behavior: "smooth",
@@ -193,17 +285,24 @@ export default function WatchNavbar({
   };
 
   const handleRefreshCurrent = () => {
-    setOpen(false);
+    closeAll();
     router.refresh();
-  };
-
-  const closeMobileMenu = () => {
-    setOpen(false);
-    setOpenMobileSection(null);
   };
 
   const toggleMobileSection = (section: "list" | "category" | "country") => {
     setOpenMobileSection((prev) => (prev === section ? null : section));
+  };
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error("WatchNavbar sign out error:", error);
+      return;
+    }
+
+    closeAll();
+    setProfile(null);
   };
 
   // CLICK OUTSIDE
@@ -215,16 +314,20 @@ export default function WatchNavbar({
         setOpen(false);
         setOpenMobileSection(null);
       }
+
+      if (userRef.current && !userRef.current.contains(target)) {
+        setUserOpen(false);
+      }
     }
 
-    if (open) {
+    if (open || userOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [open]);
+  }, [open, userOpen]);
 
   // LOCK BODY SCROLL
   useEffect(() => {
@@ -243,8 +346,7 @@ export default function WatchNavbar({
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setOpen(false);
-        setOpenMobileSection(null);
+        closeAll();
       }
     };
 
@@ -297,16 +399,20 @@ export default function WatchNavbar({
         <div className="mx-auto flex w-full justify-center">
           <div
             className={`
-              ${visible ? "bg-transparent backdrop-blur-sm opacity-100" : "bg-black/20 shadow-[0_18px_60px_rgba(0,0,0,0.3)] backdrop-blur-xl opacity-0 -translate-y-2"}
+              ${
+                visible
+                  ? "bg-transparent opacity-100 backdrop-blur-sm"
+                  : "bg-black/20 opacity-0 -translate-y-2 shadow-[0_18px_60px_rgba(0,0,0,0.3)] backdrop-blur-xl"
+              }
               relative inline-flex w-fit max-w-full overflow-visible rounded-full border border-white/10
               transition-all duration-500 ease-out will-change-transform
-      `}
+            `}
           >
             <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-r from-white/[0.08] via-transparent to-white/[0.04]" />
 
-            <div className={`transition-all duration-500 ease-out will-change
-            relative flex items-center justify-center gap-12 px-1 py-1 pl-2
-            `}>
+            <div
+              className={`relative flex items-center justify-center gap-12 px-1 py-1 pl-2 transition-all duration-500 ease-out will-change`}
+            >
               {/* LOGO */}
               <Link
                 href="/watch"
@@ -331,21 +437,7 @@ export default function WatchNavbar({
                 </div>
               </Link>
 
-              {/* SEARCH 
-              <div className="relative z-10 hidden min-w-[240px] max-w-[320px] flex-1 lg:block">
-                <div className="flex h-[46px] items-center gap-3 rounded-full bg-white/[0.1] px-4 text-slate-300 shadow-inner">
-                  <i className="fa-duotone fa-search text-sm text-white/45" />
-                  <input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Tìm kiếm phim"
-                    className="w-full bg-transparent text-[14px] font-medium text-white/75 placeholder:text-white/35 outline-none"
-                  />
-                </div>
-              </div>
-              */}
-
-              {/* DESKTOP MENU - GIỮ NGUYÊN */}
+              {/* DESKTOP MENU */}
               <div className="relative z-10 hidden items-center gap-1 xl:flex">
                 <nav className="flex items-center gap-1">
                   {mainMenu.map((item) => {
@@ -360,9 +452,10 @@ export default function WatchNavbar({
                         className={`
                           relative group flex items-center gap-2 rounded-full px-4 py-2.5
                           text-sm font-medium active:scale-95 transition-colors duration-300
-                          ${active
-                            ? "text-white"
-                            : "text-white/70 hover:text-white hover:bg-white/[0.06]"
+                          ${
+                            active
+                              ? "text-white"
+                              : "text-white/70 hover:bg-white/[0.06] hover:text-white"
                           }
                         `}
                       >
@@ -379,8 +472,9 @@ export default function WatchNavbar({
                         )}
 
                         <i
-                          className={`${item.icon} relative z-10 text-[15px] transition-transform duration-300 ${active ? "" : "group-hover:scale-105"
-                            }`}
+                          className={`${item.icon} relative z-10 text-[15px] transition-transform duration-300 ${
+                            active ? "" : "group-hover:scale-105"
+                          }`}
                         />
                         <span className="relative z-10 whitespace-nowrap">
                           {item.name}
@@ -423,13 +517,132 @@ export default function WatchNavbar({
                   baseHref="/watch/browse/quoc-gia"
                 />
 
-                <div className="ml-1">
+                {/* DESKTOP USER */}
+                <div className="relative ml-1" ref={userRef}>
                   <button
-                    className="cursor-pointer active:scale-95 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-white/70 transition hover:bg-white/[0.08] hover:text-white"
+                    onClick={() => setUserOpen((prev) => !prev)}
+                    className="group flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-white/70 transition hover:bg-white/[0.08] hover:text-white active:scale-95"
                     aria-label="Tài khoản"
+                    aria-expanded={userOpen}
                   >
-                    <i className="fa-duotone fa-user text-base" />
+                    {user ? (
+                      <Image
+                        src={avatar}
+                        alt="avatar"
+                        width={40}
+                        height={40}
+                        className="h-10 w-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      <i className="fa-duotone fa-user text-base" />
+                    )}
                   </button>
+
+                  <AnimatePresence>
+                    {userOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.97 }}
+                        transition={{ duration: 0.22, ease: "easeOut" }}
+                        className="absolute right-0 top-[calc(100%+14px)] w-80 rounded-3xl border border-white/10 bg-black p-3 shadow-[0_20px_60px_rgba(0,0,0,0.4)]"
+                      >
+                        <div className="flex items-center gap-3 rounded-2xl px-3 py-3">
+                          <Image
+                            src={avatar}
+                            alt="avatar"
+                            width={52}
+                            height={52}
+                            className="h-[52px] w-[52px] rounded-full object-cover shadow-lg"
+                          />
+
+                          <div className="min-w-0 flex-1">
+                            <p className="flex items-center gap-1 truncate text-base font-semibold text-white">
+                              <span className="truncate">{fullName}</span>
+
+                              {user && role === "admin" && (
+                                <i
+                                  className="fa-duotone fa-badge-check shrink-0 text-xs text-blue-400"
+                                  title="Tài khoản đã xác thực"
+                                />
+                              )}
+                            </p>
+
+                            <p className="truncate text-sm text-white/60">
+                              {user ? email : "Bạn chưa đăng nhập"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-3 flex flex-col gap-1.5">
+                          {user && (
+                            <Link
+                              href="/profile"
+                              onClick={closeDesktopUser}
+                              className="flex items-center justify-between rounded-2xl px-4 py-3 text-white/85 hover:bg-white/[0.06] active:scale-97 active:bg-white/[0.08]"
+                            >
+                              <div className="flex items-center gap-3">
+                                <i className="fa-duotone fa-user text-base" />
+                                <span className="text-sm font-medium">
+                                  Chỉnh sửa Profile
+                                </span>
+                              </div>
+                              <i className="fa-duotone fa-arrow-up-right text-xs text-white/40" />
+                            </Link>
+                          )}
+
+                          {user && role === "admin" && (
+                            <button
+                              onClick={() => {
+                                setUserOpen(false);
+                                setShowCreatePost(true);
+                              }}
+                              className="flex cursor-pointer items-center justify-between rounded-2xl px-4 py-3 text-white/85 hover:bg-white/[0.06] active:scale-97 active:bg-white/[0.08]"
+                            >
+                              <div className="flex items-center gap-3">
+                                <i className="fa-duotone fa-pen-to-square text-base" />
+                                <span className="text-sm font-medium">
+                                  Đăng bài viết
+                                </span>
+                              </div>
+                              <i className="fa-duotone fa-plus text-xs text-white/40" />
+                            </button>
+                          )}
+
+                          {!user ? (
+                            <button
+                              onClick={() => {
+                                setUserOpen(false);
+                                setShowLogin(true);
+                              }}
+                              className="flex cursor-pointer items-center justify-between rounded-2xl px-4 py-3 text-white/85 hover:bg-white/[0.06] active:scale-97 active:bg-white/[0.08]"
+                            >
+                              <div className="flex items-center gap-3">
+                                <i className="fa-duotone fa-user-gear text-base" />
+                                <span className="text-sm font-medium">
+                                  Đăng nhập
+                                </span>
+                              </div>
+                              <i className="fa-duotone fa-arrow-right text-xs text-white/40" />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={handleLogout}
+                              className="flex cursor-pointer items-center justify-between rounded-2xl px-4 py-3 text-red-400 hover:bg-red-500/10 active:scale-97 active:bg-red-500/15"
+                            >
+                              <div className="flex items-center gap-3">
+                                <i className="fa-duotone fa-arrow-right-from-bracket text-base" />
+                                <span className="text-sm font-medium">
+                                  Đăng xuất
+                                </span>
+                              </div>
+                              <i className="fa-duotone fa-arrow-right text-xs text-red-300/70" />
+                            </button>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
 
@@ -440,16 +653,17 @@ export default function WatchNavbar({
                   if (open) setOpenMobileSection(null);
                 }}
                 className="
-                  relative z-10 xl:hidden h-11 w-11 flex items-center justify-center rounded-full
-                  border border-white/10 bg-white/[0.06] hover:bg-white/[0.1]
-                  transition-all duration-300 text-white cursor-pointer
+                  relative z-10 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full
+                  border border-white/10 bg-white/[0.06] text-white transition-all duration-300
+                  hover:bg-white/[0.1] xl:hidden
                 "
                 aria-label="Open menu"
                 aria-expanded={open}
               >
                 <i
-                  className={`fa-duotone transition-all duration-300 ${open ? "fa-xmark text-[18px] rotate-90" : "fa-bars text-[18px]"
-                    }`}
+                  className={`fa-duotone text-[18px] transition-all duration-300 ${
+                    open ? "fa-xmark rotate-90" : "fa-bars"
+                  }`}
                 />
               </button>
             </div>
@@ -457,7 +671,7 @@ export default function WatchNavbar({
         </div>
       </header>
 
-      {/* MOBILE MENU - ĐÚNG KIỂU DROPDOWN */}
+      {/* MOBILE MENU */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -476,7 +690,7 @@ export default function WatchNavbar({
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ y: 5, opacity: 0, scale: 1 }}
               transition={{ duration: 0.28, ease: "easeOut" }}
-              className="absolute left-1/2 top-5 -translate-x-1/2 w-[calc(100%-24px)] max-w-md rounded-[2rem] border border-white/10 bg-black/50 backdrop-blur-2xl shadow-[0_24px_80px_rgba(0,0,0,0.38)] p-4"
+              className="absolute left-1/2 top-5 w-[calc(100%-24px)] max-w-md -translate-x-1/2 rounded-[2rem] border border-white/10 bg-black/50 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.38)] backdrop-blur-2xl"
             >
               {/* MOBILE TOP */}
               <div className="mb-4 mt-1 flex items-center justify-between">
@@ -493,7 +707,7 @@ export default function WatchNavbar({
                     <Link
                       href="/watch"
                       onClick={(e) => handleNavClick(e, "/watch")}
-                      className="block text-lg truncate font-semibold leading-5 text-white"
+                      className="block truncate text-lg font-semibold leading-5 text-white"
                     >
                       Watch
                     </Link>
@@ -502,11 +716,92 @@ export default function WatchNavbar({
 
                 <button
                   onClick={closeMobileMenu}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-white/70 shadow-sm hover:text-white cursor-pointer"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-white/70 shadow-sm hover:text-white"
                   aria-label="Close menu"
                 >
                   <i className="fa-duotone fa-xmark" />
                 </button>
+              </div>
+
+              {/* MOBILE ACCOUNT BLOCK */}
+              <div className="mb-4 rounded-3xl border border-white/10 bg-white/[0.045] px-4 py-4 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <Image
+                    src={avatar}
+                    alt="avatar"
+                    width={48}
+                    height={48}
+                    className="h-12 w-12 rounded-full object-cover shadow-md"
+                  />
+
+                  <div className="min-w-0 flex-1">
+                    <p className="flex items-center gap-1 truncate text-base font-semibold text-white">
+                      <span className="truncate">{fullName}</span>
+
+                      {user && role === "admin" && (
+                        <i
+                          className="fa-duotone fa-badge-check shrink-0 text-xs text-blue-400"
+                          title="Tài khoản đã xác thực"
+                        />
+                      )}
+                    </p>
+
+                    <p className="truncate text-sm text-white/60">
+                      {user ? email : "Bạn chưa đăng nhập."}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  {user && (
+                    <Link
+                      href="/profile"
+                      onClick={closeMobileMenu}
+                      className="rounded-2xl bg-white/[0.06] px-4 py-3.5 text-center text-sm font-medium text-white transition-all hover:bg-white/[0.12]"
+                    >
+                      <i className="fa-duotone fa-user mr-2" />
+                      Cá nhân
+                    </Link>
+                  )}
+
+                  {user && role === "admin" && (
+                    <button
+                      onClick={() => {
+                        closeMobileMenu();
+                        setShowCreatePost(true);
+                      }}
+                      className="cursor-pointer rounded-2xl bg-white px-4 py-3.5 text-sm font-medium text-black transition-all hover:opacity-90"
+                    >
+                      <i className="fa-duotone fa-pen-to-square mr-2" />
+                      Đăng
+                    </button>
+                  )}
+
+                  {!user && (
+                    <button
+                      onClick={() => {
+                        closeMobileMenu();
+                        setShowLogin(true);
+                      }}
+                      className="col-span-2 cursor-pointer rounded-2xl bg-white px-4 py-3.5 text-sm font-medium text-black transition-all hover:opacity-90"
+                    >
+                      <i className="fa-duotone fa-user-gear mr-2" />
+                      Đăng nhập
+                    </button>
+                  )}
+
+                  {user && (
+                    <button
+                      onClick={handleLogout}
+                      className={`${
+                        role === "admin" ? "col-span-2" : "col-span-1"
+                      } cursor-pointer rounded-2xl bg-red-500/10 px-4 py-3.5 text-sm font-medium text-red-400 transition-all hover:bg-red-500/15`}
+                    >
+                      <i className="fa-duotone fa-arrow-right-from-bracket mr-2" />
+                      Đăng xuất
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* MOBILE SEARCH */}
@@ -545,12 +840,12 @@ export default function WatchNavbar({
                           setOpenMobileSection(null);
                         }}
                         className={`
-                          min-h-[96px] rounded-3xl p-4
-                          flex flex-col justify-between
+                          flex min-h-[96px] flex-col justify-between rounded-3xl p-4
                           transition-all duration-300
-                          ${active
-                            ? "bg-white/10 text-white shadow-lg"
-                            : "bg-white/[0.05] text-white/80 hover:bg-white/[0.09]"
+                          ${
+                            active
+                              ? "bg-white/10 text-white shadow-lg"
+                              : "bg-white/[0.05] text-white/80 hover:bg-white/[0.09]"
                           }
                         `}
                       >
@@ -622,7 +917,7 @@ export default function WatchNavbar({
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <button
                   onClick={handleScrollTop}
-                  className="rounded-2xl bg-white/[0.06] px-4 py-3.5 text-sm font-medium text-white transition-all hover:bg-white/[0.12] cursor-pointer"
+                  className="cursor-pointer rounded-2xl bg-white/[0.06] px-4 py-3.5 text-sm font-medium text-white transition-all hover:bg-white/[0.12]"
                 >
                   <i className="fa-duotone fa-arrow-up mr-2" />
                   Top
@@ -630,7 +925,7 @@ export default function WatchNavbar({
 
                 <button
                   onClick={handleRefreshCurrent}
-                  className="rounded-2xl bg-white px-4 py-3.5 text-sm font-medium text-black transition-all hover:opacity-90 cursor-pointer"
+                  className="cursor-pointer rounded-2xl bg-white px-4 py-3.5 text-sm font-medium text-black transition-all hover:opacity-90"
                 >
                   <i className="fa-duotone fa-rotate-right mr-2" />
                   Refresh
@@ -640,6 +935,24 @@ export default function WatchNavbar({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* MODALS */}
+      {user && role === "admin" && (
+        <CreatePostModal
+          isOpen={showCreatePost}
+          editingPost={null}
+          onSuccess={(newPost) => {
+            window.dispatchEvent(
+              new CustomEvent("blog-post-created", {
+                detail: newPost,
+              })
+            );
+          }}
+          onClose={() => setShowCreatePost(false)}
+        />
+      )}
+
+      {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
     </>
   );
 }
