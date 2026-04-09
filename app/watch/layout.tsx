@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import WatchNavbar from "@/components/watch/WatchNavbar";
+import WatchFooter from "@/components/watch/WatchFooter";
 import {
   getCategories,
   getCountries,
@@ -40,14 +41,16 @@ export default async function WatchLayout({
   ]);
 
   return (
-    <div className="VT_Watch_app min-h-screen bg-[#030b1f] text-white">
+    <div className="VT_Watch_app min-h-screen bg-black text-white">
       <WatchNavbar
         categories={categories}
         countries={countries}
         listTypes={listTypes}
       />
 
-      {children}
+      <main>{children}</main>
+
+      <WatchFooter />
     </div>
   );
 }
