@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import WatchMovieCard from "./WatchMovieCard";
 import type { OPhimMovie } from "@/lib/watch/types";
@@ -10,7 +10,7 @@ type Props = {
   highlight: string;
   type: string;
   slug: string;
-  movies: OPhimMovie[];
+  api: string;
 };
 
 const genreGradientMap: Record<string, string> = {
@@ -90,14 +90,136 @@ function getGradientClass(highlight: string) {
   return fallbackGradients[index];
 }
 
+/**
+ * Client memory cache:
+ * - key: api
+ * - value: movies
+ */
+const sectionMoviesCache = new Map<string, OPhimMovie[]>();
+
+/**
+ * Track requested sections to avoid duplicate simultaneous fetches
+ */
+const sectionPendingCache = new Set<string>();
+
 export default function WatchSectionSlider({
   title,
   highlight,
   type,
   slug,
-  movies,
+  api,
 }: Props) {
+  const sectionRef = useRef<HTMLElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
+
+  const [shouldLoad, setShouldLoad] = useState(() =>
+    type === "the-loai" && slug === "hanh-dong"
+  );
+  const [movies, setMovies] = useState<OPhimMovie[]>(() => {
+    return sectionMoviesCache.get(api) ?? [];
+  });
+  const [loaded, setLoaded] = useState(() => sectionMoviesCache.has(api));
+  const [isEmpty, setIsEmpty] = useState(false);
+
+  useEffect(() => {
+    if (sectionMoviesCache.has(api)) return;
+
+    const el = sectionRef.current;
+    if (!el || loaded) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry?.isIntersecting) {
+          setShouldLoad(true);
+          observer.disconnect();
+        }
+      },
+      {
+        rootMargin: "100px 0px",
+        threshold: 0.01,
+      }
+    );
+
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [api, loaded]);
+
+  useEffect(() => {
+    if (!shouldLoad || loaded) return;
+
+    // nếu đã có cache thì dùng luôn, không fetch nữa
+    const cachedMovies = sectionMoviesCache.get(api);
+    if (cachedMovies) {
+      setMovies(cachedMovies);
+      setLoaded(true);
+      setIsEmpty(cachedMovies.length === 0);
+      return;
+    }
+
+    // tránh nhiều request cùng lúc cho cùng 1 section
+    if (sectionPendingCache.has(api)) return;
+
+    const controller = new AbortController();
+    let cancelled = false;
+    let delayTimer: NodeJS.Timeout | null = null;
+
+    const fetchMovies = async () => {
+      try {
+        sectionPendingCache.add(api);
+
+        const res = await fetch(
+          `/api/watch/section?api=${encodeURIComponent(api)}`,
+          {
+            method: "GET",
+            cache: "force-cache",
+            signal: controller.signal,
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error(`Section fetch failed: ${res.status}`);
+        }
+
+        const data = await res.json();
+        const nextMovies = Array.isArray(data?.movies) ? data.movies : [];
+
+        if (cancelled) return;
+
+        sectionMoviesCache.set(api, nextMovies);
+        setMovies(nextMovies);
+        setIsEmpty(nextMovies.length === 0);
+      } catch (error: any) {
+        if (error?.name !== "AbortError") {
+          console.error("[WatchSectionSlider] fetch error:", {
+            title,
+            api,
+            error,
+          });
+          setMovies([]);
+          setIsEmpty(true);
+        }
+      } finally {
+        sectionPendingCache.delete(api);
+
+        if (!cancelled) {
+          setLoaded(true);
+        }
+      }
+    };
+
+    // skeleton hiện ngay, delay 1s rồi mới fetch
+    delayTimer = setTimeout(() => {
+      fetchMovies();
+    }, 1500);
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+      if (delayTimer) clearTimeout(delayTimer);
+    };
+  }, [api, shouldLoad, loaded, title]);
 
   const scrollByAmount = (dir: "left" | "right") => {
     const el = trackRef.current;
@@ -108,12 +230,10 @@ export default function WatchSectionSlider({
     });
   };
 
-  if (!movies?.length) return null;
-
   const highlightGradient = getGradientClass(highlight);
 
   return (
-    <section className="space-y-5">
+    <section ref={sectionRef} className="space-y-5">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-xl font-normal tracking-tight text-white md:text-[24px]">
           {title}{" "}
@@ -164,30 +284,51 @@ export default function WatchSectionSlider({
       </div>
 
       <div className="relative">
-        <button
-          onClick={() => scrollByAmount("left")}
-          className="absolute active:scale-95 cursor-pointer left-[-28px] top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[#111827]/90 text-white shadow-[0_10px_25px_rgba(0,0,0,.4)] transition hover:scale-105 lg:flex"
-          aria-label="Scroll left"
-        >
-          <i className="fa-duotone fa-arrow-left" />
-        </button>
+        {movies.length > 0 && (
+          <>
+            <button
+              onClick={() => scrollByAmount("left")}
+              className="absolute left-[-28px] top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-[#111827]/90 text-white shadow-[0_10px_25px_rgba(0,0,0,.4)] transition hover:scale-105 active:scale-95 lg:flex"
+              aria-label="Scroll left"
+            >
+              <i className="fa-duotone fa-arrow-left" />
+            </button>
+
+            <button
+              onClick={() => scrollByAmount("right")}
+              className="absolute right-[-28px] top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-[#111827]/90 text-white shadow-[0_10px_25px_rgba(0,0,0,.4)] transition hover:scale-105 active:scale-95 lg:flex"
+              aria-label="Scroll right"
+            >
+              <i className="fa-duotone fa-arrow-right" />
+            </button>
+          </>
+        )}
 
         <div
           ref={trackRef}
           className="flex snap-x gap-4 overflow-x-auto pb-2 scrollbar-hide scroll-smooth"
         >
-          {movies.map((movie) => (
-            <WatchMovieCard key={movie.slug} movie={movie} />
-          ))}
+          {!loaded ? (
+            Array.from({ length: 8 }).map((_, index) => (
+              <div
+                key={index}
+                className="shrink-0 space-y-3 min-w-[205px] max-w-[205px]"
+              >
+                <div className="aspect-[2/3] w-full animate-pulse rounded-2xl bg-white/8" />
+                <div className="h-4 w-4/5 animate-pulse rounded-full bg-white/8" />
+                <div className="h-3 w-2/3 animate-pulse rounded-full bg-white/6" />
+              </div>
+            ))
+          ) : movies.length > 0 ? (
+            movies.map((movie) => (
+              <WatchMovieCard key={movie.slug} movie={movie} />
+            ))
+          ) : isEmpty ? (
+            <div className="flex min-h-[120px] items-center text-sm text-slate-500">
+              Không có dữ liệu để hiển thị.
+            </div>
+          ) : null}
         </div>
-
-        <button
-          onClick={() => scrollByAmount("right")}
-          className="absolute active:scale-95 cursor-pointer right-[-28px] top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[#111827]/90 text-white shadow-[0_10px_25px_rgba(0,0,0,.4)] transition hover:scale-105 lg:flex"
-          aria-label="Scroll right"
-        >
-          <i className="fa-duotone fa-arrow-right" />
-        </button>
       </div>
     </section>
   );

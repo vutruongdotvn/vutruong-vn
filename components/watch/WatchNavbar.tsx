@@ -304,8 +304,8 @@ export default function WatchNavbar({
           >
             <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-r from-white/[0.08] via-transparent to-white/[0.04]" />
 
-            <div className={`transition-all duration-500 ease-out will-change-px
-            relative flex items-center justify-center gap-3
+            <div className={`transition-all duration-500 ease-out will-change
+            relative flex items-center justify-center gap-12
             ${visible ? "px-3 py-3" : "px-1 py-1 pl-2"}
             `}>
               {/* LOGO */}
@@ -347,7 +347,7 @@ export default function WatchNavbar({
               */}
 
               {/* DESKTOP MENU - GIỮ NGUYÊN */}
-              <div className="relative z-10 hidden items-center gap-2 xl:flex">
+              <div className="relative z-10 hidden items-center gap-1 xl:flex">
                 <nav className="flex items-center gap-1">
                   {mainMenu.map((item) => {
                     const active = isActive(item.href);
@@ -394,8 +394,6 @@ export default function WatchNavbar({
                     );
                   })}
                 </nav>
-
-                <div className="h-6 w-px bg-white/8" />
 
                 <WatchDropdown
                   label="Danh sách"

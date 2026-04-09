@@ -58,7 +58,7 @@ export async function generateMetadata({
 
     const plainDescription = truncateText(
       stripHtml(movie.content) ||
-        `Xem thông tin phim ${movie.name} trên VT Watch.`,
+      `Xem thông tin phim ${movie.name} trên VT Watch.`,
       180
     );
 
@@ -142,8 +142,8 @@ export default async function WatchDetailPage({
 
   const safeServerNumber =
     Number.isFinite(requestedServer) &&
-    requestedServer >= 1 &&
-    requestedServer <= episodes.length
+      requestedServer >= 1 &&
+      requestedServer <= episodes.length
       ? requestedServer
       : 1;
 
@@ -152,8 +152,8 @@ export default async function WatchDetailPage({
 
   const safeEpisodeNumber =
     Number.isFinite(requestedEpisode) &&
-    requestedEpisode >= 1 &&
-    requestedEpisode <= currentEpisodeList.length
+      requestedEpisode >= 1 &&
+      requestedEpisode <= currentEpisodeList.length
       ? requestedEpisode
       : 1;
 
@@ -194,18 +194,19 @@ export default async function WatchDetailPage({
         <WatchDetailHero movie={normalizedMovie} compact={hasPlayerQuery} />
       </section>
 
-      <section className="relative z-10 mx-auto max-w-7xl px-4 pb-20 pt-8 sm:px-6 lg:px-8">
+      <section className="relative z-10 mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
         <div className="space-y-6">
-          <WatchServerTabs
-            slug={slug}
-            servers={episodes}
-            activeServer={safeServerNumber}
-            activeEpisode={safeEpisodeNumber}
-          />
 
-          <div className="grid gap-8 lg:grid-cols-[1.1fr_360px]">
-            <div className="space-y-8">
+          <div className="grid gap-6 lg:grid-cols-[1.1fr_380px]">
+            <div className="space-y-6">
               <WatchDetailMeta movie={normalizedMovie} />
+
+              <WatchServerTabs
+                slug={slug}
+                servers={episodes}
+                activeServer={safeServerNumber}
+                activeEpisode={safeEpisodeNumber}
+              />
 
               <WatchEpisodeList
                 slug={slug}

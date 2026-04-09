@@ -128,7 +128,7 @@ export default function WatchHero({ movies }: Props) {
       <div className="absolute inset-0">
         <div
           key={active.slug}
-          className="absolute inset-0 scale-[1.035] animate-[heroBgReveal_2000ms_ease-in-out_forwards] aspect-video"
+          className="absolute inset-0 animate-[heroBgReveal_2000ms_ease-in-out_forwards] object-cover object-center"
         >
           <Image
             src={active._bgUrl}
