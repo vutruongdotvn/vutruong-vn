@@ -55,7 +55,7 @@ export default function WatchHero({ movies }: Props) {
 
   const desc = useMemo(() => {
     if (!active?.content) return "";
-    return stripHtml(active.content).slice(0, 280);
+    return stripHtml(active.content).slice(0, 180);
   }, [active]);
 
   if (!movies?.length || !active) return null;
@@ -128,7 +128,7 @@ export default function WatchHero({ movies }: Props) {
       <div className="absolute inset-0">
         <div
           key={active.slug}
-          className="absolute inset-0 scale-[1.035] animate-[heroBgReveal_1500ms_ease-out_forwards]"
+          className="absolute inset-0 scale-[1.035] animate-[heroBgReveal_2000ms_ease-in-out_forwards] aspect-video"
         >
           <Image
             src={active._bgUrl}
@@ -141,9 +141,7 @@ export default function WatchHero({ movies }: Props) {
           />
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-t from-[#020817] via-[#020817]/48 to-[#020817]/12" />
-        <div className="absolute inset-x-0 bottom-0 h-[40vh] bg-gradient-to-t from-[#020817] via-[#020817]/90 to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05),transparent_52%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-screen bg-gradient-to-t from-[#030b1f] via-[#030b1f]/70 to-[#030b1f]/20" />
       </div>
 
       {/* Nav arrows */}
@@ -175,7 +173,7 @@ export default function WatchHero({ movies }: Props) {
                 Phim mới cập nhật
               </div>
 
-              <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-white drop-shadow-[0_10px_35px_rgba(0,0,0,.45)] sm:text-5xl md:text-6xl xl:text-7xl">
+              <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-white drop-shadow-[0_10px_35px_rgba(0,0,0,.45)] sm:text-5xl md:text-6xl">
                 {active.name}
               </h1>
 
@@ -343,11 +341,9 @@ export default function WatchHero({ movies }: Props) {
         @keyframes heroContentIn {
           0% {
             opacity: 0;
-            transform: scale(1.1);
           }
           100% {
             opacity: 1;
-            transform: scale(1);
           }
         }
 
@@ -355,7 +351,7 @@ export default function WatchHero({ movies }: Props) {
           0% {
             opacity: 0;
             transform: scale(1.1);
-            filter: blur(1rem);
+            filter: blur(10px);
           }
           100% {
             opacity: 1;

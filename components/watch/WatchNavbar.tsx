@@ -332,7 +332,7 @@ export default function WatchNavbar({
                 </div>
               </Link>
 
-              {/* SEARCH */}
+              {/* SEARCH 
               <div className="relative z-10 hidden min-w-[240px] max-w-[320px] flex-1 lg:block">
                 <div className="flex h-[46px] items-center gap-3 rounded-full bg-white/[0.1] px-4 text-slate-300 shadow-inner">
                   <i className="fa-duotone fa-search text-sm text-white/45" />
@@ -344,6 +344,7 @@ export default function WatchNavbar({
                   />
                 </div>
               </div>
+              */}
 
               {/* DESKTOP MENU - GIỮ NGUYÊN */}
               <div className="relative z-10 hidden items-center gap-2 xl:flex">
