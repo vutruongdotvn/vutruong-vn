@@ -1,6 +1,7 @@
 import type { WatchSectionConfig, WatchTopic } from "./types";
 
 export const HOME_SECTIONS: WatchSectionConfig[] = [
+  { id: "VTFsl_viet-nam", ti: "Phim", hi: "Việt Nam", api: "/quoc-gia/viet-nam", type: "quoc-gia", slug: "viet-nam" },
   { id: "VTFsl_hanh-dong", ti: "Phim", hi: "Hành Động", api: "/the-loai/hanh-dong", type: "the-loai", slug: "hanh-dong" },
   { id: "VTFsl_tinh-cam", ti: "Phim", hi: "Tình Cảm", api: "/the-loai/tinh-cam", type: "the-loai", slug: "tinh-cam" },
   { id: "VTFsl_kinh-di", ti: "Phim", hi: "Kinh Dị", api: "/the-loai/kinh-di", type: "the-loai", slug: "kinh-di" },

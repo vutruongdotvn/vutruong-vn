@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Item = {
   name: string;
@@ -14,6 +14,7 @@ type Props = {
   items: Item[];
   baseHref: string;
   icon?: string;
+  align?: "left" | "right";
 };
 
 export default function WatchDropdown({
@@ -21,9 +22,15 @@ export default function WatchDropdown({
   items,
   baseHref,
   icon,
+  align = "left",
 }: Props) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
+
+  const normalizedItems = useMemo(
+    () => items.filter((item) => item?.name && item?.slug),
+    [items]
+  );
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -53,15 +60,31 @@ export default function WatchDropdown({
         "
         aria-expanded={open}
       >
-        {icon && (
-          <i className={`${icon} relative z-10 text-[15px] transition-transform duration-300 group-hover:scale-105`} />
+        {open && (
+          <motion.span
+            layoutId={`watch-dropdown-pill-${label}`}
+            className="absolute inset-0 rounded-full bg-white/[0.06]"
+            transition={{
+              type: "spring",
+              stiffness: 380,
+              damping: 30,
+            }}
+          />
         )}
 
-        <span className="relative z-10">{label}</span>
+        {icon && (
+          <i
+            className={`${icon} relative z-10 text-[15px] transition-transform duration-300 ${
+              open ? "scale-105 text-white" : "group-hover:scale-105"
+            }`}
+          />
+        )}
+
+        <span className="relative z-10 whitespace-nowrap">{label}</span>
 
         <i
           className={`fa-duotone fa-chevron-down relative z-10 text-[11px] transition-transform duration-300 ${
-            open ? "rotate-180" : ""
+            open ? "rotate-180 text-white" : ""
           }`}
         />
       </button>
@@ -69,35 +92,115 @@ export default function WatchDropdown({
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.97 }}
+            initial={{ opacity: 0, y: 12, scale: 0.965 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.97 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
-            className="absolute left-0 top-[calc(100%+14px)] z-[90] w-[290px] rounded-3xl border border-white/10 bg-[#0a1427]/95 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.38)] backdrop-blur-2xl"
+            transition={{ duration: 0.24, ease: "easeOut" }}
+            className={`
+              absolute top-[calc(100%+14px)] z-[90]
+              w-[680px] max-w-[min(680px,calc(100vw-40px))]
+              overflow-hidden rounded-[2rem]
+              border border-white/10
+              bg-[#081120]/92
+              shadow-[0_30px_100px_rgba(0,0,0,0.45)]
+              backdrop-blur-2xl
+              ${align === "right" ? "right-0" : "left-0"}
+            `}
           >
-            <div className="px-2 pb-2 pt-1">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/35">
-                Explore
-              </p>
+            {/* BACKGROUND GLOW */}
+            <div className="pointer-events-none absolute inset-0">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.04),transparent_30%)]" />
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
             </div>
 
-            <div className="grid max-h-[360px] grid-cols-1 gap-1.5 overflow-y-auto pr-1">
-              {items.map((item) => (
-                <Link
-                  key={item.slug}
-                  href={`${baseHref}/${item.slug}`}
-                  onClick={() => setOpen(false)}
-                  className="
-                    flex items-center justify-between rounded-2xl px-4 py-3
-                    text-white/78 hover:bg-white/[0.06] hover:text-white
-                    active:scale-[0.98] transition-all
-                  "
-                >
-                  <span className="text-sm font-medium">{item.name}</span>
-                  <i className="fa-duotone fa-arrow-up-right text-xs text-white/30" />
-                </Link>
-              ))}
+            {/* HEADER */}
+            <div className="relative border-b border-white/8 px-4 pb-3 pt-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
+                    Explore
+                  </p>
+
+                  <div className="mt-2 flex items-center gap-2">
+                    {icon && (
+                      <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-white/80 shadow-inner">
+                        <i className={`${icon} text-[14px]`} />
+                      </div>
+                    )}
+
+                    <div className="min-w-0">
+                      <p className="truncate text-base font-semibold text-white">
+                        {label}
+                      </p>
+                      <p className="truncate text-xs text-white/45">
+                        Khám phá nhanh nội dung
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="shrink-0 rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5 text-[11px] font-semibold text-white/50">
+                  {normalizedItems.length}
+                </div>
+              </div>
             </div>
+
+            {/* GRID */}
+            <div
+              className="
+                relative max-h-[620px] overflow-y-auto p-3
+                [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
+              "
+            >
+              <div className="grid grid-cols-3 gap-2.5">
+                {normalizedItems.map((item, index) => (
+                  <motion.div
+                    key={item.slug}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.18,
+                      delay: Math.min(index * 0.01, 0.12),
+                    }}
+                  >
+                    <Link
+                      href={`${baseHref}/${item.slug}`}
+                      onClick={() => setOpen(false)}
+                      className="
+                        group relative flex min-h-[auto] items-center justify-between gap-3
+                        overflow-hidden rounded-[1.35rem]
+                        border border-white/8 bg-white/[0.04]
+                        px-4 py-3.5 text-white/80
+                        transition-all duration-300
+                        hover:-translate-y-[1.5px]
+                        hover:border-white/14 hover:bg-white/[0.08] hover:text-white
+                        hover:shadow-[0_12px_30px_rgba(0,0,0,0.18)]
+                        active:scale-[0.985]
+                      "
+                    >
+                      <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_38%)]" />
+                      </div>
+
+                      <div className="relative z-10 min-w-0 flex-1">
+                        <p className="line-clamp-2 text-sm font-semibold leading-5 text-inherit">
+                          {item.name}
+                        </p>
+                      </div>
+
+                      <div className="relative z-10 mt-0.5 shrink-0">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/8 bg-white/[0.05] text-white/28 transition-all duration-300 group-hover:border-white/12 group-hover:bg-white/[0.08] group-hover:text-white/72">
+                          <i className="fa-duotone fa-arrow-up-right text-[11px]" />
+                        </div>
+                      </div>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* FOOT FADE */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#081120]/95 to-transparent" />
           </motion.div>
         )}
       </AnimatePresence>

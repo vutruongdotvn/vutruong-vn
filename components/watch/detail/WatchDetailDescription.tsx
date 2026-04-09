@@ -11,7 +11,7 @@ export default function WatchDetailDescription({
 
       {movie?.content ? (
         <div
-          className="prose prose-invert max-w-none prose-p:text-white/75 prose-headings:text-white prose-strong:text-white"
+          className="text-white/90"
           dangerouslySetInnerHTML={{ __html: movie.content }}
         />
       ) : (

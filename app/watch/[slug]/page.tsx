@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
@@ -21,7 +22,19 @@ type WatchDetailPageProps = {
   }>;
 };
 
-export async function generateMetadata({ params }: WatchDetailPageProps) {
+function stripHtml(input?: string) {
+  if (!input) return "";
+  return input.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+}
+
+function truncateText(text: string, max = 160) {
+  if (!text) return "";
+  return text.length > max ? `${text.slice(0, max - 1).trim()}…` : text;
+}
+
+export async function generateMetadata({
+  params,
+}: WatchDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
 
   try {
@@ -30,28 +43,73 @@ export async function generateMetadata({ params }: WatchDetailPageProps) {
 
     if (!movie) {
       return {
-        title: "Không tìm thấy phim | VT Watch",
+        title: "Không tìm thấy phim",
         description: "Trang phim không tồn tại.",
+        robots: {
+          index: false,
+          follow: false,
+        },
       };
     }
 
-    const plainDescription =
-      movie.content?.replace(/<[^>]*>/g, "").slice(0, 160) ||
-      `Xem thông tin phim ${movie.name} trên VT Watch.`;
+    const movieTitle = movie.origin_name
+      ? `${movie.name} (${movie.origin_name})`
+      : movie.name;
+
+    const plainDescription = truncateText(
+      stripHtml(movie.content) ||
+        `Xem thông tin phim ${movie.name} trên VT Watch.`,
+      180
+    );
+
+    const shareImage = getMovieImage(
+      movie.thumb_url || movie.poster_url,
+      data.cdn
+    );
+
+    const pageUrl = `/watch/${slug}`;
 
     return {
-      title: `${movie.name} | VT Watch`,
+      title: movieTitle,
       description: plainDescription,
+      alternates: {
+        canonical: pageUrl,
+      },
+      robots: {
+        index: false,
+        follow: false,
+      },
       openGraph: {
-        title: `${movie.name} | VT Watch`,
+        title: movieTitle,
         description: plainDescription,
-        images: [getMovieImage(movie.thumb_url || movie.poster_url, data.cdn)],
+        url: pageUrl,
+        siteName: "VT Watch",
+        type: "video.movie",
+        locale: "vi_VN",
+        images: [
+          {
+            url: shareImage,
+            width: 1200,
+            height: 630,
+            alt: movie.name,
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: movieTitle,
+        description: plainDescription,
+        images: [shareImage],
       },
     };
   } catch {
     return {
       title: "VT Watch",
       description: "Xem phim tại VT Watch",
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 }
@@ -161,7 +219,6 @@ export default async function WatchDetailPage({
 
             <aside className="space-y-6">
               <WatchDetailInfoGrid movie={normalizedMovie} />
-
             </aside>
           </div>
         </div>

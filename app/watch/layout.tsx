@@ -7,9 +7,25 @@ import {
 } from "@/lib/watch/ophim";
 
 export const metadata: Metadata = {
-  title: "VT Watch!",
+  title: {
+    default: "VT Watch",
+    template: "%s | VT Watch",
+  },
   description:
     "Xem phim miễn phí - tốc độ cao - không quảng cáo và cập nhật liên tục!",
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
 };
 
 export default async function WatchLayout({
@@ -24,7 +40,7 @@ export default async function WatchLayout({
   ]);
 
   return (
-    <div className="min-h-screen bg-[#030b1f] text-white">
+    <div className="VT_Watch_app min-h-screen bg-[#030b1f] text-white">
       <WatchNavbar
         categories={categories}
         countries={countries}

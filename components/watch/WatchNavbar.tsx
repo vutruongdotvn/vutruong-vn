@@ -64,9 +64,8 @@ function MobileDropdownSection({
         </div>
 
         <i
-          className={`fa-duotone fa-chevron-down text-xs text-white/55 transition-transform duration-300 ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`fa-duotone fa-chevron-down text-xs text-white/55 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
+            }`}
         />
       </button>
 
@@ -295,19 +294,20 @@ export default function WatchNavbar({
   return (
     <>
       <header className="fixed top-0 left-0 z-[80] w-full select-none px-4 pt-4">
-        <div className="mx-auto w-full max-w-[1680px]">
+        <div className="mx-auto flex w-full justify-center">
           <div
             className={`
-              relative overflow-visible rounded-full border border-white/10
-              bg-[#071225]/72 backdrop-blur-2xl
-              shadow-[0_18px_60px_rgba(0,0,0,0.28)]
+              ${visible ? "bg-transparent backdrop-blur-sm" : "bg-black/20 shadow-[0_18px_60px_rgba(0,0,0,0.3)] backdrop-blur-xl"}
+              relative inline-flex w-fit max-w-full overflow-visible rounded-full border border-white/10
               transition-all duration-500 ease-out will-change-transform
-              ${visible ? "translate-y-0 opacity-100" : "-translate-y-5 opacity-0"}
-            `}
+      `}
           >
             <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-r from-white/[0.08] via-transparent to-white/[0.04]" />
 
-            <div className="relative flex h-[72px] items-center justify-between gap-3 px-3.5 py-2.5 md:px-4">
+            <div className={`transition-all duration-500 ease-out will-change-px
+            relative flex items-center justify-center gap-3
+            ${visible ? "px-3 py-3" : "px-1 py-1 pl-2"}
+            `}>
               {/* LOGO */}
               <Link
                 href="/watch"
@@ -326,24 +326,21 @@ export default function WatchNavbar({
                 </div>
 
                 <div className="min-w-0 leading-tight">
-                  <div className="truncate text-[17px] font-bold tracking-wide text-white">
-                    VT Watch
-                  </div>
-                  <div className="hidden truncate text-[11px] text-white/55 md:block">
-                    Xem phim online
+                  <div className="truncate text-xl font-bold tracking-wide text-white">
+                    Watch
                   </div>
                 </div>
               </Link>
 
               {/* SEARCH */}
-              <div className="relative z-10 hidden min-w-[280px] max-w-[380px] flex-1 lg:block">
-                <div className="flex h-[46px] items-center gap-3 rounded-full border border-white/8 bg-white/[0.05] px-4 text-slate-300 shadow-inner">
-                  <i className="fa-duotone fa-magnifying-glass text-sm text-white/45" />
+              <div className="relative z-10 hidden min-w-[240px] max-w-[320px] flex-1 lg:block">
+                <div className="flex h-[46px] items-center gap-3 rounded-full bg-white/[0.1] px-4 text-slate-300 shadow-inner">
+                  <i className="fa-duotone fa-search text-sm text-white/45" />
                   <input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Tìm kiếm phim..."
-                    className="w-full bg-transparent text-[14px] font-medium text-white placeholder:text-white/35 outline-none"
+                    placeholder="Tìm kiếm phim"
+                    className="w-full bg-transparent text-[14px] font-medium text-white/75 placeholder:text-white/35 outline-none"
                   />
                 </div>
               </div>
@@ -363,10 +360,9 @@ export default function WatchNavbar({
                         className={`
                           relative group flex items-center gap-2 rounded-full px-4 py-2.5
                           text-sm font-medium active:scale-95 transition-colors duration-300
-                          ${
-                            active
-                              ? "text-white"
-                              : "text-white/70 hover:text-white hover:bg-white/[0.06]"
+                          ${active
+                            ? "text-white"
+                            : "text-white/70 hover:text-white hover:bg-white/[0.06]"
                           }
                         `}
                       >
@@ -383,9 +379,8 @@ export default function WatchNavbar({
                         )}
 
                         <i
-                          className={`${item.icon} relative z-10 text-[15px] transition-transform duration-300 ${
-                            active ? "" : "group-hover:scale-105"
-                          }`}
+                          className={`${item.icon} relative z-10 text-[15px] transition-transform duration-300 ${active ? "" : "group-hover:scale-105"
+                            }`}
                         />
                         <span className="relative z-10 whitespace-nowrap">
                           {item.name}
@@ -409,6 +404,7 @@ export default function WatchNavbar({
                 />
 
                 <WatchDropdown
+                  align="right"
                   label="Thể loại"
                   icon="fa-duotone fa-grid-2"
                   items={topCategories.map((c) => ({
@@ -419,6 +415,7 @@ export default function WatchNavbar({
                 />
 
                 <WatchDropdown
+                  align="right"
                   label="Quốc gia"
                   icon="fa-duotone fa-earth-asia"
                   items={topCountries.map((c) => ({
@@ -430,10 +427,10 @@ export default function WatchNavbar({
 
                 <div className="ml-1">
                   <button
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-white/70 transition hover:bg-white/[0.08] hover:text-white"
+                    className="cursor-pointer active:scale-95 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-white/70 transition hover:bg-white/[0.08] hover:text-white"
                     aria-label="Tài khoản"
                   >
-                    <i className="fa-duotone fa-user text-[15px]" />
+                    <i className="fa-duotone fa-user text-base" />
                   </button>
                 </div>
               </div>
@@ -453,9 +450,8 @@ export default function WatchNavbar({
                 aria-expanded={open}
               >
                 <i
-                  className={`fa-duotone transition-all duration-300 ${
-                    open ? "fa-xmark text-[18px] rotate-90" : "fa-bars text-[18px]"
-                  }`}
+                  className={`fa-duotone transition-all duration-300 ${open ? "fa-xmark text-[18px] rotate-90" : "fa-bars text-[18px]"
+                    }`}
                 />
               </button>
             </div>
@@ -467,7 +463,7 @@ export default function WatchNavbar({
       <AnimatePresence>
         {open && (
           <motion.div
-  className="fixed inset-0 z-[999] xl:hidden"
+            className="fixed inset-0 z-[999] xl:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -499,13 +495,10 @@ export default function WatchNavbar({
                     <Link
                       href="/watch"
                       onClick={(e) => handleNavClick(e, "/watch")}
-                      className="block truncate font-semibold leading-5 text-white"
+                      className="block text-lg truncate font-semibold leading-5 text-white"
                     >
-                      VT Watch
+                      Watch
                     </Link>
-                    <p className="truncate text-xs text-white/50">
-                      Xem phim online
-                    </p>
                   </div>
                 </div>
 
@@ -557,10 +550,9 @@ export default function WatchNavbar({
                           min-h-[96px] rounded-3xl p-4
                           flex flex-col justify-between
                           transition-all duration-300
-                          ${
-                            active
-                              ? "bg-white/10 text-white shadow-lg"
-                              : "bg-white/[0.05] text-white/80 hover:bg-white/[0.09]"
+                          ${active
+                            ? "bg-white/10 text-white shadow-lg"
+                            : "bg-white/[0.05] text-white/80 hover:bg-white/[0.09]"
                           }
                         `}
                       >

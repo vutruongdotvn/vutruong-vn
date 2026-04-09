@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { stripHtml } from "@/lib/watch/ophim";
@@ -16,25 +16,46 @@ type Props = {
 };
 
 const SLIDE_MS = 7000;
+const SWIPE_THRESHOLD = 50;
 
 export default function WatchHero({ movies }: Props) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [progressKey, setProgressKey] = useState(0);
+  const [contentKey, setContentKey] = useState(0);
+
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
 
   const active = movies[activeIndex];
 
-  useEffect(() => {
-    if (!movies?.length || paused) return;
-    const id = setInterval(() => {
+  const clearSlideTimeout = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  };
+
+  const restartAutoplay = () => {
+    clearSlideTimeout();
+    setProgressKey((prev) => prev + 1);
+
+    timeoutRef.current = setTimeout(() => {
       setActiveIndex((prev) => (prev + 1) % movies.length);
     }, SLIDE_MS);
+  };
 
-    return () => clearInterval(id);
-  }, [movies, paused]);
+  useEffect(() => {
+    if (!movies?.length) return;
+    restartAutoplay();
+    setContentKey((prev) => prev + 1);
+
+    return () => clearSlideTimeout();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeIndex, movies.length]);
 
   const desc = useMemo(() => {
     if (!active?.content) return "";
-    return stripHtml(active.content).slice(0, 260);
+    return stripHtml(active.content).slice(0, 280);
   }, [active]);
 
   if (!movies?.length || !active) return null;
@@ -43,82 +64,161 @@ export default function WatchHero({ movies }: Props) {
   const country = active.country?.map((c) => c.name).join(" · ");
   const genres = active.category ?? [];
 
+  const goToSlide = (index: number) => {
+    if (index === activeIndex) {
+      restartAutoplay();
+      return;
+    }
+    setActiveIndex(index);
+  };
+
+  const goPrev = () => {
+    setActiveIndex((prev) => (prev - 1 + movies.length) % movies.length);
+  };
+
+  const goNext = () => {
+    setActiveIndex((prev) => (prev + 1) % movies.length);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLElement>) => {
+    touchStartX.current = e.changedTouches[0].clientX;
+    touchEndX.current = null;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLElement>) => {
+    touchEndX.current = e.changedTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+
+    const deltaX = touchStartX.current - touchEndX.current;
+
+    if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+      if (deltaX > 0) {
+        goNext();
+      } else {
+        goPrev();
+      }
+    }
+
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
   return (
     <section
       className="relative h-screen min-h-[860px] w-full overflow-hidden bg-[#030712]"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Progress bar */}
-      
-      {/* BG layers */}
-      <div className="absolute inset-0">
-        <Image
-          src={active._bgUrl}
-          alt={active.name}
-          fill
-          priority
-          className="object-cover"
-          sizes="100vw"
+      <div className="absolute inset-x-0 top-0 z-30 h-[3px] bg-white/8">
+        <div
+          key={`${active.slug}-${progressKey}`}
+          className="h-full bg-gradient-to-r from-red-500 via-rose-500 to-orange-400"
+          style={{
+            animation: `heroProgress ${SLIDE_MS}ms linear forwards`,
+          }}
         />
-        <div className="absolute inset-0 bg-black/15" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#020617] via-[#020617]/72 to-[#020617]/18" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#030712] via-[#030712]/18 to-transparent" />
       </div>
 
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-[1600px] items-end px-5 pb-10 pt-28 md:px-8 xl:px-12">
-        <div className="grid h-full w-full grid-cols-1 lg:grid-cols-[minmax(0,1fr)_230px] lg:gap-8">
-          {/* Main content */}
-          <div className="flex h-full flex-col justify-center">
-            <div className="max-w-4xl">
-              <div className="inline-flex rounded-full bg-white/10 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-white/55 backdrop-blur">
+      {/* BG layers */}
+      <div className="absolute inset-0">
+        <div
+          key={active.slug}
+          className="absolute inset-0 scale-[1.035] animate-[heroBgReveal_1500ms_ease-out_forwards]"
+        >
+          <Image
+            src={active._bgUrl}
+            alt={active.name}
+            fill
+            priority
+            unoptimized
+            className="object-cover"
+            sizes="1600px object-cover object-center"
+          />
+        </div>
+
+        <div className="absolute inset-0 bg-gradient-to-t from-[#020817] via-[#020817]/48 to-[#020817]/12" />
+        <div className="absolute inset-x-0 bottom-0 h-[40vh] bg-gradient-to-t from-[#020817] via-[#020817]/90 to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05),transparent_52%)]" />
+      </div>
+
+      {/* Nav arrows */}
+      <button
+        onClick={goPrev}
+        aria-label="Previous slide"
+        className="absolute left-4 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/35 text-white/85 backdrop-blur-md transition hover:scale-105 hover:bg-white/10 active:scale-95 cursor-pointer lg:flex md:left-6"
+      >
+        <i className="fa-duotone fa-arrow-left text-base" />
+      </button>
+
+      <button
+        onClick={goNext}
+        aria-label="Next slide"
+        className="absolute right-4 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/35 text-white/85 backdrop-blur-md transition hover:scale-105 hover:bg-white/10 active:scale-95 cursor-pointer lg:flex md:right-6"
+      >
+        <i className="fa-duotone fa-arrow-right text-base" />
+      </button>
+
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-[1600px] px-5 pb-8 pt-28 md:px-8 xl:px-12">
+        <div className="flex h-full w-full flex-col">
+          {/* Main centered content */}
+          <div className="flex flex-1 items-center justify-center">
+            <div
+              key={`${active.slug}-${contentKey}`}
+              className="mx-auto flex w-full max-w-5xl animate-[heroContentIn_700ms_cubic-bezier(0.22,1,0.36,1)_forwards] flex-col items-center text-center opacity-0"
+            >
+              <div className="rounded-full border border-white/10 bg-white/6 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-white/55 backdrop-blur">
                 Phim mới cập nhật
               </div>
 
-              <h1 className="mt-4 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
+              <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-white drop-shadow-[0_10px_35px_rgba(0,0,0,.45)] sm:text-5xl md:text-6xl xl:text-7xl">
                 {active.name}
               </h1>
 
               {active.origin_name && (
-                <p className="mt-3 text-lg text-slate-300 md:text-[22px]">
+                <p className="mt-3 text-base text-slate-300 md:text-[22px]">
                   {active.origin_name}
                 </p>
               )}
 
               {/* Badges */}
-              <div className="mt-5 flex flex-wrap gap-2.5">
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
                 {score ? (
-                  <span className="rounded-full bg-amber-400/20 px-3 py-1.5 text-sm font-semibold text-amber-300">
+                  <span className="rounded-full border border-amber-300/30 bg-amber-400/15 px-3 py-1.5 text-sm font-semibold text-amber-200 shadow-[0_8px_30px_rgba(251,191,36,0.18)] backdrop-blur-md">
                     IMDb {score}
                   </span>
                 ) : null}
 
                 {active.episode_current ? (
-                  <span className="rounded-full bg-white/10 px-3 py-1.5 text-sm font-semibold text-white/90">
+                  <span className="rounded-full border border-emerald-300/30 bg-emerald-400/15 px-3 py-1.5 text-sm font-semibold text-emerald-200 shadow-[0_8px_30px_rgba(52,211,153,0.18)] backdrop-blur-md">
                     {active.episode_current}
                   </span>
                 ) : null}
 
                 {active.quality ? (
-                  <span className="rounded-full bg-white/10 px-3 py-1.5 text-sm font-semibold text-white/90">
+                  <span className="rounded-full border border-sky-300/30 bg-sky-400/15 px-3 py-1.5 text-sm font-semibold text-sky-200 shadow-[0_8px_30px_rgba(56,189,248,0.18)] backdrop-blur-md">
                     {active.quality}
                   </span>
                 ) : null}
 
                 {active.lang ? (
-                  <span className="rounded-full bg-white/10 px-3 py-1.5 text-sm font-semibold text-white/90">
+                  <span className="rounded-full border border-cyan-300/30 bg-cyan-400/15 px-3 py-1.5 text-sm font-semibold text-cyan-200 shadow-[0_8px_30px_rgba(34,211,238,0.18)] backdrop-blur-md">
                     {active.lang}
                   </span>
                 ) : null}
 
                 {active.year ? (
-                  <span className="rounded-full bg-white/10 px-3 py-1.5 text-sm font-semibold text-white/90">
+                  <span className="rounded-full border border-violet-300/30 bg-violet-400/15 px-3 py-1.5 text-sm font-semibold text-violet-200 shadow-[0_8px_30px_rgba(167,139,250,0.18)] backdrop-blur-md">
                     {active.year}
                   </span>
                 ) : null}
 
                 {country ? (
-                  <span className="rounded-full bg-white/10 px-3 py-1.5 text-sm font-semibold text-white/90">
+                  <span className="rounded-full border border-rose-300/30 bg-rose-400/15 px-3 py-1.5 text-sm font-semibold text-rose-200 shadow-[0_8px_30px_rgba(251,113,133,0.18)] backdrop-blur-md">
                     {country}
                   </span>
                 ) : null}
@@ -126,7 +226,7 @@ export default function WatchHero({ movies }: Props) {
 
               {/* Genre chips */}
               {genres.length > 0 && (
-                <div className="mt-5 flex flex-wrap gap-2.5">
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
                   {genres.slice(0, 5).map((genre) => (
                     <Link
                       key={genre.slug}
@@ -151,47 +251,67 @@ export default function WatchHero({ movies }: Props) {
               <div className="mt-8">
                 <Link
                   href={`/watch/${active.slug}`}
-                  className="inline-flex items-center gap-3 rounded-full bg-white px-7 py-3.5 text-sm font-extrabold text-black shadow-[0_10px_30px_rgba(255,255,255,.15)] transition hover:scale-[1.02]"
+                  className="inline-flex items-center gap-3 rounded-full bg-red-500 px-8 py-3.5 text-base font-semibold text-white shadow-[0_14px_40px_rgba(239,68,68,.35)] transition hover:scale-[1.02] hover:bg-red-400 active:scale-95"
                 >
-                  ▶ Xem phim
+                  <i className="fa-duotone fa-play" /> Xem phim
                 </Link>
               </div>
             </div>
           </div>
 
-          {/* Thumb rail desktop */}
-          <div className="hidden h-full items-center justify-center lg:flex">
-            <div className="flex max-h-[72vh] w-full flex-col gap-3 overflow-y-auto pr-1 scrollbar-hide">
-              {movies.map((movie, index) => (
-                <button
-                  key={movie.slug}
-                  onClick={() => setActiveIndex(index)}
-                  className={`group flex items-center gap-3 rounded-[18px] border p-2 text-left backdrop-blur transition ${
-                    activeIndex === index
-                      ? "border-white/15 bg-white/10"
-                      : "border-white/8 bg-black/25 hover:bg-white/7"
-                  }`}
-                >
-                  <div className="relative h-[88px] w-[62px] shrink-0 overflow-hidden rounded-[14px]">
-                    <Image
-                      src={movie._thumbUrl}
-                      alt={movie.name}
-                      fill
-                      className="object-cover"
-                      sizes="62px"
-                    />
-                  </div>
+          {/* Bottom thumb rail desktop/tablet */}
+          <div className="relative z-10 hidden lg:block">
+            <div className="mx-auto w-full max-w-[800px]">
+              <div className="grid grid-cols-10 gap-2">
+                {movies.slice(0, 10).map((movie, index) => {
+                  const isActive = activeIndex === index;
 
-                  <div className="min-w-0">
-                    <p className="line-clamp-2 text-[14px] font-extrabold leading-snug text-white">
-                      {movie.name}
-                    </p>
-                    <p className="mt-1 line-clamp-1 text-[12px] text-slate-400">
-                      {movie.origin_name || ""}
-                    </p>
-                  </div>
-                </button>
-              ))}
+                  return (
+                    <button
+                      key={movie.slug}
+                      onClick={() => goToSlide(index)}
+                      className={`cursor-pointer group relative overflow-hidden rounded-lg border transition-all duration-300 active:scale-95 ${isActive
+                          ? "translate-y-[-6px] border-white/25 ring-2 ring-white/50 shadow-[0_18px_40px_rgba(0,0,0,.35)]"
+                          : "border-white/10 opacity-80 hover:-translate-y-1 hover:opacity-100"
+                        }`}
+                    >
+                      <div className="relative aspect-[2/3] w-full overflow-hidden bg-white/5">
+                        <Image
+                          src={movie._thumbUrl}
+                          alt={movie.name}
+                          fill
+                          unoptimized
+                          className={`object-cover transition duration-500 ${isActive ? "scale-[1.03]" : "scale-100 group-hover:scale-105"
+                            }`}
+                        />
+
+                        <div
+                          className={`absolute inset-0 transition duration-300 ${isActive
+                              ? "bg-gradient-to-t from-black/10 via-transparent to-transparent"
+                              : "bg-black/35 group-hover:bg-black/18"
+                            }`}
+                        />
+
+                        {isActive && (
+                          <>
+                            <div className="absolute inset-x-0 bottom-0 h-1.5 bg-white/10">
+                              <div
+                                key={`thumb-progress-${active.slug}-${progressKey}`}
+                                className="h-full bg-gradient-to-r from-red-500 via-rose-500 to-orange-400"
+                                style={{
+                                  animation: `heroProgress ${SLIDE_MS}ms linear forwards`,
+                                }}
+                              />
+                            </div>
+
+                            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/70 to-transparent" />
+                          </>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -202,14 +322,48 @@ export default function WatchHero({ movies }: Props) {
         {movies.map((_, index) => (
           <button
             key={index}
-            onClick={() => setActiveIndex(index)}
-            className={`h-2.5 rounded-full transition-all ${
-              activeIndex === index ? "w-8 bg-white" : "w-2.5 bg-white/35"
-            }`}
+            onClick={() => goToSlide(index)}
+            className={`h-2.5 rounded-full transition-all ${activeIndex === index ? "w-8 bg-white" : "w-2.5 bg-white/35"
+              }`}
             aria-label={`Slide ${index + 1}`}
           />
         ))}
       </div>
+
+      <style jsx>{`
+        @keyframes heroProgress {
+          from {
+            width: 0%;
+          }
+          to {
+            width: 100%;
+          }
+        }
+
+        @keyframes heroContentIn {
+          0% {
+            opacity: 0;
+            transform: scale(1.1);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        @keyframes heroBgReveal {
+          0% {
+            opacity: 0;
+            transform: scale(1.1);
+            filter: blur(1rem);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0);
+          }
+        }
+      `}</style>
     </section>
   );
 }

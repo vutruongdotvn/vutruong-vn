@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import WatchHero from "@/components/watch/WatchHero";
 import WatchSectionSlider from "@/components/watch/WatchSectionSlider";
 import WatchTopics from "@/components/watch/WatchTopics";
@@ -7,9 +8,10 @@ import {
   getSectionMovies,
 } from "@/lib/watch/ophim";
 
-export const metadata = {
-  title: "VT Watch!",
-  description: "Xem phim miễn phí - tốc độ cao - không quảng cáo và cập nhật liên tục!",
+export const metadata: Metadata = {
+  title: "Watch",
+  description:
+    "Xem phim miễn phí - tốc độ cao - không quảng cáo và cập nhật liên tục!",
 };
 
 export default async function WatchHomePage() {

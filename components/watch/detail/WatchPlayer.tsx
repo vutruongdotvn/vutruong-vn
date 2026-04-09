@@ -16,7 +16,7 @@ export default function WatchPlayer({
   backdropUrl,
 }: WatchPlayerProps) {
   return (
-    <section className="relative w-full overflow-hidden pt-8">
+    <section className="relative w-full overflow-hidden">
       <div className="absolute inset-0">
         <Image
           src={backdropUrl}
@@ -30,8 +30,8 @@ export default function WatchPlayer({
       </div>
 
       <div className="relative mx-auto w-full">
-        <div className="overflow-hidden rounded-none border-y border-white/10 bg-black sm:rounded-[2rem] sm:border">
-          <div className="relative aspect-[20/9] w-full bg-black mt-18">
+        <div className="overflow-hidden moviePlayer">
+          <div className="relative aspect-[20/9] w-full bg-black mt-[115px]">
             {embedUrl ? (
               <iframe
                 src={embedUrl}
@@ -42,17 +42,13 @@ export default function WatchPlayer({
               />
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-                <div className="mb-4 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium tracking-[0.25em] text-white/60 uppercase">
-                  VT Films
-                </div>
 
                 <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
                   {title}
                 </h2>
 
                 <p className="mt-3 max-w-2xl text-sm leading-7 text-white/55 sm:text-base">
-                  Chọn một tập bên dưới để bắt đầu xem phim với trải nghiệm điện
-                  ảnh toàn màn hình.
+                  Phim đang được cập nhật.
                 </p>
               </div>
             )}
@@ -71,10 +67,6 @@ export default function WatchPlayer({
               {episodeName ? (
                 <p className="mt-1 text-sm text-white/55">{episodeName}</p>
               ) : null}
-            </div>
-
-            <div className="text-xs text-white/35">
-              Tỉ lệ hiển thị điện ảnh 21:9
             </div>
           </div>
         </div>

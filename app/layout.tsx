@@ -5,7 +5,7 @@ import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import AuthProvider from "@/components/AuthProvider";
 import LayoutShell from "@/components/LayoutShell";
 import { ToastProvider } from "@/components/ui/ToastProvider";
-import PageTransition from "@/components/PageTransition";
+import ConditionalPageTransition from "@/components/ConditionalPageTransition";
 
 // 🔤 Font
 const roboto = Roboto({
@@ -106,9 +106,9 @@ export default function RootLayout({
         <ToastProvider>
           <AuthProvider>
             <LayoutShell>
-              <PageTransition>
+              <ConditionalPageTransition>
                 {children}
-              </PageTransition>
+              </ConditionalPageTransition>
             </LayoutShell>
           </AuthProvider>
         </ToastProvider>
