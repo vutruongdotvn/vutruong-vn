@@ -279,7 +279,7 @@ export default function WatchSectionSlider({
           href={`/watch/browse/${type}/${slug}`}
           className="text-[15px] font-medium text-slate-400 hover:text-white/75 active:scale-95"
         >
-          Xem toàn bộ <i className="fa-duotone fa-arrow-right ml-1" />
+          Xem tất cả <i className="fa-duotone fa-arrow-right ml-1" />
         </Link>
       </div>
 
@@ -312,7 +312,7 @@ export default function WatchSectionSlider({
             Array.from({ length: 9 }).map((_, index) => (
               <div
                 key={index}
-                className="shrink-0 space-y-3 w-[184px]"
+                className="shrink-0 space-y-3 w-[123px] sm:w-[168px] lg:w-[184px]"
               >
                 <div className="aspect-[2/3] w-full animate-pulse rounded-2xl bg-white/8" />
                 <div className="h-4 w-4/5 animate-pulse rounded-full bg-white/8 mx-auto" />

@@ -128,7 +128,7 @@ export default function WatchHero({ movies }: Props) {
       <div className="absolute inset-0">
         <div
           key={active.slug}
-          className="absolute inset-0 animate-[heroBgReveal_1000ms_ease-in-out_forwards] object-cover object-center"
+          className="absolute inset-0 animate-[heroBgReveal_5000ms_ease-in-out_forwards] object-cover object-center"
         >
           <Image
             src={active._bgUrl}
@@ -167,7 +167,7 @@ export default function WatchHero({ movies }: Props) {
           <div className="flex flex-1 items-center justify-center">
             <div
               key={`${active.slug}-${contentKey}`}
-              className="mx-auto flex w-full max-w-5xl animate-[heroContentIn_1000ms_ease_forwards] flex-col items-center text-center opacity-0"
+              className="mx-auto flex w-full max-w-5xl animate-[heroContentIn_3000ms_ease_forwards] flex-col items-center text-center opacity-0"
             >
               <div className="rounded-full text-xs sm:text-sm font-normal uppercase tracking-[0.18em] text-white/55">
                 Phim mới cập nhật
@@ -343,7 +343,7 @@ export default function WatchHero({ movies }: Props) {
         @keyframes heroContentIn {
           0% {
             opacity: 0;
-            transform: scale(1.1)
+            transform: scale(.9)
           }
           100% {
             opacity: 1;
@@ -353,12 +353,14 @@ export default function WatchHero({ movies }: Props) {
 
         @keyframes heroBgReveal {
           0% {
-            opacity: 0;
-            transform: scale(1.1);
+            opacity: 0.5;
+            transform: scale(1.15);
+            filter: blur(5px)
           }
           100% {
             opacity: 1;
             transform: scale(1);
+            filter: blur(0)
           }
         }
       `}</style>

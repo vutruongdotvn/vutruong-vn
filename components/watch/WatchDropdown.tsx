@@ -101,9 +101,8 @@ export default function WatchDropdown({
               w-[680px] max-w-[min(680px,calc(100vw-40px))]
               overflow-hidden rounded-[2rem]
               border border-white/10
-              bg-[#081120]/92
+              bg-black
               shadow-[0_30px_100px_rgba(0,0,0,0.45)]
-              backdrop-blur-2xl
               ${align === "right" ? "right-0" : "left-0"}
             `}
           >
@@ -115,13 +114,9 @@ export default function WatchDropdown({
 
             {/* HEADER */}
             <div className="relative border-b border-white/8 px-4 pb-3 pt-4">
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
-                    Explore
-                  </p>
-
-                  <div className="mt-2 flex items-center gap-2">
+                  <div className="flex items-center gap-2">
                     {icon && (
                       <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-white/80 shadow-inner">
                         <i className={`${icon} text-[14px]`} />
@@ -131,9 +126,6 @@ export default function WatchDropdown({
                     <div className="min-w-0">
                       <p className="truncate text-base font-semibold text-white">
                         {label}
-                      </p>
-                      <p className="truncate text-xs text-white/45">
-                        Khám phá nhanh nội dung
                       </p>
                     </div>
                   </div>
@@ -148,25 +140,25 @@ export default function WatchDropdown({
             {/* GRID */}
             <div
               className="
-                relative max-h-[620px] overflow-y-auto p-3
+                relative max-h-[800px] overflow-y-auto p-3
                 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
               "
             >
-              <div className="grid grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-4 gap-2.5">
                 {normalizedItems.map((item, index) => (
                   <motion.div
                     key={item.slug}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      duration: 0.18,
+                      duration: 0.5,
                       delay: Math.min(index * 0.01, 0.12),
                     }}
                   >
                     <Link
                       href={`${baseHref}/${item.slug}`}
                       onClick={() => setOpen(false)}
-                      className="
+                      className="truncate
                         group relative flex min-h-[auto] items-center justify-between gap-3
                         overflow-hidden rounded-[1.35rem]
                         border border-white/8 bg-white/[0.04]
@@ -183,24 +175,15 @@ export default function WatchDropdown({
                       </div>
 
                       <div className="relative z-10 min-w-0 flex-1">
-                        <p className="line-clamp-2 text-sm font-semibold leading-5 text-inherit">
+                        <p className="line-clamp-2 text-sm font-semibold leading-5 text-center">
                           {item.name}
                         </p>
-                      </div>
-
-                      <div className="relative z-10 mt-0.5 shrink-0">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/8 bg-white/[0.05] text-white/28 transition-all duration-300 group-hover:border-white/12 group-hover:bg-white/[0.08] group-hover:text-white/72">
-                          <i className="fa-duotone fa-arrow-up-right text-[11px]" />
-                        </div>
                       </div>
                     </Link>
                   </motion.div>
                 ))}
               </div>
             </div>
-
-            {/* FOOT FADE */}
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#081120]/95 to-transparent" />
           </motion.div>
         )}
       </AnimatePresence>

@@ -297,7 +297,7 @@ export default function WatchNavbar({
         <div className="mx-auto flex w-full justify-center">
           <div
             className={`
-              ${visible ? "bg-transparent backdrop-blur-sm" : "bg-black/20 shadow-[0_18px_60px_rgba(0,0,0,0.3)] backdrop-blur-xl"}
+              ${visible ? "bg-transparent backdrop-blur-sm opacity-100" : "bg-black/20 shadow-[0_18px_60px_rgba(0,0,0,0.3)] backdrop-blur-xl opacity-0 -translate-y-2"}
               relative inline-flex w-fit max-w-full overflow-visible rounded-full border border-white/10
               transition-all duration-500 ease-out will-change-transform
       `}
@@ -305,8 +305,7 @@ export default function WatchNavbar({
             <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-r from-white/[0.08] via-transparent to-white/[0.04]" />
 
             <div className={`transition-all duration-500 ease-out will-change
-            relative flex items-center justify-center gap-12
-            ${visible ? "px-3 py-3" : "px-1 py-1 pl-2"}
+            relative flex items-center justify-center gap-12 px-1 py-1 pl-2
             `}>
               {/* LOGO */}
               <Link
@@ -477,7 +476,7 @@ export default function WatchNavbar({
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ y: 5, opacity: 0, scale: 1 }}
               transition={{ duration: 0.28, ease: "easeOut" }}
-              className="absolute left-1/2 top-5 -translate-x-1/2 w-[calc(100%-24px)] max-w-md rounded-[2rem] border border-white/10 bg-[#0a1427]/92 backdrop-blur-2xl shadow-[0_24px_80px_rgba(0,0,0,0.38)] p-4"
+              className="absolute left-1/2 top-5 -translate-x-1/2 w-[calc(100%-24px)] max-w-md rounded-[2rem] border border-white/10 bg-black/50 backdrop-blur-2xl shadow-[0_24px_80px_rgba(0,0,0,0.38)] p-4"
             >
               {/* MOBILE TOP */}
               <div className="mb-4 mt-1 flex items-center justify-between">
