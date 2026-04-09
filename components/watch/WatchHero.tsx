@@ -108,7 +108,7 @@ export default function WatchHero({ movies }: Props) {
 
   return (
     <section
-      className="relative h-screen min-h-[860px] w-full overflow-hidden bg-[#030712]"
+      className="relative w-full h-[50vh] md:h-[75vh] xl:h-screen overflow-hidden bg-[#030712]"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -169,11 +169,11 @@ export default function WatchHero({ movies }: Props) {
               key={`${active.slug}-${contentKey}`}
               className="mx-auto flex w-full max-w-5xl animate-[heroContentIn_700ms_cubic-bezier(0.22,1,0.36,1)_forwards] flex-col items-center text-center opacity-0"
             >
-              <div className="rounded-full border border-white/10 bg-white/6 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-white/55 backdrop-blur">
+              <div className="rounded-full text-xs sm:text-sm font-normal uppercase tracking-[0.18em] text-white/55">
                 Phim mới cập nhật
               </div>
 
-              <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-white drop-shadow-[0_10px_35px_rgba(0,0,0,.45)] sm:text-5xl md:text-6xl">
+              <h1 className="mt-5 text-3xl font-extrabold tracking-tight text-white drop-shadow-[0_10px_35px_rgba(0,0,0,.8)] sm:text-5xl">
                 {active.name}
               </h1>
 
@@ -184,47 +184,46 @@ export default function WatchHero({ movies }: Props) {
               )}
 
               {/* Badges */}
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-2 xl:gap-2.5">
                 {score ? (
-                  <span className="rounded-full border border-amber-300/30 bg-amber-400/15 px-3 py-1.5 text-sm font-semibold text-amber-200 shadow-[0_8px_30px_rgba(251,191,36,0.18)] backdrop-blur-md">
+                  <span className="rounded-full border border-amber-300/30 bg-amber-400/15 px-2.5 py-1 text-xs font-semibold text-amber-200 shadow-[0_8px_30px_rgba(251,191,36,0.18)] backdrop-blur-md xl:px-3 xl:py-1.5 xl:text-sm">
                     IMDb {score}
                   </span>
                 ) : null}
 
                 {active.episode_current ? (
-                  <span className="rounded-full border border-emerald-300/30 bg-emerald-400/15 px-3 py-1.5 text-sm font-semibold text-emerald-200 shadow-[0_8px_30px_rgba(52,211,153,0.18)] backdrop-blur-md">
+                  <span className="rounded-full border border-emerald-300/30 bg-emerald-400/15 px-2.5 py-1 text-xs font-semibold text-emerald-200 shadow-[0_8px_30px_rgba(52,211,153,0.18)] backdrop-blur-md xl:px-3 xl:py-1.5 xl:text-sm">
                     {active.episode_current}
                   </span>
                 ) : null}
 
                 {active.quality ? (
-                  <span className="rounded-full border border-sky-300/30 bg-sky-400/15 px-3 py-1.5 text-sm font-semibold text-sky-200 shadow-[0_8px_30px_rgba(56,189,248,0.18)] backdrop-blur-md">
+                  <span className="rounded-full border border-sky-300/30 bg-sky-400/15 px-2.5 py-1 text-xs font-semibold text-sky-200 shadow-[0_8px_30px_rgba(56,189,248,0.18)] backdrop-blur-md xl:px-3 xl:py-1.5 xl:text-sm">
                     {active.quality}
                   </span>
                 ) : null}
 
                 {active.lang ? (
-                  <span className="rounded-full border border-cyan-300/30 bg-cyan-400/15 px-3 py-1.5 text-sm font-semibold text-cyan-200 shadow-[0_8px_30px_rgba(34,211,238,0.18)] backdrop-blur-md">
+                  <span className="rounded-full border border-cyan-300/30 bg-cyan-400/15 px-2.5 py-1 text-xs font-semibold text-cyan-200 shadow-[0_8px_30px_rgba(34,211,238,0.18)] backdrop-blur-md xl:px-3 xl:py-1.5 xl:text-sm">
                     {active.lang}
                   </span>
                 ) : null}
 
                 {active.year ? (
-                  <span className="rounded-full border border-violet-300/30 bg-violet-400/15 px-3 py-1.5 text-sm font-semibold text-violet-200 shadow-[0_8px_30px_rgba(167,139,250,0.18)] backdrop-blur-md">
+                  <span className="rounded-full border border-violet-300/30 bg-violet-400/15 px-2.5 py-1 text-xs font-semibold text-violet-200 shadow-[0_8px_30px_rgba(167,139,250,0.18)] backdrop-blur-md xl:px-3 xl:py-1.5 xl:text-sm">
                     {active.year}
                   </span>
                 ) : null}
 
                 {country ? (
-                  <span className="rounded-full border border-rose-300/30 bg-rose-400/15 px-3 py-1.5 text-sm font-semibold text-rose-200 shadow-[0_8px_30px_rgba(251,113,133,0.18)] backdrop-blur-md">
+                  <span className="rounded-full border border-rose-300/30 bg-rose-400/15 px-2.5 py-1 text-xs font-semibold text-rose-200 shadow-[0_8px_30px_rgba(251,113,133,0.18)] backdrop-blur-md xl:px-3 xl:py-1.5 xl:text-sm">
                     {country}
                   </span>
                 ) : null}
               </div>
-
               {/* Genre chips */}
               {genres.length > 0 && (
-                <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
+                <div className="mt-5 hidden sm:flex flex-wrap items-center justify-center gap-2.5">
                   {genres.slice(0, 5).map((genre) => (
                     <Link
                       key={genre.slug}
@@ -239,7 +238,7 @@ export default function WatchHero({ movies }: Props) {
 
               {/* Desc */}
               {desc && (
-                <p className="mt-6 max-w-3xl text-[15px] leading-8 text-slate-300 md:text-[16px]">
+                <p className="mt-6 max-w-3xl text-sm/6 text-slate-300 md:text-base/8 hidden lg:flex">
                   {desc}
                   {stripHtml(active.content || "").length > 260 ? "..." : ""}
                 </p>
@@ -249,7 +248,10 @@ export default function WatchHero({ movies }: Props) {
               <div className="mt-8">
                 <Link
                   href={`/watch/${active.slug}`}
-                  className="inline-flex items-center gap-3 rounded-full bg-red-500 px-8 py-3.5 text-base font-semibold text-white shadow-[0_14px_40px_rgba(239,68,68,.35)] transition hover:scale-[1.02] hover:bg-red-400 active:scale-95"
+                  className="inline-flex items-center gap-3 rounded-full
+                  bg-red-500 lg:px-8 lg:py-3.5 text-base font-semibold text-white shadow-[0_14px_40px_rgba(239,68,68,.35)]
+                  transition hover:scale-[1.02] hover:bg-red-400 active:scale-95
+                  px-6 py-2.5"
                 >
                   <i className="fa-duotone fa-play" /> Xem phim
                 </Link>
@@ -269,8 +271,8 @@ export default function WatchHero({ movies }: Props) {
                       key={movie.slug}
                       onClick={() => goToSlide(index)}
                       className={`cursor-pointer group relative overflow-hidden rounded-lg border transition-all duration-300 active:scale-95 ${isActive
-                          ? "translate-y-[-6px] border-white/25 ring-2 ring-white/50 shadow-[0_18px_40px_rgba(0,0,0,.35)]"
-                          : "border-white/10 opacity-80 hover:-translate-y-1 hover:opacity-100"
+                        ? "border-white/25 ring-2 ring-white/50 shadow-[0_18px_40px_rgba(0,0,0,.35)]"
+                        : "border-white/10 opacity-80 hover:-translate-y-1 hover:opacity-100"
                         }`}
                     >
                       <div className="relative aspect-[2/3] w-full overflow-hidden bg-white/5">
@@ -285,8 +287,8 @@ export default function WatchHero({ movies }: Props) {
 
                         <div
                           className={`absolute inset-0 transition duration-300 ${isActive
-                              ? "bg-gradient-to-t from-black/10 via-transparent to-transparent"
-                              : "bg-black/35 group-hover:bg-black/18"
+                            ? "bg-gradient-to-t from-black/10 via-transparent to-transparent"
+                            : "bg-black/35 group-hover:bg-black/18"
                             }`}
                         />
 
@@ -321,7 +323,7 @@ export default function WatchHero({ movies }: Props) {
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`h-2.5 rounded-full transition-all ${activeIndex === index ? "w-8 bg-white" : "w-2.5 bg-white/35"
+            className={`cursor-pointer h-2.5 rounded-full transition-all hover:bg-white/75 ${activeIndex === index ? "w-2.5 bg-white" : "w-2.5 bg-white/15"
               }`}
             aria-label={`Slide ${index + 1}`}
           />
@@ -341,9 +343,11 @@ export default function WatchHero({ movies }: Props) {
         @keyframes heroContentIn {
           0% {
             opacity: 0;
+            transform: scale(.97)
           }
           100% {
             opacity: 1;
+            transform: scale(1)
           }
         }
 
@@ -351,12 +355,10 @@ export default function WatchHero({ movies }: Props) {
           0% {
             opacity: 0;
             transform: scale(1.1);
-            filter: blur(10px);
           }
           100% {
             opacity: 1;
             transform: scale(1);
-            filter: blur(0);
           }
         }
       `}</style>
