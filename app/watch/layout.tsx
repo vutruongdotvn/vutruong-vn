@@ -10,14 +10,14 @@ import {
 export const metadata: Metadata = {
   title: {
     default: "VT Watch",
-    template: "%s | VT Watch",
+    template: "%s | VT Watch!",
   },
   description:
     "Xem phim miễn phí - tốc độ cao - không quảng cáo và cập nhật liên tục!",
   robots: {
     index: false,
     follow: false,
-    nocache: true,
+    // nocache: true,
     googleBot: {
       index: false,
       follow: false,
@@ -48,7 +48,7 @@ export default async function WatchLayout({
         listTypes={listTypes}
       />
 
-      <main>{children}</main>
+      <main id="vtwatch-app">{children}</main>
 
       <WatchFooter />
     </div>

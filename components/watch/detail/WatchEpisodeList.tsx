@@ -34,10 +34,7 @@ export default function WatchEpisodeList({
     <section className="space-y-4 rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-xs font-medium tracking-[0.22em] text-white/45 uppercase">
-            Episode Library
-          </p>
-          <h2 className="mt-1 text-xl font-semibold tracking-tight text-white">
+          <h2 className="text-xl font-semibold tracking-tight text-white">
             Danh sách tập
           </h2>
         </div>
@@ -47,7 +44,7 @@ export default function WatchEpisodeList({
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7">
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8">
         {episodeList.map((episode, index) => {
           const episodeNumber = index + 1;
           const isActive = episodeNumber === activeEpisode;

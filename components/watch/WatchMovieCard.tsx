@@ -36,10 +36,10 @@ export default function WatchMovieCard({ movie }: Props) {
         </div>
 
         <div className="py-3 text-center">
-          <h3 className="line-clamp-1 text-base font-bold leading-tight text-white/80 hover:text-white">
+          <h3 className="line-clamp-1 text-sm sm:text-base font-bold leading-tight text-white/80 hover:text-white">
             {movie.name}
           </h3>
-          <p className="mt-1 line-clamp-1 text-sm text-slate-400 hover:text-slate-300">
+          <p className="mt-1 line-clamp-1 text-xs sm:text-sm text-slate-400 hover:text-slate-300">
             {movie.origin_name || ""}
           </p>
         </div>

@@ -31,7 +31,7 @@ export default function WatchPlayer({
 
       <div className="relative mx-auto w-full">
         <div className="overflow-hidden moviePlayer">
-          <div className="relative aspect-[20/9] w-full bg-black mt-[115px]">
+          <div className="relative aspect-[2.39/1] w-full bg-black mt-[85px]">
             {embedUrl ? (
               <iframe
                 src={embedUrl}

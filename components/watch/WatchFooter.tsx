@@ -9,8 +9,8 @@ export default function WatchFooter() {
   ];
 
   return (
-    <footer className="relative select-none px-4 pb-12 pt-2">
-      <div className="mx-auto flex w-full max-w-7xl justify-center">
+    <footer className="relative select-none pb-12">
+      <div className="mx-auto flex w-full max-w-7xl justify-center px-4 sm:px-6 lg:px-8">
         <div
           className="
             relative w-full overflow-hidden rounded-[32px]

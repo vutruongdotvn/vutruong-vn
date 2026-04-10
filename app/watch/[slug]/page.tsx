@@ -5,7 +5,7 @@ import Link from "next/link";
 import WatchPlayer from "@/components/watch/detail/WatchPlayer";
 import WatchServerTabs from "@/components/watch/detail/WatchServerTabs";
 import WatchDetailHero from "@/components/watch/detail/WatchDetailHero";
-import WatchDetailMeta from "@/components/watch/detail/WatchDetailMeta";
+// import WatchDetailMeta from "@/components/watch/detail/WatchDetailMeta";
 import WatchDetailInfoGrid from "@/components/watch/detail/WatchDetailInfoGrid";
 import WatchDetailDescription from "@/components/watch/detail/WatchDetailDescription";
 import WatchEpisodeList from "@/components/watch/detail/WatchEpisodeList";
@@ -194,12 +194,12 @@ export default async function WatchDetailPage({
         <WatchDetailHero movie={normalizedMovie} compact={hasPlayerQuery} />
       </section>
 
-      <section className="relative z-10 mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
-        <div className="space-y-6">
+      <section className="relative z-10 mx-auto max-w-7xl px-4 pb-26 sm:px-6 lg:px-8">
+        <div className="space-y-4">
 
-          <div className="grid gap-6 lg:grid-cols-[1.1fr_380px]">
-            <div className="space-y-6">
-              <WatchDetailMeta movie={normalizedMovie} />
+          <div className="grid gap-4 lg:grid-cols-[1.1fr_400px]">
+            <div className="space-y-4">
+              {/*<WatchDetailMeta movie={normalizedMovie} />*/}
 
               <WatchServerTabs
                 slug={slug}

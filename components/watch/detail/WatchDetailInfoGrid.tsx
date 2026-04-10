@@ -32,14 +32,9 @@ export default function WatchDetailInfoGrid({
 
   return (
     <section className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl sm:p-6">
-      <h2 className="mb-4 text-lg font-semibold text-white">Thông tin chi tiết</h2>
+      <h2 className="mb-4 text-lg font-semibold text-white">Thông tin khác</h2>
 
       <div>
-        <InfoRow label="Tên gốc" value={movie?.origin_name} />
-        <InfoRow label="Năm phát hành" value={movie?.year} />
-        <InfoRow label="Thời lượng" value={movie?.time} />
-        <InfoRow label="Chất lượng" value={movie?.quality} />
-        <InfoRow label="Ngôn ngữ" value={movie?.lang} />
         <InfoRow label="Trạng thái" value={movie?.status} />
         <InfoRow label="Thể loại" value={categories} />
         <InfoRow label="Quốc gia" value={countries} />
