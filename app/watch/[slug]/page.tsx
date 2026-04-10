@@ -12,6 +12,7 @@ import WatchEpisodeList from "@/components/watch/detail/WatchEpisodeList";
 import CastSlider from "@/components/watch/detail/CastSlider";
 import { getMovieImage, getOPhimMovieDetail } from "@/lib/watch/ophim";
 import { getOPhimPeoples } from "@/lib/watch/ophim";
+import ImageSlider from "@/components/watch/detail/ImageSlider";
 
 type WatchDetailPageProps = {
   params: Promise<{
@@ -221,6 +222,7 @@ export default async function WatchDetailPage({
               />
 
               <WatchDetailDescription movie={normalizedMovie} />
+              <ImageSlider slug={slug} />
               <CastSlider actors={peoples.length ? peoples : movie.actor}/>
             </div>
           </div>

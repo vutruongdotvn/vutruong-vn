@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import WatchNavbar from "@/components/watch/WatchNavbar";
 import WatchFooter from "@/components/watch/WatchFooter";
+import FancyboxWrapper from "@/components/blog/FancyboxWrapper"; // ✅ ADD
+
 import {
   getCategories,
   getCountries,
@@ -17,7 +19,6 @@ export const metadata: Metadata = {
   robots: {
     index: false,
     follow: false,
-    // nocache: true,
     googleBot: {
       index: false,
       follow: false,
@@ -42,6 +43,9 @@ export default async function WatchLayout({
 
   return (
     <div className="VT_Watch_app min-h-screen bg-black text-white">
+      {/* ✅ GLOBAL FANCYBOX */}
+      <FancyboxWrapper />
+
       <WatchNavbar
         categories={categories}
         countries={countries}

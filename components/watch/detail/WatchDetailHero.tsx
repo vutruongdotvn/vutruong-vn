@@ -33,7 +33,7 @@ export default function WatchDetailHero({
         compact ? "min-h-[40vh]" : "min-h-screen",
       ].join(" ")}
     >
-      <div className="fixed inset-0">
+      <div className="fixed inset-0 pointer-events-none">
         <Image
           src={backdrop}
           alt={movie.name}
