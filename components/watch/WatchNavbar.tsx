@@ -401,8 +401,8 @@ export default function WatchNavbar({
             className={`
               ${
                 visible
-                  ? "bg-transparent opacity-100 backdrop-blur-sm"
-                  : "bg-black/20 opacity-0 -translate-y-2 shadow-[0_18px_60px_rgba(0,0,0,0.3)] backdrop-blur-xl"
+                  ? "bg-transparent backdrop-blur-sm"
+                  : "bg-black/30 shadow-[0_18px_60px_rgba(0,0,0,0.3)] backdrop-blur-lg"
               }
               relative inline-flex w-fit max-w-full overflow-visible rounded-full border border-white/10
               transition-all duration-500 ease-out will-change-transform

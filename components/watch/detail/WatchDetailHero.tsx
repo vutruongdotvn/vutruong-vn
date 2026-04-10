@@ -33,7 +33,7 @@ export default function WatchDetailHero({
         compact ? "min-h-[40vh]" : "min-h-screen",
       ].join(" ")}
     >
-      <div className="absolute inset-0">
+      <div className="fixed inset-0">
         <Image
           src={backdrop}
           alt={movie.name}
@@ -41,10 +41,8 @@ export default function WatchDetailHero({
           priority
           unoptimized
           sizes="100vw"
-          className="object-cover object-center opacity-50"
+          className="object-cover object-center opacity-25"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/0" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_45%)]" />
       </div>
 
       <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-8 px-4 pb-12 pt-50 sm:px-6 lg:flex-row lg:items-center lg:px-8">

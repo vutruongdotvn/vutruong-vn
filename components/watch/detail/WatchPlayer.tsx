@@ -17,21 +17,22 @@ export default function WatchPlayer({
 }: WatchPlayerProps) {
   return (
     <section className="relative w-full overflow-hidden">
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 movieCover">
         <Image
           src={backdropUrl}
           alt={title}
           fill
           sizes="100vw"
-          className="object-cover opacity-20 blur-2xl scale-110"
+          className="object-cover blur-xl opacity-75"
           priority
+          unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/70 to-black" />
       </div>
 
       <div className="relative mx-auto w-full">
         <div className="overflow-hidden moviePlayer">
-          <div className="relative aspect-[2.39/1] w-full bg-black mt-[85px]">
+          <div className="relative aspect-[2.39/1] w-full mt-[85px]">
             {embedUrl ? (
               <iframe
                 src={embedUrl}

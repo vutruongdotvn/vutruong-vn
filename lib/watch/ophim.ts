@@ -253,3 +253,35 @@ export async function getOPhimMovieDetail(slug: string) {
     return null;
   }
 }
+
+// helper lấy avatar diễn viên
+export async function getOPhimPeoples(slug: string) {
+  try {
+    const res = await fetch(
+      `https://ophim1.com/v1/api/phim/${slug}/peoples`,
+      { next: { revalidate: 3600 } }
+    );
+
+    if (!res.ok) return [];
+
+    const json = await res.json();
+
+    const peoples = json?.data?.peoples ?? [];
+    const base = json?.data?.profile_sizes?.w185 ?? "";
+
+    return peoples.map((p: any) => ({
+      name: p.name,
+
+      // avatar
+      thumb_url: p.profile_path
+        ? `${base}${p.profile_path}`
+        : null,
+
+      // 👇 THÊM 2 FIELD NÀY
+      character: p.character,
+      known_for_department: p.known_for_department,
+    }));
+  } catch {
+    return [];
+  }
+}

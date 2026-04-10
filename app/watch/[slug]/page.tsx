@@ -6,11 +6,12 @@ import WatchPlayer from "@/components/watch/detail/WatchPlayer";
 import WatchServerTabs from "@/components/watch/detail/WatchServerTabs";
 import WatchDetailHero from "@/components/watch/detail/WatchDetailHero";
 // import WatchDetailMeta from "@/components/watch/detail/WatchDetailMeta";
-import WatchDetailInfoGrid from "@/components/watch/detail/WatchDetailInfoGrid";
+// import WatchDetailInfoGrid from "@/components/watch/detail/WatchDetailInfoGrid";
 import WatchDetailDescription from "@/components/watch/detail/WatchDetailDescription";
 import WatchEpisodeList from "@/components/watch/detail/WatchEpisodeList";
-
+import CastSlider from "@/components/watch/detail/CastSlider";
 import { getMovieImage, getOPhimMovieDetail } from "@/lib/watch/ophim";
+import { getOPhimPeoples } from "@/lib/watch/ophim";
 
 type WatchDetailPageProps = {
   params: Promise<{
@@ -121,7 +122,10 @@ export default async function WatchDetailPage({
   const { slug } = await params;
   const query = (await searchParams) ?? {};
 
-  const data = await getOPhimMovieDetail(slug);
+  const [data, peoples] = await Promise.all([
+  getOPhimMovieDetail(slug),
+  getOPhimPeoples(slug),
+]);
 
   if (!data?.movie) {
     notFound();
@@ -197,7 +201,8 @@ export default async function WatchDetailPage({
       <section className="relative z-10 mx-auto max-w-7xl px-4 pb-26 sm:px-6 lg:px-8">
         <div className="space-y-4">
 
-          <div className="grid gap-4 lg:grid-cols-[1.1fr_400px]">
+          <div className="grid gap-4 grid-cols-1">
+
             <div className="space-y-4">
               {/*<WatchDetailMeta movie={normalizedMovie} />*/}
 
@@ -216,11 +221,8 @@ export default async function WatchDetailPage({
               />
 
               <WatchDetailDescription movie={normalizedMovie} />
+              <CastSlider actors={peoples.length ? peoples : movie.actor}/>
             </div>
-
-            <aside className="space-y-6">
-              <WatchDetailInfoGrid movie={normalizedMovie} />
-            </aside>
           </div>
         </div>
       </section>
