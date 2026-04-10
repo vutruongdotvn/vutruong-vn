@@ -99,7 +99,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="VT Zone" />
         <link rel="apple-touch-icon" href="/app.jpg" />
-        <link href="/api/fa-pro.css" rel="stylesheet" />
+        <link href="https://kit-pro.fontawesome.com/releases/v7.2.0/css/pro.min.css" rel="stylesheet" />
       </head>
 
       <body className="antialiased bg-[#f2f3f5]">

@@ -44,7 +44,7 @@ export default function WatchEpisodeList({
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8">
+      <div className="grid grid-cols-4 gap-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10">
         {episodeList.map((episode, index) => {
           const episodeNumber = index + 1;
           const isActive = episodeNumber === activeEpisode;
@@ -57,7 +57,7 @@ export default function WatchEpisodeList({
                 "group rounded-2xl border px-4 py-3 text-center transition",
                 isActive
                   ? "border-white bg-white text-black shadow-[0_0_30px_rgba(255,255,255,0.12)]"
-                  : "border-white/10 bg-white/5 text-white/75 hover:border-white/20 hover:bg-white/10 hover:text-white",
+                  : "border-white/10 bg-white/5 text-white/75 hover:border-white/20 hover:bg-white/20 hover:text-white",
               ].join(" ")}
             >
               <div className="text-xs font-medium tracking-[0.18em] uppercase opacity-55">

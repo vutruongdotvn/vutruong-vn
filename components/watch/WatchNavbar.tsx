@@ -584,7 +584,7 @@ export default function WatchNavbar({
                               <div className="flex items-center gap-3">
                                 <i className="fa-duotone fa-user text-base" />
                                 <span className="text-sm font-medium">
-                                  Chỉnh sửa Profile
+                                  Trang cá nhân
                                 </span>
                               </div>
                               <i className="fa-duotone fa-arrow-up-right text-xs text-white/40" />

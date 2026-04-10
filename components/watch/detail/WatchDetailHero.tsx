@@ -41,7 +41,7 @@ export default function WatchDetailHero({
           priority
           unoptimized
           sizes="100vw"
-          className="object-cover object-center opacity-25"
+          className="object-cover object-center opacity-20"
         />
       </div>
 

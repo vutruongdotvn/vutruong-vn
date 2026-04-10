@@ -17,7 +17,7 @@ export default function WatchPlayer({
 }: WatchPlayerProps) {
   return (
     <section className="relative w-full overflow-hidden">
-      <div className="absolute inset-0 movieCover">
+      <div className="hidden absolute inset-0 movieCover">
         <Image
           src={backdropUrl}
           alt={title}
@@ -30,7 +30,7 @@ export default function WatchPlayer({
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/70 to-black" />
       </div>
 
-      <div className="relative mx-auto w-full">
+      <div className="relative mx-auto w-full z-50">
         <div className="overflow-hidden moviePlayer">
           <div className="relative aspect-[2.39/1] w-full mt-[85px]">
             {embedUrl ? (
