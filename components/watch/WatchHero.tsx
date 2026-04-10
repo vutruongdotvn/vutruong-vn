@@ -161,7 +161,7 @@ export default function WatchHero({ movies }: Props) {
         <i className="fa-duotone fa-arrow-right text-base" />
       </button>
 
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-[1600px] px-5 pb-8 pt-28 md:px-8 xl:px-12">
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-[1600px] px-5 pb-12 pt-48 sm:pt-36 md:pt-28 lg:pt-24">
         <div className="flex h-full w-full flex-col">
           {/* Main centered content */}
           <div className="flex flex-1 items-center justify-center">
@@ -169,16 +169,16 @@ export default function WatchHero({ movies }: Props) {
               key={`${active.slug}-${contentKey}`}
               className="mx-auto flex w-full max-w-5xl animate-[heroContentIn_1000ms_ease-in-out_forwards] flex-col items-center text-center opacity-0"
             >
-              <div className="rounded-full text-xs sm:text-sm font-normal uppercase tracking-[0.18em] text-white/55">
+              <div className="hidden rounded-full text-xs sm:text-sm font-normal uppercase tracking-[0.18em] text-white/55">
                 Phim mới cập nhật
               </div>
 
-              <h1 className="mt-5 text-3xl font-extrabold tracking-tight text-white drop-shadow-[0_10px_35px_rgba(0,0,0,.8)] sm:text-5xl">
+              <h1 className="mt-3 text-2xl font-bold tracking-tight text-white drop-shadow-[0_10px_35px_rgba(0,0,0,.8)] sm:text-3xl md:text-4xl lg:text-5xl">
                 {active.name}
               </h1>
 
               {active.origin_name && (
-                <p className="mt-3 text-base text-slate-300 md:text-[22px]">
+                <p className="mt-3 text-sm text-slate-300 lg:text-xl">
                   {active.origin_name}
                 </p>
               )}
@@ -317,7 +317,7 @@ export default function WatchHero({ movies }: Props) {
         </div>
       </div>
 
-      {/* Mobile dots */}
+      {/* Mobile dots 
       <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 gap-2 lg:hidden">
         {movies.map((_, index) => (
           <button
@@ -329,6 +329,7 @@ export default function WatchHero({ movies }: Props) {
           />
         ))}
       </div>
+      */}
 
       <style jsx>{`
         @keyframes heroProgress {

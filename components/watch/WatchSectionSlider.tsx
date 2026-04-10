@@ -136,8 +136,8 @@ export default function WatchSectionSlider({
         }
       },
       {
-        rootMargin: "100px 0px",
-        threshold: 0.01,
+        rootMargin: "0px",
+        // threshold: 0.01,
       }
     );
 
@@ -212,7 +212,7 @@ export default function WatchSectionSlider({
     // skeleton hiện ngay, delay 1s rồi mới fetch
     delayTimer = setTimeout(() => {
       fetchMovies();
-    }, 1000);
+    }, 300); // delay 300ms
 
     return () => {
       cancelled = true;
@@ -276,7 +276,7 @@ export default function WatchSectionSlider({
         </h2>
 
         <Link
-          href={`/watch/browse/${type}/${slug}`}
+          href={`/watch/${type}/${slug}`}
           className="text-[15px] font-medium text-slate-400 hover:text-white/75 active:scale-95"
         >
           Xem tất cả <i className="fa-duotone fa-arrow-right ml-1" />
