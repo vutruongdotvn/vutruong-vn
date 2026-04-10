@@ -17,6 +17,12 @@ import type {
   OPhimListType,
 } from "@/lib/watch/types";
 
+import {
+  normalizeCategories,
+  normalizeCountries,
+  normalizeListTypes,
+} from "@/lib/watch/menu";
+
 type Props = {
   categories: OPhimCategory[];
   countries: OPhimCountry[];
@@ -69,9 +75,8 @@ function MobileDropdownSection({
         </div>
 
         <i
-          className={`fa-duotone fa-chevron-down text-xs text-white/55 transition-transform duration-300 ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`fa-duotone fa-chevron-down text-xs text-white/55 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
+            }`}
         />
       </button>
 
@@ -84,7 +89,7 @@ function MobileDropdownSection({
             transition={{ duration: 0.24, ease: "easeOut" }}
             className="overflow-hidden"
           >
-            <div className="grid max-h-[260px] grid-cols-1 gap-2 overflow-y-auto px-2 pb-2 pt-1">
+            <div className="grid max-h-[300px] grid-cols-2 gap-2 overflow-y-auto px-2 pb-2 pt-1 scrollbar-hide">
               {items.map((item) => (
                 <Link
                   key={item.slug}
@@ -137,20 +142,9 @@ export default function WatchNavbar({
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
 
-  const topCategories = useMemo(
-    () => [...categories].filter((c) => c?.name && c?.slug).slice(0, 18),
-    [categories]
-  );
-
-  const topCountries = useMemo(
-    () => [...countries].filter((c) => c?.name && c?.slug).slice(0, 18),
-    [countries]
-  );
-
-  const topListTypes = useMemo(
-    () => [...listTypes].filter((c) => c?.name && c?.slug).slice(0, 12),
-    [listTypes]
-  );
+  const finalCategories = normalizeCategories(categories);
+  const finalCountries = normalizeCountries(countries);
+  const finalListTypes = normalizeListTypes(listTypes);
 
   const mainMenu: MenuItem[] = [
     {
@@ -399,10 +393,9 @@ export default function WatchNavbar({
         <div className="mx-auto flex w-full justify-center">
           <div
             className={`
-              ${
-                visible
-                  ? "bg-transparent backdrop-blur-sm"
-                  : "bg-black/30 shadow-[0_18px_60px_rgba(0,0,0,0.3)] backdrop-blur-lg"
+              ${visible
+                ? "bg-transparent backdrop-blur-sm"
+                : "bg-black/30 shadow-[0_18px_60px_rgba(0,0,0,0.3)] backdrop-blur-lg"
               }
               relative inline-flex w-fit max-w-full overflow-visible rounded-full border border-white/10
               transition-all duration-500 ease-out will-change-transform
@@ -452,10 +445,9 @@ export default function WatchNavbar({
                         className={`
                           relative group flex items-center gap-2 rounded-full px-4 py-2.5
                           text-sm font-medium active:scale-95 transition-colors duration-300
-                          ${
-                            active
-                              ? "text-white"
-                              : "text-white/70 hover:bg-white/[0.06] hover:text-white"
+                          ${active
+                            ? "text-white"
+                            : "text-white/70 hover:bg-white/[0.06] hover:text-white"
                           }
                         `}
                       >
@@ -472,9 +464,8 @@ export default function WatchNavbar({
                         )}
 
                         <i
-                          className={`${item.icon} relative z-10 text-[15px] transition-transform duration-300 ${
-                            active ? "" : "group-hover:scale-105"
-                          }`}
+                          className={`${item.icon} relative z-10 text-[15px] transition-transform duration-300 ${active ? "" : "group-hover:scale-105"
+                            }`}
                         />
                         <span className="relative z-10 whitespace-nowrap">
                           {item.name}
@@ -491,7 +482,7 @@ export default function WatchNavbar({
                 <WatchDropdown
                   label="Danh sách"
                   icon="fa-duotone fa-rectangle-list"
-                  items={listTypes}
+                  items={finalListTypes}
                   baseHref="/watch/browse/danh-sach"
                 />
 
@@ -499,10 +490,7 @@ export default function WatchNavbar({
                   align="right"
                   label="Thể loại"
                   icon="fa-duotone fa-grid-2"
-                  items={topCategories.map((c) => ({
-                    name: c.name,
-                    slug: c.slug,
-                  }))}
+                  items={finalCategories}
                   baseHref="/watch/browse/the-loai"
                 />
 
@@ -510,10 +498,7 @@ export default function WatchNavbar({
                   align="right"
                   label="Quốc gia"
                   icon="fa-duotone fa-earth-asia"
-                  items={topCountries.map((c) => ({
-                    name: c.name,
-                    slug: c.slug,
-                  }))}
+                  items={finalCountries}
                   baseHref="/watch/browse/quoc-gia"
                 />
 
@@ -661,9 +646,8 @@ export default function WatchNavbar({
                 aria-expanded={open}
               >
                 <i
-                  className={`fa-duotone text-[18px] transition-all duration-300 ${
-                    open ? "fa-xmark rotate-90" : "fa-bars"
-                  }`}
+                  className={`fa-duotone text-[18px] transition-all duration-300 ${open ? "fa-xmark rotate-90" : "fa-bars"
+                    }`}
                 />
               </button>
             </div>
@@ -690,7 +674,7 @@ export default function WatchNavbar({
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ y: 5, opacity: 0, scale: 1 }}
               transition={{ duration: 0.28, ease: "easeOut" }}
-              className="absolute left-1/2 top-5 w-[calc(100%-24px)] max-w-md -translate-x-1/2 rounded-[2rem] border border-white/10 bg-black/50 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.38)] backdrop-blur-2xl"
+              className="absolute left-1/2 top-5 w-[calc(100%-24px)] max-w-md max-h-screen overflow-auto -translate-x-1/2 rounded-[2rem] border border-white/10 bg-black/50 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.38)] backdrop-blur-2xl scrollbar-hide"
             >
               {/* MOBILE TOP */}
               <div className="mb-4 mt-1 flex items-center justify-between">
@@ -793,9 +777,8 @@ export default function WatchNavbar({
                   {user && (
                     <button
                       onClick={handleLogout}
-                      className={`${
-                        role === "admin" ? "col-span-2" : "col-span-1"
-                      } cursor-pointer rounded-2xl bg-red-500/10 px-4 py-3.5 text-sm font-medium text-red-400 transition-all hover:bg-red-500/15`}
+                      className={`${role === "admin" ? "col-span-2" : "col-span-1"
+                        } cursor-pointer rounded-2xl bg-red-500/10 px-4 py-3.5 text-sm font-medium text-red-400 transition-all hover:bg-red-500/15`}
                     >
                       <i className="fa-duotone fa-arrow-right-from-bracket mr-2" />
                       Đăng xuất
@@ -842,10 +825,9 @@ export default function WatchNavbar({
                         className={`
                           flex min-h-[96px] flex-col justify-between rounded-3xl p-4
                           transition-all duration-300
-                          ${
-                            active
-                              ? "bg-white/10 text-white shadow-lg"
-                              : "bg-white/[0.05] text-white/80 hover:bg-white/[0.09]"
+                          ${active
+                            ? "bg-white/10 text-white shadow-lg"
+                            : "bg-white/[0.05] text-white/80 hover:bg-white/[0.09]"
                           }
                         `}
                       >
@@ -874,42 +856,30 @@ export default function WatchNavbar({
                   title="Danh sách"
                   icon="fa-duotone fa-rectangle-list"
                   baseHref="/watch/browse/danh-sach"
-                  items={topListTypes.map((item) => ({
-                    name: item.name,
-                    slug: item.slug,
-                  }))}
+                  items={finalListTypes}
                   isOpen={openMobileSection === "list"}
                   onToggle={() => toggleMobileSection("list")}
                   onClose={closeMobileMenu}
-                  delay={0.18}
                 />
 
                 <MobileDropdownSection
                   title="Thể loại"
                   icon="fa-duotone fa-grid-2"
                   baseHref="/watch/browse/the-loai"
-                  items={topCategories.map((item) => ({
-                    name: item.name,
-                    slug: item.slug,
-                  }))}
+                  items={finalCategories}
                   isOpen={openMobileSection === "category"}
                   onToggle={() => toggleMobileSection("category")}
                   onClose={closeMobileMenu}
-                  delay={0.22}
                 />
 
                 <MobileDropdownSection
                   title="Quốc gia"
                   icon="fa-duotone fa-earth-asia"
                   baseHref="/watch/browse/quoc-gia"
-                  items={topCountries.map((item) => ({
-                    name: item.name,
-                    slug: item.slug,
-                  }))}
+                  items={finalCountries}
                   isOpen={openMobileSection === "country"}
                   onToggle={() => toggleMobileSection("country")}
                   onClose={closeMobileMenu}
-                  delay={0.26}
                 />
               </div>
 
