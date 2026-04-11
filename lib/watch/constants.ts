@@ -1,15 +1,16 @@
 import type { WatchSectionConfig, WatchTopic } from "./types";
 
 export const HOME_SECTIONS: WatchSectionConfig[] = [
-  { id: "VTFsl_viet-nam", ti: "Phim", hi: "Việt Nam", api: "/quoc-gia/viet-nam", type: "quoc-gia", slug: "viet-nam" },
   { id: "VTFsl_hanh-dong", ti: "Phim", hi: "Hành Động", api: "/the-loai/hanh-dong", type: "the-loai", slug: "hanh-dong" },
   { id: "VTFsl_tinh-cam", ti: "Phim", hi: "Tình Cảm", api: "/the-loai/tinh-cam", type: "the-loai", slug: "tinh-cam" },
   { id: "VTFsl_kinh-di", ti: "Phim", hi: "Kinh Dị", api: "/the-loai/kinh-di", type: "the-loai", slug: "kinh-di" },
   { id: "VTFsl_hai-huoc", ti: "Phim", hi: "Hài Hước", api: "/the-loai/hai-huoc", type: "the-loai", slug: "hai-huoc" },
   { id: "VTFsl_co-trang", ti: "Phim", hi: "Cổ Trang", api: "/the-loai/co-trang", type: "the-loai", slug: "co-trang" },
+  { id: "VTFsl_viet-nam", ti: "Phim", hi: "Việt Nam", api: "/quoc-gia/viet-nam", type: "quoc-gia", slug: "viet-nam" },
   { id: "VTFsl_han-quoc", ti: "Phim", hi: "Hàn Quốc", api: "/quoc-gia/han-quoc", type: "quoc-gia", slug: "han-quoc" },
   { id: "VTFsl_trung-quoc", ti: "Phim", hi: "Trung Quốc", api: "/quoc-gia/trung-quoc", type: "quoc-gia", slug: "trung-quoc" },
   { id: "VTFsl_au-my", ti: "Phim", hi: "Âu Mỹ", api: "/quoc-gia/au-my", type: "quoc-gia", slug: "au-my" },
+  { id: "VTFsl_tv-shows", ti: "TV", hi: "Shows", api: "/danh-sach/tv-shows", type: "danh-sach", slug: "tv-shows" },
 ];
 
 export const TOPIC_ITEMS: (WatchTopic & { gradient: string })[] = [

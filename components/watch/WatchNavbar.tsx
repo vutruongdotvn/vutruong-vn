@@ -161,11 +161,6 @@ export default function WatchNavbar({
       icon: "fa-duotone fa-search",
     },
     {
-      name: "Phim mới",
-      href: "/watch/danh-sach/phim-moi-cap-nhat",
-      icon: "fa-duotone fa-sparkles",
-    },
-    {
       name: "Phim lẻ",
       href: "/watch/danh-sach/phim-le",
       icon: "fa-duotone fa-film",
@@ -177,7 +172,9 @@ export default function WatchNavbar({
     },
   ];
 
-  const mobileMenu: MenuItem[] = [...mainMenu];
+  const mobileMenu: MenuItem[] = mainMenu.filter(
+  (item) => item.name !== "Tìm kiếm"
+);
 
   // =========================
   // PROFILE FETCH
@@ -495,12 +492,14 @@ export default function WatchNavbar({
                   })}
                 </nav>
 
+                {/*
                 <WatchDropdown
                   label="Danh sách"
                   icon="fa-duotone fa-rectangle-list"
                   items={finalListTypes}
                   baseHref="/watch/danh-sach"
                 />
+                */}
 
                 <WatchDropdown
                   align="right"
@@ -874,6 +873,7 @@ export default function WatchNavbar({
 
               {/* MOBILE DROPDOWNS */}
               <div className="mt-4 space-y-3">
+                {/*
                 <MobileDropdownSection
                   title="Danh sách"
                   icon="fa-duotone fa-rectangle-list"
@@ -883,6 +883,7 @@ export default function WatchNavbar({
                   onToggle={() => toggleMobileSection("list")}
                   onClose={closeMobileMenu}
                 />
+                */}
 
                 <MobileDropdownSection
                   title="Thể loại"
