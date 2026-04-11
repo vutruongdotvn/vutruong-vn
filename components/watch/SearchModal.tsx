@@ -68,6 +68,11 @@ export default function SearchModal({
     router.push(`/watch/search?q=${encodeURIComponent(keyword)}`);
   };
 
+  const handleClear = () => {
+    setKeyword("");
+    setResults([]);
+  };
+
   if (!open) return null;
 
   return (
@@ -85,12 +90,12 @@ export default function SearchModal({
           {/* HEADER */}
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white/90 flex items-center gap-2">
-              <i className="fa-duotone fa-search"/> Tìm kiếm phim
+              <i className="fa-duotone fa-search" /> Tìm kiếm phim
             </h2>
 
             <button
               onClick={onClose}
-              className="text-white/50 hover:text-white transition"
+              className="text-white/50 hover:text-white transition cursor-pointer hidden"
             >
               <i className="fa-duotone fa-xmark text-lg" />
             </button>
@@ -117,49 +122,75 @@ export default function SearchModal({
             </div>
           </div>
 
-          <div className="loadingText flex items-center justify-center hidden">
-            {loading && (
-              <p className="text-sm text-white/40 flex gap-2 items-center">
-                <i className="fa-duotone fa-spinner-third fa-spin"/> Đang tìm kiếm</p>
-            )}
 
+          {/* 🔥 REALTIME RESULTS */}
+          <div className="grid grid-cols-5 gap-3">
+
+            {/* SKELETON */}
+            {loading &&
+              Array.from({ length: 10 }).map((_, i) => (
+                <div key={i} className="flex flex-col items-center animate-pulse">
+
+                  <div className="w-full aspect-[2/3] rounded-md bg-white/10 opacity-70" />
+
+                  <div className="mt-3 mb-4 w-3/4 h-3 rounded bg-white/10" />
+                </div>
+              ))
+            }
+
+            {/* EMPTY */}
             {!loading && results.length === 0 && keyword && (
-              <p className="text-sm text-white/40">
+              <p className="col-span-5 text-sm text-white/40 text-center">
                 Không tìm thấy kết quả nào.
               </p>
             )}
-          </div>
 
-          {/* 🔥 REALTIME RESULTS */}
-          <div className="grid grid-cols-5">
-            {results.map((item) => (
-              <div
-                key={item._id}
-                onClick={() => {
-                  onClose();
-                  router.push(`/watch/${item.slug}`);
-                }}
-                className="relative flex flex-col items-center p-1 cursor-pointer transition overflow-hidden"
-              >
-                <img
-                  src={`${CDN}/${item.thumb_url}`}
-                  className="w-full aspect-[2/3] object-cover rounded-md transition hover:scale-105"
-                />
+            {/* RESULTS */}
+            {!loading &&
+              results.map((item) => (
+                <div
+                  key={item._id}
+                  onClick={() => {
+                    onClose();
+                    router.push(`/watch/${item.slug}`);
+                  }}
+                  className="relative flex flex-col items-center cursor-pointer transition overflow-hidden"
+                >
+                  <div className="relative">
+                    <img
+                      src={`${CDN}/${item.thumb_url}`}
+                      className="w-full aspect-[2/3] object-cover rounded-md transition hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-black/0 hover:bg-black/30 transition rounded-md" />
+                  </div>
 
-                <div className="text-xs font-normal line-clamp-1 text-center mt-3 mb-4 text-white/80 hover:text-white transition">
-                  {item.name}
+                  <div className="text-xs font-normal line-clamp-1 text-center mt-3 mb-4 text-white/80 hover:text-white transition">
+                    {item.name}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
 
           {/* ACTION */}
-          <div className="mt-6 flex justify-end">
+          <div className="mt-6 flex items-center justify-end gap-2">
+
+            {/* CLEAR BUTTON */}
+            {keyword && (
+              <button
+                onClick={handleClear}
+                className="cursor-pointer px-4 py-3 rounded-xl border border-white/10 text-white/70 hover:text-white hover:bg-white/10 active:scale-95 transition flex items-center gap-2"
+              >
+                <i className="fa-duotone fa-trash" />
+                Xóa
+              </button>
+            )}
+
+            {/* SEARCH BUTTON */}
             <button
               onClick={handleSearch}
               className="px-5 py-3 rounded-xl bg-white text-black font-medium hover:opacity-90 active:scale-95 transition flex items-center gap-2 cursor-pointer"
             >
-              <i className="fa-duotone fa-search"/> Xem tất cả kết quả
+              <i className="fa-duotone fa-search" /> Xem tất cả kết quả
             </button>
           </div>
         </div>

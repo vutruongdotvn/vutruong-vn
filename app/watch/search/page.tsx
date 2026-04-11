@@ -1,4 +1,5 @@
 import WatchPageLayout from "@/components/watch/WatchPageLayout";
+import { redirect } from "next/navigation";
 
 function formatNumber(num: number) {
   return new Intl.NumberFormat("vi-VN").format(num);
@@ -28,11 +29,7 @@ export default async function Page({
   const currentPage = Number(page) || 1;
 
   if (!keyword) {
-    return (
-      <div className="mx-auto max-w-[1200px] py-40 text-center text-white/60">
-        Nhập từ khóa để tìm kiếm phim
-      </div>
-    );
+    redirect("/watch");
   }
 
   const res = await fetch(

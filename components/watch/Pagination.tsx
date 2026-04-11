@@ -14,7 +14,7 @@ export default function Pagination({
   if (totalPages <= 1) return null;
 
   const pages: (number | string)[] = [];
-  const range = 3;
+  const range = 1;
 
   const start = Math.max(2, currentPage - range);
   const end = Math.min(totalPages - 1, currentPage + range);
