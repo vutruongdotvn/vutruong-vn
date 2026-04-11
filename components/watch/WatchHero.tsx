@@ -227,7 +227,7 @@ export default function WatchHero({ movies }: Props) {
                   {genres.slice(0, 5).map((genre) => (
                     <Link
                       key={genre.slug}
-                      href={`/watch/browse/the-loai/${genre.slug}`}
+                      href={`/watch/the-loai/${genre.slug}`}
                       className="rounded-full border border-white/10 bg-black/25 px-3 py-1.5 text-sm font-medium text-white/80 backdrop-blur transition hover:bg-white/10 hover:text-white"
                     >
                       {genre.name}

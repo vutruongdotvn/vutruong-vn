@@ -22,6 +22,7 @@ import {
   normalizeCountries,
   normalizeListTypes,
 } from "@/lib/watch/menu";
+import SearchModal from "@/components/watch/SearchModal";
 
 type Props = {
   categories: OPhimCategory[];
@@ -128,6 +129,8 @@ export default function WatchNavbar({
   const [profile, setProfile] = useState<any>(null);
   const [profileLoading, setProfileLoading] = useState(true);
 
+  const [openSearch, setOpenSearch] = useState(false); // modal search
+
   // MOBILE DROPDOWN STATE
   const [openMobileSection, setOpenMobileSection] = useState<
     "list" | "category" | "country" | null
@@ -153,18 +156,23 @@ export default function WatchNavbar({
       icon: "fa-duotone fa-house",
     },
     {
+      name: "Tìm kiếm",
+      href: "/watch/search/",
+      icon: "fa-duotone fa-search",
+    },
+    {
       name: "Phim mới",
-      href: "/watch/browse/danh-sach/phim-moi-cap-nhat",
+      href: "/watch/danh-sach/phim-moi-cap-nhat",
       icon: "fa-duotone fa-sparkles",
     },
     {
       name: "Phim lẻ",
-      href: "/watch/browse/danh-sach/phim-le",
+      href: "/watch/danh-sach/phim-le",
       icon: "fa-duotone fa-film",
     },
     {
       name: "Phim bộ",
-      href: "/watch/browse/danh-sach/phim-bo",
+      href: "/watch/danh-sach/phim-bo",
       icon: "fa-duotone fa-clapperboard-play",
     },
   ];
@@ -263,6 +271,7 @@ export default function WatchNavbar({
         behavior: "smooth",
       });
 
+      router.refresh();
       return;
     }
 
@@ -394,11 +403,11 @@ export default function WatchNavbar({
           <div
             className={`
               ${visible
-                ? "bg-transparent backdrop-blur-sm"
-                : "bg-black/30 shadow-[0_18px_60px_rgba(0,0,0,0.3)] backdrop-blur-lg"
+                ? "backdrop-blur-sm opacity-100 -translate-y-0"
+                : "shadow-[0_18px_60px_rgba(0,0,0,0.3)] backdrop-blur-lg opacity-0 -translate-y-3"
               }
               relative inline-flex w-fit max-w-full overflow-visible rounded-full border border-white/10
-              transition-all duration-500 ease-out will-change-transform
+              transition-all duration-500 ease-out will-change-transform hover:bg-black/30 hover:border-white/20
             `}
           >
             <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-r from-white/[0.08] via-transparent to-white/[0.04]" />
@@ -441,7 +450,14 @@ export default function WatchNavbar({
                         key={item.name}
                         href={item.href}
                         prefetch
-                        onClick={(e) => handleNavClick(e, item.href)}
+                        onClick={(e) => {
+                          if (item.name === "Tìm kiếm") {
+                            e.preventDefault();
+                            setOpenSearch(true);
+                            return;
+                          }
+                          handleNavClick(e, item.href);
+                        }}
                         className={`
                           relative group flex items-center gap-2 rounded-full px-4 py-2.5
                           text-sm font-medium active:scale-95 transition-colors duration-300
@@ -454,7 +470,7 @@ export default function WatchNavbar({
                         {active && (
                           <motion.span
                             layoutId="watch-active-nav-pill"
-                            className="absolute inset-0 rounded-full bg-white/10 shadow-[0_8px_30px_rgba(255,255,255,0.04)]"
+                            className="absolute inset-0 rounded-full bg-white/15 backdrop-blur-sm border border-white/20"
                             transition={{
                               type: "spring",
                               stiffness: 380,
@@ -483,7 +499,7 @@ export default function WatchNavbar({
                   label="Danh sách"
                   icon="fa-duotone fa-rectangle-list"
                   items={finalListTypes}
-                  baseHref="/watch/browse/danh-sach"
+                  baseHref="/watch/danh-sach"
                 />
 
                 <WatchDropdown
@@ -491,7 +507,7 @@ export default function WatchNavbar({
                   label="Thể loại"
                   icon="fa-duotone fa-grid-2"
                   items={finalCategories}
-                  baseHref="/watch/browse/the-loai"
+                  baseHref="/watch/the-loai"
                 />
 
                 <WatchDropdown
@@ -499,7 +515,7 @@ export default function WatchNavbar({
                   label="Quốc gia"
                   icon="fa-duotone fa-earth-asia"
                   items={finalCountries}
-                  baseHref="/watch/browse/quoc-gia"
+                  baseHref="/watch/quoc-gia"
                 />
 
                 {/* DESKTOP USER */}
@@ -793,6 +809,12 @@ export default function WatchNavbar({
                   <i className="fa-duotone fa-magnifying-glass text-sm text-white/45" />
                   <input
                     value={query}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && query.trim()) {
+                        closeMobileMenu();
+                        router.push(`/watch/search?q=${encodeURIComponent(query)}`);
+                      }
+                    }}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Tìm kiếm phim..."
                     className="w-full bg-transparent text-[14px] font-medium text-white placeholder:text-white/35 outline-none"
@@ -855,7 +877,7 @@ export default function WatchNavbar({
                 <MobileDropdownSection
                   title="Danh sách"
                   icon="fa-duotone fa-rectangle-list"
-                  baseHref="/watch/browse/danh-sach"
+                  baseHref="/watch/danh-sach"
                   items={finalListTypes}
                   isOpen={openMobileSection === "list"}
                   onToggle={() => toggleMobileSection("list")}
@@ -865,7 +887,7 @@ export default function WatchNavbar({
                 <MobileDropdownSection
                   title="Thể loại"
                   icon="fa-duotone fa-grid-2"
-                  baseHref="/watch/browse/the-loai"
+                  baseHref="/watch/the-loai"
                   items={finalCategories}
                   isOpen={openMobileSection === "category"}
                   onToggle={() => toggleMobileSection("category")}
@@ -875,7 +897,7 @@ export default function WatchNavbar({
                 <MobileDropdownSection
                   title="Quốc gia"
                   icon="fa-duotone fa-earth-asia"
-                  baseHref="/watch/browse/quoc-gia"
+                  baseHref="/watch/quoc-gia"
                   items={finalCountries}
                   isOpen={openMobileSection === "country"}
                   onToggle={() => toggleMobileSection("country")}
@@ -923,6 +945,10 @@ export default function WatchNavbar({
       )}
 
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
+      <SearchModal
+        open={openSearch}
+        onClose={() => setOpenSearch(false)}
+      />
     </>
   );
 }

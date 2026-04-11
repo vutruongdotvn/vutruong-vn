@@ -243,3 +243,37 @@ img {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+
+/* VT Watch */
+/* shimmer skeleton */
+.shimmer {
+  background: linear-gradient(
+    105deg,
+    rgba(0,0,0,.095) 8%,
+    rgba(0,0,0,.15) 18%,
+    rgba(0,0,0,.05) 33%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 5s linear infinite;
+}
+
+@keyframes shimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+/* fade grid animation */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+/* END VT Watch */
+

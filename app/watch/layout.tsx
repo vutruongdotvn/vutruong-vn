@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = {
   title: {
     default: "VT Watch",
-    template: "%s | VT Watch!",
+    template: "%s",
   },
   description:
     "Xem phim miễn phí - tốc độ cao - không quảng cáo và cập nhật liên tục!",
