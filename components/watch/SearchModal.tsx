@@ -79,7 +79,7 @@ export default function SearchModal({
     <div className="fixed inset-0 z-[999] flex items-center justify-center">
       {/* BACKDROP */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-md"
+        className="absolute inset-0 bg-black/50 backdrop-blur-xs"
         onClick={onClose}
       />
 

@@ -42,7 +42,7 @@ export default async function WatchLayout({
   ]);
 
   return (
-    <div className="VT_Watch_app min-h-screen bg-black text-white">
+    <div className="bg-black text-white">
       {/* ✅ GLOBAL FANCYBOX */}
       <FancyboxWrapper />
 
@@ -52,7 +52,7 @@ export default async function WatchLayout({
         listTypes={listTypes}
       />
 
-      <main id="vtwatch-app">{children}</main>
+      {children}
 
       <WatchFooter />
     </div>

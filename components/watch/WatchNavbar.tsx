@@ -90,7 +90,7 @@ function MobileDropdownSection({
             transition={{ duration: 0.24, ease: "easeOut" }}
             className="overflow-hidden"
           >
-            <div className="grid max-h-[300px] grid-cols-2 gap-2 overflow-y-auto px-2 pb-2 pt-1 scrollbar-hide">
+            <div className="grid grid-cols-2 gap-2 px-2 pb-2 pt-3">
               {items.map((item) => (
                 <Link
                   key={item.slug}
@@ -403,8 +403,8 @@ export default function WatchNavbar({
           <div
             className={`
               ${visible
-                ? "backdrop-blur-sm opacity-100 -translate-y-0"
-                : "shadow-[0_18px_60px_rgba(0,0,0,0.3)] backdrop-blur-lg opacity-0 -translate-y-3"
+                ? "backdrop-blur-sm"
+                : "shadow-[0_18px_60px_rgba(0,0,0,0.3)] backdrop-blur-lg"
               }
               relative inline-flex w-fit max-w-full overflow-visible rounded-full border border-white/10
               transition-all duration-500 ease-out will-change-transform hover:bg-black/30 hover:border-white/20
