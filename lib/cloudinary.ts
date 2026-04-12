@@ -156,25 +156,14 @@ type CloudinaryLoaderParams = {
   quality?: number;
 };
 
-
-{/*
-// ⚠️ deprecated - không dùng nữa để tránh double transform
-export function cloudinaryLoader({
-  src,
-  width,
-  quality,
-}: CloudinaryLoaderParams) {
-  if (!src.includes("res.cloudinary.com")) return src;
-
-  const q = quality || "auto";
-
-  return buildCloudinaryImage(src, {
-    width,
-    crop: "limit",
-    quality: typeof q === "number" ? q : "auto",
+// avatar trong trang route app/profile
+export function getProfileAvatar(url?: string) {
+  return buildCloudinaryImage(url, {
+    width: 144,
+    height: 144,
+    crop: "fill",
+    quality: "auto:eco",
     format: "auto",
     dpr: 1,
-    sharpen: true,
   });
 }
-*/}

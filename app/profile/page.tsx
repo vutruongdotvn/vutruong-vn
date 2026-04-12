@@ -6,7 +6,7 @@ import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
 import Cropper from "react-easy-crop";
 import { useToast } from "@/hooks/useToast";
 import { supabase } from "@/lib/supabase";
-
+import { getProfileAvatar } from "@/lib/cloudinary";
 const DEFAULT_AVATAR = "/images/default.jpg";
 
 export default function ProfilePage() {
@@ -29,12 +29,15 @@ export default function ProfilePage() {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [isCropping, setIsCropping] = useState(false);
 
   const { showToast } = useToast();
 
   const safeAvatar =
-    avatar && avatar.trim() !== "" ? avatar : DEFAULT_AVATAR;
-
+    avatar && avatar !== "null" && avatar !== "undefined"
+      ? avatar
+      : DEFAULT_AVATAR;
+  const optimizedAvatar = getProfileAvatar(safeAvatar);
   // LOAD DATA
   useEffect(() => {
     const fetchData = async () => {
@@ -117,6 +120,9 @@ export default function ProfilePage() {
 
   // UPLOAD
   const handleCropSave = async () => {
+    if (isCropping) return;
+
+    setIsCropping(true);
     try {
       const blob = await getCroppedImage();
 
@@ -137,7 +143,11 @@ export default function ProfilePage() {
       }
 
       const newUrl = data.secure_url;
-
+      // 🔥 CẬP NHẬT LUÔN PROFILE AVATAR
+      await supabase
+        .from("profiles")
+        .update({ avatar: newUrl })
+        .eq("id", user.id);
       await supabase.from("user_avatars").insert({
         user_id: user.id,
         url: newUrl,
@@ -157,7 +167,10 @@ export default function ProfilePage() {
       setCropImage(null);
     } catch {
       showToast("Có lỗi xảy ra khi tải avatar", "error");
+    } finally {
+      setIsCropping(false);
     }
+
   };
 
   const handleSelectFile = (file: File) => {
@@ -347,7 +360,7 @@ export default function ProfilePage() {
           <div className="space-y-4">
             <div className="flex justify-center">
               <Image
-                src={safeAvatar}
+                src={optimizedAvatar}
                 alt="avatar"
                 width={72}
                 height={72}
@@ -374,10 +387,19 @@ export default function ProfilePage() {
     <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
 
       {cropImage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget && !isCropping) {
+              setCropImage(null);
+            }
+          }}
+        >
           <div className="w-full max-w-sm rounded-3xl border border-white/20 bg-white/95 p-5 shadow-2xl backdrop-blur-xl space-y-4">
             <div className="relative h-[280px] w-full overflow-hidden rounded-xl bg-black/5">
               <Cropper
+                cropShape="round"
+                showGrid={false}
                 image={cropImage}
                 crop={crop}
                 zoom={zoom}
@@ -386,9 +408,14 @@ export default function ProfilePage() {
                 onZoomChange={setZoom}
                 onCropComplete={onCropComplete}
               />
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <div className="h-[200px] w-[200px] rounded-full border-2 border-white/70 shadow-[0_0_0_9999px_rgba(0,0,0,0.4)]" />
+              </div>
+
             </div>
 
             <input
+              disabled={isCropping}
               type="range"
               min={1}
               max={3}
@@ -400,16 +427,18 @@ export default function ProfilePage() {
 
             <div className="flex gap-3">
               <button
-                onClick={() => setCropImage(null)}
-                className="flex-1 rounded-full border border-black/10 bg-black/5 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-black/10"
+                onClick={() => !isCropping && setCropImage(null)}
+                disabled={isCropping}
+                className="flex-1 rounded-full border border-black/10 bg-black/5 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-black/10 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Huỷ
               </button>
               <button
                 onClick={handleCropSave}
+                disabled={isCropping}
                 className="flex-1 rounded-full bg-neutral-900 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
               >
-                Xác nhận
+                {isCropping ? "Đang lưu" : "Xác nhận"}
               </button>
             </div>
           </div>
@@ -447,7 +476,7 @@ export default function ProfilePage() {
                   <div className="absolute -inset-3 rounded-full bg-gradient-to-br from-sky-200/50 via-white/0 to-purple-200/40 blur-2xl opacity-90" />
 
                   <Image
-                    src={safeAvatar}
+                    src={optimizedAvatar}
                     alt="avatar"
                     fill
                     sizes="144px"
@@ -509,11 +538,10 @@ export default function ProfilePage() {
                   <button
                     onClick={handleSave}
                     disabled={!isChanged || saving}
-                    className={`w-full rounded-full py-3.5 text-sm font-medium text-white shadow-sm transition ${
-                      !isChanged || saving
-                        ? "cursor-not-allowed bg-neutral-300"
-                        : "bg-neutral-900 hover:opacity-90 hover:shadow-md cursor-pointer"
-                    }`}
+                    className={`w-full rounded-full py-3.5 text-sm font-medium text-white shadow-sm transition ${!isChanged || saving
+                      ? "cursor-not-allowed bg-neutral-300"
+                      : "bg-neutral-900 hover:opacity-90 hover:shadow-md cursor-pointer"
+                      }`}
                   >
                     {saving ? "Đang lưu" : "Lưu thay đổi"}
                   </button>
@@ -591,7 +619,7 @@ export default function ProfilePage() {
                           data-label={deletingAvatarId === item.id ? "Đang xóa" : "Xóa"}
                           onClick={() => handleDeleteAvatar(item)}
                         >
-                          <i className="fa-duotone fa-trash"/>
+                          <i className="fa-duotone fa-trash" />
                         </button>
                       </div>
                     </div>
