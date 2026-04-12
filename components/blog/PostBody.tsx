@@ -41,7 +41,7 @@ export default function PostBody({
       setResponsiveMaxLength(
         maxLength === 180
           ? mediaQuery.matches
-            ? 120
+            ? 130
             : 200
           : maxLength
       );
