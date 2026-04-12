@@ -33,7 +33,7 @@ export default function Page() {
 
       <div className="mx-auto flex min-h-full max-w-4xl flex-col items-center justify-center">
         <PremiumGlassCard
-          className="max-w-2xl pointer-events-none select-none"
+          className="max-w-2xl hover:scale-102 transition duration-800 ease-out"
           contentClassName="p-12 px-24 text-center"
         >
           {/* Badge */}
@@ -48,15 +48,15 @@ export default function Page() {
           </div>
 
           {/* Hello */}
-          <div key={helloKey} className="animate-fadeIn">
+          <div key={helloKey}>
             <AppleHelloVietnameseEffect />
           </div>
 
           {/* Tagline */}
           <div className="mt-6 space-y-2">
-            <p className="text-base md:text-lg font-semibold text-gray-800">Welcome to...</p>
-            <p className="mx-auto max-w-2xl text-sm leading-7 text-gray-600 md:text-base">
-              Hệ sinh thái số cá nhân của mình trên Internet,
+            <p className="text-base md:text-lg font-semibold text-gray-800">Welcome to 👋</p>
+            <p className="mx-auto max-w-2xl text-sm text-gray-600 md:text-base/7">
+              Hệ sinh thái số cá nhân của Vũ Trường,
               <br />
               Xây dựng những thứ mình thích chỉ với những dòng code.
             </p>
@@ -74,8 +74,6 @@ export default function Page() {
             </div>
           </div>
         </PremiumGlassCard>
-
-        <p className="mt-8 text-sm/6 text-gray-400 pointer-events-none select-none">Vibes & Clean | Powered by Next.js, Vercel, Cloudinary & Supabase.</p>
 
       </div>
     </main>

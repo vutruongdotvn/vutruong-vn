@@ -60,50 +60,52 @@ export default function PostHeader({
   return (
     <div className="flex items-center justify-between px-3 pt-3 select-none sm:px-4 sm:pt-4">
       <div className="flex min-w-0 items-center gap-2">
-        {!hideAvatar && (
-          <Image
-            src={avatar || "/images/default.jpg"}
-            alt="avatar"
-            width={30}
-            height={30}
-            className="size-8 rounded-full object-cover"
-          />
-        )}
+        <Image
+          src={avatar || "/images/default.jpg"}
+          alt="avatar"
+          width={44}
+          height={44}
+          unoptimized
+          className="size-10 rounded-full object-cover"
+        />
 
-        <div className="flex min-w-0 items-center gap-2">
+        <div className="flex flex-col gap-0.75">
           <Link
             href="/bio"
-            className="flex items-center gap-1 rounded-full border border-slate-300 bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600 hover:border-slate-400 active:scale-97"
+            className="flex items-center gap-0.5 text-sm font-medium text-gray-700 hover:text-black active:scale-95"
           >
             {name}
-            <i className="fad fa-badge-check text-xs text-blue-600" title="Tài khoản đã được xác thực"/>
+            <i className="fad fa-badge-check text-xs text-blue-600" title="Tài khoản đã được xác thực" />
           </Link>
 
-          {showLink && postId ? (
-            <Link
-              href={`/blog/${postId}`}
-              title={fullTime}
-              className="postPublish inline-flex items-center text-xs font-normal text-gray-600 hover:text-black active:scale-97"
-            >
-              {time}
-            </Link>
-          ) : (
-            <span
-              title={fullTime}
-              className="postPublish inline-flex items-center text-xs font-normal text-gray-500"
-            >
-              {time}
-            </span>
-          )}
+          <div className="flex items-center gap-1.5">
+            {isPinned && (
+              <span
+                title={`${name} đã ghim bài viết này`}
+                className="text-xs text-gray-600 hover:text-black active:scale-95 cursor-pointer"
+              >
+                <i className="fa-duotone fa-thumbtack text-xs" /> Bài ghim
+                <span className="ml-1.5">•</span>
+              </span>
 
-          {isPinned && (
-            <span
-              title="Bài ghim"
-              className="inline-flex items-center text-sm text-gray-600 hover:text-black active:scale-95 cursor-pointer"
-            >
-              <i className="fa-duotone fa-thumbtack-angle" />
-            </span>
-          )}
+            )}
+            {showLink && postId ? (
+              <Link
+                href={`/blog/${postId}`}
+                title={fullTime}
+                className="postPublish inline-flex items-center text-xs font-normal text-gray-600 hover:text-black active:scale-95"
+              >
+                {time}
+              </Link>
+            ) : (
+              <span
+                title={fullTime}
+                className="postPublish inline-flex items-center text-xs font-normal text-gray-600 hover:text-black active:scale-95"
+              >
+                {time}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 

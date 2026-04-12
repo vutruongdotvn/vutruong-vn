@@ -15,7 +15,7 @@ export default function NotFound() {
           >
             {/* Badge */}
             <div className="mb-6 flex justify-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-red-300 bg-red-100 px-4 py-1.5 text-xs font-medium text-neutral-600 backdrop-blur">
+              <span className="inline-flex items-center gap-2 rounded-full text-red-600 border border-red-300 bg-red-100 px-4 py-1.5 text-xs font-medium text-neutral-600 backdrop-blur">
                 <i className="fa-duotone fa-triangle-exclamation text-red-500" />
                 404
               </span>
@@ -41,13 +41,20 @@ export default function NotFound() {
             </div>
 
             {/* Actions */}
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-2">
               <Link
                 href="/"
                 className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
               >
                 <i className="fa-duotone fa-house" />
                 Trang chủ
+              </Link>
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 rounded-full bg-black/15 px-5 py-2.5 text-sm font-medium text-black transition hover:opacity-90"
+              >
+                <i className="fa-duotone fa-envelope" />
+                Liên hệ
               </Link>
             </div>
           </PremiumGlassCard>

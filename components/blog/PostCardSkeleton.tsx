@@ -68,8 +68,8 @@ function SkeletonText({
   if (density === "short") {
     return (
       <div className="px-3 sm:px-4 space-y-2">
-        <SkeletonLine width="w-[76%]" className="h-[16px]" />
-        <SkeletonLine width="w-[42%]" className="h-[16px]" />
+        <SkeletonLine width="w-[97%]" className="h-[16px]" />
+        <SkeletonLine width="w-[69%]" className="h-[16px]" />
       </div>
     );
   }
@@ -78,17 +78,17 @@ function SkeletonText({
     return (
       <div className="px-3 sm:px-4 space-y-2">
         <SkeletonLine width="w-[97%]" className="h-[16px]" />
-        <SkeletonLine width="w-[92%]" className="h-[16px]" />
-        <SkeletonLine width="w-[88%]" className="h-[16px]" />
+        <SkeletonLine width="w-[70%]" className="h-[16px]" />
+        <SkeletonLine width="w-[55%]" className="h-[16px]" />
       </div>
     );
   }
 
   return (
     <div className="px-3 sm:px-4 space-y-2">
-      <SkeletonLine width="w-[96%]" className="h-[16px]" />
-      <SkeletonLine width="w-[88%]" className="h-[16px]" />
-      <SkeletonLine width="w-[72%]" className="h-[16px]" />
+        <SkeletonLine width="w-[97%]" className="h-[16px]" />
+        <SkeletonLine width="w-[70%]" className="h-[16px]" />
+        <SkeletonLine width="w-[55%]" className="h-[16px]" />
     </div>
   );
 }
@@ -211,58 +211,38 @@ export default function PostCardSkeleton({
 }: Props) {
   return (
     <article className="timelineItem relative">
-      <div className="grid grid-cols-[40px_1fr] gap-2 md:gap-3">
-        {/* LEFT TIMELINE */}
-        <div className="relative flex flex-col items-center">
-          {/* Avatar */}
-          <div className="relative z-20 mt-3.5 w-[40px] h-[40px] rounded-full bg-gradient-to-br from-gray-300 to-gray-200 animate-pulse" />
 
-          {/* Line */}
-          <div
-            className={`absolute top-10 sm:top-18 w-[2px] bg-gradient-to-b from-gray-300 via-gray-200 to-transparent z-0 ${
-              isLast ? "bottom-8" : "bottom-[-10px]"
-            }`}
-          />
-
-          {/* Dot */}
-          <div
-            className={`relative z-10 mt-3 size-3 rounded-full border-2 border-white shadow-sm animate-pulse ${
-              isPinned ? "bg-neutral-400" : "bg-gray-300"
-            }`}
-          />
-        </div>
-
-        {/* RIGHT CONTENT */}
-        <div className="p-0">
-          <div
-            className={`
+      {/* RIGHT CONTENT */}
+      <div
+        className={`
               rounded-2xl bg-white/80 backdrop-blur-md
               shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 overflow-hidden
               ${isPinned ? "pinnedPost" : ""}
             `}
-          >
-            {/* HEADER */}
-            <div className="flex items-center justify-between px-3 sm:px-4 pt-3 sm:pt-4 select-none">
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="leading-6 flex items-center gap-2 min-w-0 flex-wrap">
-                  <div className="h-[28px] w-[100px] rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse border border-neutral-200" />
-                  <div className="h-4 w-24 rounded-xl bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
-                </div>
-              </div>
-
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
-            </div>
-
-            {/* BODY */}
-            <div className="px-0 pt-3">
-              <SkeletonText density={textDensity} />
-              <SkeletonMedia variant={variant} moreCount={moreCount} />
-
-              {/* ACTIONS */}
-              <div className="flex items-center gap-5 pt-4 pb-4 px-4 sm:px-4">
-                <SkeletonAction />
+      >
+        {/* HEADER */}
+        <div className="flex items-center justify-between px-3 sm:px-4 pt-3 sm:pt-4 select-none">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="leading-6 flex items-center gap-2 min-w-0 flex-wrap">
+              <div className="size-10 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse border border-neutral-200" />
+              <div className="flex items-start flex-col gap-1.5">
+              <div className="h-4 w-24 rounded-xl bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+              <div className="h-3 w-18 rounded-xl bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
               </div>
             </div>
+          </div>
+
+          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+        </div>
+
+        {/* BODY */}
+        <div className="px-0 pt-4">
+          <SkeletonText density={textDensity} />
+          <SkeletonMedia variant={variant} moreCount={moreCount} />
+
+          {/* ACTIONS */}
+          <div className="flex items-center gap-5 py-3 px-3 sm:px-4">
+            <SkeletonAction />
           </div>
         </div>
       </div>
