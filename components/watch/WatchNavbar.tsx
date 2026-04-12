@@ -404,7 +404,7 @@ export default function WatchNavbar({
                 : "shadow-[0_18px_60px_rgba(0,0,0,0.3)] backdrop-blur-lg"
               }
               relative inline-flex w-fit max-w-full overflow-visible rounded-full border border-white/10
-              transition-all duration-500 ease-out will-change-transform hover:bg-black/30 hover:border-white/20
+              transition-all duration-500 ease-out will-change-transform hover:bg-white/10 hover:border-white/20
             `}
           >
             <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-r from-white/[0.08] via-transparent to-white/[0.04]" />

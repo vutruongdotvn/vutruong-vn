@@ -19,7 +19,7 @@ export function stripHtml(html?: string) {
 
 export function getMovieImage(path?: string, base = FALLBACK_CDN) {
   if (!path || typeof path !== "string") {
-    return "/watch/og.png"; // ✅ fallback chuẩn branding
+    return "/watch-og.png"; // ✅ fallback chuẩn branding
   }
 
   return path.startsWith("http") ? path : `${base}${path}`;
@@ -119,22 +119,35 @@ export async function getHeroMovies(): Promise<
   })[]
 > {
   const { items, cdn } = await getHomeMovies();
+  const newestItems = items.slice(0, 10);
 
-  const sliced = items.slice(0, 10); // ✅ giảm load
+  const detailResults = await Promise.all(
+    newestItems.map((item) => getMovieDetail(item.slug))
+  );
 
-  return sliced.map((item) => ({
-    ...item,
-    _bgUrl: getMovieImage(
-      item.poster_url || item.thumb_url,
-      cdn
-    ),
-    _thumbUrl: getMovieImage(
-      item.thumb_url || item.poster_url,
-      cdn
-    ),
-  }));
+  const enriched = newestItems.map((item, idx) => {
+    const detail = detailResults[idx]?.data?.item ?? null;
+
+    const detailCdn = `${
+      detailResults[idx]?.data?.APP_DOMAIN_CDN_IMAGE || "https://img.ophim.live"
+    }/uploads/movies/`;
+
+    return {
+      ...item,
+      ...(detail ?? {}),
+      _bgUrl: getMovieImage(
+        detail?.poster_url ||
+          detail?.thumb_url ||
+          item.poster_url ||
+          item.thumb_url,
+        detailCdn
+      ),
+      _thumbUrl: getMovieImage(item.thumb_url || item.poster_url, cdn),
+    };
+  });
+
+  return enriched;
 }
-
 /**
  * Navbar data
  */
@@ -218,4 +231,10 @@ export async function getOPhimPeoples(slug: string) {
     character: p.character,
     known_for_department: p.known_for_department,
   }));
+}
+
+export async function getMovieDetail(
+  slug: string
+): Promise<OPhimDetailResponse | null> {
+  return fetchJson<OPhimDetailResponse>(`${API_BASE}/phim/${slug}`);
 }

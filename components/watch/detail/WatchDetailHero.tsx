@@ -39,9 +39,9 @@ export default function WatchDetailHero({
           alt={movie.name}
           fill
           priority
-          unoptimized
           sizes="100vw"
-          className="object-cover object-center opacity-20"
+          quality={50}
+          className="object-cover object-center opacity-15"
         />
       </div>
 
