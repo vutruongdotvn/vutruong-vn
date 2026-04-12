@@ -7,6 +7,10 @@
 :root {
   --font-sans: var(--font-roboto);
 }
+::selection{
+  background: black;
+  color: white;
+}
 
 html,
 body {

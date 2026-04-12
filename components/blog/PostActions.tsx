@@ -50,7 +50,7 @@ export default function PostActions({
   };
 
   return (
-    <div className="postAction flex items-center gap-4 px-5 py-4">
+    <div className="postAction flex items-center gap-4 px-4 py-3">
       {/*<button
       onClick={() => showToast("Đăng nhập để Thích bài viết này.", "warning")}
       className="likeBtn cursor-pointer text-gray-500 transition hover:text-black active:scale-80"

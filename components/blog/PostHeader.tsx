@@ -58,7 +58,7 @@ export default function PostHeader({
   }, []);
 
   return (
-    <div className="flex items-center justify-between px-3 pt-3 select-none sm:px-5 sm:pt-5">
+    <div className="flex items-center justify-between px-3 pt-3 select-none sm:px-4 sm:pt-4">
       <div className="flex min-w-0 items-center gap-2">
         {!hideAvatar && (
           <Image

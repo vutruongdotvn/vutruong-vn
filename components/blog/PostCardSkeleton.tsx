@@ -67,28 +67,28 @@ function SkeletonText({
 }) {
   if (density === "short") {
     return (
-      <div className="px-3 sm:px-5 space-y-3">
-        <SkeletonLine width="w-[76%]" className="h-[18px]" />
-        <SkeletonLine width="w-[42%]" className="h-[18px]" />
+      <div className="px-3 sm:px-4 space-y-2">
+        <SkeletonLine width="w-[76%]" className="h-[16px]" />
+        <SkeletonLine width="w-[42%]" className="h-[16px]" />
       </div>
     );
   }
 
   if (density === "long") {
     return (
-      <div className="px-3 sm:px-5 space-y-3">
-        <SkeletonLine width="w-[97%]" className="h-[18px]" />
-        <SkeletonLine width="w-[92%]" className="h-[18px]" />
-        <SkeletonLine width="w-[88%]" className="h-[18px]" />
+      <div className="px-3 sm:px-4 space-y-2">
+        <SkeletonLine width="w-[97%]" className="h-[16px]" />
+        <SkeletonLine width="w-[92%]" className="h-[16px]" />
+        <SkeletonLine width="w-[88%]" className="h-[16px]" />
       </div>
     );
   }
 
   return (
-    <div className="px-3 sm:px-5 space-y-3">
-      <SkeletonLine width="w-[96%]" className="h-[18px]" />
-      <SkeletonLine width="w-[88%]" className="h-[18px]" />
-      <SkeletonLine width="w-[72%]" className="h-[18px]" />
+    <div className="px-3 sm:px-4 space-y-2">
+      <SkeletonLine width="w-[96%]" className="h-[16px]" />
+      <SkeletonLine width="w-[88%]" className="h-[16px]" />
+      <SkeletonLine width="w-[72%]" className="h-[16px]" />
     </div>
   );
 }
@@ -211,11 +211,11 @@ export default function PostCardSkeleton({
 }: Props) {
   return (
     <article className="timelineItem relative">
-      <div className="grid md:grid-cols-[40px_1fr] grid-cols-[33px_1fr] gap-2 md:gap-3">
+      <div className="grid grid-cols-[40px_1fr] gap-2 md:gap-3">
         {/* LEFT TIMELINE */}
         <div className="relative flex flex-col items-center">
           {/* Avatar */}
-          <div className="relative z-20 mt-3.5 w-[33px] h-[33px] md:w-[40px] md:h-[40px] rounded-full bg-gradient-to-br from-gray-300 to-gray-200 animate-pulse" />
+          <div className="relative z-20 mt-3.5 w-[40px] h-[40px] rounded-full bg-gradient-to-br from-gray-300 to-gray-200 animate-pulse" />
 
           {/* Line */}
           <div
@@ -242,7 +242,7 @@ export default function PostCardSkeleton({
             `}
           >
             {/* HEADER */}
-            <div className="flex items-center justify-between px-3 sm:px-5 pt-3 sm:pt-5 select-none">
+            <div className="flex items-center justify-between px-3 sm:px-4 pt-3 sm:pt-4 select-none">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="leading-6 flex items-center gap-2 min-w-0 flex-wrap">
                   <div className="h-[28px] w-[100px] rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse border border-neutral-200" />
@@ -259,7 +259,7 @@ export default function PostCardSkeleton({
               <SkeletonMedia variant={variant} moreCount={moreCount} />
 
               {/* ACTIONS */}
-              <div className="flex items-center gap-5 pt-5 pb-4 px-5 sm:px-5">
+              <div className="flex items-center gap-5 pt-4 pb-4 px-4 sm:px-4">
                 <SkeletonAction />
               </div>
             </div>
