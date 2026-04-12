@@ -120,7 +120,7 @@ export async function getHeroMovies(): Promise<
 > {
   const { items, cdn } = await getHomeMovies();
 
-  const sliced = items.slice(0, 6); // ✅ giảm load
+  const sliced = items.slice(0, 10); // ✅ giảm load
 
   return sliced.map((item) => ({
     ...item,
