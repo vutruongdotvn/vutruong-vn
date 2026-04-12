@@ -37,6 +37,11 @@ export default function WatchDetailHero({
       ].join(" ")}
     >
       <div className="fixed inset-0 pointer-events-none">
+        {/* Skeleton */}
+        {!loaded && (
+          <div className="absolute inset-0 animate-pulse bg-neutral-800" />
+        )}
+
         <Image
           src={backdrop}
           alt={movie.name}
@@ -44,7 +49,9 @@ export default function WatchDetailHero({
           priority
           sizes="100vw"
           quality={75}
-          className="object-cover object-center opacity-20"
+          onLoad={() => setLoaded(true)}
+          className={`object-cover object-center transition duration-700
+      ${loaded ? "opacity-20" : "opacity-0"}`}
         />
       </div>
 

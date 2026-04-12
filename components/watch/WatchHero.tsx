@@ -126,17 +126,11 @@ export default function WatchHero({ movies }: Props) {
 
       {/* BG layers */}
       <div className="absolute inset-0">
-        <div
-          key={active.slug}
-          className="absolute inset-0 animate-[heroBgReveal_3000ms_ease-out_forwards] object-cover object-center"
-        >
-          <Image
+        <div key={active.slug} className="absolute inset-0 animate-[heroBgReveal_3000ms_ease-out_forwards] object-cover object-center">
+          <img
             src={active._bgUrl}
             alt={active.name}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
+            className="w-full h-full object-cover"
           />
         </div>
 
@@ -166,7 +160,7 @@ export default function WatchHero({ movies }: Props) {
           <div className="flex flex-1 items-center justify-center">
             <div
               key={`${active.slug}-${contentKey}`}
-              className="mx-auto flex w-full max-w-5xl animate-[heroContentIn_500ms_ease-in-out_forwards] flex-col items-center text-center"
+              className="mx-auto flex w-full max-w-5xl animate-[heroContentIn_1500ms_ease-out_forwards] flex-col items-center text-center"
             >
 
               <h1 className="text-2xl font-bold tracking-tight text-white drop-shadow-[0_10px_35px_rgba(0,0,0,.8)] sm:text-3xl md:text-4xl lg:text-[2.75rem]">
@@ -351,18 +345,22 @@ export default function WatchHero({ movies }: Props) {
         @keyframes heroContentIn {
           0% {
             opacity: 0;
+            transform: scale(.9)
           }
           100% {
             opacity: 1;
+            transform: scale(1)
           }
         }
 
         @keyframes heroBgReveal {
           0% {
             transform: scale(1.05);
+            opacity:0
           }
           100% {
             transform: none;
+            opacity:1
           }
         }
       `}</style>
