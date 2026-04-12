@@ -214,15 +214,15 @@ export default function PostImages({
         className={`relative block overflow-hidden group ${className}`}
       >
         <Image
-          loader={cloudinaryLoader}
-          src={img}
-          alt="post"
-          fill
-          sizes={sizes}
-          priority={isPriorityImage}
-          loading={isPriorityImage ? "eager" : "lazy"}
-          className="object-cover transition-transform duration-3000 ease-out group-hover:scale-[1.15]"
-        />
+  src={getFeedImage(img)}
+  alt="post"
+  fill
+  sizes={sizes}
+  priority={isPriorityImage}
+  loading={isPriorityImage ? "eager" : "lazy"}
+  unoptimized
+  className="object-cover transition-transform duration-3000 ease-out group-hover:scale-[1.15]"
+/>
         {overlay}
       </a>
     );
@@ -272,7 +272,7 @@ export default function PostImages({
             firstImage,
             0,
             "w-full h-full",
-            "(max-width:768px) 100vw, 800px"
+            "(max-width:640px) 100vw, (max-width:1024px) 80vw, 800px"
           )}
         </div>
       )}
@@ -284,7 +284,7 @@ export default function PostImages({
               img,
               i,
               getTwoImageAspectClass(),
-              "(max-width:768px) 50vw, 400px"
+              "(max-width:640px) 50vw, (max-width:1024px) 40vw, 400px"
             )
           )}
         </div>
@@ -297,7 +297,7 @@ export default function PostImages({
               orderedImages[0],
               0,
               "w-full h-full",
-              "(max-width:768px) 100vw, 800px"
+              "(max-width:640px) 100vw, (max-width:1024px) 80vw, 800px"
             )}
           </div>
 
@@ -307,7 +307,7 @@ export default function PostImages({
                 img,
                 idx + 1,
                 "aspect-[4/3]",
-                "(max-width:768px) 50vw, 400px"
+                "(max-width:640px) 50vw, (max-width:1024px) 40vw, 400px"
               )
             )}
           </div>
@@ -320,7 +320,7 @@ export default function PostImages({
             orderedImages[0],
             0,
             "h-full",
-            "(max-width:768px) 50vw, 400px"
+            "(max-width:640px) 50vw, (max-width:1024px) 40vw, 400px"
           )}
 
           <div className="grid grid-rows-2 gap-0.5 h-full">
@@ -329,7 +329,7 @@ export default function PostImages({
                 img,
                 idx + 1,
                 "h-full",
-                "(max-width:768px) 50vw, 400px"
+                "(max-width:640px) 50vw, (max-width:1024px) 40vw, 400px"
               )
             )}
           </div>
@@ -343,7 +343,7 @@ export default function PostImages({
               img,
               i,
               "aspect-[4/3]",
-              "(max-width:768px) 50vw, 400px"
+              "(max-width:640px) 50vw, (max-width:1024px) 40vw, 400px"
             )
           )}
         </div>
@@ -356,7 +356,7 @@ export default function PostImages({
               img,
               i,
               "aspect-[4/3]",
-              "(max-width:768px) 50vw, 400px",
+              "(max-width:640px) 50vw, (max-width:1024px) 40vw, 400px",
               i === 3 ? (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-lg pointer-events-none">
                   +{count - 4}

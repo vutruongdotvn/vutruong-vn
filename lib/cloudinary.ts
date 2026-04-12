@@ -40,7 +40,7 @@ type CloudinaryCrop = "fill" | "fit" | "thumb" | "scale" | "limit" | "pad";
 type CloudinaryOptions = {
   width?: number;
   height?: number;
-  quality?: number | "auto";
+  quality?: number | "auto" | "auto:eco" | "auto:good" | "auto:best";
   crop?: CloudinaryCrop;
   format?: "auto" | "webp" | "avif" | "jpg" | "png";
   dpr?: "auto" | number;
@@ -60,21 +60,22 @@ export function buildCloudinaryImage(
   const crop = options?.crop ?? "limit";
   const quality = options?.quality ?? "auto";
   const format = options?.format ?? "auto";
-  const dpr = options?.dpr ?? "auto";
+  const dpr = options?.dpr ?? 1;
   const gravity = options?.gravity;
   const sharpen = options?.sharpen ?? false;
 
   const transforms: string[] = [
     `f_${format}`,
-    `q_${quality}`,
+    `q_${quality === "auto" ? "auto:eco" : quality}`,
     `dpr_${dpr}`,
+    "fl_strip_profile",
   ];
 
   if (width) transforms.push(`w_${width}`);
   if (height) transforms.push(`h_${height}`);
   if (crop) transforms.push(`c_${crop}`);
   if (gravity && crop === "fill") transforms.push(`g_${gravity}`);
-  if (sharpen) transforms.push("e_sharpen:50");
+  if (sharpen) transforms.push("e_sharpen:30");
 
   return url.replace("/upload/", `/upload/${transforms.join(",")}/`);
 }
@@ -82,24 +83,24 @@ export function buildCloudinaryImage(
 // avatar nhỏ
 export function getAvatarImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 80,
-    height: 80,
+    width: 50,
+    height: 50,
     crop: "fill",
     gravity: "face",
     quality: 80,
     format: "auto",
-    dpr: "auto",
+    dpr: 1,
   });
 }
 
 // thumbnail feed / card
 export function getFeedImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 960,
+    width: 600,
     crop: "limit",
     quality: "auto",
     format: "auto",
-    dpr: "auto",
+    dpr: 1,
     sharpen: true,
   });
 }
@@ -107,11 +108,11 @@ export function getFeedImage(url?: string) {
 // ảnh lớn cho lightbox / preview chất lượng cao
 export function getLightboxImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 1800,
+    width: 1200,
     crop: "limit",
-    quality: "auto",
+    quality: "auto:good",
     format: "auto",
-    dpr: "auto",
+    dpr: 1,
   });
 }
 
@@ -155,6 +156,9 @@ type CloudinaryLoaderParams = {
   quality?: number;
 };
 
+
+{/*
+// ⚠️ deprecated - không dùng nữa để tránh double transform
 export function cloudinaryLoader({
   src,
   width,
@@ -169,7 +173,8 @@ export function cloudinaryLoader({
     crop: "limit",
     quality: typeof q === "number" ? q : "auto",
     format: "auto",
-    dpr: "auto",
+    dpr: 1,
     sharpen: true,
   });
 }
+*/}
