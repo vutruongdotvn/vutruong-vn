@@ -53,7 +53,7 @@ export async function generateMetadata({
     }
 
     const movieTitle = movie.name;
-    const title = `Xem phim ${movieTitle}`;
+    const title = `${movieTitle}`; // title nè
 
     const description = truncateText(
       stripHtml(movie.content) || "",

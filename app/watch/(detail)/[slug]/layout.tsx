@@ -5,7 +5,7 @@ export const metadata: Metadata = {
 
     title: {
         default: "VT Watch",
-        template: "%s | VT Watch",
+        template: "%s",
     },
 
     robots: {
