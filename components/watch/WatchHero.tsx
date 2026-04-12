@@ -15,7 +15,7 @@ type Props = {
   movies: HeroMovie[];
 };
 
-const SLIDE_MS = 7000;
+const SLIDE_MS = 900000;
 const SWIPE_THRESHOLD = 50;
 
 export default function WatchHero({ movies }: Props) {
@@ -108,7 +108,7 @@ export default function WatchHero({ movies }: Props) {
 
   return (
     <section
-      className="relative w-full h-[60vh] md:h-[75vh] xl:h-screen overflow-hidden bg-[#030712]"
+      className="relative w-full h-[80vh] md:h-[100vh] xl:h-screen overflow-hidden bg-[#030712]"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -141,7 +141,7 @@ export default function WatchHero({ movies }: Props) {
           />
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 h-[60vh] md:h-[75vh] xl:h-screen bg-gradient-to-t from-black via-black/50 to-black/20" />
+        <div className="absolute inset-x-0 bottom-0 h-[80vh] md:h-[100vh] xl:h-screen bg-gradient-to-t from-black via-black/50 to-black/20" />
       </div>
 
       {/* Nav arrows */}
@@ -236,7 +236,7 @@ export default function WatchHero({ movies }: Props) {
                       <Link
                         key={genre.slug}
                         href={`/watch/the-loai/${genre.slug}`}
-                        className={`inline-flex rounded-full bg-gradient-to-r ${color} px-3 py-1 text-xs xl:text-sm font-medium text-white/90 active:scale-95 hover:text-white`}
+                        className={`hidden md:inline-flex rounded-full bg-gradient-to-r ${color} px-3 py-1 text-xs xl:text-sm font-medium text-white/90 active:scale-95 hover:text-white`}
                       >
                         {genre.name}
                       </Link>
