@@ -6,9 +6,32 @@ import { HOME_SECTIONS } from "@/lib/watch/constants";
 import { getHeroMovies } from "@/lib/watch/ophim";
 
 export const metadata: Metadata = {
-  title: "Watch",
+  title: "VT Watch",
   description:
-    "Xem phim miễn phí - tốc độ cao - không quảng cáo và cập nhật liên tục!",
+    "Xem phim miễn phí, tốc độ cao, không quảng cáo và cập nhật liên tục.",
+
+  openGraph: {
+    title: "VT Watch",
+    description:
+      "Xem phim miễn phí, tốc độ cao, không quảng cáo và cập nhật liên tục.",
+    url: "/watch",
+    images: [
+      {
+        url: "/watch-og.png",
+        width: 1200,
+        height: 630,
+        alt: "VT Watch",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "VT Watch",
+    description:
+      "Xem phim miễn phí, tốc độ cao, không quảng cáo và cập nhật liên tục.",
+    images: ["/watch-og.png"],
+  },
 };
 
 export default async function WatchHomePage() {

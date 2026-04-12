@@ -10,12 +10,42 @@ import {
 } from "@/lib/watch/ophim";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.vutruong.vn"),
+
   title: {
     default: "VT Watch",
-    template: "%s",
+    template: "%s | VT Watch",
   },
+
   description:
-    "Xem phim miễn phí - tốc độ cao - không quảng cáo và cập nhật liên tục!",
+    "Xem phim miễn phí, tốc độ cao, không quảng cáo và cập nhật liên tục.",
+
+  openGraph: {
+    title: "VT Watch",
+    description:
+      "Xem phim miễn phí, tốc độ cao, không quảng cáo và cập nhật liên tục.",
+    url: "/watch",
+    siteName: "VT Watch",
+    images: [
+      {
+        url: "/watch-og.png",
+        width: 1200,
+        height: 630,
+        alt: "VT Watch",
+      },
+    ],
+    locale: "vi_VN",
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "VT Watch",
+    description:
+      "Xem phim miễn phí, tốc độ cao, không quảng cáo và cập nhật liên tục.",
+    images: ["/watch-og.png"],
+  },
+
   robots: {
     index: false,
     follow: false,

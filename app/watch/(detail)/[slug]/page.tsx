@@ -47,71 +47,44 @@ export async function generateMetadata({
       return {
         title: "Không tìm thấy phim",
         description: "Trang phim không tồn tại.",
-        robots: {
-          index: false,
-          follow: false,
-        },
       };
     }
 
-    const movieTitle = movie.origin_name
-      ? `${movie.name} (${movie.origin_name})`
-      : movie.name;
-
-    const plainDescription = truncateText(
-      stripHtml(movie.content) ||
-      `Xem thông tin phim ${movie.name} trên VT Watch.`,
-      180
+    const description = truncateText(
+      stripHtml(movie.content) || "",
+      160
     );
 
-    const shareImage = getMovieImage(
-      movie.thumb_url || movie.poster_url,
-      data.cdn
-    );
-
-    const pageUrl = `/watch/${slug}`;
+    const poster = getMovieImage(movie.poster_url, data.cdn);
 
     return {
-      title: movieTitle,
-      description: plainDescription,
-      alternates: {
-        canonical: pageUrl,
-      },
-      robots: {
-        index: false,
-        follow: false,
-      },
+      title: slug,
+      description,
+
       openGraph: {
-        title: movieTitle,
-        description: plainDescription,
-        url: pageUrl,
-        siteName: "VT Watch",
-        type: "video.movie",
-        locale: "vi_VN",
+        title: slug,
+        description,
+        url: `/watch/${slug}`,
         images: [
           {
-            url: shareImage,
+            url: poster,
             width: 1200,
             height: 630,
-            alt: movie.name,
+            alt: slug,
           },
         ],
       },
+
       twitter: {
-        card: "summary_large_image",
-        title: movieTitle,
-        description: plainDescription,
-        images: [shareImage],
+        title: slug,
+        description,
+        images: [poster],
       },
     };
   } catch {
     return {
-      title: "VT Watch",
+      title: slug,
       description: "Xem phim tại VT Watch",
-      robots: {
-        index: false,
-        follow: false,
-      },
     };
   }
 }
