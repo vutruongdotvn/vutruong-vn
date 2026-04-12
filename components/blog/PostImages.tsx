@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  cloudinaryLoader,
   extractCloudinaryMeta,
   getFeedImage,
   getLightboxImage,
