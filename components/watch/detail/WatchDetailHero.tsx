@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 type WatchDetailHeroProps = {
   movie: {
@@ -25,7 +28,7 @@ export default function WatchDetailHero({
   const backdrop = movie.poster_url || movie.thumb_url || "";
   const poster = movie.thumb_url || movie.poster_url || "";
   const watchHref = `/watch/${movie.slug}?server=1&ep=1`;
-
+  const [loaded, setLoaded] = useState(false);
   return (
     <section
       className={[
@@ -40,19 +43,24 @@ export default function WatchDetailHero({
           fill
           priority
           sizes="100vw"
-          quality={50}
-          className="object-cover object-center opacity-15"
+          quality={75}
+          className="object-cover object-center opacity-10"
         />
       </div>
 
       <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-8 px-4 pb-12 pt-50 sm:px-6 lg:flex-row lg:items-center lg:px-8">
         <div className="relative mx-auto aspect-[2/3] w-[280px] overflow-hidden rounded-3xl shadow-3xl shadow-black/40 sm:w-[280px] lg:mx-0 lg:w-[400px]">
+          {!loaded && (
+            <div className="absolute inset-0 animate-pulse bg-neutral-800" />
+          )}
+
           <Image
             src={poster}
             alt={movie.name}
             fill
-            unoptimized
-            sizes="300px"
+            sizes="(max-width: 640px) 280px,
+         (max-width: 1024px) 280px,
+         400px"
             className="object-cover pointer-events-none"
           />
         </div>

@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getMovieImage } from "@/lib/watch/ophim";
@@ -9,6 +12,7 @@ type Props = {
 
 export default function WatchMovieCard({ movie }: Props) {
   const image = getMovieImage(movie.thumb_url || movie.poster_url);
+  const [loaded, setLoaded] = useState(false);
 
   return (
     <Link
@@ -17,17 +21,30 @@ export default function WatchMovieCard({ movie }: Props) {
     >
       <div className="relative overflow-hidden">
         <div className="relative aspect-[2/3] overflow-hidden rounded-[16px]">
+
+          {/* Skeleton */}
+          {!loaded && (
+            <div className="absolute inset-0 animate-pulse bg-neutral-800" />
+          )}
+
+          {/* Image */}
           <Image
             src={image}
             alt={movie.name}
             fill
-            className="object-cover transition duration-900 ease-out group-hover:scale-[1.05] bg-black/10"
-            sizes="200px"
-            unoptimized
+            sizes="(max-width: 640px) 123px,
+                   (max-width: 1024px) 168px,
+                   184px"
+            onLoad={() => setLoaded(true)}
+            className={`object-cover transition duration-500 ease-out 
+              ${loaded ? "opacity-100 scale-100 blur-0" : "opacity-0 scale-105 blur-sm"}
+              group-hover:scale-[1.05] bg-black/10`}
           />
 
+          {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent hover:opacity-0 transition duration-500 ease-in-out" />
 
+          {/* Badge */}
           {(movie.episode_current || movie.year) && (
             <span className="absolute bottom-2 left-2 rounded-md bg-black/75 px-2 py-1 text-[10px] font-bold text-white">
               {movie.episode_current || movie.year}

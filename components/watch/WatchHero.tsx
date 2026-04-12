@@ -136,6 +136,7 @@ export default function WatchHero({ movies }: Props) {
             fill
             priority
             sizes="100vw"
+            quality={75}
             className="object-cover"
           />
         </div>
@@ -287,7 +288,7 @@ export default function WatchHero({ movies }: Props) {
                           src={movie._thumbUrl}
                           alt={movie.name}
                           fill
-                          unoptimized
+                          sizes="(max-width: 1024px) 80px, 100px"
                           className={`object-cover transition duration-500 ${isActive ? "scale-[1.03]" : "scale-100 group-hover:scale-105"
                             }`}
                         />

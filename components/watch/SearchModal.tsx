@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import Image from "next/image";
 type Item = {
   _id: string;
   name: string;
@@ -22,7 +22,7 @@ export default function SearchModal({
   const [keyword, setKeyword] = useState("");
   const [results, setResults] = useState<Item[]>([]);
   const [loading, setLoading] = useState(false);
-
+  const [loadedMap, setLoadedMap] = useState<Record<string, boolean>>({});
   const router = useRouter();
 
   // ESC close
@@ -156,14 +156,29 @@ export default function SearchModal({
                   }}
                   className="relative flex flex-col items-center cursor-pointer transition overflow-hidden"
                 >
-                  <div className="relative">
-                    <img
+                  <div className="relative w-full aspect-[2/3]">
+                    {/* Skeleton */}
+                    {!loadedMap[item._id] && (
+                      <div className="absolute inset-0 animate-pulse bg-white/10 rounded-lg" />
+                    )}
+
+                    <Image
                       src={`${CDN}/${item.thumb_url}`}
-                      className="w-full aspect-[2/3] object-cover rounded-md transition hover:scale-105"
+                      alt={item.name}
+                      fill
+                      sizes="(max-width: 640px) 20vw,
+           (max-width: 1024px) 15vw,
+           120px"
+                      onLoad={() =>
+                        setLoadedMap((prev) => ({ ...prev, [item._id]: true }))
+                      }
+                      className={`object-cover rounded-lg transition duration-500
+      ${loadedMap[item._id] ? "opacity-100" : "opacity-0"}
+      hover:scale-105`}
                     />
+
                     <div className="absolute inset-0 bg-black/0 hover:bg-black/30 transition rounded-md" />
                   </div>
-
                   <div className="text-xs font-normal line-clamp-1 text-center mt-3 mb-4 text-white/80 hover:text-white transition">
                     {item.name}
                   </div>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 type Item = {
   _id: string;
@@ -18,7 +19,7 @@ const CDN = "https://img.ophim.live/uploads/movies";
 export default function WatchGrid({ items }: { items: Item[] }) {
   return (
     <section className="mt-8">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
         {items?.map((item, index) => (
           <Card key={item._id} item={item} index={index} />
         ))}
@@ -35,32 +36,37 @@ function Card({ item, index }: { item: Item; index: number }) {
       href={`/watch/${item.slug}`}
       className="group block"
       style={{
-        animation: `fadeUp 0.4s ease forwards`,
-        animationDelay: `${index * 0.03}s`,
+        animation: `fadeUp 1s ease forwards`,
+        animationDelay: `${index * 0.1}s`,
         opacity: 0,
       }}
     >
       {/* Poster */}
       <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-neutral-900">
-        
+
         {/* Skeleton shimmer */}
         {!loaded && (
           <div className="absolute inset-0 shimmer" />
         )}
 
         {/* Image */}
-        <img
+        <Image
           src={`${CDN}/${item.thumb_url}`}
           alt={item.name}
-          loading="lazy"
+          fill
+          sizes="(max-width: 640px) 50vw,
+         (max-width: 1024px) 33vw,
+         (max-width: 1280px) 25vw,
+         16vw"
           onLoad={() => setLoaded(true)}
-          className={`w-full h-full object-cover transition duration-900 ease-in-out ${
-            loaded ? "opacity-100 scale-100 blur-none" : "opacity-0 scale-105 blur-sm"
-          } group-hover:scale-105`}
+          className={`object-cover transition duration-300 ease-in-out ${loaded
+              ? "opacity-100 scale-100 blur-0"
+              : "opacity-0 scale-105 blur-xs"
+            } group-hover:scale-103`}
         />
 
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition duration-300" />
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300" />
 
         {/* Badge */}
         <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
@@ -74,12 +80,12 @@ function Card({ item, index }: { item: Item; index: number }) {
 
       {/* Text */}
       <div className="mt-3 mb-4 space-y-[2px] text-center">
-        <p className="text-sm sm:text-base font-medium leading-tight line-clamp-1 group-hover:text-white/90 transition">
+        <p className="text-xs sm:text-sm lg:text-base font-medium text-white/90 leading-tight line-clamp-1 group-hover:text-white transition">
           {item.name}
         </p>
 
         {item.origin_name && (
-          <p className="text-xs sm:text-sm text-gray-500 line-clamp-1">
+          <p className="text-[0.75rem] sm:text-xs lg:text-sm text-gray-500 line-clamp-1">
             {item.origin_name}
           </p>
         )}
