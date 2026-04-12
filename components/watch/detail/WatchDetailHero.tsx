@@ -44,14 +44,14 @@ export default function WatchDetailHero({
           priority
           sizes="100vw"
           quality={75}
-          className="object-cover object-center opacity-10"
+          className="object-cover object-center opacity-20"
         />
       </div>
 
       <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-8 px-4 pb-12 pt-50 sm:px-6 lg:flex-row lg:items-center lg:px-8">
         <div className="relative mx-auto aspect-[2/3] w-[280px] overflow-hidden rounded-3xl shadow-3xl shadow-black/40 sm:w-[280px] lg:mx-0 lg:w-[400px]">
           {!loaded && (
-            <div className="absolute inset-0 animate-pulse bg-neutral-800" />
+            <div className="absolute inset-0 animate-pulse bg-white/10" />
           )}
 
           <Image
