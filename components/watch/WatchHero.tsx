@@ -15,7 +15,7 @@ type Props = {
   movies: HeroMovie[];
 };
 
-const SLIDE_MS = 900000;
+const SLIDE_MS = 8000;
 const SWIPE_THRESHOLD = 50;
 
 export default function WatchHero({ movies }: Props) {
