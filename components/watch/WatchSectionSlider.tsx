@@ -112,14 +112,43 @@ export default function WatchSectionSlider({
   const sectionRef = useRef<HTMLElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
 
+  
   const [shouldLoad, setShouldLoad] = useState(() =>
     type === "the-loai" && slug === "hanh-dong"
   );
   const [movies, setMovies] = useState<OPhimMovie[]>(() => {
     return sectionMoviesCache.get(api) ?? [];
   });
+  const [limit, setLimit] = useState(12); // 🔥 chỉ render 12 item đầu
   const [loaded, setLoaded] = useState(() => sectionMoviesCache.has(api));
   const [isEmpty, setIsEmpty] = useState(false);
+
+  useEffect(() => {
+  const el = trackRef.current;
+  if (!el) return;
+
+  const handleScroll = () => {
+    // vị trí scroll hiện tại
+    const scrollLeft = el.scrollLeft;
+    const visibleWidth = el.clientWidth;
+    const totalWidth = el.scrollWidth;
+
+    // nếu user scroll gần cuối
+    if (scrollLeft + visibleWidth >= totalWidth - 200) {
+      setLimit((prev) => {
+        // tránh tăng vô hạn
+        if (prev >= movies.length) return prev;
+        return prev + 8; // mỗi lần load thêm 8 item
+      });
+    }
+  };
+
+  el.addEventListener("scroll", handleScroll);
+
+  return () => {
+    el.removeEventListener("scroll", handleScroll);
+  };
+}, [movies.length]);
 
   useEffect(() => {
     if (sectionMoviesCache.has(api)) return;
@@ -147,6 +176,7 @@ export default function WatchSectionSlider({
   }, [api, loaded]);
 
   useEffect(() => {
+    setLimit(12); // reset mỗi lần load section mới
     if (!shouldLoad || loaded) return;
 
     // nếu đã có cache thì dùng luôn, không fetch nữa
@@ -231,6 +261,7 @@ export default function WatchSectionSlider({
   };
 
   const highlightGradient = getGradientClass(highlight);
+  const visibleMovies = movies.slice(0, limit);
 
   return (
     <section ref={sectionRef} className="space-y-5">
@@ -320,9 +351,9 @@ export default function WatchSectionSlider({
               </div>
             ))
           ) : movies.length > 0 ? (
-            movies.map((movie) => (
-              <WatchMovieCard key={movie.slug} movie={movie} />
-            ))
+            visibleMovies.map((movie) => (
+  <WatchMovieCard key={movie.slug} movie={movie} />
+))
           ) : isEmpty ? (
             <div className="flex min-h-[120px] items-center text-sm text-slate-500">
               Không có dữ liệu để hiển thị.

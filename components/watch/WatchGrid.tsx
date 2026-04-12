@@ -53,15 +53,15 @@ function Card({ item, index }: { item: Item; index: number }) {
         <Image
           src={`${CDN}/${item.thumb_url}`}
           alt={item.name}
-          fill
-          sizes="(max-width: 640px) 50vw,
-         (max-width: 1024px) 33vw,
-         (max-width: 1280px) 25vw,
-         16vw"
+          fill unoptimized
+          sizes="(max-width: 640px) 120px,
+       (max-width: 1024px) 140px,
+       160px"
+       priority={index < 4}
           onLoad={() => setLoaded(true)}
           className={`object-cover transition duration-300 ease-in-out ${loaded
-              ? "opacity-100 scale-100 blur-0"
-              : "opacity-0 scale-105 blur-xs"
+            ? "opacity-100 scale-100 blur-0"
+            : "opacity-0 scale-105 blur-xs"
             } group-hover:scale-103`}
         />
 

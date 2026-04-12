@@ -127,10 +127,13 @@ export default function WatchHero({ movies }: Props) {
       {/* BG layers */}
       <div className="absolute inset-0">
         <div key={active.slug} className="absolute inset-0 animate-[heroBgReveal_3000ms_ease-out_forwards] object-cover object-center">
-          <img
+          <Image
+            fill unoptimized
             src={active._bgUrl}
             alt={active.name}
             className="w-full h-full object-cover"
+            loading="eager"
+            fetchPriority="high"
           />
         </div>
 
@@ -280,8 +283,8 @@ export default function WatchHero({ movies }: Props) {
                         <Image
                           src={movie._thumbUrl}
                           alt={movie.name}
-                          fill
-                          sizes="(max-width: 1024px) 80px, 100px"
+                          fill unoptimized
+                          sizes="100px"
                           className={`object-cover transition duration-500 ${isActive ? "scale-[1.03]" : "scale-100 group-hover:scale-105"
                             }`}
                         />

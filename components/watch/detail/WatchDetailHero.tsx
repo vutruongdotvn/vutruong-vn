@@ -46,9 +46,9 @@ export default function WatchDetailHero({
           src={backdrop}
           alt={movie.name}
           fill
+          unoptimized
           priority
           sizes="100vw"
-          quality={75}
           onLoad={() => setLoaded(true)}
           className={`object-cover object-center transition duration-700
       ${loaded ? "opacity-20" : "opacity-0"}`}
@@ -65,9 +65,10 @@ export default function WatchDetailHero({
             src={poster}
             alt={movie.name}
             fill
+            unoptimized
             sizes="(max-width: 640px) 280px,
-         (max-width: 1024px) 280px,
-         400px"
+            (max-width: 1024px) 280px,
+            400px"
             className="object-cover pointer-events-none"
           />
         </div>

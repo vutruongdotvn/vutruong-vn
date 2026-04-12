@@ -31,13 +31,11 @@ export default function WatchMovieCard({ movie }: Props) {
           <Image
             src={image}
             alt={movie.name}
-            fill
-            sizes="(max-width: 640px) 123px,
-                   (max-width: 1024px) 168px,
-                   184px"
+            fill unoptimized
+            sizes="123px"
             onLoad={() => setLoaded(true)}
             className={`object-cover transition duration-1200 ease-out 
-              ${loaded ? "opacity-100 scale-100 blur-0" : "opacity-0 scale-105 blur-md"}
+              ${loaded ? "opacity-100 scale-100" : "opacity-0 scale-105"}
               group-hover:scale-[1.05] bg-black/10`}
           />
 
