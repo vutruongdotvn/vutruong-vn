@@ -128,7 +128,7 @@ export default function WatchHero({ movies }: Props) {
       <div className="absolute inset-0">
         <div
           key={active.slug}
-          className="absolute inset-0 animate-[heroBgReveal_2500ms_ease-out_forwards] object-cover object-center"
+          className="absolute inset-0 animate-[heroBgReveal_3000ms_ease-out_forwards] object-cover object-center"
         >
           <Image
             src={active._bgUrl}
@@ -136,7 +136,6 @@ export default function WatchHero({ movies }: Props) {
             fill
             priority
             sizes="100vw"
-            quality={75}
             className="object-cover"
           />
         </div>
