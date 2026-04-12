@@ -24,7 +24,7 @@ export default function WatchMovieCard({ movie }: Props) {
 
           {/* Skeleton */}
           {!loaded && (
-            <div className="absolute inset-0 animate-pulse bg-neutral-800" />
+            <div className="absolute inset-0 animate-pulse bg-black/20" />
           )}
 
           {/* Image */}
@@ -36,8 +36,8 @@ export default function WatchMovieCard({ movie }: Props) {
                    (max-width: 1024px) 168px,
                    184px"
             onLoad={() => setLoaded(true)}
-            className={`object-cover transition duration-500 ease-out 
-              ${loaded ? "opacity-100 scale-100 blur-0" : "opacity-0 scale-105 blur-sm"}
+            className={`object-cover transition duration-1200 ease-out 
+              ${loaded ? "opacity-100 scale-100 blur-0" : "opacity-0 scale-105 blur-md"}
               group-hover:scale-[1.05] bg-black/10`}
           />
 
