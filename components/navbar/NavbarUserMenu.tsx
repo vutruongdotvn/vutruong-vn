@@ -47,7 +47,7 @@ export default function NavbarUserMenu({
         <div
           className={`
             rounded-full transition-all duration-300
-            ${user && role === "admin" ? "isAdmin" : "isNotAdmin"}
+            ${user && role === "admin" ? "isAdmin" : "isUser"}
             ${userOpen ? "scale-105 shadow-lg" : "group-hover:scale-105"}
           `}
         >
@@ -56,6 +56,7 @@ export default function NavbarUserMenu({
             alt="avatar"
             width={40}
             height={40}
+            unoptimized
             className="w-10 h-10 rounded-full object-cover cursor-pointer"
           />
         </div>
@@ -76,7 +77,8 @@ export default function NavbarUserMenu({
                 alt="avatar"
                 width={52}
                 height={52}
-                className="w-[52px] h-[52px] rounded-full object-cover shadow-lg"
+                unoptimized
+                className="w-[52px] h-[52px] rounded-full object-cover shadow-lg pointer-events-none"
               />
 
               <div className="min-w-0 flex-1">

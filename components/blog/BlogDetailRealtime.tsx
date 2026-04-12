@@ -10,7 +10,7 @@ import PostHeader from "@/components/blog/PostHeader";
 import PostBody from "@/components/blog/PostBody";
 import PostActions from "@/components/blog/PostActions";
 import CreatePostModal from "@/components/blog/CreatePostModal";
-
+import { getAvatarImage } from "@/lib/cloudinary";
 import { extractPostTitle, extractPostDescription } from "@/lib/postMeta";
 import { buildCloudinaryImage } from "@/lib/cloudinary";
 import { useUser } from "@/hooks/useUser";
@@ -41,12 +41,8 @@ export default function BlogDetailRealtime({
   const name = profile?.name || post?.author_name || "Người dùng";
   const avatar = useMemo(() => {
     return (
-      buildCloudinaryImage(profile?.avatar || post?.author_avatar, {
-        width: 80,
-        height: 80,
-        quality: 80,
-        crop: "fill",
-      }) || "/images/default.jpg"
+      getAvatarImage(profile?.avatar || post?.author_avatar) ||
+      "/images/default.jpg"
     );
   }, [profile?.avatar, post?.author_avatar]);
 
@@ -72,9 +68,9 @@ export default function BlogDetailRealtime({
     setPost((prev: any) =>
       prev
         ? {
-            ...prev,
-            is_pinned: prev.is_pinned ? false : true,
-          }
+          ...prev,
+          is_pinned: prev.is_pinned ? false : true,
+        }
         : prev
     );
 

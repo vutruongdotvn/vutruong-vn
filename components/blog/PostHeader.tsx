@@ -63,8 +63,9 @@ export default function PostHeader({
         <Image
           src={avatar || "/images/default.jpg"}
           alt="avatar"
-          width={44}
-          height={44}
+          width={40}
+          height={40}
+          sizes="40px"
           unoptimized
           className="size-10 rounded-full object-cover"
         />

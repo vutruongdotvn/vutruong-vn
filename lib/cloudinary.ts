@@ -87,7 +87,7 @@ export function getAvatarImage(url?: string) {
     height: 50,
     crop: "fill",
     gravity: "face",
-    quality: 80,
+    quality: "auto:eco",
     format: "auto",
     dpr: 1,
   });
