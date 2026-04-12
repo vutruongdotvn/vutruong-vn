@@ -84,7 +84,7 @@ export default function SearchModal({
       />
 
       {/* MODAL */}
-      <div className="relative w-full max-w-2xl px-4">
+      <div className="relative w-full max-w-3xl px-4">
         <div className="space-y-6 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-2xl shadow-2xl p-6 md:p-8 animate-fadeIn">
 
           {/* HEADER */}
@@ -124,7 +124,7 @@ export default function SearchModal({
 
 
           {/* 🔥 REALTIME RESULTS */}
-          <div className="grid grid-cols-5 gap-3">
+          <div className="grid grid-cols-5 gap-2">
 
             {/* SKELETON */}
             {loading &&
@@ -166,20 +166,18 @@ export default function SearchModal({
                       src={`${CDN}/${item.thumb_url}`}
                       alt={item.name}
                       fill
-                      sizes="(max-width: 640px) 20vw,
-           (max-width: 1024px) 15vw,
-           120px"
+                      unoptimized
+                      sizes="200px"
                       onLoad={() =>
                         setLoadedMap((prev) => ({ ...prev, [item._id]: true }))
                       }
                       className={`object-cover rounded-lg transition duration-500
-      ${loadedMap[item._id] ? "opacity-100" : "opacity-0"}
-      hover:scale-105`}
+                      ${loadedMap[item._id] ? "opacity-100" : "opacity-0"}
+                      hover:scale-105`}
                     />
-
                     <div className="absolute inset-0 bg-black/0 hover:bg-black/30 transition rounded-md" />
                   </div>
-                  <div className="text-xs font-normal line-clamp-1 text-center mt-3 mb-4 text-white/80 hover:text-white transition">
+                  <div className="text-xs font-medium line-clamp-2 text-center mt-3 mb-4 text-white/90 hover:text-white transition">
                     {item.name}
                   </div>
                 </div>
