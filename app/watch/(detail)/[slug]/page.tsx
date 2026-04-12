@@ -13,6 +13,7 @@ import CastSlider from "@/components/watch/detail/CastSlider";
 import { getMovieImage, getOPhimMovieDetail } from "@/lib/watch/ophim";
 import { getOPhimPeoples } from "@/lib/watch/ophim";
 import ImageSlider from "@/components/watch/detail/ImageSlider";
+import { getMovieCached } from "@/lib/watch/getMovieCached";
 
 type WatchDetailPageProps = {
   params: Promise<{
@@ -40,7 +41,8 @@ export async function generateMetadata({
   const { slug } = await params;
 
   try {
-    const data = await getOPhimMovieDetail(slug);
+    // ✅ CHỈ dùng cache
+    const data = await getMovieCached(slug);
     const movie = data?.movie;
 
     if (!movie) {
@@ -50,41 +52,47 @@ export async function generateMetadata({
       };
     }
 
+    const movieTitle = movie.name;
+    const title = `Xem phim ${movieTitle}`;
+
     const description = truncateText(
       stripHtml(movie.content) || "",
       160
     );
 
-    const poster = getMovieImage(movie.poster_url, data.cdn);
+    const thumb = getMovieImage(movie.thumb_url, data.cdn);
+
+    const url = `/watch/${slug}`;
 
     return {
-      title: slug,
+      title,
       description,
-
+      alternates: {
+        canonical: url,
+      },
       openGraph: {
-        title: slug,
+        title,
         description,
-        url: `/watch/${slug}`,
+        url,
         images: [
           {
-            url: poster,
-            width: 1200,
-            height: 630,
-            alt: slug,
+            url: thumb,
+            width: 600,
+            height: 900,
+            alt: movieTitle,
           },
         ],
       },
-
       twitter: {
-        title: slug,
+        title,
         description,
-        images: [poster],
+        images: [thumb],
       },
     };
   } catch {
     return {
-      title: slug,
-      description: "Xem phim tại VT Watch",
+      title: "VT Watch",
+      description: "Xem phim miễn phí tại VT Watch",
     };
   }
 }
@@ -97,7 +105,7 @@ export default async function WatchDetailPage({
   const query = (await searchParams) ?? {};
 
   const [data, peoples] = await Promise.all([
-  getOPhimMovieDetail(slug),
+  getMovieCached(slug),
   getOPhimPeoples(slug),
 ]);
 
