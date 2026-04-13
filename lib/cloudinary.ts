@@ -83,11 +83,11 @@ export function buildCloudinaryImage(
 // avatar nhỏ
 export function getAvatarImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 50,
-    height: 50,
+    width: 100,
+    height: 100,
     crop: "fill",
     gravity: "face",
-    quality: "auto:eco",
+    quality: "auto",
     format: "auto",
     dpr: 1,
   });
@@ -96,7 +96,7 @@ export function getAvatarImage(url?: string) {
 // thumbnail feed / card
 export function getFeedImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 600,
+    width: 800,
     crop: "limit",
     quality: "auto",
     format: "auto",
@@ -108,7 +108,7 @@ export function getFeedImage(url?: string) {
 // ảnh lớn cho lightbox / preview chất lượng cao
 export function getLightboxImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 1200,
+    width: 1600,
     crop: "limit",
     quality: "auto:good",
     format: "auto",

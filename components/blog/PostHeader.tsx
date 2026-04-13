@@ -171,15 +171,15 @@ export default function PostHeader({
             alt="avatar"
             width={40}
             height={40}
-            sizes="40px"
+            sizes="100px"
             unoptimized
-            className="size-10 rounded-full object-cover"
+            className="w-[40px] h-[40px] rounded-full object-cover pointer-events-none"
           />
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-0.75">
             <Link
               href="/bio"
-              className="flex items-center gap-0.5 text-sm font-medium text-gray-700 hover:text-black active:scale-95"
+              className="flex items-center gap-0.5 text-sm font-medium text-gray-600 hover:text-sky-800 active:scale-95"
             >
               {name}
               <i className="fad fa-badge-check text-xs text-blue-600" />
