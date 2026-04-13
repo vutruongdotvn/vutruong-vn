@@ -51,7 +51,7 @@ export const getPosts = async (from?: number, to?: number) => {
   let query = supabase
     .from("posts")
     .select("*")
-    .eq("visibility", "public")
+    // .eq("visibility", "public")
     .order("is_pinned", { ascending: false }) // 🔥 pin lên đầu
     .order("created_at", { ascending: false });
 
@@ -101,7 +101,7 @@ export const createPost = async ({
   content: string;
   files: File[];
   user_id: string;
-  visibility?: "public" | "draft" | "private";
+  visibility?: "public" | "privacy";
 }) => {
   try {
     const {
@@ -194,6 +194,22 @@ export const deletePost = async (postId: string, public_ids: string[]) => {
   try {
     console.log("🔥 DELETE SERVICE - public_ids:", public_ids);
 
+        // 🔥 XÓA BÀI VIẾT TRONG DB
+    // 🔒 CHECK USER TRƯỚC KHI DELETE
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const { data: post } = await supabase
+      .from("posts")
+      .select("user_id")
+      .eq("id", postId)
+      .single();
+
+    if (!user || !post || post.user_id !== user.id) {
+      return { success: false, error: "Không có quyền xóa bài viết" };
+    }
+
     // 🔥 XÓA ẢNH CLOUDINARY TRƯỚC
     if (public_ids && public_ids.length > 0) {
       try {
@@ -218,8 +234,11 @@ export const deletePost = async (postId: string, public_ids: string[]) => {
       }
     }
 
-    // 🔥 XÓA BÀI VIẾT TRONG DB
-    const { error } = await supabase.from("posts").delete().eq("id", postId);
+    // 🔥 XÓA BÀI VIẾT
+    const { error } = await supabase
+      .from("posts")
+      .delete()
+      .eq("id", postId);
 
     if (error) {
       console.error("Lỗi delete post:", error);
@@ -235,6 +254,13 @@ export const deletePost = async (postId: string, public_ids: string[]) => {
 
 // 📌 PIN / UNPIN POST
 export const pinPost = async (postId: string, currentPinned: boolean) => {
+  const {
+  data: { user },
+} = await supabase.auth.getUser();
+
+if (!user) {
+  return { success: false, error: "Chưa đăng nhập" };
+}
   try {
     // 👉 Nếu đang GHIM -> bấm lần nữa là BỎ GHIM
     if (currentPinned) {
@@ -480,7 +506,7 @@ export async function getPostsByHashtag(tag: string, from = 0, to = 2) {
   let query = supabase
     .from("posts")
     .select("*")
-    .eq("visibility", "public")
+    // .eq("visibility", "public")
     .contains("hashtags", [normalizedTag])
     .order("is_pinned", { ascending: false })
     .order("created_at", { ascending: false });
@@ -531,7 +557,7 @@ export async function countPostsByHashtag(tag: string) {
   const { count, error } = await supabase
     .from("posts")
     .select("*", { count: "exact", head: true })
-    .eq("visibility", "public")
+    // .eq("visibility", "public")
     .contains("hashtags", [normalizedTag]);
 
   if (error) {
@@ -565,3 +591,66 @@ export const getPostById = async (postId: string) => {
     profiles: profile || null,
   };
 };
+
+// tính năng chỉnh sửa ngày đăng bài và quyền xem bài viết (công khai / riêng tư)
+export async function updatePostDate(postId: string, newDate: string) {
+  const {
+  data: { user },
+} = await supabase.auth.getUser();
+
+const { data: post } = await supabase
+  .from("posts")
+  .select("user_id")
+  .eq("id", postId)
+  .single();
+
+if (!user || !post || post.user_id !== user.id) {
+  throw new Error("Không có quyền");
+}
+  const { data, error } = await supabase
+    .from("posts")
+    .update({
+      created_at: newDate,
+    })
+    .eq("id", postId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+
+export async function updatePostVisibility(
+  postId: string,
+  visibility: "public" | "privacy"
+) {
+  // 🔒 CHECK USER
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: post, error: postError } = await supabase
+    .from("posts")
+    .select("user_id")
+    .eq("id", postId)
+    .single();
+
+  if (postError || !user || !post || post.user_id !== user.id) {
+    throw new Error("Không có quyền");
+  }
+
+  // 🔥 UPDATE
+  const { data, error } = await supabase
+    .from("posts")
+    .update({
+      visibility,
+    })
+    .eq("id", postId)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  return data;
+}

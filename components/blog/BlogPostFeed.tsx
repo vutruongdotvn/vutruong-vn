@@ -521,18 +521,23 @@ export default function BlogPostFeed() {
         <p className="text-center text-gray-500">Chưa có bài viết nào 🧐</p>
       )}
 
-      {posts.map((post, index) => (
-        <PostCard
-          key={`${post.id}-${feedVersion}`}
-          post={post}
-          isFirst={index === 0}
-          isLast={index === posts.length - 1}
-          onPin={handlePin}
-          onDelete={handleDelete}
-          onEdit={handleEdit}
-        />
-      ))}
-
+{posts
+  .filter((post) => {
+    if (post.visibility === "public") return true;
+    if (post.visibility === "privacy" && role === "admin") return true;
+    return false;
+  })
+  .map((post, index, arr) => (
+    <PostCard
+      key={`${post.id}-${feedVersion}`}
+      post={post}
+      isFirst={index === 0}
+      isLast={index === arr.length - 1}
+      onPin={handlePin}
+      onDelete={handleDelete}
+      onEdit={handleEdit}
+    />
+  ))}
       {/* Skeleton khi tải thêm */}
       {loadingMore && (
         <div className="mt-0">

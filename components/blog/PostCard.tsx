@@ -23,14 +23,14 @@ export default function PostCard({
   const { role } = useUser();
 
   return (
-    <article className="post relative">
+    <article className="post relative z-1">
 
       {/* POST CONTENT */}
       <div
         className={`
-              rounded-2xl bg-white/80 backdrop-blur-md
+              rounded-2xl bg-white
               shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300
-              hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)]
+              hover:shadow-[0_12px_40px_rgba(0,0,0,0.075)]
               ${post.is_pinned ? "pinnedPost" : ""}
             `}
       >
@@ -45,6 +45,7 @@ export default function PostCard({
           onEdit={() => onEdit(post)}
           onDelete={() => onDelete(post)}
           hideAvatar
+          visibility={post.visibility}
         />
 
         <PostBody
