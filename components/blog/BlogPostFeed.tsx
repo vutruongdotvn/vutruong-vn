@@ -371,7 +371,31 @@ export default function BlogPostFeed() {
     };
 
     window.addEventListener("blog-post-created", handleCreatedPost);
-    return () => window.removeEventListener("blog-post-created", handleCreatedPost);
+    const handleUpdatedPost = async (event: Event) => {
+  const customEvent = event as CustomEvent;
+  const updatedPost = customEvent.detail;
+  if (!updatedPost) return;
+
+  // 🧠 UPDATE LOCAL STATE NGAY
+  const updatedList = postsRef.current.map((p) =>
+    p.id === updatedPost.id ? { ...p, ...updatedPost } : p
+  );
+
+  // 🔥 SORT LẠI (QUAN TRỌNG CHO DATE + PIN)
+  const sorted = sortPostsByPinnedAndDate(updatedList);
+
+  setPosts(sorted);
+  syncFeedMeta(sorted);
+
+  // 🔁 fallback sync server (giữ realtime chuẩn)
+  await refreshCurrentWindow({ resetUi: false });
+};
+
+window.addEventListener("blog-post-updated", handleUpdatedPost);
+    return () => {
+  window.removeEventListener("blog-post-created", handleCreatedPost);
+  window.removeEventListener("blog-post-updated", handleUpdatedPost);
+};
   }, [refreshCurrentWindow]);
 
   // Refresh Feeds Post

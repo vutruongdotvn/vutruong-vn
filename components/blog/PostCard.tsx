@@ -23,7 +23,7 @@ export default function PostCard({
   const { role } = useUser();
 
   return (
-    <article className="post relative z-1">
+    <article className="post relative">
 
       {/* POST CONTENT */}
       <div
@@ -41,6 +41,7 @@ export default function PostCard({
           postId={post.id}
           showMenu={role === "admin"}
           isPinned={post.is_pinned}
+          isAdmin={role === "admin"} // 🔥 QUAN TRỌNG
           onPin={() => onPin(post)}
           onEdit={() => onEdit(post)}
           onDelete={() => onDelete(post)}
