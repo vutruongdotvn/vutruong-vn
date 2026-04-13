@@ -71,7 +71,7 @@ export default function PostHeader({
   // ===== NEW STATE =====
   const [openDateModal, setOpenDateModal] = useState(false);
   const [openPrivacyModal, setOpenPrivacyModal] = useState(false);
-
+  const [savingPrivacy, setSavingPrivacy] = useState(false);
   const [selectedDate, setSelectedDate] = useState(createdAt);
   const [selectedTime, setSelectedTime] = useState(
     new Date(createdAt).toTimeString().slice(0, 5)
@@ -157,7 +157,9 @@ export default function PostHeader({
     );
 
     onUpdated?.(updated);
-    setOpenPrivacyModal(false);
+    setTimeout(() => {
+      setOpenPrivacyModal(false);
+    }, 50);
   };
 
   return (
@@ -211,7 +213,7 @@ export default function PostHeader({
                   {time}
                 </span>
               )}
-              
+
               {/* ✅ BẬT LOGIC */}
               {visibility === "public" ? (
                 <i
@@ -503,16 +505,21 @@ export default function PostHeader({
                   onClick={async () => {
                     if (selectedVisibility === visibility) return;
 
-                    const btn = document.activeElement as HTMLButtonElement;
-                    btn.disabled = true;
-                    btn.innerHTML = `<i class="fa-duotone fa-spinner-third fa-spin mr-1"></i> Đang lưu`;
-
+                    setSavingPrivacy(true);
                     await handleChangeVisibility();
+                    setSavingPrivacy(false);
                   }}
-                  disabled={selectedVisibility === visibility}
+                  disabled={selectedVisibility === visibility || savingPrivacy}
                   className="px-4 py-2 rounded-xl text-sm bg-gray-900 text-white disabled:opacity-50 cursor-pointer active:scale-95"
                 >
-                  Lưu thay đổi
+                  {savingPrivacy ? (
+                    <>
+                      <i className="fa-duotone fa-spinner-third fa-spin mr-1" />
+                      Đang lưu
+                    </>
+                  ) : (
+                    "Lưu thay đổi"
+                  )}
                 </button>
               </div>
             </div>
