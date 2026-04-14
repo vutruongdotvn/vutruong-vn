@@ -52,7 +52,7 @@ export default function PhotoWidget() {
           title:
             typeof post.content === "string" && post.content.trim().length > 0
               ? extractTitle(post.content)
-              : `Bài viết ${post.id.slice(0, 4)}`,
+              : `#${post.id.slice(0, 20)}`, // nếu bài viết không có nội dung thì lấy ID làm tiêu đề
         }));
 
       setPhotos(mapped);

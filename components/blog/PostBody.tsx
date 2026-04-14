@@ -137,24 +137,39 @@ export default function PostBody({
     });
   };
 
+  const videoBlocks = useMemo(() => {
+    const paragraphs = getPostParagraphs(normalizedContent);
+
+    return paragraphs.flatMap((p) =>
+      parsePostBlocks(p).filter((b) => b.type === "youtube")
+    );
+  }, [normalizedContent]);
+
   return (
     <>
       <div className="postBody text-left pt-3 text-gray-800">
         {isCollapsed ? (
-          <div className="postShortPreview sm:text-base/6 text-[.9375rem]/6 break-words overflow-hidden px-3 sm:px-4">
-            {renderInlineParts(previewText)}
+          <>
+            <div className="postShortPreview sm:text-base/6 text-[.9375rem]/6 break-words overflow-hidden px-3 sm:px-4">
+              {renderInlineParts(previewText)}
 
-            <button
-              title="Xem toàn bộ bài viết"
-              onClick={() => setIsExpanded(true)}
-              className="ml-1 inline-flex items-center gap-1 align-baseline whitespace-nowrap font-medium text-gray-800 hover:underline cursor-pointer"
-            >
-              <span>Xem thêm</span>
-            </button>
-          </div>
+              <button
+                title="Xem toàn bộ bài viết"
+                onClick={() => setIsExpanded(true)}
+                className="ml-1 inline-flex items-center gap-1 align-baseline whitespace-nowrap font-medium text-gray-800 hover:underline cursor-pointer"
+              >
+                <span>Xem thêm</span>
+              </button>
+            </div>
+
+            {/* ✅ VIDEO LUÔN HIỂN THỊ */}
+            {videoBlocks.map((block, index) => (
+              <PostEmbed key={index} videoId={block.videoId} />
+            ))}
+          </>
         ) : (
           fullParagraphs.map((paragraph, index) => {
-            const isLast = index === fullParagraphs.length - 1;
+            // const isLast = index === fullParagraphs.length - 1;
 
             // ✅ NEW: parse block
             const blocks = parsePostBlocks(paragraph);
