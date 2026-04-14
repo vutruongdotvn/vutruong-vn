@@ -54,20 +54,20 @@ export default function PostActions({
       {/* Buttons */}
       <button
       onClick={() => showToast("Đăng nhập để Thích bài viết này.", "warning")}
-      className="likeBtn cursor-pointer text-gray-500 transition hover:text-black active:scale-80"
+      className="likeBtn cursor-pointer text-[.9375rem] sm:text-base text-gray-500 transition hover:text-black active:scale-80"
     >
       <i className="fadt fa-heart" />
     </button>
       <button
       onClick={() => showToast("Bình luận đã bị tắt cho bài viết này.", "error")}
-      className="commentBtn cursor-pointer text-gray-500 transition hover:text-black active:scale-80"
+      className="commentBtn cursor-pointer text-[.9375rem] sm:text-base text-gray-500 transition hover:text-black active:scale-80"
     >
       <i className="fadt fa-comment-slash" />
     </button>
       <button
         onClick={handleShare}
         disabled={sharing}
-        className="shareBtn cursor-pointer text-gray-500 transition hover:text-black active:scale-80 disabled:opacity-50"
+        className="shareBtn cursor-pointer text-[.9375rem] sm:text-base text-gray-500 transition hover:text-black active:scale-80 disabled:opacity-50"
         title="Chia sẻ"
       >
         <i
