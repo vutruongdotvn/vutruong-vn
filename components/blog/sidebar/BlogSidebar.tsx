@@ -2,7 +2,7 @@ import IntroWidget from "@/components/blog/sidebar/widget/IntroWidget";
 
 export default function BlogSidebar() {
   return (
-    <aside className="space-y-4">
+    <aside id="sidebar" className="space-y-4">
       <IntroWidget />
     </aside>
   );
