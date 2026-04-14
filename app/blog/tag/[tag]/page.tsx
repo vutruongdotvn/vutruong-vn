@@ -410,7 +410,7 @@ export default function BlogTagPage() {
       {isReady && (
         <>
 
-          <div className="mb-7 rounded-2xl bg-white/80 backdrop-blur-md px-5 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="rounded-0 sm:rounded-xl bg-white px-3 sm:px-5 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div>
                 <h1 className="text-base text-gray-800">
