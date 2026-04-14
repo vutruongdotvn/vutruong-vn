@@ -167,3 +167,17 @@ export function getProfileAvatar(url?: string) {
     dpr: 1,
   });
 }
+
+// ảnh PhotoWidget
+export function getPhotoWidgetImage(url?: string) {
+  return buildCloudinaryImage(url, {
+    width: 300,          // grid 3x3 → ~100px mỗi ảnh trên mobile, 200–300px desktop
+    height: 300,
+    crop: "fill",
+    gravity: "auto",
+    quality: "auto:eco",
+    format: "auto",
+    dpr: 1,
+    sharpen: true,
+  });
+}
