@@ -27,13 +27,9 @@ export default function PostCard({
 
       {/* POST CONTENT */}
       <div
-        className={`
-              rounded-2xl bg-white
-              shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300
-              hover:shadow-[0_12px_40px_rgba(0,0,0,0.075)]
-              ${post.is_pinned ? "pinnedPost" : ""}
-            `}
-      >
+        className={`rounded-0 sm:rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.075)]
+        ${post.is_pinned ? "pinnedPost" : ""}
+        `}>
         <PostHeader
           name={name}
           avatar={avatar}

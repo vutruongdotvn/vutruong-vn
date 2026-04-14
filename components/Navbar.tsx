@@ -350,16 +350,16 @@ export default function Navbar() {
         <div
           className={`
             topNavbar w-full transition-all duration-800 ease-in-out
-            ${scrolled ? "max-w-lg" : "max-w-3xl"}
+            ${scrolled ? "max-w-xl" : "max-w-3xl"}
           `}
         >
           <div
             className={`
-              relative overflow-visible rounded-full border transition-all duration-500 ease-out will-change-transform
+              relative overflow-visible border transition-all duration-600 ease-in-out will-change
               ${
                 scrolled
-                  ? "border-white/50 bg-white/72 backdrop-blur-2xl shadow-[0_8px_48px_rgba(0,0,0,0.1)]"
-                  : "border-white/60 bg-white/99 backdrop-blur-xl shadow-[0_12px_36px_rgba(0,0,0,0.015)]"
+                  ? "rounded-full border-white/50 bg-white/55 backdrop-blur-xl shadow-[0_8px_48px_rgba(0,0,0,0.1)]"
+                  : "rounded-xl border-white/60 bg-white shadow-[0_12px_36px_rgba(0,0,0,0.015)]"
               }
               ${
                 visible

@@ -212,10 +212,10 @@ export default function PostCardSkeleton({
   return (
     <article className="timelineItem relative">
 
-      {/* RIGHT CONTENT */}
+      {/* CONTENT */}
       <div
         className={`
-              rounded-2xl bg-white/80 backdrop-blur-md
+              rounded-0 sm:rounded-2xl bg-white/80 backdrop-blur-md
               shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 overflow-hidden
               ${isPinned ? "pinnedPost" : ""}
             `}

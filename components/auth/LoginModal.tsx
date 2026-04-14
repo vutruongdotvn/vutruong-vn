@@ -29,17 +29,17 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
 
   const handleLogin = async () => {
     if (!email.trim() && !password.trim()) {
-      showToast("Vui lòng nhập email và mật khẩu", "warning");
+      showToast("Ê?", "warning");
       return;
     }
 
     if (!email.trim()) {
-      showToast("Vui lòng nhập email", "warning");
+      showToast("Ê??", "warning");
       return;
     }
 
     if (!password.trim()) {
-      showToast("Vui lòng nhập mật khẩu", "warning");
+      showToast("Ê???", "warning");
       return;
     }
 
@@ -54,12 +54,12 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
 
     if (error) {
       console.error("Login error:", error);
-      showToast("Email hoặc mật khẩu không đúng", "error");
+      showToast("Êeeeeeee?", "error");
       setLoading(false);
       return;
     }
 
-    showToast("Đăng nhập thành công", "success");
+    showToast("Dzô", "success");
     setLoading(false);
     onClose();
   };
