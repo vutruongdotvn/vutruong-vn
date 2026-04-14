@@ -180,3 +180,46 @@ export const smartTruncatePostContent = (
 
   return truncated + "...";
 };
+
+// =========================
+// VIDEO EMBED (YOUTUBE)
+// =========================
+
+export const extractYouTubeId = (url: string): string | null => {
+  if (!url) return null;
+
+  const regex =
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+
+  const match = url.match(regex);
+  return match ? match[1] : null;
+};
+
+// detect video
+export type PostBlock =
+  | { type: "text"; value: string }
+  | { type: "youtube"; videoId: string };
+
+export const parsePostBlocks = (text: string): PostBlock[] => {
+  if (!text) return [];
+
+  const lines = text.split("\n");
+
+  return lines.map((line) => {
+    const trimmed = line.trim();
+
+    const videoId = extractYouTubeId(trimmed);
+
+    if (videoId) {
+      return {
+        type: "youtube",
+        videoId,
+      };
+    }
+
+    return {
+      type: "text",
+      value: line,
+    };
+  });
+};

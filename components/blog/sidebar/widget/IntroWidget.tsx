@@ -141,7 +141,7 @@ export default function IntroWidget() {
             onClick={() => setEditing(true)}
             className="text-xs text-neutral-500 hover:text-neutral-800 cursor-pointer active:scale-95"
           >
-            <i className="fadt fa-pen"/>
+            <i className="fadt fa-pen" />
           </button>
         )}
       </div>

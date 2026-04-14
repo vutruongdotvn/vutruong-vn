@@ -9,6 +9,8 @@ import {
   parsePostInline,
   smartTruncatePostContent,
 } from "@/lib/utils";
+import { parsePostBlocks } from "@/lib/utils";
+import PostEmbed from "@/components/blog/PostEmbed";
 
 type Props = {
   content: string;
@@ -137,9 +139,9 @@ export default function PostBody({
 
   return (
     <>
-      <div className="postBody text-left pt-3 px-3 sm:px-4 text-gray-900">
+      <div className="postBody text-left pt-3 text-gray-800">
         {isCollapsed ? (
-          <div className="postShortPreview sm:text-base/6 text-[.9375rem]/6 break-words overflow-hidden">
+          <div className="postShortPreview sm:text-base/6 text-[.9375rem]/6 break-words overflow-hidden px-3 sm:px-4">
             {renderInlineParts(previewText)}
 
             <button
@@ -154,23 +156,46 @@ export default function PostBody({
           fullParagraphs.map((paragraph, index) => {
             const isLast = index === fullParagraphs.length - 1;
 
-            return (
-              <p
-                key={index}
-                className="postParagraph mb-3 sm:text-base/6 text-[.9375rem]/6 whitespace-pre-line break-words last:mb-0"
-              >
-                {renderInlineParts(paragraph)}
+            // ✅ NEW: parse block
+            const blocks = parsePostBlocks(paragraph);
 
-                {/*isLast && truncate && isLong && (
-            <button
-              title="Thu gọn"
-              onClick={() => setIsExpanded(false)}
-              className="ml-1 align-baseline whitespace-nowrap font-medium text-gray-800 hover:text-black cursor-pointer"
-            >
-              <i className="fa-duotone fa-angle-up text-sm" />
-            </button>
-          )*/}
-              </p>
+            return (
+              <div
+                key={index}
+                className="postParagraph mb-3 last:mb-0"
+              >
+                {blocks.map((block, blockIndex) => {
+                  // 🎬 VIDEO EMBED
+                  if (block.type === "youtube") {
+                    return (
+                      <PostEmbed
+                        key={blockIndex}
+                        videoId={block.videoId}
+                      />
+                    );
+                  }
+
+                  // 📝 TEXT (GIỮ NGUYÊN STYLE CŨ)
+                  return (
+                    <p
+                      key={blockIndex}
+                      className="sm:text-base/6 text-[.9375rem]/6 whitespace-pre-line break-words px-3 sm:px-4"
+                    >
+                      {renderInlineParts(block.value)}
+
+                      {/*isLast && truncate && isLong && (
+                  <button
+                    title="Thu gọn"
+                    onClick={() => setIsExpanded(false)}
+                    className="ml-1 align-baseline whitespace-nowrap font-medium text-gray-800 hover:text-black cursor-pointer"
+                  >
+                    <i className="fa-duotone fa-angle-up text-sm" />
+                  </button>
+                )*/}
+                    </p>
+                  );
+                })}
+              </div>
             );
           })
         )}
