@@ -87,7 +87,7 @@ export default function BlogPostFeed() {
    *
    * Tăng giá trị này để giảm tần suất gọi API; giảm để phản hồi nhanh hơn.
    */
-  const SCROLL_FETCH_DELAY = 1000;
+  const SCROLL_FETCH_DELAY = 500;
 
   const { user, role } = useUser();
   const { showToast, removeToast } = useToastContext();

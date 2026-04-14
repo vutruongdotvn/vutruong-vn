@@ -50,7 +50,7 @@ export default function NotFound() {
                 Trang chủ
               </Link>
               <Link
-                href="/"
+                href="/contact"
                 className="inline-flex items-center gap-2 rounded-full bg-black/15 px-5 py-2.5 text-sm font-medium text-black transition hover:opacity-90"
               >
                 <i className="fa-duotone fa-envelope" />

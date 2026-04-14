@@ -32,7 +32,7 @@ export default function PostEmbed({ videoId }: Props) {
 
                     {/* play button */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/70 backdrop-blur-xl shadow-lg group-hover:scale-105 transition">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/50 group-hover:bg-white/70 backdrop-blur-xl group-hover:scale-105 transition">
                             <i className="fad fa-play text-black ml-1" />
                         </div>
                     </div>

@@ -17,7 +17,7 @@ export default function PageTransition({
         initial={{ y: 0, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{
-          duration: 0.5,
+          duration: 0.85,
           ease: "easeInOut",
         }}
         className="min-h-screen will-change-opacity"

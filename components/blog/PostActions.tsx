@@ -33,7 +33,7 @@ export default function PostActions({
     try {
       if (navigator.share) {
         await navigator.share(shareData);
-        showToast("Chia sẻ thành công!", "success");
+        // showToast("Chia sẻ thành công!", "success");
         return;
       }
 
@@ -51,18 +51,19 @@ export default function PostActions({
 
   return (
     <div className="postAction flex items-center gap-4 px-4 py-3">
-      {/*<button
+      {/* Buttons */}
+      <button
       onClick={() => showToast("Đăng nhập để Thích bài viết này.", "warning")}
       className="likeBtn cursor-pointer text-gray-500 transition hover:text-black active:scale-80"
     >
-      <i className="fa-duotone fa-heart" />
+      <i className="fadt fa-heart" />
     </button>
       <button
       onClick={() => showToast("Bình luận đã bị tắt cho bài viết này.", "error")}
       className="commentBtn cursor-pointer text-gray-500 transition hover:text-black active:scale-80"
     >
-      <i className="fa-duotone fa-comment-slash" />
-    </button>*/}
+      <i className="fadt fa-comment-slash" />
+    </button>
       <button
         onClick={handleShare}
         disabled={sharing}
@@ -72,8 +73,8 @@ export default function PostActions({
         <i
           className={
             sharing
-              ? "fa-duotone fa-spinner-third fa-spin"
-              : "fa-duotone fa-share"
+              ? "fadt fa-spinner-third fa-spin"
+              : "fadt fa-share"
           }
         />
       </button>

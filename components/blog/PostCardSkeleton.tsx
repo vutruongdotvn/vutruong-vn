@@ -241,7 +241,9 @@ export default function PostCardSkeleton({
           <SkeletonMedia variant={variant} moreCount={moreCount} />
 
           {/* ACTIONS */}
-          <div className="flex items-center gap-5 py-3 px-3 sm:px-4">
+          <div className="flex items-center gap-3 py-3 px-3 sm:px-4">
+            <SkeletonAction />
+            <SkeletonAction />
             <SkeletonAction />
           </div>
         </div>

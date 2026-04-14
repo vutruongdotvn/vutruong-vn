@@ -81,6 +81,7 @@ export default function NavbarMobileMenu({
                   height={38}
                   className="pointer-events-none shrink-0"
                   priority
+                  unoptimized
                 />
                 <div className="min-w-0">
                   <Link

@@ -349,13 +349,13 @@ export default function Navbar() {
       <header className="fixed top-0 left-0 z-50 flex w-full select-none justify-center px-4 pt-4">
         <div
           className={`
-            topNavbar w-full transition-all duration-800 ease-in-out
-            ${scrolled ? "max-w-xl" : "max-w-3xl"}
+            topNavbar w-full transition-all duration-1200 ease-in-out
+            ${scrolled ? "max-w-[280px] sm:max-w-lg" : "max-w-3xl"}
           `}
         >
           <div
             className={`
-              relative overflow-visible border transition-all duration-600 ease-in-out will-change
+              relative overflow-visible border transition-all duration-1200 ease-in-out
               ${
                 scrolled
                   ? "rounded-full border-white/50 bg-white/55 backdrop-blur-xl shadow-[0_8px_48px_rgba(0,0,0,0.1)]"
