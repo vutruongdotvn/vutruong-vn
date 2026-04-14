@@ -75,7 +75,7 @@ export default function PhotoWidget() {
           ? Array.from({ length: 9 }).map((_, i) => (
             <div
               key={i}
-              className="aspect-square rounded-md bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse"
+              className="aspect-square sm:rounded-md bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse"
             />
           ))
           : photos.map((photo, index) => (
