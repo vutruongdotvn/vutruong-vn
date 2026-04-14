@@ -26,7 +26,7 @@ function extractTitle(content: string): string {
 
   const first = clean.split(/[\n\.!?]/)[0];
 
-  return first.trim().slice(0, 80) || "Bài viết";
+  return first.trim().slice(0, 100) || "Bài viết";
 }
 
 export default function PhotoWidget() {
@@ -62,24 +62,27 @@ export default function PhotoWidget() {
   }, []);
 
   return (
-  <div className="sm:rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-shadow duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.075)] p-3 sm:p-4">
-    <h3 className="block text-[.9375rem] sm:text-base font-semibold mb-3">
-      Ảnh
-    </h3>
+    <div className="
+  sm:rounded-2xl bg-white
+  shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-shadow duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.075)]
+  p-3 sm:p-4 px-0 pb-0 sm:pb-4 sm:px-4">
+      <h3 className="block text-[.9375rem] sm:text-base font-semibold mb-3 px-4 sm:px-0">
+        Ảnh
+      </h3>
 
-    <div className="grid grid-cols-3 gap-1 w-full">
-      {(photos.length === 0
-        ? Array.from({ length: 9 }).map((_, i) => (
+      <div className="grid grid-cols-3 gap-0.5 sm:gap-1 w-full">
+        {(photos.length === 0
+          ? Array.from({ length: 9 }).map((_, i) => (
             <div
               key={i}
-              className="aspect-square rounded-md bg-gradient-to-br from-gray-100 to-gray-200 dark:from-neutral-800 dark:to-neutral-700 animate-pulse"
+              className="aspect-square rounded-md bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse"
             />
           ))
-        : photos.map((photo, index) => (
+          : photos.map((photo, index) => (
             <Link
               key={photo.id}
               href={photo.href}
-              className="relative aspect-square overflow-hidden rounded-md group"
+              className="relative aspect-square rounded-0 sm:rounded-md overflow-hidden group"
             >
               <Image
                 src={getPhotoWidgetImage(photo.src)}
@@ -88,21 +91,21 @@ export default function PhotoWidget() {
                 unoptimized
                 sizes="(max-width: 768px) 33vw, 200px"
                 priority={index === 0}
-                className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                className="object-cover transition-transform duration-900 ease-out group-hover:scale-110"
               />
 
               {/* overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent sm:opacity-0 sm:group-hover:opacity-100 transition duration-300" />
 
               {/* title */}
-              <div className="absolute inset-x-0 bottom-0 p-2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition duration-300">
-                <p className="text-[11px] sm:text-xs text-white font-medium line-clamp-2">
+              <div className="absolute inset-x-0 bottom-0 p-2 sm:translate-y-2 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 transition duration-300">
+                <p className="text-[0.6875rem] sm:text-xs text-white/90 hover:text-white line-clamp-2">
                   {photo.title}
                 </p>
               </div>
             </Link>
           )))}
+      </div>
     </div>
-  </div>
-);
+  );
 }
