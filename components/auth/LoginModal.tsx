@@ -58,7 +58,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
       setLoading(false);
       return;
     }
-
+    await new Promise((r) => setTimeout(r, 300));
     showToast("Dzô", "success");
     setLoading(false);
     onClose();
