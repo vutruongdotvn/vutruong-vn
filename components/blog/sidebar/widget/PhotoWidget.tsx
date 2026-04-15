@@ -48,7 +48,7 @@ export default function PhotoWidget() {
         .from("posts")
         .select("id, images, content, created_at")
         .not("images", "eq", "{}")
-        .order("created_at", { ascending: false })
+        .order("created_at", { ascending: true }) // sắp xếp theo mới nhất trước
         .limit(9);
 
       if (error || !data) return;
