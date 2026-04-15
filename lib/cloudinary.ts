@@ -156,15 +156,17 @@ type CloudinaryLoaderParams = {
   quality?: number;
 };
 
-// avatar trong trang route app/profile
+// avatar trong trang route app/profile và trong CoverSection
 export function getProfileAvatar(url?: string) {
   return buildCloudinaryImage(url, {
     width: 144,
     height: 144,
     crop: "fill",
-    quality: "auto:eco",
+    gravity: "face",
+    quality: "auto:good",
     format: "auto",
-    dpr: 1,
+    dpr: "auto",
+    sharpen: true,
   });
 }
 
@@ -181,3 +183,4 @@ export function getPhotoWidgetImage(url?: string) {
     sharpen: true,
   });
 }
+

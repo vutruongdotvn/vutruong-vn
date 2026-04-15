@@ -1,7 +1,8 @@
 import React from "react";
 import type { Metadata } from "next";
 import BlogSidebarClient from "@/components/blog/sidebar/BlogSidebarClient";
-
+import CoverSection from "@/components/blog/CoverSection";
+import BlogNavbar from "@/components/blog/BlogNavbar";
 export const metadata: Metadata = {
   title: "Blog",
   description: "Blog cá nhân | Lưu giữ những điều đẹp đẽ và giá trị!",
@@ -15,6 +16,10 @@ export default function BlogLayout({
   return (
     <main id="blog" className="py-26">
       <div className="max-w-6xl w-full mx-auto px-0 sm:px-4 space-y-1 md:space-y-4">
+        
+        <CoverSection />
+        {/* <BlogNavbar /> */}
+
         <div className="mainBlog grid grid-cols-1 lg:grid-cols-10 gap-1 sm:gap-4">
           
           {/* SIDEBAR */}
