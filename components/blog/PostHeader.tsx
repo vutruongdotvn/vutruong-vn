@@ -341,7 +341,7 @@ export default function PostHeader({
 
               {/* Header */}
               <div className="border-b border-gray-100/80 bg-white/90 px-5 py-4 backdrop-blur-xl flex items-center justify-between">
-                <div className="flex items-center gap-2 text-gray-800 font-medium text-sm">
+                <div className="flex items-center gap-2 text-gray-800 font-medium text-sm sm:text-base">
                   <i className="fa-duotone fa-calendar" />
                   Thay đổi ngày đăng
                 </div>
@@ -436,7 +436,7 @@ export default function PostHeader({
 
               {/* Header */}
               <div className="border-b border-gray-100/80 bg-white/90 px-5 py-4 backdrop-blur-xl flex items-center justify-between">
-                <div className="flex items-center gap-2 text-gray-800 font-medium text-sm">
+                <div className="flex items-center gap-2 text-gray-800 font-medium text-sm sm:text-base">
                   <i className="fa-duotone fa-earth-asia" />
                   Chỉnh sửa đối tượng
                 </div>
@@ -455,7 +455,7 @@ export default function PostHeader({
                 {/* PUBLIC */}
                 <div
                   onClick={() => setSelectedVisibility("public")}
-                  className={`flex items-center justify-between px-4 py-3 rounded-xl border cursor-pointer active:scale-95 transition ${selectedVisibility === "public"
+                  className={`flex items-center justify-between px-4 py-3 rounded-xl border cursor-pointer transition ${selectedVisibility === "public"
                     ? "border-gray-900 bg-gray-50"
                     : "border-gray-200 hover:bg-gray-50"
                     }`}
@@ -474,7 +474,7 @@ export default function PostHeader({
                 {/* PRIVATE */}
                 <div
                   onClick={() => setSelectedVisibility("privacy")}
-                  className={`flex items-center justify-between px-4 py-3 rounded-xl border cursor-pointer active:scale-95 transition ${selectedVisibility === "privacy"
+                  className={`flex items-center justify-between px-4 py-3 rounded-xl border cursor-pointer transition ${selectedVisibility === "privacy"
                     ? "border-gray-900 bg-gray-50"
                     : "border-gray-200 hover:bg-gray-50"
                     }`}
