@@ -149,8 +149,10 @@ export default function IntroWidget() {
       {/* VIEW */}
       {!editing && (
         loadingProfile ? (
-          <div className="space-y-2 sm:space-y-4 animate-pulse">
+          <div className="space-y-1.5 sm:space-y-3 animate-pulse">
+            <div className="h-[1rem] bg-gray-100 rounded-full w-full"></div>
             <div className="h-[1rem] bg-gray-100 rounded-full w-3/4"></div>
+            <div className="h-[1rem] bg-gray-100 rounded-full w-1/3"></div>
           </div>
         ) : (
           <p className="text-sm sm:text-base/6 text-gray-800 dark:text-neutral-400 whitespace-pre-line">
