@@ -53,9 +53,8 @@ export default function CoverSection() {
     if (loading) {
         return (
             <div className="w-full">
-
                 {/* COVER */}
-                <div className="relative w-full h-[240px] sm:h-[360px] md:h-[480px] overflow-hidden rounded-0 sm:rounded-2xl bg-gray-200 animate-pulse">
+                <div className="relative w-full h-[240px] sm:h-[360px] md:h-[480px] overflow-hidden rounded-0 sm:rounded-2xl bg-white/80 animate-pulse">
 
                     {/* OVERLAY */}
                     <div className="absolute inset-0 bg-none" />
@@ -63,30 +62,22 @@ export default function CoverSection() {
                     {/* INFO SKELETON */}
                     <div className="absolute bottom-0 left-0 right-0">
                         <div className="px-3 sm:px-4 pb-3 sm:pb-4">
-
                             <div className="flex items-center gap-4">
-
                                 {/* AVATAR */}
                                 <div className="size-18 sm:size-24 md:size-28 rounded-full bg-gray-100 backdrop-blur-md" />
 
                                 {/* TEXT */}
                                 <div className="flex flex-col gap-2">
-
                                     {/* NAME */}
                                     <div className="h-4 sm:h-5 md:h-6 w-28 sm:w-36 md:w-44 rounded-md bg-gray-100" />
-
                                     {/* TAGLINE */}
                                     <div className="h-3 sm:h-4 w-40 sm:w-56 md:w-64 rounded-md bg-gray-100" />
-
                                 </div>
 
                             </div>
-
                         </div>
                     </div>
-
                 </div>
-
             </div>
         );
     }
@@ -105,7 +96,7 @@ export default function CoverSection() {
         <div className="w-full">
 
             {/* COVER WRAPPER */}
-            <div className="relative w-full h-[240px] sm:h-[360px] md:h-[480px] overflow-hidden rounded-0 sm:rounded-2xl">
+            <div className="relative w-full h-[240px] sm:h-[360px] md:h-[480px] overflow-hidden rounded-0 sm:rounded-2xl group">
 
                 {/* COVER IMAGE */}
                 <Image
@@ -118,8 +109,37 @@ export default function CoverSection() {
                     priority
                 />
 
-                {/* OVERLAY GRADIENT */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                {/* OVERLAY BLUR GRADIENT */}
+                <div
+                    className="
+    absolute left-0 bottom-0 h-full w-full 
+    backdrop-blur-sm 
+    bg-gradient-to-t from-black/50 via-black/15 to-transparent 
+    pointer-events-none 
+    transition-opacity duration-900 ease-out
+    group-hover:opacity-25
+  "
+                    style={{
+                        maskImage: `linear-gradient(
+      to top,
+      rgba(0,0,0,1) 0%,
+      rgba(0,0,0,0.85) 20%,
+      rgba(0,0,0,0.6) 40%,
+      rgba(0,0,0,0.3) 60%,
+      rgba(0,0,0,0.1) 80%,
+      rgba(0,0,0,0) 100%
+    )`,
+                        WebkitMaskImage: `linear-gradient(
+      to top,
+      rgba(0,0,0,1) 0%,
+      rgba(0,0,0,0.85) 20%,
+      rgba(0,0,0,0.6) 40%,
+      rgba(0,0,0,0.3) 60%,
+      rgba(0,0,0,0.1) 80%,
+      rgba(0,0,0,0) 100%
+    )`,
+                    }}
+                />
 
                 {/* INFO CARD (ABSOLUTE) */}
                 <div className="absolute bottom-0 left-0 right-0">
@@ -139,8 +159,8 @@ export default function CoverSection() {
                                         {profile.name || "Vũ Trường"}
                                         <i className="fad fa-badge-check text-sm sm:text-base text-sky-600" />
                                     </div>
-                                    <div className="text-[.8375rem] sm:text-base/6 text-white/80">
-                                        {postStats.total} bài viết <span className="mx-0.5 text-sm">•</span> {postStats.today} bài viết mới
+                                    <div className="text-[.8375rem] sm:text-sm/6 text-white/80">
+                                        <b>{postStats.total}</b> bài viết <span className="mx-0.5 text-sm">•</span> <b>{postStats.today}</b> bài mới
                                     </div>
                                 </div>
                             </div>
