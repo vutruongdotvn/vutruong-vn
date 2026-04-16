@@ -179,8 +179,8 @@ export function getProfileAvatar(url?: string) {
 // ảnh PhotoWidget
 export function getPhotoWidgetImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 300,          // grid 3x3 → ~100px mỗi ảnh trên mobile, 200–300px desktop
-    height: 300,
+    width: 200,          // grid 3x3 → ~100px mỗi ảnh trên mobile, 200–300px desktop
+    height: 200,
     crop: "fill",
     gravity: "auto",
     quality: "auto:eco",

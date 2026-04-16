@@ -38,7 +38,7 @@ export const formatTimeAgo = (date: string) => {
 
   // return `${day} tháng ${month}, ${year} lúc ${hours}:${minutes}`;
   // return `${day}/${month}/${year}`;
-  return `${day} tháng ${month}`;
+  return `${day} tháng ${month}, ${year}`;
 };
 
 // =========================

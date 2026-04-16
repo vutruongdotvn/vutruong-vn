@@ -179,10 +179,10 @@ export default function PostHeader({
           <div className="flex flex-col gap-0.75">
             <Link
               href="/bio"
-              className="flex items-center gap-0.5 text-sm font-medium text-gray-600 hover:text-sky-800 active:scale-95"
+              className="flex items-center gap-1 text-sm font-medium text-gray-800 hover:text-black active:scale-95"
             >
               {name}
-              <i className="fad fa-badge-check text-xs text-blue-600" />
+              <i className="fad fa-badge-check text-xs text-blue-600" title="Tài khoản đã được xác thực." />
             </Link>
 
             <div className="flex items-center gap-1.5">

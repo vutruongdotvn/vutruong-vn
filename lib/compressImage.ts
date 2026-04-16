@@ -15,10 +15,10 @@ export async function compressImage(
   }
 
   const options = {
-    maxSizeMB: customOptions.maxSizeMB ?? 0.8,
+    maxSizeMB: customOptions.maxSizeMB ?? 1,
     maxWidthOrHeight: customOptions.maxWidthOrHeight ?? 1600,
     useWebWorker: true,
-    initialQuality: customOptions.initialQuality ?? 0.78,
+    initialQuality: customOptions.initialQuality ?? 0.8,
     alwaysKeepResolution: false,
   };
 

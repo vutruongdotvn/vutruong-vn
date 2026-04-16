@@ -617,7 +617,7 @@ export default function CreatePostModal({
       {/* Modal */}
       <div
         className="relative z-10 flex w-full max-w-4xl max-h-screen md:max-h-[94vh] flex-col overflow-hidden
-        rounded-0 md:rounded-3xl border border-white/60 bg-white/95 shadow-[0_25px_80px_rgba(0,0,0,0.18)] animate-fadeIn"
+        rounded-0 md:rounded-3xl border border-white/60 bg-white shadow-[0_25px_80px_rgba(0,0,0,0.18)] animate-fadeIn"
         onDragEnter={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -668,10 +668,10 @@ export default function CreatePostModal({
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className="text-[18px] sm:text-[20px] font-semibold text-gray-900 leading-tight">
-                    {isEditMode ? "Chỉnh sửa bài viết" : "Tạo bài viết mới"}
+                    {isEditMode ? "Chỉnh sửa bài viết" : "Đăng bài viết"}
                   </h2>
                 </div>
-                <p className="mt-0.5 text-sm text-gray-500">
+                <p className="mt-0.5 text-sm text-gray-500 hidden">
                   {isEditMode
                     ? "Sửa nội dung, thêm/xóa ảnh"
                     : "Đăng bài viết hoặc hình ảnh"}
@@ -691,7 +691,7 @@ export default function CreatePostModal({
         </div>
 
         {/* Scroll body */}
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-6">
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-6 bg-white">
           <div className="space-y-6">
             {/* Editor */}
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
@@ -729,12 +729,13 @@ export default function CreatePostModal({
                   className="w-full bg-transparent text-base/6 text-gray-900 placeholder:text-gray-400 outline-none resize-none overflow-hidden min-h-[1rem] align-top"
                 />
 
+                {/* Nút Bold floating right
                 {selectionHint?.visible && (
                   <button
                     type="button"
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={handleWrapBold}
-                    className="absolute z-20 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/95 px-3 py-2 text-xs font-medium text-gray-700 shadow-lg backdrop-blur-sm transition hover:bg-gray-50 opacity-0 pointer-events-none"
+                    className="absolute z-20 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/95 px-3 py-2 text-xs font-medium text-gray-700 shadow-md backdrop-blur-sm transition hover:bg-gray-50"
                     style={{
                       top: selectionHint.top,
                       left: selectionHint.left,
@@ -744,6 +745,7 @@ export default function CreatePostModal({
                     **In đậm**
                   </button>
                 )}
+                */}
 
 
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
@@ -765,16 +767,6 @@ export default function CreatePostModal({
                       <i className="fa-duotone fa-image" />
                       Ảnh
                     </button>
-
-                    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
-                      <i className="fa-duotone fa-paste" />
-                      Dán ảnh
-                    </span>
-
-                    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
-                      <i className="fa-duotone fa-hashtag" />
-                      Auto Hashtag
-                    </span>
                   </div>
                 </div>
 
@@ -786,11 +778,8 @@ export default function CreatePostModal({
               <div className="flex flex-wrap items-end justify-between gap-3">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">
-                    Hình ảnh đính kèm
+                    Hình ảnh
                   </h3>
-                  <p className="mt-0.5 text-sm text-gray-500">
-                    Kéo thả/dán/sắp xếp ảnh
-                  </p>
                 </div>
 
                 <div className="text-sm font-medium text-gray-400">
@@ -844,10 +833,10 @@ export default function CreatePostModal({
                     <i className="fa-duotone fa-image text-2xl" />
                   </div>
                   <p className="text-base font-semibold text-gray-900">
-                    Chưa có ảnh nào được chọn
+                    Chưa có ảnh nào
                   </p>
-                  <p className="mt-2 max-w-md text-sm text-gray-500">
-                    Nhấn để chọn ảnh, kéo thả vào đây hoặc dán ảnh trực tiếp
+                  <p className="mt-1 max-w-md text-sm text-gray-500">
+                    Nhấn để chọn ảnh, kéo thả hoặc dán ảnh trực tiếp
                   </p>
                 </div>
               )}

@@ -190,11 +190,14 @@ export const createPost = async ({
 };
 
 // 🗑️ DELETE POST
+// 🗑️ DELETE POST
 export const deletePost = async (postId: string, public_ids: string[]) => {
   try {
-    console.log("🔥 DELETE SERVICE - public_ids:", public_ids);
+    // 1. Dùng hàm normalize để làm sạch dữ liệu thành mảng chuẩn (loại bỏ các giá trị rỗng)
+    const safePublicIds = normalizePublicIds(public_ids); 
+    
+    console.log("🔥 DELETE SERVICE - safePublicIds:", safePublicIds);
 
-    // 🔥 XÓA BÀI VIẾT TRONG DB
     // 🔒 CHECK USER TRƯỚC KHI DELETE
     const {
       data: { user },
@@ -210,8 +213,8 @@ export const deletePost = async (postId: string, public_ids: string[]) => {
       return { success: false, error: "Không có quyền xóa bài viết" };
     }
 
-    // 🔥 XÓA ẢNH CLOUDINARY TRƯỚC
-    if (public_ids && public_ids.length > 0) {
+    // 🔥 2. XÓA ẢNH CLOUDINARY TRƯỚC (Chỉ gọi API nếu THỰC SỰ có ảnh)
+    if (safePublicIds.length > 0) {
       try {
         // Lấy token phiên đăng nhập hiện tại
         const { data: { session } } = await supabase.auth.getSession();
@@ -220,9 +223,10 @@ export const deletePost = async (postId: string, public_ids: string[]) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": session ? `Bearer ${session.access_token}` : "", // Bơm token vào header
+            "Authorization": session ? `Bearer ${session.access_token}` : "", // Bảo mật Token
           },
-          body: JSON.stringify({ public_ids }),
+          // Truyền mảng đã làm sạch xuống API
+          body: JSON.stringify({ public_ids: safePublicIds }), 
         });
 
         const data = await res.json();
@@ -236,9 +240,11 @@ export const deletePost = async (postId: string, public_ids: string[]) => {
         console.error("❌ FETCH DELETE ERROR:", err);
         return { success: false, error: "Không thể gọi API xóa ảnh" };
       }
+    } else {
+      console.log("✅ Không có ảnh để xóa, bỏ qua bước gọi API Cloudinary.");
     }
 
-    // 🔥 XÓA BÀI VIẾT
+    // 🔥 XÓA BÀI VIẾT TRONG DATABASE
     const { error } = await supabase
       .from("posts")
       .delete()

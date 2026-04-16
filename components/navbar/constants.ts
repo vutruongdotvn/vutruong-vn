@@ -2,16 +2,16 @@ import { MenuItem } from "./types";
 
 export const mainMenu: MenuItem[] = [
   { name: "Home", href: "/", icon: "fa-duotone fa-house" },
+  { name: "Bio", href: "/bio", icon: "fa-duotone fa-users" },
+  { name: "Contact", href: "/contact", icon: "fa-duotone fa-envelope" },
   { name: "Blog", href: "/blog", icon: "fa-duotone fa-comment-pen" },
 ];
 
 export const moreMenu: MenuItem[] = [
-  { name: "Bio", href: "/bio", icon: "fa-duotone fa-users" },
   { name: "Project", href: "/project", icon: "fa-duotone fa-code" },
-  { name: "Contact", href: "/contact", icon: "fa-duotone fa-envelope" },
   { name: "Watch", href: "/watch", icon: "fa-duotone fa-clapperboard-play" },
   { name: "Secret", href: "/secret", icon: "fa-duotone fa-lock-keyhole" },
-  { name: "Manage", href: "/admin", icon: "fa-duotone fa-user-gear" },
+  { name: "Admin", href: "/admin", icon: "fa-duotone fa-user-gear" },
 ];
 
 export const mobileMenu: MenuItem[] = [...mainMenu, ...moreMenu];

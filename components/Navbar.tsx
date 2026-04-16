@@ -350,15 +350,15 @@ export default function Navbar() {
         <div
           className={`
             topNavbar w-full transition-all duration-1200 ease-in-out
-            ${scrolled ? "max-w-[280px] sm:max-w-lg" : "max-w-3xl"}
+            ${scrolled ? "max-w-[280px] sm:max-w-[360px] md:max-w-3xl" : "max-w-4xl"}
           `}
         >
           <div
             className={`
-              relative overflow-visible border transition-all duration-1200 ease-in-out
+              relative overflow-visible border transition-all duration-1200 ease-in-out hover:bg-white
               ${
                 scrolled
-                  ? "rounded-full border-white/50 bg-white/55 backdrop-blur-xl shadow-[0_8px_48px_rgba(0,0,0,0.1)]"
+                  ? "rounded-full border-white/30 bg-white/50 backdrop-blur-xl shadow-[0_8px_48px_rgba(0,0,0,0.1)]"
                   : "rounded-xl border-white/60 bg-white shadow-[0_12px_36px_rgba(0,0,0,0.015)]"
               }
               ${
@@ -373,7 +373,7 @@ export default function Navbar() {
             <div
               className={`
                 relative flex items-center justify-between transition-all duration-300
-                ${scrolled ? "px-1 py-1 ps-2" : "px-3.5 py-2.5 ps-3"}
+                ${scrolled ? "px-0.5 py-0.5 ps-1.5" : "px-3.5 py-2.5 ps-3"}
               `}
             >
               <NavbarBrand

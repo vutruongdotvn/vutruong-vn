@@ -54,7 +54,7 @@ export default function CoverSection() {
         return (
             <div className="w-full">
                 {/* COVER */}
-                <div className="relative w-full h-[240px] sm:h-[360px] md:h-[480px] overflow-hidden rounded-0 sm:rounded-2xl bg-white/80 animate-pulse">
+                <div className="relative w-full h-[240px] sm:h-[360px] md:h-[480px] overflow-hidden rounded-0 sm:rounded-2xl bg-white animate-pulse">
 
                     {/* OVERLAY */}
                     <div className="absolute inset-0 bg-none" />
@@ -64,14 +64,14 @@ export default function CoverSection() {
                         <div className="px-3 sm:px-4 pb-3 sm:pb-4">
                             <div className="flex items-center gap-4">
                                 {/* AVATAR */}
-                                <div className="size-18 sm:size-24 md:size-28 rounded-full bg-gray-100 backdrop-blur-md" />
+                                <div className="size-20 sm:size-26 md:size-30 rounded-full bg-gray-200 backdrop-blur-md animate-pulse" />
 
                                 {/* TEXT */}
                                 <div className="flex flex-col gap-2">
                                     {/* NAME */}
-                                    <div className="h-4 sm:h-5 md:h-6 w-28 sm:w-36 md:w-44 rounded-md bg-gray-100" />
+                                    <div className="h-4 sm:h-5 md:h-6 w-28 sm:w-36 md:w-44 rounded-md bg-gray-200 animate-pulse" />
                                     {/* TAGLINE */}
-                                    <div className="h-3 sm:h-4 w-40 sm:w-56 md:w-64 rounded-md bg-gray-100" />
+                                    <div className="h-3 sm:h-4 w-40 sm:w-56 md:w-64 rounded-md bg-gray-200 animate-pulse" />
                                 </div>
 
                             </div>
@@ -90,7 +90,7 @@ export default function CoverSection() {
             : profile.cover_image || "/cover.jpg";
 
     const avatar =
-        getProfileAvatar(profile.avatar) || "/og/avatar.png";
+        getProfileAvatar(profile.avatar) || "/logo.png";
 
     return (
         <div className="w-full">
@@ -104,9 +104,9 @@ export default function CoverSection() {
                     alt="cover"
                     fill
                     unoptimized
-                    className="object-cover opacity-0 transition-opacity duration-1200 ease-out"
+                    className="object-cover opacity-0 transition-opacity duration-1200 ease-out pointer-events-none"
                     onLoad={(e) => e.currentTarget.classList.remove("opacity-0")}
-                    priority
+                    priority loading="eager"
                 />
 
                 {/* OVERLAY BLUR GRADIENT */}
@@ -149,15 +149,15 @@ export default function CoverSection() {
                             <div className="flex items-center gap-4">
 
                                 {/* AVATAR */}
-                                <div className="relative size-18 sm:size-24 md:size-28 rounded-full shadow-xl overflow-hidden pointer-events-none">
-                                    <Image src={avatar} alt="avatar" fill unoptimized className="object-cover" />
+                                <div className="relative size-20 sm:size-26 md:size-30 rounded-full shadow-xl overflow-hidden pointer-events-none">
+                                    <Image src={avatar} alt="avatar" fill unoptimized loading="eager" className="object-cover" />
                                 </div>
 
                                 {/* NAME */}
                                 <div className="flex items-start gap-0 sm:gap-0.5 flex-col">
                                     <div className="text-base sm:text-xl md:text-2xl font-semibold flex items-center gap-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
                                         {profile.name || "Vũ Trường"}
-                                        <i className="fad fa-badge-check text-sm sm:text-base text-sky-600" />
+                                        <i className="fad fa-badge-check text-sm sm:text-base text-blue-600 cursor-pointer active:scale-95" title="Tài khoản đã được xác thực." />
                                     </div>
                                     <div className="text-[.8375rem] sm:text-sm/6 text-white/80">
                                         <b>{postStats.total}</b> bài viết <span className="mx-0.5 text-sm">•</span> <b>{postStats.today}</b> bài mới
