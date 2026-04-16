@@ -170,7 +170,7 @@ export default function IntroWidget() {
             role="textbox"
             spellCheck={false}
             data-placeholder="Nhập giới thiệu..."
-            className="w-full text-[.9375rem] sm:text-base/6 outline-none whitespace-pre-wrap break-words empty:before:content-[attr(data-placeholder)] empty:before:text-neutral-400"
+            className="w-full text-sm sm:text-base/6 outline-none whitespace-pre-wrap break-words empty:before:content-[attr(data-placeholder)] empty:before:text-neutral-400"
             onInput={(e) => {
               setBio(e.currentTarget.innerText);
             }}
@@ -187,7 +187,7 @@ export default function IntroWidget() {
           <div className="flex justify-end gap-1 mt-4 pt-4 border-t border-black/5">
             <button
               onClick={handleCancel}
-              className="text-xs px-5 py-2 rounded-full bg-gray-50 hover:bg-gray-100 active:bg-gray-200 cursor-pointer active:scale-95"
+              className="text-xs px-5 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 cursor-pointer active:scale-95"
             >
               Huỷ
             </button>
@@ -195,7 +195,7 @@ export default function IntroWidget() {
             <button
               onClick={handleSave}
               disabled={!hasChanged || loading}
-              className="text-xs px-5 py-2 rounded-full bg-black/80 hover:bg-black text-white cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-xs px-5 py-2 rounded-lg bg-black/80 hover:bg-black text-white cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Đang lưu" : "Lưu thay đổi"}
             </button>

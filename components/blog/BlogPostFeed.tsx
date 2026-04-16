@@ -50,31 +50,31 @@ export default function BlogPostFeed() {
   const LOAD_MORE_LIMIT = 5;
 
   const buildFeedSkeletonSnapshot = (items: any[], fallbackCount = 1) => {
-  if (Array.isArray(items) && items.length > 0) {
-    return buildSkeletonLayoutsFromPosts(items);
-  }
+    if (Array.isArray(items) && items.length > 0) {
+      return buildSkeletonLayoutsFromPosts(items);
+    }
 
-  return Array.from({ length: fallbackCount }, (_, index) => ({
-    variant:
-      index === 0
-        ? ("single-landscape" as const)
-        : index === 1
-        ? ("text" as const)
-        : index === 2
-        ? ("triple-top-hero" as const)
-        : ("grid" as const),
-    isPinned: index === 0,
-    textDensity:
-      index === 0
-        ? ("medium" as const)
-        : index === 1
-        ? ("short" as const)
-        : index === 2
-        ? ("long" as const)
-        : ("medium" as const),
-    moreCount: 0,
-  }));
-};
+    return Array.from({ length: fallbackCount }, (_, index) => ({
+      variant:
+        index === 0
+          ? ("single-landscape" as const)
+          : index === 1
+            ? ("text" as const)
+            : index === 2
+              ? ("triple-top-hero" as const)
+              : ("grid" as const),
+      isPinned: index === 0,
+      textDensity:
+        index === 0
+          ? ("medium" as const)
+          : index === 1
+            ? ("short" as const)
+            : index === 2
+              ? ("long" as const)
+              : ("medium" as const),
+      moreCount: 0,
+    }));
+  };
 
 
   /**
@@ -87,7 +87,7 @@ export default function BlogPostFeed() {
    *
    * Tăng giá trị này để giảm tần suất gọi API; giảm để phản hồi nhanh hơn.
    */
-  const SCROLL_FETCH_DELAY = 500;
+  const SCROLL_FETCH_DELAY = 1000;
 
   const { user, role } = useUser();
   const { showToast, removeToast } = useToastContext();
@@ -372,30 +372,30 @@ export default function BlogPostFeed() {
 
     window.addEventListener("blog-post-created", handleCreatedPost);
     const handleUpdatedPost = async (event: Event) => {
-  const customEvent = event as CustomEvent;
-  const updatedPost = customEvent.detail;
-  if (!updatedPost) return;
+      const customEvent = event as CustomEvent;
+      const updatedPost = customEvent.detail;
+      if (!updatedPost) return;
 
-  // 🧠 UPDATE LOCAL STATE NGAY
-  const updatedList = postsRef.current.map((p) =>
-    p.id === updatedPost.id ? { ...p, ...updatedPost } : p
-  );
+      // 🧠 UPDATE LOCAL STATE NGAY
+      const updatedList = postsRef.current.map((p) =>
+        p.id === updatedPost.id ? { ...p, ...updatedPost } : p
+      );
 
-  // 🔥 SORT LẠI (QUAN TRỌNG CHO DATE + PIN)
-  const sorted = sortPostsByPinnedAndDate(updatedList);
+      // 🔥 SORT LẠI (QUAN TRỌNG CHO DATE + PIN)
+      const sorted = sortPostsByPinnedAndDate(updatedList);
 
-  setPosts(sorted);
-  syncFeedMeta(sorted);
+      setPosts(sorted);
+      syncFeedMeta(sorted);
 
-  // 🔁 fallback sync server (giữ realtime chuẩn)
-  await refreshCurrentWindow({ resetUi: false });
-};
+      // 🔁 fallback sync server (giữ realtime chuẩn)
+      await refreshCurrentWindow({ resetUi: false });
+    };
 
-window.addEventListener("blog-post-updated", handleUpdatedPost);
+    window.addEventListener("blog-post-updated", handleUpdatedPost);
     return () => {
-  window.removeEventListener("blog-post-created", handleCreatedPost);
-  window.removeEventListener("blog-post-updated", handleUpdatedPost);
-};
+      window.removeEventListener("blog-post-created", handleCreatedPost);
+      window.removeEventListener("blog-post-updated", handleUpdatedPost);
+    };
   }, [refreshCurrentWindow]);
 
   // Refresh Feeds Post
@@ -516,9 +516,12 @@ window.addEventListener("blog-post-updated", handleUpdatedPost);
           >
             <div className="flex items-center justify-center text-3xl">
               {refreshing ? (
-                <i className="fa-duotone fa-spinner-third fa-spin text-slate-600" />
+                <i
+                  className="fad fa-spinner-third fa-spin text-slate-600"
+                  style={{ "--fa-animation-duration": ".65s" } as React.CSSProperties}
+                />
               ) : (
-                <i className="fa-duotone fa-circle-check text-green-600" />
+                <i className="fad fa-circle-check text-sky-600" />
               )}
             </div>
           </div>
@@ -545,26 +548,26 @@ window.addEventListener("blog-post-updated", handleUpdatedPost);
         <p className="text-center text-gray-500">Chưa có bài viết nào 🧐</p>
       )}
 
-{posts
-  .filter((post) => {
-    if (post.visibility === "public") return true;
-    if (post.visibility === "privacy" && role === "admin") return true;
-    return false;
-  })
-  .map((post, index, arr) => (
-    <PostCard
-      key={`${post.id}-${feedVersion}`}
-      post={post}
-      isFirst={index === 0}
-      isLast={index === arr.length - 1}
-      onPin={handlePin}
-      onDelete={handleDelete}
-      onEdit={handleEdit}
-    />
-  ))}
+      {posts
+        .filter((post) => {
+          if (post.visibility === "public") return true;
+          if (post.visibility === "privacy" && role === "admin") return true;
+          return false;
+        })
+        .map((post, index, arr) => (
+          <PostCard
+            key={`${post.id}-${feedVersion}`}
+            post={post}
+            isFirst={index === 0}
+            isLast={index === arr.length - 1}
+            onPin={handlePin}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+          />
+        ))}
       {/* Skeleton khi tải thêm */}
       {loadingMore && (
-        <div className="mt-0">
+        <div className="m-0">
           <SmartPostSkeletonFeed
             mode="loadMore"
             layouts={loadMoreSkeletonLayouts}

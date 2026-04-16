@@ -31,7 +31,7 @@ function SkeletonLine({
 }) {
   return (
     <div
-      className={`rounded-xl bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse ${height} ${width} ${className}`}
+      className={`rounded-xl bg-gray-200 animate-pulse ${height} ${width} ${className}`}
     />
   );
 }
@@ -104,7 +104,7 @@ function SkeletonMedia({
 
   if (variant === "single-landscape") {
     return (
-      <div className="postImages relative mt-3 overflow-hidden select-none max-h-[78vh] w-full px-3 sm:px-0">
+      <div className="postImages relative mt-3 overflow-hidden select-none max-h-[78vh] w-full px-0">
         <MediaBlock className="w-full aspect-[4/3] rounded-lg sm:rounded-none" />
       </div>
     );
@@ -112,7 +112,7 @@ function SkeletonMedia({
 
   if (variant === "single-portrait") {
     return (
-      <div className="postImages relative mt-3 overflow-hidden select-none max-h-[78vh] w-full aspect-[3/4] px-3 sm:px-0">
+      <div className="postImages relative mt-3 overflow-hidden select-none max-h-[78vh] w-full aspect-[3/4] px-0">
         <MediaBlock className="w-full h-full rounded-lg sm:rounded-none" />
       </div>
     );
@@ -120,7 +120,7 @@ function SkeletonMedia({
 
   if (variant === "double-portrait") {
     return (
-      <div className="postImages grid grid-cols-2 gap-0.5 mt-3 select-none overflow-hidden px-3 sm:px-0">
+      <div className="postImages grid grid-cols-2 gap-0.5 mt-3 select-none overflow-hidden px-0">
         <MediaBlock className="aspect-[3/4] rounded-l-lg sm:rounded-none" />
         <MediaBlock className="aspect-[3/4] rounded-r-lg sm:rounded-none" />
       </div>
@@ -129,7 +129,7 @@ function SkeletonMedia({
 
   if (variant === "double-landscape") {
     return (
-      <div className="postImages grid grid-cols-2 gap-0.5 mt-3 select-none overflow-hidden px-3 sm:px-0">
+      <div className="postImages grid grid-cols-2 gap-0.5 mt-3 select-none overflow-hidden px-0">
         <MediaBlock className="aspect-[4/3] rounded-l-lg sm:rounded-none" />
         <MediaBlock className="aspect-[4/3] rounded-r-lg sm:rounded-none" />
       </div>
@@ -138,7 +138,7 @@ function SkeletonMedia({
 
   if (variant === "double-mixed") {
     return (
-      <div className="postImages grid grid-cols-2 gap-0.5 mt-3 select-none overflow-hidden px-3 sm:px-0">
+      <div className="postImages grid grid-cols-2 gap-0.5 mt-3 select-none overflow-hidden px-0">
         <MediaBlock className="aspect-square rounded-l-lg sm:rounded-none" />
         <MediaBlock className="aspect-square rounded-r-lg sm:rounded-none" />
       </div>
@@ -147,7 +147,7 @@ function SkeletonMedia({
 
   if (variant === "triple-top-hero") {
     return (
-      <div className="postImages mt-3 grid gap-0.5 select-none overflow-hidden px-3 sm:px-0">
+      <div className="postImages mt-3 grid gap-0.5 select-none overflow-hidden px-0">
         <div className="relative w-full aspect-video">
           <MediaBlock className="w-full h-full rounded-t-lg sm:rounded-none" />
         </div>
@@ -162,7 +162,7 @@ function SkeletonMedia({
 
   if (variant === "triple-left-hero") {
     return (
-      <div className="postImages grid grid-cols-2 gap-0.5 select-none aspect-[4/3] overflow-hidden mt-3 px-3 sm:px-0">
+      <div className="postImages grid grid-cols-2 gap-0.5 select-none aspect-[4/3] overflow-hidden mt-3 px-0">
         <MediaBlock className="h-full rounded-l-lg sm:rounded-none" />
 
         <div className="grid grid-rows-2 gap-0.5 h-full">
@@ -175,7 +175,7 @@ function SkeletonMedia({
 
   if (variant === "grid") {
     return (
-      <div className="postImages grid grid-cols-2 gap-0.5 mt-3 select-none overflow-hidden px-3 sm:px-0">
+      <div className="postImages grid grid-cols-2 gap-0.5 mt-3 select-none overflow-hidden px-0">
         <MediaBlock className="aspect-[4/3] rounded-tl-lg sm:rounded-none" />
         <MediaBlock className="aspect-[4/3] rounded-tr-lg sm:rounded-none" />
         <MediaBlock className="aspect-[4/3] rounded-bl-lg sm:rounded-none" />
@@ -185,7 +185,7 @@ function SkeletonMedia({
   }
 
   return (
-    <div className="postImages grid grid-cols-2 gap-0.5 mt-3 select-none overflow-hidden px-3 sm:px-0">
+    <div className="postImages grid grid-cols-2 gap-0.5 mt-3 select-none overflow-hidden px-0">
       <MediaBlock className="aspect-[4/3] rounded-tl-lg sm:rounded-none" />
       <MediaBlock className="aspect-[4/3] rounded-tr-lg sm:rounded-none" />
       <MediaBlock className="aspect-[4/3] rounded-bl-lg sm:rounded-none" />
@@ -224,15 +224,15 @@ export default function PostCardSkeleton({
         <div className="flex items-center justify-between px-3 sm:px-4 pt-3 sm:pt-4 select-none">
           <div className="flex items-center gap-2 min-w-0">
             <div className="leading-6 flex items-center gap-2 min-w-0 flex-wrap">
-              <div className="size-10 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse border border-neutral-200" />
+              <div className="size-10 rounded-full bg-gray-200 animate-pulse border border-neutral-200" />
               <div className="flex items-start flex-col gap-1.5">
-              <div className="h-4 w-24 rounded-xl bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
-              <div className="h-3 w-18 rounded-xl bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+              <div className="h-4 w-24 rounded-xl bg-gray-200 animate-pulse" />
+              <div className="h-3 w-18 rounded-xl bg-gray-200 animate-pulse" />
               </div>
             </div>
           </div>
 
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+          <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
         </div>
 
         {/* BODY */}

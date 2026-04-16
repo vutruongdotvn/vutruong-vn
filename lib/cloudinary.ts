@@ -1,33 +1,39 @@
-export const uploadImage = async (file: File) => {
+import { supabase } from "@/lib/supabase";
+
+export const uploadImage = async (
+  file: File | Blob, 
+  type: "post" | "avatar" = "post" // Mặc định là "post"
+) => {
   try {
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!;
-    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!;
+    // 1. Lấy token đăng nhập
+    const { data: { session } } = await supabase.auth.getSession();
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", uploadPreset);
+    formData.append("type", type); // Gửi thêm loại ảnh để API biết đường phân quyền
 
-    const res = await fetch(
-      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
+    // 2. Gửi request lên Server API nội bộ
+    const res = await fetch("/api/upload-images", {
+      method: "POST",
+      headers: {
+        "Authorization": session ? `Bearer ${session.access_token}` : "",
+      },
+      body: formData,
+    });
 
-    const data = await res.json();
+    const result = await res.json();
 
-    if (!res.ok) {
-      console.error("Cloudinary error:", data);
-      throw new Error("Upload Cloudinary thất bại");
+    if (!res.ok || !result.success) {
+      console.error("Cloudinary error:", result);
+      throw new Error(result.error || "Upload ảnh thất bại");
     }
 
     return {
-      url: data.secure_url,
-      public_id: data.public_id,
-      width: data.width,
-      height: data.height,
-      format: data.format,
+      url: result.data.secure_url,
+      public_id: result.data.public_id,
+      width: result.data.width,
+      height: result.data.height,
+      format: result.data.format,
     };
   } catch (err) {
     console.error("Upload lỗi:", err);

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { getPhotoWidgetImage } from "@/lib/cloudinary";
+import { extractPostTitle } from "@/lib/postMeta"; // ✅ 1. Import hàm chuẩn từ thư viện của bạn
 
 type Photo = {
   id: string;
@@ -13,20 +14,7 @@ type Photo = {
   title?: string;
 };
 
-function extractTitle(content: string): string {
-  if (!content) return "Bài viết";
-
-  const clean = content
-    .replace(/^#+\s*/gm, "")
-    .replace(/\*\*(.*?)\*\*/g, "$1")
-    .replace(/\*(.*?)\*/g, "$1")
-    .replace(/\[(.*?)\]\(.*?\)/g, "$1")
-    .replace(/```[\s\S]*?```/g, "");
-
-  const first = clean.split(/[\n\.!?]/)[0];
-
-  return first.trim().slice(0, 100) || "Bài viết";
-}
+// Đã xóa hàm extractTitle nội bộ bị lỗi ở đây để code sạch hơn
 
 export default function PhotoWidget() {
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -48,22 +36,31 @@ export default function PhotoWidget() {
         .from("posts")
         .select("id, images, content, created_at")
         .not("images", "eq", "{}")
-        .order("created_at", { ascending: true }) // sắp xếp theo mới nhất trước
+        .order("created_at", { ascending: false }) // sắp xếp theo mới nhất trước
         .limit(9);
 
       if (error || !data) return;
 
       const mapped: Photo[] = data
         .filter((post) => post.images?.length > 0)
-        .map((post) => ({
-          id: post.id,
-          src: post.images[0],
-          href: `/blog/${post.id}`,
-          title:
-            typeof post.content === "string" && post.content.trim().length > 0
-              ? extractTitle(post.content)
-              : `#${post.id.slice(0, 20)}`,
-        }));
+        .map((post) => {
+          
+          // ✅ 2. Dùng hàm extract chuẩn để lấy câu đầu tiên
+          let safeTitle = extractPostTitle(post.content);
+          
+          // ✅ 3. Cắt giới hạn ký tự (VD: 90 ký tự) cho vừa vặn với UI Widget
+          if (safeTitle.length > 60) {
+            safeTitle = safeTitle.slice(0, 60).trim() + "...";
+          }
+
+          return {
+            id: post.id,
+            src: post.images[0],
+            href: `/blog/${post.id}`,
+            // Nếu không có title (bài chỉ có ảnh), fallback về ID bài viết
+            title: safeTitle || `#${post.id.slice(0, 20)}`,
+          };
+        });
 
       setPhotos(mapped);
     };

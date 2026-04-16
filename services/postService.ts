@@ -194,7 +194,7 @@ export const deletePost = async (postId: string, public_ids: string[]) => {
   try {
     console.log("🔥 DELETE SERVICE - public_ids:", public_ids);
 
-        // 🔥 XÓA BÀI VIẾT TRONG DB
+    // 🔥 XÓA BÀI VIẾT TRONG DB
     // 🔒 CHECK USER TRƯỚC KHI DELETE
     const {
       data: { user },
@@ -213,10 +213,14 @@ export const deletePost = async (postId: string, public_ids: string[]) => {
     // 🔥 XÓA ẢNH CLOUDINARY TRƯỚC
     if (public_ids && public_ids.length > 0) {
       try {
+        // Lấy token phiên đăng nhập hiện tại
+        const { data: { session } } = await supabase.auth.getSession();
+
         const res = await fetch(`${window.location.origin}/api/delete-images`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": session ? `Bearer ${session.access_token}` : "", // Bơm token vào header
           },
           body: JSON.stringify({ public_ids }),
         });
@@ -255,12 +259,12 @@ export const deletePost = async (postId: string, public_ids: string[]) => {
 // 📌 PIN / UNPIN POST
 export const pinPost = async (postId: string, currentPinned: boolean) => {
   const {
-  data: { user },
-} = await supabase.auth.getUser();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-if (!user) {
-  return { success: false, error: "Chưa đăng nhập" };
-}
+  if (!user) {
+    return { success: false, error: "Chưa đăng nhập" };
+  }
   try {
     // 👉 Nếu đang GHIM -> bấm lần nữa là BỎ GHIM
     if (currentPinned) {
@@ -380,13 +384,18 @@ export const updatePost = async ({
     // 🔥 XÓA ẢNH CŨ KHỎI CLOUDINARY
     if (normalizedRemovedIds.length > 0) {
       try {
+        // Lấy token phiên đăng nhập hiện tại
+        const { data: { session } } = await supabase.auth.getSession();
+
         const res = await fetch(`${window.location.origin}/api/delete-images`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": session ? `Bearer ${session.access_token}` : "", // Bơm token vào header
           },
           body: JSON.stringify({ public_ids: normalizedRemovedIds }),
         });
+        //...
 
         const data = await res.json();
 
@@ -595,18 +604,18 @@ export const getPostById = async (postId: string) => {
 // tính năng chỉnh sửa ngày đăng bài và quyền xem bài viết (công khai / riêng tư)
 export async function updatePostDate(postId: string, newDate: string) {
   const {
-  data: { user },
-} = await supabase.auth.getUser();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-const { data: post } = await supabase
-  .from("posts")
-  .select("user_id")
-  .eq("id", postId)
-  .single();
+  const { data: post } = await supabase
+    .from("posts")
+    .select("user_id")
+    .eq("id", postId)
+    .single();
 
-if (!user || !post || post.user_id !== user.id) {
-  throw new Error("Không có quyền");
-}
+  if (!user || !post || post.user_id !== user.id) {
+    throw new Error("Không có quyền");
+  }
   const { data, error } = await supabase
     .from("posts")
     .update({

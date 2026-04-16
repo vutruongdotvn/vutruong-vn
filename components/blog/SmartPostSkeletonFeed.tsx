@@ -77,9 +77,9 @@ function isPortraitRatio(ratio: number | null) {
 function getPostSkeletonVariant(post: any): Variant {
   const safeImages: string[] = Array.isArray(post?.images)
     ? post.images.filter(
-        (img: unknown): img is string =>
-          typeof img === "string" && img.trim() !== ""
-      )
+      (img: unknown): img is string =>
+        typeof img === "string" && img.trim() !== ""
+    )
     : [];
 
   const count = safeImages.length;
@@ -121,12 +121,12 @@ function getPostSkeletonVariant(post: any): Variant {
 
 export function buildSkeletonLayoutsFromPosts(posts: any[] = []): SkeletonLayoutItem[] {
   return posts.map((post) => {
-   const safeImages: string[] = Array.isArray(post?.images)
-  ? post.images.filter(
-      (img: unknown): img is string =>
-        typeof img === "string" && img.trim() !== ""
-    )
-  : [];
+    const safeImages: string[] = Array.isArray(post?.images)
+      ? post.images.filter(
+        (img: unknown): img is string =>
+          typeof img === "string" && img.trim() !== ""
+      )
+      : [];
 
     return {
       variant: getPostSkeletonVariant(post),
@@ -146,11 +146,11 @@ export default function SmartPostSkeletonFeed({
     layouts && layouts.length > 0
       ? layouts
       : mode === "initial"
-      ? DEFAULT_INITIAL_LAYOUTS
-      : DEFAULT_LOAD_MORE_LAYOUTS;
+        ? DEFAULT_INITIAL_LAYOUTS
+        : DEFAULT_LOAD_MORE_LAYOUTS;
 
   return (
-    <div className={`space-y-3 sm:space-y-6 mb-3 sm:mb-6 w-full ${className}`}>
+    <div className={`space-y-1 sm:space-y-4 mb-3 w-full ${className}`}>
       {pattern.map((item, index) => (
         <PostCardSkeleton
           key={`${mode}-${item.variant}-${item.isPinned ? "pinned" : "normal"}-${item.textDensity ?? "medium"}-${item.moreCount ?? 0}-${index}`}

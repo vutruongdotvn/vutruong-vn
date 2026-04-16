@@ -7,6 +7,8 @@ import Cropper from "react-easy-crop";
 import { useToast } from "@/hooks/useToast";
 import { supabase } from "@/lib/supabase";
 import { getProfileAvatar } from "@/lib/cloudinary";
+import { uploadImage } from "@/lib/cloudinary";
+
 const DEFAULT_AVATAR = "/images/default.jpg";
 
 export default function ProfilePage() {
@@ -126,36 +128,26 @@ export default function ProfilePage() {
     try {
       const blob = await getCroppedImage();
 
-      const formData = new FormData();
-      formData.append("file", blob);
-      formData.append("upload_preset", "unsigned_upload");
+      // Sử dụng hàm uploadImage an toàn, truyền type là "avatar"
+      const uploadedData = await uploadImage(blob, "avatar");
 
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-        { method: "POST", body: formData }
-      );
+      const newUrl = uploadedData.url;
 
-      const data = await res.json();
-
-      if (!data.secure_url) {
-        showToast("Tải avatar lên thất bại", "error");
-        return;
-      }
-
-      const newUrl = data.secure_url;
       // 🔥 CẬP NHẬT LUÔN PROFILE AVATAR
       await supabase
         .from("profiles")
         .update({ avatar: newUrl })
         .eq("id", user.id);
+
       await supabase.from("user_avatars").insert({
         user_id: user.id,
         url: newUrl,
-        public_id: data.public_id,
+        public_id: uploadedData.public_id, // Lấy public_id từ API trả về
       });
 
       setAvatar(newUrl);
       showToast("Tải avatar lên thành công", "success");
+      // ... (đoạn fetch lại avatarList và finally giữ nguyên)
 
       const { data: avatarList } = await supabase
         .from("user_avatars")
@@ -235,17 +227,23 @@ export default function ProfilePage() {
     setDeletingAvatarId(item.id);
 
     try {
+      // 1. Lấy session hiện tại để có Access Token
+      const { data: { session } } = await supabase.auth.getSession();
+
       const isCurrentAvatar = item.url === avatar || item.url === originalAvatar;
 
+      // 2. Gửi request kèm Header Authorization
       const response = await fetch("/api/delete-images", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": session ? `Bearer ${session.access_token}` : "",
         },
         body: JSON.stringify({ public_ids: [item.public_id] }),
       });
 
       const result = await response.json();
+      // ... (giữ nguyên logic xử lý kết quả bên dưới)
       const deleteResult = result?.results?.[0]?.result;
 
       if (
@@ -289,23 +287,6 @@ export default function ProfilePage() {
     } finally {
       setDeletingAvatarId(null);
     }
-  };
-
-  const handleDelete = async (item: any) => {
-    if (item.url === avatar) {
-      setAvatar(DEFAULT_AVATAR);
-    }
-
-    await fetch("/api/delete-images", {
-      method: "POST",
-      body: JSON.stringify({ public_ids: [item.public_id] }),
-    });
-
-    await supabase.from("user_avatars").delete().eq("id", item.id);
-
-    setAvatars((prev) => prev.filter((a) => a.id !== item.id));
-
-    showToast("Đã xoá avatar", "success");
   };
 
   if (loading) {

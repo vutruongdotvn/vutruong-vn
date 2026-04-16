@@ -23,13 +23,22 @@ export function useSmartStickySidebar({
 
     let lastScrollY = window.scrollY;
     let ticking = false;
+    let frameId: number; // Thêm biến lưu ID của animation frame
 
     const handleScroll = () => {
       if (ticking) return;
+      ticking = true;
 
-      requestAnimationFrame(() => {
-        const container = containerRef.current!;
-        const sidebar = sidebarRef.current!;
+      frameId = requestAnimationFrame(() => {
+        // Lấy ref hiện tại
+        const container = containerRef.current;
+        const sidebar = sidebarRef.current;
+
+        // 🚨 FIX LỖI Ở ĐÂY: Nếu component đã unmount (ref = null), thoát ngay lập tức
+        if (!container || !sidebar) {
+          ticking = false;
+          return;
+        }
 
         const scrollY = window.scrollY;
         const direction = scrollY > lastScrollY ? "down" : "up";
@@ -109,8 +118,6 @@ export function useSmartStickySidebar({
 
         ticking = false;
       });
-
-      ticking = true;
     };
 
     const handleResize = () => {
@@ -122,8 +129,12 @@ export function useSmartStickySidebar({
     window.addEventListener("resize", handleResize);
 
     return () => {
+      // 🚨 DỌN DẸP SẠCH SẼ:
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
+      if (frameId) {
+        cancelAnimationFrame(frameId); // Hủy frame đang chờ nếu component bị unmount
+      }
     };
   }, [containerRef, sidebarRef, offsetTop, breakpoint]);
 

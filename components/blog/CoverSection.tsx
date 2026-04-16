@@ -55,7 +55,7 @@ export default function CoverSection() {
             <div className="w-full">
 
                 {/* COVER */}
-                <div className="relative w-full h-[240px] sm:h-[360px] md:h-[480px] overflow-hidden rounded-0 sm:rounded-2xl bg-white animate-pulse">
+                <div className="relative w-full h-[240px] sm:h-[360px] md:h-[480px] overflow-hidden rounded-0 sm:rounded-2xl bg-gray-200 animate-pulse">
 
                     {/* OVERLAY */}
                     <div className="absolute inset-0 bg-none" />
@@ -113,13 +113,13 @@ export default function CoverSection() {
                     alt="cover"
                     fill
                     unoptimized
-                    className="object-cover opacity-0 transition-opacity duration-500"
+                    className="object-cover opacity-0 transition-opacity duration-1200 ease-out"
                     onLoad={(e) => e.currentTarget.classList.remove("opacity-0")}
                     priority
                 />
 
                 {/* OVERLAY GRADIENT */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
                 {/* INFO CARD (ABSOLUTE) */}
                 <div className="absolute bottom-0 left-0 right-0">
@@ -139,7 +139,7 @@ export default function CoverSection() {
                                         {profile.name || "Vũ Trường"}
                                         <i className="fad fa-badge-check text-sm sm:text-base text-sky-600" />
                                     </div>
-                                    <div className="text-[.8375rem] sm:text-base/6 text-white/90">
+                                    <div className="text-[.8375rem] sm:text-base/6 text-white/80">
                                         {postStats.total} bài viết <span className="mx-0.5 text-sm">•</span> {postStats.today} bài viết mới
                                     </div>
                                 </div>
