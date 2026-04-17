@@ -425,7 +425,7 @@ export default function WatchNavbar({
                     width={42}
                     height={42}
                     className="pointer-events-none shrink-0 rounded-full"
-                    priority
+                    priority unoptimized
                   />
                 </div>
 
@@ -700,7 +700,7 @@ export default function WatchNavbar({
                     width={38}
                     height={38}
                     className="pointer-events-none shrink-0 rounded-full"
-                    priority
+                    priority unoptimized
                   />
                   <div className="min-w-0">
                     <Link

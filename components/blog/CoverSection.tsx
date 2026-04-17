@@ -96,7 +96,7 @@ export default function CoverSection() {
         <div className="w-full">
 
             {/* COVER WRAPPER */}
-            <div className="relative w-full h-[240px] sm:h-[360px] md:h-[480px] overflow-hidden rounded-0 sm:rounded-2xl group">
+            <div className="relative w-full h-[240px] sm:h-[360px] md:h-[480px] overflow-hidden rounded-0 sm:rounded-2xl group select-none">
 
                 {/* COVER IMAGE */}
                 <Image
@@ -156,7 +156,7 @@ export default function CoverSection() {
                                 {/* NAME */}
                                 <div className="flex items-start gap-0 sm:gap-0.5 flex-col">
                                     <div className="text-base sm:text-xl md:text-2xl font-semibold flex items-center gap-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
-                                        {profile.name || "Vũ Trường"}
+                                        {profile.name || "User Name"}
                                         <i className="fad fa-badge-check text-sm sm:text-base text-blue-600 cursor-pointer active:scale-95" title="Tài khoản đã được xác thực." />
                                     </div>
                                     <div className="text-[.8375rem] sm:text-sm/6 text-white/80">

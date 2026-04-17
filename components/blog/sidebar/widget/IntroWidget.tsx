@@ -1,8 +1,14 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/hooks/useUser";
+import {
+  normalizePostContent,
+  getPostParagraphs,
+  parsePostInline,
+} from "@/lib/utils";
 
 export default function IntroWidget() {
   const { role } = useUser();
@@ -13,6 +19,8 @@ export default function IntroWidget() {
 
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const isAdmin = role === "admin";
   const hasChanged = bio !== originalBio;
@@ -21,11 +29,59 @@ export default function IntroWidget() {
 
   const [loadingProfile, setLoadingProfile] = useState(true);
 
-  // 🔥 FETCH ADMIN PROFILE
+  // ⚙️ TỐI ƯU LOGIC RENDER (Không dùng JS Truncate nữa)
+  const MAX_LENGTH = 110; 
+  
+  const normalizedBio = useMemo(() => normalizePostContent(bio), [bio]);
+  const fullParagraphs = useMemo(() => getPostParagraphs(normalizedBio), [normalizedBio]);
+  
+  // Chỉ dùng MAX_LENGTH làm mốc để quyết định "có cho phép thu gọn/mở rộng không"
+  const isLong = normalizedBio.length > MAX_LENGTH;
+  const isCollapsed = isLong && !isExpanded;
+
+  const renderInlineParts = (text: string) => {
+    const inlineParts = parsePostInline(text);
+
+    return inlineParts.map((part, partIndex) => {
+      if (part.type === "bold") {
+        return <strong key={partIndex} className="font-semibold text-gray-900">{part.value}</strong>;
+      }
+      if (part.type === "link") {
+        return (
+          <Link
+            key={partIndex}
+            href={part.value}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sky-700 font-medium hover:text-sky-900 break-words"
+            onClick={(e) => e.stopPropagation()} 
+          >
+            {part.value}
+          </Link>
+        );
+      }
+      if (part.type === "hashtag") {
+        const tagName = part.value.replace(/^#/, "").trim().toLowerCase();
+        return (
+          <Link
+            title={`Xem hashtag #${encodeURIComponent(tagName)}`}
+            key={partIndex}
+            href={`/blog/tag/${encodeURIComponent(tagName)}`}
+            className="text-sky-700 font-medium hover:underline active:scale-95 inline-flex break-words"
+            onClick={(e) => e.stopPropagation()} 
+          >
+            {part.value}
+          </Link>
+        );
+      }
+      return <span key={partIndex}>{part.value}</span>;
+    });
+  };
+
+  // 🔥 FETCH ADMIN PROFILE (Giữ nguyên)
   useEffect(() => {
     const fetchProfile = async () => {
       setLoadingProfile(true);
-
       const { data, error } = await supabase
         .from("profiles")
         .select("id, bio")
@@ -37,97 +93,57 @@ export default function IntroWidget() {
         setLoadingProfile(false);
         return;
       }
-
       const value = data?.bio || "";
-
       setBio(value);
       setOriginalBio(value);
       setProfileId(data?.id);
-
       setLoadingProfile(false);
     };
-
     fetchProfile();
   }, []);
 
-  // 🔥 CHỈ SYNC DOM KHI ENTER EDIT MODE
+  // 🔥 ĐỒNG BỘ DOM KHI EDIT (Giữ nguyên)
   useEffect(() => {
-    if (editing && divRef.current) {
-      if (divRef.current.innerText !== bio) {
-        divRef.current.innerText = bio || "";
-      }
+    if (editing && divRef.current && divRef.current.innerText !== bio) {
+      divRef.current.innerText = bio || "";
     }
   }, [editing, bio]);
 
-  // 🔥 REALTIME (KHÔNG PHÁ EDIT MODE)
+  // 🔥 REALTIME (Giữ nguyên)
   useEffect(() => {
     if (!profileId) return;
-
     const channel = supabase
       .channel("profile-bio")
       .on(
         "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "profiles",
-          filter: `id=eq.${profileId}`,
-        },
+        { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${profileId}` },
         (payload) => {
           if (editing || loadingProfile) return;
-
           const value = payload.new.bio || "";
           setBio(value);
           setOriginalBio(value);
         }
       )
       .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [profileId, editing, loadingProfile]);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [profileId, editing]);
-
-  // 🔥 SAVE
+  // 🔥 SAVE & CANCEL (Giữ nguyên)
   const handleSave = async () => {
     if (!profileId || !hasChanged || loading) return;
-
     setLoading(true);
-
-    const clean = bio
-      .replace(/\n{3,}/g, "\n\n")
-      .replace(/\s+$/gm, "")
-      .trim();
-
-    const { error } = await supabase
-      .from("profiles")
-      .update({ bio: clean })
-      .eq("id", profileId);
-
+    const clean = bio.replace(/\n{3,}/g, "\n\n").replace(/\s+$/gm, "").trim();
+    const { error } = await supabase.from("profiles").update({ bio: clean }).eq("id", profileId);
     setLoading(false);
-
-    if (error) {
-      console.error("Update bio error:", error);
-      return;
-    }
-
+    if (error) return console.error("Update bio error:", error);
     setEditing(false);
     setOriginalBio(clean);
   };
 
-  // 🔥 CANCEL
   const handleCancel = () => {
-    if (hasChanged) {
-      const ok = confirm("Bạn có thay đổi chưa lưu. Huỷ bỏ?");
-      if (!ok) return;
-    }
-
+    if (hasChanged && !confirm("Bạn có thay đổi chưa lưu. Huỷ bỏ?")) return;
     setBio(originalBio);
-
-    if (divRef.current) {
-      divRef.current.innerText = originalBio;
-    }
-
+    if (divRef.current) divRef.current.innerText = originalBio;
     setEditing(false);
   };
 
@@ -135,7 +151,6 @@ export default function IntroWidget() {
     <div className="rounded-0 sm:rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-shadow duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.075)] p-3 sm:p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-[.9375rem] sm:text-base font-semibold">Giới thiệu</h3>
-
         {isAdmin && !editing && (
           <button
             onClick={() => setEditing(true)}
@@ -155,11 +170,50 @@ export default function IntroWidget() {
             <div className="h-[1rem] bg-gray-100 rounded-full w-1/3"></div>
           </div>
         ) : (
-          <p className="text-sm sm:text-base/6 text-gray-800 dark:text-neutral-400 whitespace-pre-line">
-            {bio || "..."}
-          </p>
+          <div className="text-sm sm:text-base/6 text-gray-800 dark:text-neutral-400">
+            {isCollapsed ? (
+              // BẢN RÚT GỌN (CSS TỰ ĐỘNG CẮT Ở DÒNG 3)
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => setIsExpanded(true)}
+                onKeyDown={(e) => e.key === 'Enter' && setIsExpanded(true)}
+                className="cursor-pointer transition-opacity hover:opacity-75 outline-none rounded-md"
+                title="Nhấn để xem thêm"
+              >
+                <div className="whitespace-pre-line break-words line-clamp-3">
+                  {/* Bơm thẳng bio vào, CSS sẽ tự cắt rất đẹp */}
+                  {renderInlineParts(normalizedBio)}
+                </div>
+              </div>
+            ) : (
+              // BẢN MỞ RỘNG
+              <div className="space-y-2">
+                {fullParagraphs.length > 0 ? (
+                  fullParagraphs.map((paragraph, index) => (
+                    <p key={index} className="whitespace-pre-line break-words">
+                      {renderInlineParts(paragraph)}
+                    </p>
+                  ))
+                ) : (
+                  <p>...</p>
+                )}
+                
+                {/*isLong && (
+                  <button
+                    onClick={() => setIsExpanded(false)}
+                    className="mt-1 align-baseline font-medium text-gray-500 hover:text-black cursor-pointer text-xs transition"
+                  >
+                    <i className="fa-duotone fa-angle-up mr-1" /> Thu gọn
+                  </button>
+                )}
+                */}
+              </div>
+            )}
+          </div>
         )
       )}
+
       {/* EDIT */}
       {editing && (
         <div className="space-y-2">
@@ -171,12 +225,8 @@ export default function IntroWidget() {
             spellCheck={false}
             data-placeholder="Nhập giới thiệu..."
             className="w-full text-sm sm:text-base/6 outline-none whitespace-pre-wrap break-words empty:before:content-[attr(data-placeholder)] empty:before:text-neutral-400"
-            onInput={(e) => {
-              setBio(e.currentTarget.innerText);
-            }}
-            onBlur={(e) => {
-              setBio(e.currentTarget.innerText);
-            }}
+            onInput={(e) => setBio(e.currentTarget.innerText)}
+            onBlur={(e) => setBio(e.currentTarget.innerText)}
             onPaste={(e) => {
               e.preventDefault();
               const text = e.clipboardData.getData("text/plain");
@@ -191,7 +241,6 @@ export default function IntroWidget() {
             >
               Huỷ
             </button>
-
             <button
               onClick={handleSave}
               disabled={!hasChanged || loading}

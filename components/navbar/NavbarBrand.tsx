@@ -36,7 +36,7 @@ export default function NavbarBrand({
           pointer-events-none shrink-0 transition-all duration-300
           ${scrolled ? "size-10" : "size-11"}
         `}
-        priority
+        priority unoptimized
       />
 
       <div className="min-w-0 leading-tight">

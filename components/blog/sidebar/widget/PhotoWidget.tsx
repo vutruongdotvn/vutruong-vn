@@ -141,7 +141,7 @@ export default function PhotoWidget() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent sm:opacity-0 sm:group-hover:opacity-100 transition duration-300" />
 
               <div className="absolute inset-x-0 bottom-0 p-2 sm:translate-y-2 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 transition duration-300">
-                <p className="text-[0.6875rem] sm:text-xs text-white/90 hover:text-white line-clamp-2">
+                <p className="text-[0.75rem] sm:text-xs text-white/90 hover:text-white line-clamp-2">
                   {photo.title}
                 </p>
               </div>
