@@ -110,7 +110,7 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
           <div className="size-13 flex flex-shrink-0 items-center justify-center bg-gray-100 rounded-2xl">
             <i className={`${getBrandIcon(secret.title)} text-2xl`} />
           </div>
-          <div className="min-w-0 flex gap-1 flex-col">
+          <div className="min-w-0 flex gap-0.25 flex-col">
             <h3 className="font-bold text-gray-800 text-base truncate">{highlight(secret.title)}</h3>
             {secret.tags && secret.tags.length > 0 && (
               <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
@@ -127,8 +127,6 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
         {/* 4 Thông tin cơ bản */}
         <div className="space-y-4 text-sm sm:text-base flex-1">
           <InfoRow label="Tài khoản" icon="fa-user" value={secret.account} />
-          <InfoRow label="Email" icon="fa-envelope" value={secret.email} />
-          <InfoRow label="Số điện thoại" icon="fa-phone" value={secret.phone} />
           <InfoRow label="Mật khẩu" icon="fa-key-skeleton" value={secret.password} maskable isMasked={showPassword} setMask={setShowPassword} />
         </div>
 

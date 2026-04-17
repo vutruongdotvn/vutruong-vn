@@ -6,7 +6,6 @@
       "dom.iterable",
       "esnext"
     ],
-    "baseUrl": ".",                     // ✅ THÊM DÒNG NÀY
     "paths": {
       "@/*": ["./*"]                    // ✅ THÊM DÒNG NÀY
     },

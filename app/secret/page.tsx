@@ -24,8 +24,8 @@ export default function SecretPage() {
     const handleResize = () => {
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
-      // Đặt mặc định ban đầu: 5 cho Mobile, 10 cho PC
-      setTagLimit(mobile ? 5 : 10);
+      // Đặt mặc định ban đầu: 3 cho Mobile, 10 cho PC
+      setTagLimit(mobile ? 3 : 10);
     };
     handleResize(); // Chạy lần đầu
     window.addEventListener("resize", handleResize);
