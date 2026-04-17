@@ -15,16 +15,11 @@ export default function PremiumGlassCard({
 }: PremiumGlassCardProps) {
   return (
     <div className={cn("relative w-full mx-auto", className)}>
-      {/* Ambient outer glow */}
-      <div className="pointer-events-none absolute inset-0 rounded-[42px] bg-white/20 blur-3xl" />
-
-      {/* Soft top highlight */}
-      <div className="pointer-events-none absolute inset-x-8 top-0 h-24 rounded-full bg-white/30 blur-2xl" />
 
       {/* Main glass shell */}
       <div
         className={cn(
-          "relative overflow-hidden rounded-0 sm:rounded-4xl border border-white/45 bg-white/60 shadow-[0_18px_70px_rgba(0,0,0,0.06)] backdrop-blur-2xl transition-all duration-300 hover:shadow-[0_24px_90px_rgba(0,0,0,0.08)]",
+          "relative overflow-hidden rounded-4xl border border-white/45 bg-white/60 shadow-[0_18px_70px_rgba(0,0,0,0.06)] backdrop-blur-2xl transition-all duration-300 hover:shadow-[0_24px_90px_rgba(0,0,0,0.08)]",
           contentClassName
         )}
       >

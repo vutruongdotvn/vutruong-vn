@@ -88,18 +88,27 @@ export default function SecretPage() {
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-28">
 
       {/* Header */}
-      <button
-        onClick={handleOpenCreate}
-        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-1 bg-sky-600 hover:bg-sky-700 text-white text-sm px-6 py-3 rounded-full font-medium shadow-[0_4px_12px_rgba(2,132,199,0.2)] transition flex items-center justify-center gap-2 cursor-pointer active:scale-95 whitespace-nowrap"
-      >
-        <i className="fa-solid fa-plus text-lg" /> Thêm tài khoản
-      </button>
+
 
       {/* Bố cục 2 Cột */}
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-3 sm:gap-4">
 
         {/* CỘT TRÁI: Sidebar Tags */}
-        <div className="w-full lg:w-64 flex-shrink-0">
+        <div className="w-full lg:w-80 flex-shrink-0 space-y-3 sm:space-y-4">
+          {/* Search Bar */}
+          <div className="relative group mb-3 sm:mb-4 shadow-[0_4px_20px_rgba(0,0,0,0.013)]">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <i className="fa-duotone fa-search text-gray-400 text-base group-focus-within:text-sky-500 transition-colors" />
+            </div>
+            <input
+              type="text"
+              placeholder="Tìm kiếm"
+              value={searchQuery} autoComplete="off"
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-white rounded-xl pl-11 pr-4 py-3.5 text-sm font-medium text-gray-900 placeholder:text-gray-400 transition shadow-[0_2px_10px_rgba(0,0,0,0.02)]"
+            />
+          </div>
+
           <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 p-4 sticky top-24">
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-2 flex items-center gap-2">
               <i className="fa-duotone fa-filter-list" /> Phân loại
@@ -137,24 +146,16 @@ export default function SecretPage() {
               </button>
             )}
           </div>
+          <button
+            onClick={handleOpenCreate}
+            className="w-full py-3 px-4 bg-white rounded-xl font-medium shadow-[0_4px_20px_rgba(0,0,0,0.03)] text-sm text-gray-600 hover:text-black flex items-center justify-center gap-2 cursor-pointer active:scale-95 whitespace-nowrap"
+          >
+            <i className="fa-duotone fa-plus text-lg" /> Thêm tài khoản
+          </button>
         </div>
 
         {/* CỘT PHẢI: Search & Lưới Card */}
         <div className="flex-1 min-w-0">
-          {/* Search Bar */}
-          <div className="relative mb-6 group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <i className="fa-duotone fa-magnifying-glass text-gray-400 text-base group-focus-within:text-sky-500 transition-colors" />
-            </div>
-            <input
-              type="text"
-              placeholder="Tìm kiếm tài khoản, email, brand..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition shadow-[0_2px_10px_rgba(0,0,0,0.02)]"
-            />
-          </div>
-
           {/* Grid Cards (2 columns on lg) */}
           {loading ? (
             <div className="flex justify-center py-20">
@@ -169,7 +170,7 @@ export default function SecretPage() {
               <p className="text-gray-500 text-sm">Hãy thử tìm kiếm với từ khóa khác hoặc thêm tài khoản mới.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 xl:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {filteredSecrets.map((secret) => (
                 <SecretCard
                   key={secret.id}
