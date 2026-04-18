@@ -151,10 +151,10 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
       {/* 🔍 MODAL XEM CHI TIẾT (VIEW FULL) */}
       {isViewModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onClick={() => setIsViewModalOpen(false)} />
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-xs transition-opacity" onClick={() => setIsViewModalOpen(false)} />
           <div className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-fadeIn">
             
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50 rounded-t-2xl">
+            <div className="flex items-center justify-between bg-white px-6 py-4 border-b border-gray-100 bg-gray-50/50 rounded-t-2xl">
               <div className="flex items-center gap-3">
                  <div className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-xl">
                   <i className={`${getBrandIcon(secret.title)} text-xl`} />
@@ -181,15 +181,13 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
                
                <InfoRow label="Email khôi phục" icon="fa-envelope-open-text" value={secret.recovery_email} />
                <InfoRow label="SĐT khôi phục" icon="fa-phone-plus" value={secret.recovery_phone} />
-               <InfoRow label="Mã bí mật" icon="fa-qrcode" value={secret.secret_code} maskable isMasked={showCode} setMask={setShowCode} />
+               <InfoRow label="Mã bí mật / PIN / 2FA" icon="fa-qrcode" value={secret.secret_code} maskable isMasked={showCode} setMask={setShowCode} />
 
                {secret.notes && (
                  <>
                    <div className="notes_info">
-                     <div className="bg-amber-50/50 border border-amber-200 text-amber-900 text-sm p-4 rounded-xl whitespace-pre-wrap break-words leading-relaxed mt-4">
-                     <div>
-                      <i className="fa-duotone fa-exclamation mr-1" /> Ghi chú
-                      </div>
+                     <div className="bg-amber-50/50 border border-amber-200 text-amber-900 text-sm p-4 rounded-md whitespace-pre-wrap break-words leading-relaxed mt-4">
+                     <div className="font-bold">Ghi chú</div>
                       <div className="my-3 border-t border-amber-200" />
                        {secret.notes}
                      </div>
@@ -198,7 +196,7 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
                )}
             </div>
 
-            <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 rounded-b-2xl flex justify-end">
+            <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 rounded-b-2xl flex justify-end bg-white">
                <button onClick={() => { setIsViewModalOpen(false); onEdit(secret); }} className="px-5 py-2.5 bg-sky-100 text-sky-700 hover:bg-sky-200 text-sm font-semibold rounded-xl transition cursor-pointer flex items-center gap-2">
                  <i className="fa-duotone fa-pen-to-square" /> Chỉnh sửa
                </button>

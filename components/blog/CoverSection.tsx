@@ -165,13 +165,13 @@ export default function CoverSection() {
                                 </div>
                             </div>
 
-                            {/* ACTIONS */}
+                            {/* ACTIONS 
                             <div className="hidden sm:flex gap-2 mt-4 sm:mt-0">
                                 <Link href="/contact" className=" px-4 py-2 rounded-lg bg-white text-black text-sm font-medium flex items-center gap-2 hover:bg-white/90 transition active:scale-95">
                                     <i className="fad fa-comment-lines" />
                                     Liên hệ
                                 </Link>
-                            </div>
+                            </div>*/}
                         </div>
                     </div>
                 </div>

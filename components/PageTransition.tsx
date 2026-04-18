@@ -14,7 +14,7 @@ export default function PageTransition({
     <AnimatePresence mode="wait">
       <motion.div
         key={pathname}
-        initial={{ y: 0, opacity: 1 }} // trước
+        initial={{ y: 0, opacity: 0 }} // trước
         animate={{ y: 0, opacity: 1 }} // sau 
         transition={{
           duration: 0.85,

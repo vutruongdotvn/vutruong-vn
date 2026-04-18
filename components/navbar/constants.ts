@@ -10,7 +10,7 @@ export const mainMenu: MenuItem[] = [
 export const moreMenu: MenuItem[] = [
   { name: "Project", href: "/project", icon: "fa-duotone fa-code" },
   { name: "Watch", href: "/watch", icon: "fa-duotone fa-clapperboard-play" },
-  { name: "Secret", href: "/secret", icon: "fa-duotone fa-lock-keyhole" },
+  { name: "Secret", href: "/secret", icon: "fa-duotone fa-shield-keyhole" },
   { name: "Admin", href: "/admin", icon: "fa-duotone fa-user-gear" },
 ];
 
