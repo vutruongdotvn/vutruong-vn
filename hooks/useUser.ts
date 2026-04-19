@@ -29,11 +29,13 @@ export function useUser() {
       if (mounted) setUser(currentUser);
 
       try {
+        // 🌟 NÂNG CẤP BẢO MẬT: Dùng limit(1) và maybeSingle() để chặn đứng mọi lỗi Crash
         const { data, error } = await supabase
           .from("profiles")
           .select("role, status")
           .eq("email", currentUser.email)
-          .single();
+          .limit(1)
+          .maybeSingle(); 
 
         if (error) {
           console.error("❌ Lỗi truy vấn Supabase:", error.message);
@@ -42,11 +44,10 @@ export function useUser() {
         if (mounted) {
           if (data) {
             setRole(data.role || "user");
-            
-            // 🎯 Lấy chính xác text từ DB (chỉ loại bỏ khoảng trắng thừa nếu có vô tình gõ nhầm)
             const exactStatus = data.status?.toLowerCase().trim();
             setStatus((exactStatus as UserStatus) || "pending");
           } else {
+            // Nếu Database Trigger chưa chạy kịp, mặc định luôn là user pending (An toàn 100%)
             setRole("user");
             setStatus("pending");
           }
