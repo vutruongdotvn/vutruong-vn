@@ -97,20 +97,20 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
         <div className="mt-4 space-y-3">
           <input
             type="email"
-            placeholder="vutruong.vn"
+            placeholder="Tài khoản"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full border rounded-xl px-3 py-2 outline-none focus:ring-1 focus:ring-gray-200"
+            className="w-full border rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-gray-200"
           />
 
           <input
             type="password"
-            placeholder="••••••••"
+            placeholder="Mật khẩu"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full border rounded-xl px-3 py-2 outline-none focus:ring-1 focus:ring-gray-200"
+            className="w-full border rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-gray-200"
           />
         </div>
 
