@@ -8,7 +8,7 @@ import { getHeroMovies } from "@/lib/watch/ophim";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "VT Watch",
+  title: "Watch",
   description:
     "Xem phim miễn phí, tốc độ cao, không quảng cáo và cập nhật liên tục.",
 

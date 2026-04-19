@@ -9,10 +9,9 @@ export default function WatchTopics() {
           <Link
             key={`${topic.type}-${topic.slug}`}
             href={`/watch/${topic.type}/${topic.slug}`} prefetch={false}
-            className={`group relative overflow-hidden rounded-[20px] bg-gradient-to-r ${topic.gradient} p-[1px] shadow-[0_10px_35px_rgba(0,0,0,.25)] transition duration-300 hover:-translate-y-0.5`}
+            className={`group relative overflow-hidden rounded-lg hover:rounded-xl bg-gradient-to-r ${topic.gradient} p-[1px] shadow-[0_10px_35px_rgba(0,0,0,.25)] transition duration-300 hover:-translate-y-0.5`}
           >
-            <div className="h-full rounded-xl bg-white/10 px-4 py-5 backdrop-blur-[2px]">
-              <div className="flex h-full flex-col justify-between gap-8">
+              <div className="flex h-full flex-col justify-between gap-8 px-6 py-4">
                 <h3 className="text-base font-bold leading-snug text-white">
                   {topic.label}
                 </h3>
@@ -20,7 +19,6 @@ export default function WatchTopics() {
                 <p className="text-[13px] font-medium text-white/75 group-hover:text-white/90">
                   Xem chủ đề <i className="fa-duotone fa-arrow-right"/>
                 </p>
-              </div>
             </div>
           </Link>
         ))}
