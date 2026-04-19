@@ -7,6 +7,9 @@ import LayoutShell from "@/components/LayoutShell";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import ConditionalPageTransition from "@/components/ConditionalPageTransition";
 
+// Cache trong 1 giờ, hoặc thậm chí 1 ngày (86400)
+export const revalidate = 3600;
+
 // 🔤 Font
 const roboto = Roboto({
   subsets: ["latin"],

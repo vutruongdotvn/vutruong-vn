@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+// Cache trong 1 giờ, hoặc thậm chí 1 ngày (86400)
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Dự án",

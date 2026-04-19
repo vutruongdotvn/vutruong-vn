@@ -4,6 +4,8 @@ import WatchSectionSlider from "@/components/watch/WatchSectionSlider";
 import WatchTopics from "@/components/watch/WatchTopics";
 import { HOME_SECTIONS } from "@/lib/watch/constants";
 import { getHeroMovies } from "@/lib/watch/ophim";
+// Cache trong 1 giờ, hoặc thậm chí 1 ngày (86400)
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "VT Watch",

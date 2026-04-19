@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 const tabs = [
   { label: "Bài viết", icon: "fa-feed", href: "/blog" },
@@ -17,9 +18,9 @@ export default function BlogNavbar() {
 
   return (
     <div
-      className="
-        rounded-0 sm:rounded-2xl
-        bg-white dark:bg-neutral-900
+      className="absolute bottom-0 left-0 m-3
+        rounded-0 sm:rounded-lg
+        bg-white/10 hover:bg-white/15 backdrop-blur-lg
         shadow-[0_8px_30px_rgba(0,0,0,0.04)]
         transition-all duration-300
         hover:shadow-[0_12px_40px_rgba(0,0,0,0.075)]
@@ -34,10 +35,10 @@ export default function BlogNavbar() {
               (tab.href !== "/blog" && pathname.startsWith(tab.href));
 
             return (
-              <a
+              <Link
                 key={tab.href}
                 href={tab.href}
-                className={`
+                className={`text-white/70 hover:text-white active:scale-95 font-normal
                   flex items-center gap-2 py-3 border-b-2 transition
                   ${
                     isActive
@@ -48,7 +49,7 @@ export default function BlogNavbar() {
               >
                 <i className={`fa-duotone ${tab.icon}`} />
                 {tab.label}
-              </a>
+              </Link>
             );
           })}
         </div>

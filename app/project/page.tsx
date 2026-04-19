@@ -1,4 +1,6 @@
 import { createMetadata } from "@/lib/metadata";
+// Cache trong 1 giờ, hoặc thậm chí 1 ngày (86400)
+export const revalidate = 3600;
 
 export const metadata = createMetadata({
   title: "Dự án",

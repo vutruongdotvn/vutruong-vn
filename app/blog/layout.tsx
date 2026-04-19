@@ -1,12 +1,16 @@
 import React from "react";
 import type { Metadata } from "next";
 import BlogSidebarClient from "@/components/blog/sidebar/BlogSidebarClient";
+import BlogSidebar from "@/components/blog/sidebar/BlogSidebar";
 import CoverSection from "@/components/blog/CoverSection";
-import BlogNavbar from "@/components/blog/BlogNavbar";
+
 export const metadata: Metadata = {
   title: "Blog",
   description: "Blog cá nhân | Lưu giữ những điều đẹp đẽ và giá trị!",
 };
+
+// Cache bài viết trong 1 giờ, hoặc thậm chí 1 ngày (86400)
+export const revalidate = 3600;
 
 export default function BlogLayout({
   children,
@@ -17,14 +21,16 @@ export default function BlogLayout({
     <main id="blog" className="py-26">
       <div className="max-w-6xl w-full mx-auto px-0 sm:px-4 space-y-1 md:space-y-4">
         
+        {/* CoverSection giờ đây là Server Component tải siêu tốc */}
         <CoverSection />
-        {/* <BlogNavbar /> */}
 
         <div className="mainBlog grid grid-cols-1 lg:grid-cols-10 gap-1 sm:gap-4">
           
-          {/* SIDEBAR */}
+          {/* SIDEBAR: Truyền Component con vào qua children */}
           <div className="sidebar-widget lg:col-span-4 order-1 relative">
-            <BlogSidebarClient />
+            <BlogSidebarClient>
+               <BlogSidebar />
+            </BlogSidebarClient>
           </div>
 
           {/* MAIN FEED */}

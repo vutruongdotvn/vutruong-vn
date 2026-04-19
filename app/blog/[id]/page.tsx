@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import BlogDetailRealtime from "@/components/blog/BlogDetailRealtime";
 
+// Cache bài viết trong 1 giờ, hoặc thậm chí 1 ngày (86400)
+export const revalidate = 3600;
+
 export default async function BlogDetailPage({
   params,
 }: {

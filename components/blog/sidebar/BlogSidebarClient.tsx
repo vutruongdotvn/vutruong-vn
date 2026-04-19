@@ -1,10 +1,10 @@
 "use client";
 
 import { useRef } from "react";
-import BlogSidebar from "./BlogSidebar";
 import { useSmartStickySidebar } from "@/hooks/useSmartStickySidebar";
 
-export default function BlogSidebarClient() {
+// Nhận children từ Layout truyền vào
+export default function BlogSidebarClient({ children }: { children: React.ReactNode }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
 
@@ -18,7 +18,8 @@ export default function BlogSidebarClient() {
   return (
     <div ref={containerRef} className="relative">
       <div ref={sidebarRef} className={className} style={style}>
-        <BlogSidebar />
+        {/* Component bên trong vẫn là Server Component */}
+        {children}
       </div>
     </div>
   );

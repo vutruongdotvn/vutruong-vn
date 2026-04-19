@@ -1,11 +1,12 @@
 "use client";
 
-import Link from "next/link";
+// import Link from "next/link";
 import Image from "next/image";
 import { useProfile } from "@/hooks/useProfile";
 import { getProfileAvatar } from "@/lib/cloudinary";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+ // import BlogNavbar from "@/components/blog/BlogNavbar";
 
 export default function CoverSection() {
     const { profile, loading } = useProfile();
@@ -175,6 +176,10 @@ export default function CoverSection() {
                         </div>
                     </div>
                 </div>
+
+                {/* BlogNavbar bên trong CoverSection) 
+                <BlogNavbar />
+                */}
             </div>
         </div>
     );
