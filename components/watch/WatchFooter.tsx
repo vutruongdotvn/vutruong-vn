@@ -28,7 +28,7 @@ export default function WatchFooter() {
             <div className="flex flex-col gap-5 lg:flex-row lg:items-center justify-around lg:justify-between">
               {/* Brand */}
               <div className="min-w-0">
-                <Link href="/watch" className="inline-flex items-center gap-2">
+                <Link href="/watch" prefetch={false} className="inline-flex items-center gap-2">
                   <div
                     className="relative
                       flex size-9 items-center justify-center

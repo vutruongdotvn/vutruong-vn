@@ -157,7 +157,7 @@ export default function WatchDetailHero({
           {/* KHỐI 3: CTA */}
           <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
             <Link
-              href="/watch"
+              href="/watch" prefetch={false}
               className="
     inline-flex h-12 items-center justify-center gap-2
     rounded-full border border-white/20
@@ -177,7 +177,7 @@ export default function WatchDetailHero({
             </Link>
 
             <Link
-              href={watchHref}
+              href={watchHref} prefetch={false}
               className="
       inline-flex h-12 items-center justify-center gap-2
       rounded-full border border-red-400/30

@@ -39,7 +39,6 @@ export default async function WatchHomePage() {
 
   return (
     <main className="select-none" id="vt-watch-app">
-      {/*
       <WatchHero movies={heroMovies} />
 
       <div className="mx-auto flex w-full max-w-[1800px] flex-col gap-16 px-5 py-12 md:px-8 md:py-16 xl:px-10">
@@ -56,7 +55,6 @@ export default async function WatchHomePage() {
           />
         ))}
       </div>
-      */}
     </main>
   );
 }

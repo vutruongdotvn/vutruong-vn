@@ -8,7 +8,7 @@ export default function WatchTopics() {
         {TOPIC_ITEMS.map((topic) => (
           <Link
             key={`${topic.type}-${topic.slug}`}
-            href={`/watch/${topic.type}/${topic.slug}`}
+            href={`/watch/${topic.type}/${topic.slug}`} prefetch={false}
             className={`group relative overflow-hidden rounded-[20px] bg-gradient-to-r ${topic.gradient} p-[1px] shadow-[0_10px_35px_rgba(0,0,0,.25)] transition duration-300 hover:-translate-y-0.5`}
           >
             <div className="h-full rounded-xl bg-white/10 px-4 py-5 backdrop-blur-[2px]">

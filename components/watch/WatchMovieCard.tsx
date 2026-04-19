@@ -16,7 +16,7 @@ export default function WatchMovieCard({ movie }: Props) {
 
   return (
     <Link
-      href={`/watch/${movie.slug}`}
+      href={`/watch/${movie.slug}`} prefetch={false}
       className="group block w-[123px] sm:w-[168px] lg:w-[184px] shrink-0 snap-start"
     >
       <div className="relative overflow-hidden">

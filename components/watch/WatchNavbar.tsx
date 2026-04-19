@@ -94,7 +94,7 @@ function MobileDropdownSection({
               {items.map((item) => (
                 <Link
                   key={item.slug}
-                  href={`${baseHref}/${item.slug}`}
+                  href={`${baseHref}/${item.slug}`} prefetch={false}
                   onClick={onClose}
                   className="flex items-center justify-between rounded-2xl bg-white/[0.04] px-4 py-3 text-sm text-white/80 transition-all hover:bg-white/[0.08] hover:text-white active:scale-[0.98]"
                 >
@@ -414,7 +414,7 @@ export default function WatchNavbar({
             >
               {/* LOGO */}
               <Link
-                href="/watch"
+                href="/watch" prefetch={false}
                 onClick={(e) => handleNavClick(e, "/watch")}
                 className="relative z-10 flex min-w-0 shrink-0 items-center gap-3 pl-1"
               >
@@ -446,7 +446,7 @@ export default function WatchNavbar({
                       <Link
                         key={item.name}
                         href={item.href}
-                        prefetch
+                        prefetch={false}
                         onClick={(e) => {
                           if (item.name === "Tìm kiếm") {
                             e.preventDefault();
@@ -577,7 +577,7 @@ export default function WatchNavbar({
                         <div className="mt-3 flex flex-col gap-1.5">
                           {user && (
                             <Link
-                              href="/profile"
+                              href="/profile" prefetch={false}
                               onClick={closeDesktopUser}
                               className="flex items-center justify-between rounded-2xl px-4 py-3 text-white/85 hover:bg-white/[0.06] active:scale-97 active:bg-white/[0.08]"
                             >
@@ -704,7 +704,7 @@ export default function WatchNavbar({
                   />
                   <div className="min-w-0">
                     <Link
-                      href="/watch"
+                      href="/watch" prefetch={false}
                       onClick={(e) => handleNavClick(e, "/watch")}
                       className="block truncate text-lg font-semibold leading-5 text-white"
                     >
@@ -754,7 +754,7 @@ export default function WatchNavbar({
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   {user && (
                     <Link
-                      href="/profile"
+                      href="/profile" prefetch={false}
                       onClick={closeMobileMenu}
                       className="rounded-2xl bg-white/[0.06] px-4 py-3.5 text-center text-sm font-medium text-white transition-all hover:bg-white/[0.12]"
                     >
@@ -837,7 +837,7 @@ export default function WatchNavbar({
                       }}
                     >
                       <Link
-                        href={item.href}
+                        href={item.href} prefetch={false}
                         onClick={(e) => {
                           handleNavClick(e, item.href);
                           setOpen(false);

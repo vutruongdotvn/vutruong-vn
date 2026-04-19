@@ -42,7 +42,7 @@ export default function Pagination({
       {/* Prev */}
       {currentPage > 1 && (
         <Link
-          href={buildUrl(currentPage - 1)}
+          href={buildUrl(currentPage - 1)} prefetch={false}
           className="p-3 rounded-lg border border-white/20 hover:bg-white/10 active:scale-95"
         >
           <i className="fa-duotone fa-arrow-left text-sm" />
@@ -62,7 +62,7 @@ export default function Pagination({
         return (
           <Link
             key={`page-${p}`}
-            href={buildUrl(p)}
+            href={buildUrl(p)} prefetch={false}
             className={`py-3 px-4 rounded-lg text-sm border active:scale-95 ${
               p === currentPage
                 ? "bg-white text-black"
@@ -77,7 +77,7 @@ export default function Pagination({
       {/* Next */}
       {currentPage < totalPages && (
         <Link
-          href={buildUrl(currentPage + 1)}
+          href={buildUrl(currentPage + 1)} prefetch={false}
           className="p-3 rounded-lg border border-white/20 hover:bg-white/10 active:scale-95"
         >
           <i className="fa-duotone fa-arrow-right text-sm" />

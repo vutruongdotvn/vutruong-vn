@@ -52,7 +52,7 @@ export default function WatchEpisodeList({
           return (
             <Link
               key={`${episode.slug || episode.name}-${index}`}
-              href={`/watch/${slug}?server=${activeServer}&ep=${episodeNumber}`}
+              href={`/watch/${slug}?server=${activeServer}&ep=${episodeNumber}`} prefetch={false}
               className={[
                 "group rounded-2xl border px-4 py-3 text-center transition",
                 isActive

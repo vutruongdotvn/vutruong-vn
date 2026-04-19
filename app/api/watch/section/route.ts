@@ -14,9 +14,16 @@ export async function GET(request: NextRequest) {
 
     const movies = await getSectionMovies(api);
 
-    return NextResponse.json({
-      movies: Array.isArray(movies) ? movies : [],
-    });
+    // Sửa đoạn return NextResponse.json thành:
+    return NextResponse.json(
+      { movies: Array.isArray(movies) ? movies : [] },
+      {
+        headers: {
+          // Cho phép Cache 1 giờ (3600s), phục vụ bản cũ trong 1 ngày nếu quá tải
+          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        },
+      }
+    );
   } catch (error) {
     console.error("[/api/watch/section] error:", error);
 

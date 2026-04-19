@@ -231,7 +231,7 @@ export default function WatchHero({ movies }: Props) {
                     return (
                       <Link
                         key={genre.slug}
-                        href={`/watch/the-loai/${genre.slug}`}
+                        href={`/watch/the-loai/${genre.slug}`} prefetch={false}
                         className={`hidden md:inline-flex rounded-full bg-gradient-to-r ${color} px-3 py-1 text-xs xl:text-sm font-medium text-white/90 active:scale-95 hover:text-white`}
                       >
                         {genre.name}
@@ -251,7 +251,7 @@ export default function WatchHero({ movies }: Props) {
               {/* CTA */}
               <div className="mt-8">
                 <Link
-                  href={`/watch/${active.slug}`}
+                  href={`/watch/${active.slug}`} prefetch={false}
                   className="inline-flex items-center gap-3 rounded-full
                   bg-red-500 lg:px-8 lg:py-3.5 text-base font-semibold text-white shadow-[0_14px_40px_rgba(239,68,68,.35)]
                   transition hover:scale-[1.02] hover:bg-red-400 active:scale-95

@@ -33,7 +33,7 @@ function Card({ item, index }: { item: Item; index: number }) {
 
   return (
     <Link
-      href={`/watch/${item.slug}`}
+      href={`/watch/${item.slug}`} prefetch={false}
       className="group block"
       style={{
         animation: `fadeUp 1s ease forwards`,

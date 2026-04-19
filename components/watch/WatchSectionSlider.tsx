@@ -5,6 +5,9 @@ import Link from "next/link";
 import WatchMovieCard from "./WatchMovieCard";
 import type { OPhimMovie } from "@/lib/watch/types";
 
+// Ép Vercel lưu lại HTML của trang này trong vòng 1 tiếng
+export const revalidate = 3600;
+
 type Props = {
   title: string;
   highlight: string;

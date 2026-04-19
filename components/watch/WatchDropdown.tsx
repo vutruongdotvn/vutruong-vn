@@ -157,6 +157,7 @@ export default function WatchDropdown({
                   >
                     <Link
                       href={`${baseHref}/${item.slug}`}
+                      prefetch={false}
                       onClick={() => setOpen(false)}
                       className="truncate
                         group relative flex min-h-[auto] items-center justify-between gap-3
