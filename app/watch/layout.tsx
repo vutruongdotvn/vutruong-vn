@@ -72,8 +72,9 @@ export default async function WatchLayout({
   ]);
 
   return (
-    <div className="bg-black text-white">
-      {/* ✅ GLOBAL FANCYBOX */}
+    <div className="bg-black text-white w-screen h-screen flex items-center justify-center">
+      <div className="animate-bounce text-sm sm:text-xl text-amber-400 p-4"><strong className="font-bold animate-pulse">VT Watch</strong> đang bảo trì để nâng cấp.</div>
+      {/* ✅ GLOBAL FANCYBOX 
       <FancyboxWrapper />
 
       <WatchNavbar
@@ -85,6 +86,7 @@ export default async function WatchLayout({
       {children}
 
       <WatchFooter />
+      */}
     </div>
   );
 }
