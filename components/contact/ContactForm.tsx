@@ -155,19 +155,16 @@ export default function ContactForm() {
   };
 
   return (
-    <section className="relative mx-auto max-w-4xl">
+    <section className="">
       {/* Background glow */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[2rem]">
         <div className="absolute -left-16 top-0 h-40 w-40 rounded-full bg-sky-200/30 blur-3xl" />
         <div className="absolute bottom-0 right-0 h-48 w-48 rounded-full bg-violet-200/25 blur-3xl" />
       </div>
 
-      <PremiumGlassCard
-        className="w-full"
-        contentClassName="rounded-[2rem] sm:rounded-[2.25rem]"
-      >
+      <PremiumGlassCard className="p-0">
         {/* Header */}
-        <div className="px-8 py-8 pb-0">
+        <div className="">
 
           <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
             Gửi biểu mẫu
@@ -181,7 +178,7 @@ export default function ContactForm() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="px-5 py-6 sm:px-7 sm:py-7">
+        <form onSubmit={handleSubmit} className="py-6">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* Name */}
             <div className="group relative">

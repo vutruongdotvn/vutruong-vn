@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useUser, UserStatus } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
+import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
 
 type Profile = {
   id: string;
@@ -76,8 +77,8 @@ export default function AdminUsersPage() {
   // 1. Loading State
   if (authLoading || (user && role !== "admin" && loading)) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC]">
-        <i className="fa-duotone fa-spinner-third animate-spin text-4xl text-blue-500"></i>
+      <div className="flex min-h-screen items-center justify-center">
+        <i className="fa-duotone fa-shield-exclamation animate-pulse text-6xl text-red-500"></i>
       </div>
     );
   }
@@ -85,17 +86,19 @@ export default function AdminUsersPage() {
   // 2. Chặn truy cập (Access Denied)
   if (!user || role !== "admin") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[#F8FAFC] text-slate-800 p-4">
-        <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-100 flex flex-col items-center text-center max-w-sm w-full">
-          <i className="fa-duotone fa-shield-slash text-6xl text-red-500 mb-4"></i>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Truy cập bị từ chối</h1>
-          <p className="text-slate-500 mt-2 text-sm sm:text-base">
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <PremiumGlassCard contentClassName="text-center">
+          <div className="size-16 mb-6 flex items-center mx-auto justify-center rounded-full bg-red-50 border border-red-200">
+            <i className="fa-duotone fa-lock-keyhole text-3xl text-red-500"></i>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800 mb-1.5">Truy cập bị từ chối</h1>
+          <p className="text-sm sm:text-base text-gray-500 mb-8">
             Bạn không có quyền truy cập vào trang này.
           </p>
-          <Link href="/" className="mt-6 px-6 py-2.5 bg-slate-900 text-white rounded-full hover:bg-slate-800 transition shadow-lg shadow-slate-900/20 active:scale-95 w-full">
-            Về trang chủ
+          <Link href="/" className="flex items-center gap-3 justify-center mt-6 mx-auto px-6 py-3 bg-slate-900 text-white text-sm font-medium rounded-full hover:bg-slate-800 transition shadow-lg shadow-slate-900/20 active:scale-95 w-sm max-w-full">
+            <i className="fad fa-arrow-left"/> Về Trang chủ
           </Link>
-        </div>
+        </PremiumGlassCard>
       </div>
     );
   }

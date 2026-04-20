@@ -5,33 +5,10 @@ export const revalidate = 3600;
 
 export const metadata = createMetadata({
   title: "Liên hệ",
-  description: "Liên hệ với mình",
+  description: "Liên hệ - Trao đổi công việc - Cộng tác - Tài trợ",
 });
 
 export default function ContactPage() {
-  const socials = [
-    {
-      name: "Email",
-      url: "mailto:contact@vutruong.vn",
-      display: "contact@vutruong.vn",
-      gradient: "from-sky-300 to-sky-600",
-      icon: "fa-duotone fa-envelope",
-    },
-    {
-      name: "Điện thoại",
-      url: "tel:0968999542",
-      // display: "0968 999 542",
-      gradient: "from-green-300 to-green-600",
-      icon: "fa-duotone fa-phone",
-    },
-    {
-      name: "Mạng xã hội",
-      url: "/bio",
-      // display: "Xem tất cả liên kết",
-      gradient: "from-amber-300 to-amber-600",
-      icon: "fa-duotone fa-message-dots",
-    },
-  ];
 
   return (
     <div className="space-y-10">
@@ -41,7 +18,7 @@ export default function ContactPage() {
           Liên hệ
         </h1>
         <p className="text-sm text-gray-500">
-          Trao đổi công việc | Cộng tác | Tài trợ
+          Trao đổi công việc - Cộng tác - Tài trợ
         </p>
       </div>
 

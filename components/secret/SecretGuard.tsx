@@ -32,28 +32,22 @@ export default function SecretGuard({ children }: { children: React.ReactNode })
   // 🚨 Kẻ xâm nhập -> Hiển thị thẻ thông báo Truy cập bị từ chối
   if (!loading && (!user || role !== "admin")) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-slate-50/80 p-4">
-        <PremiumGlassCard
-          className="w-full max-w-xl hover:-translate-y-1 transition-transform duration-500 ease-out shadow-[0_18px_70px_rgba(0,0,0,0.06)]"
-          contentClassName="px-6 py-12 sm:px-24 sm:py-20 flex flex-col items-center text-center"
-        >
+      <div className="flex h-screen w-full items-center justify-center">
+        <PremiumGlassCard contentClassName="text-center">
           {/* Icon Container */}
           <div className="size-16 mb-6 flex items-center mx-auto justify-center rounded-full bg-red-50 border border-red-200">
             <i className="fa-duotone fa-lock-keyhole text-3xl text-red-500" />
           </div>
 
           {/* Nội dung thông báo */}
-          <h2 className="text-xl font-extrabold text-gray-900 mb-2 tracking-tight">Truy cập bị từ chối</h2>
-          <p className="text-sm text-gray-500 mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-1.5">Truy cập bị từ chối</h2>
+          <p className="text-sm sm:text-base text-gray-500 mb-8">
             Bạn không có quyền truy cập vào trang này.
           </p>
 
           {/* Nút điều hướng lối thoát */}
-          <Link
-            href="/"
-            className="w-full py-3 px-4 bg-gray-900 hover:bg-black text-white text-sm font-semibold rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2"
-          >
-            OK
+          <Link href="/" className="flex items-center gap-3 justify-center mt-6 px-6 py-3 mx-auto bg-slate-900 text-white text-sm font-medium rounded-full hover:bg-slate-800 transition shadow-lg shadow-slate-900/20 active:scale-95 w-sm max-w-full">
+            <i className="fad fa-arrow-left"/> Về Trang chủ
           </Link>
         </PremiumGlassCard>
       </div>
