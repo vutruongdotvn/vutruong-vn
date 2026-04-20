@@ -21,7 +21,7 @@ export default function SecretGuard({ children }: { children: React.ReactNode })
   // 2. Đổi Title động theo trạng thái trên Client
   useEffect(() => {
     if (!loading && (!user || role !== "admin")) {
-      document.title = "Truy cập bị từ chối";
+      document.title = "Secret"; // có thể đổi
     } else if (loading || !isAuthorized) {
       document.title = "Đang xác thực...";
     } else {

@@ -42,16 +42,13 @@ export default function WatchDetailHero({
           <div className="absolute inset-0 animate-pulse bg-neutral-800" />
         )}
 
-        <Image
+        <img
           src={backdrop}
           alt={movie.name}
-          fill
-          unoptimized
-          priority
-          sizes="100vw"
           onLoad={() => setLoaded(true)}
-          className={`object-cover object-center transition duration-700
-      ${loaded ? "opacity-20" : "opacity-0"}`}
+          loading="eager"
+          className={`object-cover object-center transition duration-700 w-screen h-screen
+      ${loaded ? "opacity-30" : "opacity-0"}`}
         />
       </div>
 
