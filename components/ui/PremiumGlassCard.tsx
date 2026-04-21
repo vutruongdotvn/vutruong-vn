@@ -22,7 +22,7 @@ export default function PremiumGlassCard({
         className={cn(
           "relative overflow-hidden rounded-0 sm:rounded-[2rem] border border-white/60 bg-white/40 backdrop-blur-2xl",
           "shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-1200 ease-out",
-          "hover:bg-white/80 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] hover:scale-102",
+          "hover:bg-white/80 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)]",
           contentClassName
         )}
       >

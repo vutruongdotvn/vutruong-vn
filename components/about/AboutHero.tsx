@@ -1,0 +1,86 @@
+export default function AboutHero() {
+    return (
+        <section className="animate-in fade-in zoom-in-95 slide-in-from-bottom-8 duration-1000 relative">
+
+            <div className="flex flex-col items-center justify-between gap-12 md:flex-row md:items-center">
+                {/* 🌟 CỘT TRÁI: AVATAR */}
+                <div className="relative shrink-0 mx-auto sm:mx-0 group perspective-1000 w-48 sm:w-56 md:w-72 lg:w-80 mt-4 sm:mt-0">
+
+                    {/* Hào quang nền đằng sau thẻ */}
+                    <div className="absolute -inset-2 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 rounded-[2.5rem] blur-2xl opacity-30 transition duration-700" />
+
+                    {/* Khung thẻ Glassmorphism bo góc lớn */}
+                    <div className="relative bg-white/40 border border-white/60 p-1 md:p-1.5 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-transform duration-700 ease-out">
+
+                        <div className="relative h-full w-full rounded-[1.5rem] overflow-hidden">
+                            {/* Ảnh Avatar (Tự động zoom nhẹ khi hover) */}
+                            <img
+                                src="/avatar.jpg" // Đổi đường dẫn thành avatar của bạn
+                                alt="Vũ Trường"
+                                className="h-full w-full aspect-[2/3] object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                            />
+
+                            {/* Lớp phủ đen dưới đáy để làm nổi bật chữ */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
+
+                            {/* Thông tin đính kèm trên thẻ */}
+                            <div className="absolute bottom-5 left-5 right-5 text-left">
+                                <div className="flex items-center gap-2 mt-1.5">
+                                    <span className="relative flex h-2.5 w-2.5">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                                    </span>
+                                    <span className="text-xs font-medium text-emerald-400 uppercase tracking-widest">Online</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                {/* 🌟 CỘT PHẢI: TÊN & CÂU CHUYỆN */}
+                <div className="flex-1 w-full text-center md:text-left">
+
+                    {/* Badge Nghề nghiệp (Giữ nguyên vì đã rất đẹp) */}
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-600 text-xs font-medium uppercase tracking-wider mb-6">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                        </span>
+                        Web Developer & Content Creator
+                    </div>
+
+                    {/* Lời chào */}
+                    <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 mb-6 leading-8 md:leading-11">
+                        Xin chào 👋 <br />
+                        Mình là <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600"> Vũ Trường</span>
+                    </h1>
+
+                    {/* Khối Câu chuyện (Gradient Storyline) */}
+                    <div className="relative space-y-3 text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl text-justify">
+
+                        {/* Dải Gradient tạo điểm nhấn thay cho border thông thường */}
+
+                        <p>
+                            Bắt đầu bước chân vào thế giới thiết kế & lập trình từ những năm 2013 - 2015, khi mà mọi thứ vẫn còn sơ khai,
+                            chưa được phát triển mạnh mẽ như bây giờ - nơi mà AI chưa có chỗ đứng, HTML, CSS và Javascript thuần
+                            chiếm giá trị quan trọng trong thế giới lập trình web.
+                        </p>
+                        <p>
+                            Đến thời điểm hiện tại 2025 - 2026, mọi thứ đã dần "dễ thở" hơn từ khi nhiều AI xuất hiện, khiến việc lập trình và thiết kế Web
+                            cũng trở nên nhẹ nhàng và dễ dàng hơn, nhiều khái niệm như <span className="font-medium">"vibe coding"</span> ra đời, tất nhiên mình cũng không đứng ngoài cuộc chơi này.
+                        </p>
+                        <p>
+                            Đam mê xây dựng những sản phẩm công nghệ tinh tế, tối ưu và mang lại giá trị thực tế.
+                            Yêu thích sự hoàn hảo trong UI/UX và luôn tìm tòi những công nghệ mới nhất.
+                        </p>
+                        <p>
+                            <strong className="font-bold text-slate-900">VT Zone</strong> (vutruong.vn) cũng là một sản phẩm được kết hợp giữa code truyền thống và vibe coding,
+                            ra mắt vào khoảng tháng 3/2026 và đang dần được hoàn thiện qua từng ngày.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+}
