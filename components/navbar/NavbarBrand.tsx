@@ -25,7 +25,7 @@ export default function NavbarBrand({
     <Link
       href={currentPageHref}
       onClick={(e) => onNavClick(e, currentPageHref)}
-      className="relative z-10 flex items-center gap-3 pl-1 min-w-0"
+      className="relative z-10 flex items-center gap-2 pl-1 min-w-0"
     >
       <Image
         src="/logo.png"
@@ -42,20 +42,24 @@ export default function NavbarBrand({
       <div className="min-w-0 leading-tight">
         <div
           className={`
-            font-bold tracking-wide text-gray-800 transition-all duration-300 truncate
-            ${scrolled ? "text-lg" : "text-lg"}
+            font-bold text-gray-800 transition-all duration-300 truncate
+            ${scrolled ? "text-base" : "text-lg"}
           `}
         >
           {title}
         </div>
+
+        {/*
         <div
           className={` metaTitlePage_removeHiddenClasstoShow
-            hidden text-[11px] text-gray-500 transition-all duration-300 truncate
+            text-xs text-gray-500 transition-all duration-300 truncate
             ${scrolled ? "opacity-80" : "opacity-100"}
           `}
         >
           {subtitle}
         </div>
+        */}
+        
       </div>
     </Link>
   );

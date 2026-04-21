@@ -355,11 +355,11 @@ export default function Navbar() {
         >
           <div
             className={`
-              relative overflow-visible border transition-all duration-1200 ease-in-out hover:bg-white
+              relative overflow-visible border transition-all duration-1200 ease-in-out hover:bg-white rounded-full 
               ${
                 scrolled
-                  ? "rounded-full border-white/30 bg-white/50 backdrop-blur-xl shadow-[0_8px_48px_rgba(0,0,0,0.1)]"
-                  : "rounded-xl border-white/60 bg-white shadow-[0_12px_36px_rgba(0,0,0,0.015)]"
+                  ? "border-white/30 bg-white/50 backdrop-blur-xl shadow-[0_8px_48px_rgba(0,0,0,0.1)]"
+                  : "border-white/60 bg-white shadow-[0_12px_36px_rgba(0,0,0,0.015)]"
               }
               ${
                 visible

@@ -1,3 +1,5 @@
+export const revalidate = 3600; // cache 1h
+
 export default function AboutHero() {
     return (
         <section className="animate-in fade-in duration-1000 relative">
@@ -54,12 +56,12 @@ export default function AboutHero() {
                     {/* Lời chào */}
                     <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 mb-6 leading-8 md:leading-11">
                         <span className="block animate-in slide-in-from-bottom-4 duration-700 delay-50">Xin chào 👋 <br /></span>
-                        <span className="block animate-in slide-in-from-bottom-4 duration-700 delay-150">Mình là <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600"> Vũ Trường</span></span>
+                        <span className="block animate-in slide-in-from-bottom-4 duration-700 delay-100">Mình là <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600"> Vũ Trường</span></span>
                     </h1>
 
                     {/* Khối Câu chuyện (Gradient Storyline) */}
                     <div className="relative space-y-3 text-[.9375rem] sm:text-base text-slate-800 leading-6 sm:leading-relaxed max-w-2xl text-justify">
-                        <p className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        <p className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-50">
                             Bắt đầu bước chân vào thế giới thiết kế & lập trình từ những năm 2013 - 2015, khi mà mọi thứ vẫn còn sơ khai,
                             chưa được phát triển mạnh mẽ như bây giờ - nơi mà AI chưa có chỗ đứng, HTML, CSS và Javascript thuần
                             chiếm giá trị quan trọng trong thế giới lập trình web.

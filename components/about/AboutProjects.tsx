@@ -1,4 +1,5 @@
 import Link from "next/link";
+export const revalidate = 3600; // cache 1h
 
 export default function AboutProjects() {
   // Dữ liệu bốc từ project/page.tsx cũ sang
