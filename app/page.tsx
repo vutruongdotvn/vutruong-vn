@@ -60,7 +60,7 @@ export default function Page() {
 
           {/* Hello */}
           <div className="my-8" key={helloKey}>
-            <AppleHelloVietnameseEffect />
+            <AppleHelloVietnameseEffect className="lg:h-20 md:h-18 h-16 mx-auto"/>
           </div>
           
           {/* Tagline 

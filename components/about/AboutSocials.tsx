@@ -1,4 +1,3 @@
-export const revalidate = 3600; // cache 1h
 
 export default function AboutSocials() {
   const socials = [

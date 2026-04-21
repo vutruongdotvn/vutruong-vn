@@ -8,9 +8,9 @@ export default function AboutPage() {
         <PremiumGlassCard className="w-6xl max-w-screen mx-auto">
             <div className="flex flex-col space-y-8 sm:space-y-10">
                 <AboutHero />
-                <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-0 to-transparent" />
+                <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
                 <AboutSocials />
-                <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-0 to-transparent" />
+                <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
                 <AboutProjects />
             </div>
         </PremiumGlassCard>
