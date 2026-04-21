@@ -15,12 +15,12 @@ export default function PremiumGlassCard({
 }: PremiumGlassCardProps) {
   return (
     // Thêm class "group" để các thành phần bên trong bắt được sự kiện hover từ thẻ cha
-    <div className={cn("group relative w-full max-w-3xl mx-auto px-0 sm:px-4", className)}>
+    <div className={cn("group relative w-full max-w-3xl mx-auto px-4", className)}>
       
       {/* 🔮 MAIN GLASS SHELL (Lớp kính chính) */}
       <div
         className={cn(
-          "relative overflow-hidden rounded-0 sm:rounded-[2rem] border border-white/60 bg-white/40 backdrop-blur-2xl",
+          "relative overflow-hidden rounded-2xl sm:rounded-[2rem] border border-white/60 bg-white/40 backdrop-blur-2xl",
           "shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-1200 ease-out",
           "hover:bg-white/80 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)]",
           contentClassName
@@ -44,21 +44,21 @@ export default function PremiumGlassCard({
 
         {/* 4. Fine Grid Texture (Lưới pattern tinh tế - Tối ưu bằng mix-blend-overlay) */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.02] mix-blend-overlay transition-opacity duration-500 group-hover:opacity-[0.035]"
+          className="pointer-events-none absolute inset-0 opacity-[0.05] mix-blend-overlay"
           style={{
             backgroundImage: `
-              linear-gradient(to right, #000 1.5px, transparent 1.5px),
-              linear-gradient(to bottom, #000 1.5px, transparent 1.5px)
+              linear-gradient(to right, #000 1px, transparent 1px),
+              linear-gradient(to bottom, #000 1px, transparent 1px)
             `,
-            backgroundSize: "50px 50px",
+            backgroundSize: "45px 45px",
           }}
         />
 
         {/* 5. Vệt sáng lướt qua (Diagonal Shine Effect) - Kích hoạt khi Hover */}
-        <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/90 to-transparent transition-transform duration-[1200ms] ease-in-out group-hover:translate-x-full" />
+        <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-black/3 to-transparent transition-transform duration-[1200ms] ease-in-out group-hover:translate-x-full" />
 
         {/* 📦 CONTENT WRAPPER */}
-        <div className="relative z-10 h-full w-full px-8 py-8 sm:py-12">{children}</div>
+        <div className="relative z-10 h-full w-full p-6 sm:p-8" id="glassCard">{children}</div>
       </div>
     </div>
   );

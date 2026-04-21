@@ -18,7 +18,7 @@ export default function AboutProjects() {
     <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-both">
       <div className="mb-6">
         <h3 className="text-lg sm:text-xl font-bold text-slate-900">Dự án cá nhân</h3>
-        <p className="text-slate-500 text-sm mt-1">Những sản phẩm mình đã hoàn thiện</p>
+        <p className="text-slate-500 text-sm mt-1">Những sản phẩm mình đã làm</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">

@@ -27,12 +27,6 @@ export const metadata: Metadata = {
 export default function AboutLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-blue-200">
-      {/* Background Decor (Tạo hiệu ứng gradient mờ ảo phía sau) */}
-      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        <div className="fixed -top-[20%] -left-[10%] h-[50vw] w-[50vw] rounded-full bg-blue-400/10 blur-[100px]" />
-        <div className="fixed top-[20%] -right-[10%] h-[40vw] w-[40vw] rounded-full bg-purple-400/10 blur-[100px]" />
-      </div>
-
       {/* Main Container */}
       <main className="relative py-26" id="about">
         {children}
