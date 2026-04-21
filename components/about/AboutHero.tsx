@@ -1,6 +1,6 @@
 export default function AboutHero() {
     return (
-        <section className="animate-in fade-in zoom-in-95 slide-in-from-bottom-8 duration-1000 relative">
+        <section className="animate-in fade-in duration-1000 relative">
 
             <div className="flex flex-col items-center justify-between gap-12 md:flex-row-reverse md:items-start">
                 {/* 🌟 CỘT TRÁI: AVATAR */}
@@ -53,29 +53,26 @@ export default function AboutHero() {
 
                     {/* Lời chào */}
                     <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 mb-6 leading-8 md:leading-11">
-                        Xin chào 👋 <br />
-                        Mình là <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600"> Vũ Trường</span>
+                        <span className="block animate-in slide-in-from-bottom-4 duration-700 delay-50">Xin chào 👋 <br /></span>
+                        <span className="block animate-in slide-in-from-bottom-4 duration-700 delay-150">Mình là <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600"> Vũ Trường</span></span>
                     </h1>
 
                     {/* Khối Câu chuyện (Gradient Storyline) */}
                     <div className="relative space-y-3 text-[.9375rem] sm:text-base text-slate-800 leading-6 sm:leading-relaxed max-w-2xl text-justify">
-
-                        {/* Dải Gradient tạo điểm nhấn thay cho border thông thường */}
-
-                        <p>
+                        <p className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                             Bắt đầu bước chân vào thế giới thiết kế & lập trình từ những năm 2013 - 2015, khi mà mọi thứ vẫn còn sơ khai,
                             chưa được phát triển mạnh mẽ như bây giờ - nơi mà AI chưa có chỗ đứng, HTML, CSS và Javascript thuần
                             chiếm giá trị quan trọng trong thế giới lập trình web.
                         </p>
-                        <p>
+                        <p className="animate-in fade-in slide-in-from-bottom-4 duration-900 delay-100">
                             Đến thời điểm hiện tại 2025 - 2026, mọi thứ đã dần "dễ thở" hơn từ khi nhiều AI xuất hiện, khiến việc lập trình và thiết kế Web
                             cũng trở nên nhẹ nhàng và dễ dàng hơn, nhiều khái niệm như <span className="font-medium">"vibe coding"</span> ra đời, tất nhiên mình cũng không đứng ngoài cuộc chơi này.
                         </p>
-                        <p>
+                        <p className="animate-in fade-in slide-in-from-bottom-4 duration-1100 delay-150">
                             Đam mê xây dựng những sản phẩm công nghệ tinh tế, tối ưu và mang lại giá trị thực tế.
                             Yêu thích sự hoàn hảo trong UI/UX và luôn tìm tòi những công nghệ mới nhất.
                         </p>
-                        <p>
+                        <p className="animate-in fade-in slide-in-from-bottom-4 duration-1300 delay-200">
                             <strong className="font-bold text-slate-900">VT Zone</strong> (vutruong.vn) cũng là một sản phẩm được kết hợp giữa code truyền thống và vibe coding,
                             ra mắt vào khoảng tháng 3/2026 và đang dần được hoàn thiện qua từng ngày.
                         </p>

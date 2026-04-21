@@ -9,7 +9,7 @@ export default function AboutSocials() {
   ];
 
   return (
-    <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300 fill-mode-both">
+    <section className="animate-in fade-in duration-1000 fill-mode-both">
       <div className="mb-6">
         <h3 className="text-lg sm:text-xl font-bold text-slate-900">Kết nối với mình</h3>
         <p className="text-slate-500 text-sm mt-1">Trên các nền tảng mạng xã hội</p>
