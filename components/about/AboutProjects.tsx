@@ -1,5 +1,5 @@
 import Link from "next/link";
-
+export const revalidate = 3600;
 export default function AboutProjects() {
   // Dữ liệu bốc từ project/page.tsx cũ sang
   const projects = [

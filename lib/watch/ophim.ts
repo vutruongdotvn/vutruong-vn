@@ -96,18 +96,6 @@ export async function getOPhimMovieDetail(slug: string) {
   };
 }
 
-/**
- * Sections
- */
-export async function getSectionMovies(
-  apiPath: string
-): Promise<OPhimMovie[]> {
-  const data = await fetchJson<OPhimListResponse>(
-    `${API_BASE}${apiPath}?page=1`
-  );
-
-  return Array.isArray(data?.data?.items) ? data.data.items : [];
-}
 
 /**
  * Hero (optimized: tránh gọi quá nhiều API detail)

@@ -57,7 +57,7 @@ function Card({ item, index }: { item: Item; index: number }) {
           sizes="(max-width: 640px) 120px,
        (max-width: 1024px) 140px,
        160px"
-       priority={index < 4}
+          priority={index < 4}
           onLoad={() => setLoaded(true)}
           className={`object-cover transition duration-300 ease-in-out ${loaded
             ? "opacity-100 scale-100 blur-0"

@@ -74,19 +74,20 @@ export default function WatchGuard({ children }: { children: React.ReactNode }) 
         <p className="mb-8 max-w-lg text-slate-400 text-sm sm:text-base">{config.desc}</p>
         
         <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-3">
+          <Link href="/watch" prefetch={false} className="flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-8 py-3 font-semibold text-sm sm:text-base text-white transition-all hover:bg-white/20 active:scale-95">
+            <i className="fa-duotone fa-arrow-left" /> Về trang chủ
+          </Link>
+
           {!user ? (
             <button onClick={() => setShowLogin(true)} className="flex items-center gap-2 rounded-full bg-red-600 px-8 py-3 font-semibold text-white text-sm sm:text-base transition-all hover:bg-red-500 active:scale-95 shadow-[0_0_20px_rgba(220,38,38,0.4)] cursor-pointer">
               <i className="fa-duotone fa-user-lock" /> Đăng nhập
             </button>
           ) : (
-            <button onClick={async () => { await supabase.auth.signOut(); window.location.reload(); }} className="flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-8 py-3 font-semibold text-white text-sm sm:text-base transition-all hover:bg-white/20 active:scale-95 cursor-pointer">
+            <button onClick={async () => { await supabase.auth.signOut(); window.location.reload(); }} className="flex items-center gap-2 rounded-full bg-red-600 px-8 py-3 font-semibold text-white text-sm sm:text-base transition-all hover:bg-red-500 active:scale-95 shadow-[0_0_20px_rgba(220,38,38,0.4)] cursor-pointer">
               <i className="fa-duotone fa-sign-out" /> Đăng xuất
             </button>
           )}
 
-          <Link href="/watch" prefetch={false} className="flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-8 py-3 font-semibold text-sm sm:text-base text-white transition-all hover:bg-white/20 active:scale-95">
-            <i className="fa-duotone fa-arrow-left" /> Về trang chủ
-          </Link>
         </div>
 
         {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}

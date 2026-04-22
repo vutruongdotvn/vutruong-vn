@@ -1,5 +1,5 @@
 import { AppleHelloVietnameseEffect } from "@/components/apple-hello-effect";
-
+export const revalidate = 3600;
 export default function AboutHero() {
     return (
         <section className="animate-in fade-in duration-1000 relative">
