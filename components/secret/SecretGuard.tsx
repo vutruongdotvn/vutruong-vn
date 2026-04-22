@@ -38,7 +38,7 @@ export default function SecretGuard({ children }: { children: React.ReactNode })
   if (!loading && (!user || role !== "admin")) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
-        <PremiumGlassCard contentClassName="text-center">
+        <PremiumGlassCard className="max-w-3xl" contentClassName="text-center">
           {/* Icon Container */}
           <div className="size-16 mb-6 flex items-center mx-auto justify-center rounded-full bg-red-50 border border-red-200">
             <i className="fa-duotone fa-lock-keyhole text-3xl text-red-500" />
