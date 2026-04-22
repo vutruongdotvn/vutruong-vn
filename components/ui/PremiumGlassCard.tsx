@@ -15,12 +15,12 @@ export default function PremiumGlassCard({
 }: PremiumGlassCardProps) {
   return (
     // Thêm class "group" để các thành phần bên trong bắt được sự kiện hover từ thẻ cha
-    <div className={cn("group relative w-full max-w-3xl mx-auto px-0 sm:px-4", className)}>
+    <div className={cn("group relative w-full mx-auto px-0 sm:px-4", className)}>
       
       {/* 🔮 MAIN GLASS SHELL (Lớp kính chính) */}
       <div
         className={cn(
-          "relative overflow-hidden rounded-0 sm:rounded-2xl border border-white/60 bg-white/40 backdrop-blur-2xl",
+          "relative overflow-hidden rounded-0 sm:rounded-[1.5rem] border border-white/60 bg-white/40 backdrop-blur-2xl",
           "shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-1200 ease-out",
           "hover:bg-white/80 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)]",
           contentClassName
@@ -58,7 +58,7 @@ export default function PremiumGlassCard({
         <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-black/3 to-transparent transition-transform duration-[1200ms] ease-in-out group-hover:translate-x-full" />
 
         {/* 📦 CONTENT WRAPPER */}
-        <div className="relative z-10 h-full w-full p-6 sm:p-8" id="glassCard">{children}</div>
+        <div className="relative z-10 h-full w-full px-6 py-8 sm:px-8 sm:py-8" id="glassCard">{children}</div>
       </div>
     </div>
   );

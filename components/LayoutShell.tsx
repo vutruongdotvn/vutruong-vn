@@ -11,7 +11,7 @@ export default function LayoutShell({
   const pathname = usePathname();
 
   const hideNavbar =
-    pathname === "/welcome" || pathname.startsWith("/watch");
+    pathname === "/hi" || pathname.startsWith("/watch");
 
   return (
     <>

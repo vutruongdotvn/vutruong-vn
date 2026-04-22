@@ -4,7 +4,7 @@ export default function AboutHero() {
     return (
         <section className="animate-in fade-in duration-1000 relative">
 
-            <div className="flex flex-col items-center justify-between gap-12 md:flex-row md:items-start">
+            <div className="flex flex-col items-center justify-between gap-10 md:flex-row md:items-start">
                 {/* 🌟 CỘT TRÁI: AVATAR */}
                 <div className="relative shrink-0 mx-auto sm:mx-0 group perspective-1000 w-48 sm:w-56 md:w-64 lg:w-88">
 

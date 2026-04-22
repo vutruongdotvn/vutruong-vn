@@ -65,10 +65,10 @@ const shortcuts: ShortcutItem[] = [
     bgClass: "from-indigo-500 to-indigo-600",
   },
   {
-    title: "VT Films",
-    url: "//films.vutruong.vn",
-    icon: "fa-duotone fa-film",
-    bgClass: "from-purple-700 to-purple-700",
+    title: "VT Zone",
+    url: "/",
+    icon: "fa-duotone fa-earth-asia",
+    bgClass: "from-slate-600 to-black",
   },
 ];
 
@@ -180,12 +180,14 @@ export default function WelcomePage() {
                   href={item.url}
                   target={isInternal ? "_self" : "_blank"}
                   rel={isInternal ? undefined : "noopener noreferrer"}
-                  className={`group flex h-[124px] flex-col items-center justify-center rounded-[10px] bg-gradient-to-br ${item.bgClass} px-4 text-white shadow-sm transition-all duration-200 hover:-translate-y-[2px] hover:shadow-md`}
+                  className={`group flex h-[150px] flex-col items-center justify-center rounded-2xl
+                    bg-gradient-to-br ${item.bgClass} px-4 text-white shadow-sm transition-all duration-200 hover:shadow-xl z-1 relative duration-200 ease-in-out active:scale-95`}
                 >
-                  <i
-                    className={`${item.icon} text-[34px] leading-none text-white transition-transform duration-200 group-hover:scale-105`}
+                  <div className="size-15 rounded-full text-center flex items-center justify-center p-3 flex bg-white/10 group-hover:bg-white/30 group-hover:shadow-lg duration-500 ease-in-out text-[1.6875rem]">
+                  <i className={`${item.icon} text-white transition-transform duration-300`}
                   />
-                  <span className="mt-4 text-center text-[15px] font-semibold">
+                  </div>
+                  <span className="mt-4 text-center text-base font-semibold">
                     {item.title}
                   </span>
                 </a>

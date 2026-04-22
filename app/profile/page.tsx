@@ -291,10 +291,9 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
+      <main className="relative min-h-screen flex items-center justify-center py-26">
         <PremiumGlassCard
-          className="max-w-5xl"
-          contentClassName="p-8 sm:p-10"
+          className="max-w-6xl"
         >
           <div className="animate-pulse">
             <div className="mx-auto mb-8 h-10 w-40 rounded-full bg-black/10" />
@@ -333,9 +332,9 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
+      <main className="relative min-h-screen flex items-center justify-center py-26">
         <PremiumGlassCard
-          className="max-w-md"
+          className="max-w-3xl"
           contentClassName="p-10 sm:p-12 text-center"
         >
           <div className="space-y-4">
@@ -351,11 +350,11 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <p className="text-lg font-semibold text-neutral-900">
+              <p className="text-lg sm:text-xl font-semibold text-neutral-900">
                 Hello 👋
               </p>
-              <p className="mt-2 text-sm text-neutral-500">
-                Đăng nhập để chỉnh sửa thông tin cá nhân của bạn.
+              <p className="mt-2 text-sm sm:text-base text-neutral-500">
+                Bạn chưa đăng nhập.
               </p>
             </div>
           </div>
@@ -365,7 +364,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
+    <main className="relative min-h-screen flex items-center justify-center py-26">
 
       {cropImage && (
         <div
@@ -428,7 +427,6 @@ export default function ProfilePage() {
 
       <PremiumGlassCard
         className="max-w-6xl"
-        contentClassName="p-6 sm:p-8 lg:p-10 xl:p-12"
       >
         <div className="space-y-10">
           <div className="text-center">

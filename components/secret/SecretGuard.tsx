@@ -9,12 +9,17 @@ export default function SecretGuard({ children }: { children: React.ReactNode })
   const { user, role, loading } = useUser();
   const [isAuthorized, setIsAuthorized] = useState(false);
 
+  // ✅ LOGIC MỚI: Trạng thái đánh dấu lần load đầu tiên
+  const [isInitialCheck, setIsInitialCheck] = useState(true);
+
   // 1. Kiểm tra quyền truy cập
   useEffect(() => {
     if (!loading) {
       if (user && role === "admin") {
         setIsAuthorized(true);
       }
+      // Khi đã load xong thì set tắt initial check đi
+      setIsInitialCheck(false);
     }
   }, [user, role, loading]);
 
@@ -54,8 +59,8 @@ export default function SecretGuard({ children }: { children: React.ReactNode })
     );
   }
 
-  // ⏳ Màn hình chờ trong lúc check phiên đăng nhập
-  if (loading || !isAuthorized) {
+  // ⏳ Màn hình chờ trong lúc check phiên đăng nhập (Đã sửa điều kiện: Chỉ chặn màn hình ở lần check đầu)
+  if ((loading || !isAuthorized) && isInitialCheck) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-gray-50/50">
         <div className="flex flex-col items-center gap-4">
@@ -65,7 +70,7 @@ export default function SecretGuard({ children }: { children: React.ReactNode })
     );
   }
 
-  // ✅ Hiển thị nội dung Khu vực tuyệt mật (Khi đã là Admin)
+  // ✅ Hiển thị nội dung Khu vực tuyệt mật (Khi đã là Admin hoặc đang check ngầm)
   return (
     <div className="secretRoute">
       {children}

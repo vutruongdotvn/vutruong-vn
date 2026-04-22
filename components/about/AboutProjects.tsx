@@ -4,12 +4,12 @@ export default function AboutProjects() {
   // Dữ liệu bốc từ project/page.tsx cũ sang
   const projects = [
     { name: "VT Zone", description: "Hệ sinh thái số cá nhân", href: "/", icon: "fa-earth-asia", gradient: "from-olive-400 to-olive-600" },
-    { name: "VT Welcome", description: "Trang chào mừng trên trình duyệt", href: "https://hi.vutruong.vn", icon: "fa-hand-wave", gradient: "from-sky-400 to-blue-600" },
+    { name: "VT Hi", description: "Trang chào mừng trên trình duyệt", href: "/hi", icon: "fa-hand-wave", gradient: "from-sky-400 to-blue-600" },
     { name: "VT Restaurant", description: "Quán ăn Gia đình Vũ Trường", href: "https://quanangiadinh.vutruong.vn", icon: "fa-bowl-food", gradient: "from-orange-400 to-red-500" },
     { name: "VT Invoice", description: "Hệ thống quản lý & vận hành Quán ăn", href: "https://hoadon.vutruong.vn", icon: "fa-file-invoice", gradient: "from-emerald-400 to-green-600" },
     { name: "VT Watch", description: "Trang xem phim cá nhân - nội bộ", href: "/watch", icon: "fa-film", gradient: "from-purple-400 to-indigo-600" },
     { name: "VT Blog", description: "Blog cá nhân - lưu giữ những điều giá trị", href: "/blog", icon: "fa-pen-nib", gradient: "from-pink-400 to-rose-500" },
-    { name: "VT Secret", description: "Lưu trữ những tài khoản quan trọng", href: "/secret", icon: "fa-shield-keyhole", gradient: "from-gray-600 to-black" },
+    { name: "VT Secret", description: "Hệ thống lưu trữ tài khoản quan trọng", href: "/secret", icon: "fa-shield-keyhole", gradient: "from-gray-600 to-black" },
     { name: "VT Admin", description: "Hệ thống quản lý và điều hành nội bộ", href: "/admin", icon: "fa-user-gear", gradient: "from-gray-600 to-black" },
     { name: "Coming Soon", description: "Một sản phẩm thú vị khác", href: "", icon: "fa-question", gradient: "from-gray-400 to-gray-400" },
   ];
@@ -18,7 +18,7 @@ export default function AboutProjects() {
     <section className="animate-in fade-in duration-1000 fill-mode-both">
       <div className="mb-6">
         <h3 className="text-lg sm:text-xl font-bold text-slate-900">Dự án cá nhân</h3>
-        <p className="text-slate-500 text-sm mt-1">Những sản phẩm mình đã làm</p>
+        <p className="text-slate-500 text-sm mt-1">Những sản phẩm đã làm</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">

@@ -44,7 +44,7 @@ export default function Page() {
 
       <div className="mx-auto flex min-h-full max-w-4xl w-full flex-col items-center justify-center">
         <PremiumGlassCard
-          className="text-center"
+          className="text-center max-w-3xl"
           contentClassName="py-16 select-none"
         >
           {/* Badge */}

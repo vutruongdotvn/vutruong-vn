@@ -16,9 +16,9 @@ export const moreMenu: MenuItem[] = [
 export const mobileMenu: MenuItem[] = [...mainMenu, ...moreMenu];
 
 export const pageMeta = {
-  "/": { title: "Trang chủ", subtitle: "VT Zone" },
-  "/about": { title: "Giới thiệu", subtitle: "Giới thiệu" },
-  "/contact": { title: "Liên hệ", subtitle: "Liên hệ" },
+  "/": { title: "Zone", subtitle: "VT Zone" },
+  "/about": { title: "About", subtitle: "Giới thiệu" },
+  "/contact": { title: "Contact", subtitle: "Liên hệ" },
   "/blog": { title: "Blog", subtitle: "Blog cá nhân" },
   "/watch": { title: "Watch", subtitle: "Thư giãn" },
   "/secret": { title: "Secret", subtitle: "ID & Password" },

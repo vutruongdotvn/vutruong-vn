@@ -11,19 +11,6 @@ export const metadata = createMetadata({
 export default function ContactPage() {
 
   return (
-    <div className="space-y-10">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className="font-semibold text-gray-900 text-2xl">
-          Liên hệ
-        </h1>
-        <p className="text-sm text-gray-500">
-          Trao đổi công việc - Cộng tác - Tài trợ
-        </p>
-      </div>
-
-      {/* Contact form */}
       <ContactForm />
-    </div>
   );
 }

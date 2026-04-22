@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: {
-    absolute: "VT Welcome",
-  },
+  title: "Hi",
+  description: "Trang chào mừng trên trình duyệt Web.",
+  robots: "noindex, nofollow", // Cấm Bot Google index
 };
 
 export default function WelcomeLayout({

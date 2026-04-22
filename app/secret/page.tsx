@@ -102,8 +102,8 @@ export default function SecretPage() {
       
       {/* 🚀 ẨN TOÀN BỘ UI KHI ĐANG LOAD */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] w-full gap-4">
-          <i className="fa-duotone fa-spinner-third fa-spin text-3xl text-sky-500" />
+        <div className="flex flex-col items-center justify-center min-h-[80vh] w-full gap-4">
+          <i className="fa-duotone fa-spinner-third fa-spin text-3xl text-slate-400 opacity-50" />
         </div>
       ) : (
         <>

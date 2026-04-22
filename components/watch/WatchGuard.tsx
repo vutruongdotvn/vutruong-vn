@@ -10,19 +10,19 @@ export default function WatchGuard({ children }: { children: React.ReactNode }) 
   const { user, role, status, loading } = useUser();
   const [showLogin, setShowLogin] = useState(false);
 
-  // LOGIC PHÊ DUYỆT: Admin hoặc User có status approved
-  const isAuthorized = user && (role === "admin" || status === "approved");
+  // ✅ THÊM LOGIC: Đánh dấu lần load đầu tiên
+  const [isInitialCheck, setIsInitialCheck] = useState(true);
 
-  // 💡 Debug Tool: In ra console để theo dõi
   useEffect(() => {
     if (!loading) {
-      // console.log("👉 Đang đăng nhập:", user?.email || "Chưa");
-      // console.log("👉 Role trong DB:", role);
-      // console.log("👉 Status trong DB:", status);
+      setIsInitialCheck(false);
     }
-  }, [user, role, status, loading]);
+  }, [loading]);
 
-  if (loading) {
+  const isAuthorized = user && (role === "admin" || status === "approved");
+
+  // ✅ SỬA ĐIỀU KIỆN: Chỉ hiện loading toàn màn hình ở lần check đầu tiên
+  if (loading && isInitialCheck) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-black">
         <img src="/logo.png" className="size-24 sm:size-30"/>
@@ -30,15 +30,13 @@ export default function WatchGuard({ children }: { children: React.ReactNode }) 
     );
   }
 
-  // NẾU KHÔNG CÓ QUYỀN VÀO XEM PHIM
-  if (!isAuthorized) {
-    // 1. Mặc định là khách chưa đăng nhập
+  // ✅ SỬA ĐIỀU KIỆN: Chỉ chặn truy cập khi đã load xong (tránh chớp nháy màn hình lỗi)
+  if (!loading && !isAuthorized) {
     let config = {
       icon: "fa-lock-keyhole", color: "bg-red-500/10 border border-red-500/20", iconColor: "text-red-500",
       title: "Truy cập bị từ chối", desc: "Bạn không có quyền xem nội dung này"
     };
 
-    // 2. NẾU ĐÃ ĐĂNG NHẬP, phân loại theo trạng thái
     if (user) {
       if (status === "banned") {
         config = {
@@ -56,7 +54,6 @@ export default function WatchGuard({ children }: { children: React.ReactNode }) 
           title: "Tài khoản bị thu hồi", desc: "Tài khoản của bạn đã bị thu hồi quyền sử dụng"
         };
       } else {
-        // Bắt gọn mọi trạng thái còn lại (pending, unknown, lỗi null...) thành Chờ Duyệt
         config = {
           icon: "fa-spinner-third fa-spin", color: "bg-amber-500/10 border border-amber-500/20", iconColor: "text-amber-500",
           title: "Tài khoản đang chờ phê duyệt", desc: "Tài khoản được phê duyệt mới có thể xem nội dung này"

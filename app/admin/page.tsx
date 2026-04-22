@@ -20,6 +20,13 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
+  // ✅ LOGIC MỚI: Trạng thái đánh dấu lần load đầu tiên
+  const [isInitialAuth, setIsInitialAuth] = useState(true);
+
+  useEffect(() => {
+    if (!authLoading) setIsInitialAuth(false);
+  }, [authLoading]);
+
   const fetchProfiles = async () => {
     try {
       const { data, error } = await supabase
@@ -74,8 +81,8 @@ export default function AdminUsersPage() {
     }
   };
 
-  // 1. Loading State
-  if (authLoading || (user && role !== "admin" && loading)) {
+  // 1. Loading State (Đã sửa điều kiện: chỉ chớp loading ở lần đầu isInitialAuth)
+  if ((authLoading && isInitialAuth) || (user && role !== "admin" && loading)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <i className="fa-duotone fa-shield-exclamation animate-pulse text-6xl text-red-500"></i>
@@ -83,8 +90,8 @@ export default function AdminUsersPage() {
     );
   }
 
-  // 2. Chặn truy cập (Access Denied)
-  if (!user || role !== "admin") {
+  // 2. Chặn truy cập (Access Denied) (Đã sửa điều kiện: thêm !authLoading)
+  if (!authLoading && (!user || role !== "admin")) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
         <PremiumGlassCard contentClassName="text-center">
@@ -114,7 +121,7 @@ export default function AdminUsersPage() {
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4 bg-white/50 p-5 sm:p-6 rounded-3xl backdrop-blur-xl border border-white shadow-sm">
           <div>
-            <h1 className="text-xl sm:text-3xl font-bold flex items-center gap-3 text-slate-800">
+            <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-3 text-slate-800">
               <i className="fa-duotone fa-users-gear text-blue-600"></i>
               Quản lý Người dùng
             </h1>
@@ -158,7 +165,7 @@ export default function AdminUsersPage() {
                       }`}>
                         {p.role}
                       </span>
-                      {p.email === user.email && (
+                      {p.role === "admin" && (
                         <span className="ml-1.5 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold uppercase bg-blue-100 text-blue-600 border border-blue-200">
                           Bạn
                         </span>
