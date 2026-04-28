@@ -194,8 +194,8 @@ export const createPost = async ({
 export const deletePost = async (postId: string, public_ids: string[]) => {
   try {
     // 1. Dùng hàm normalize để làm sạch dữ liệu thành mảng chuẩn (loại bỏ các giá trị rỗng)
-    const safePublicIds = normalizePublicIds(public_ids); 
-    
+    const safePublicIds = normalizePublicIds(public_ids);
+
     console.log("🔥 DELETE SERVICE - safePublicIds:", safePublicIds);
 
     // 🔒 CHECK USER TRƯỚC KHI DELETE
@@ -226,7 +226,7 @@ export const deletePost = async (postId: string, public_ids: string[]) => {
             "Authorization": session ? `Bearer ${session.access_token}` : "", // Bảo mật Token
           },
           // Truyền mảng đã làm sạch xuống API
-          body: JSON.stringify({ public_ids: safePublicIds }), 
+          body: JSON.stringify({ public_ids: safePublicIds }),
         });
 
         const data = await res.json();

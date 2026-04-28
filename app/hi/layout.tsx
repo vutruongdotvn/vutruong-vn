@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+export const revalidate = 3600; // cache 1h
 
 export const metadata: Metadata = {
   title: "Hi",
@@ -13,4 +14,4 @@ export default function WelcomeLayout({
 }) {
   return <>{children}</>;
 }
-// Trang VT Welcome không cần SEO
+// Trang VT Hi không cần SEO

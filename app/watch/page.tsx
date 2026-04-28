@@ -4,8 +4,6 @@ import WatchSectionSlider from "@/components/watch/WatchSectionSlider";
 import WatchTopics from "@/components/watch/WatchTopics";
 import { HOME_SECTIONS } from "@/lib/watch/constants";
 import { getHeroMovies } from "@/lib/watch/ophim";
-// Cache trong 1 giờ, hoặc thậm chí 1 ngày (86400)
-export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Watch",
@@ -40,7 +38,7 @@ export default async function WatchHomePage() {
   const heroMovies = await getHeroMovies();
 
   return (
-    <main className="select-none" id="vt-watch-app">
+    <main className="select-none" id="watch">
       <WatchHero movies={heroMovies} />
 
       <div className="mx-auto flex w-full max-w-[1800px] flex-col gap-16 px-5 py-12 md:px-8 md:py-16 xl:px-10">

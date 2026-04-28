@@ -368,8 +368,6 @@ export default function Navbar() {
               }
             `}
           >
-            <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-r from-white/30 via-transparent to-white/15" />
-
             <div
               className={`
                 relative flex items-center justify-between transition-all duration-300

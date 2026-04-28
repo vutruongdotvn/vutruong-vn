@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import WatchNavbar from "@/components/watch/WatchNavbar";
 import WatchFooter from "@/components/watch/WatchFooter";
 import FancyboxWrapper from "@/components/blog/FancyboxWrapper"; // ✅ ADD
+export const revalidate = 3600; // cache 1h
 
 import {
   getCategories,

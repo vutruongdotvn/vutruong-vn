@@ -1,15 +1,19 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
 
+export const metadata: Metadata = {
+  title: "Lỗi!",
+  description: "Lỗi 404 - Page not found!",
+  robots: "noindex, nofollow", // Cấm Bot Google index
+};
 export default function NotFound() {
   return (
     <>
-      <title>Lỗi!</title>
-
       <main className="flex min-h-screen flex-col items-center justify-center">
 
         <PremiumGlassCard
-          className="w-full"
+          className="max-w-3xl w-full"
           contentClassName="text-center"
         >
           {/* Main Icon */}
@@ -35,14 +39,14 @@ export default function NotFound() {
           <div className="flex items-center justify-center gap-2">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
+              className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-black active:scale-95"
             >
               <i className="fa-duotone fa-house" />
               Trang chủ
             </Link>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 rounded-full bg-black/15 px-5 py-2.5 text-sm font-medium text-black transition hover:opacity-90"
+              className="inline-flex items-center gap-2 rounded-full bg-black/10 px-5 py-2.5 text-sm font-medium text-black transition hover:bg-black/15 active:scale-95"
             >
               <i className="fa-duotone fa-envelope" />
               Liên hệ

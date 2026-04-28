@@ -94,7 +94,7 @@ export default function NavbarUserMenu({
                 </p>
 
                 <p className="text-sm text-gray-600 truncate">
-                  {user ? email : "Bạn chưa đăng nhập á!"}
+                  {user ? email : "Bạn chưa đăng nhập"}
                 </p>
               </div>
             </div>
