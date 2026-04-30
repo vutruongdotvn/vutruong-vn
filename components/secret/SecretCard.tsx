@@ -103,7 +103,7 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
   return (
     <>
       {/* 💳 THẺ HIỂN THỊ CHÍNH (CARD) */}
-      <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 p-5 transition-all duration-300 hover:shadow-[0_8px_60px_rgba(0,0,0,0.1)] relative flex flex-col h-full">
+      <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 p-4 transition-all duration-300 hover:shadow-[0_8px_60px_rgba(0,0,0,0.1)] relative flex flex-col h-full">
         
         {/* Header */}
         <div className="flex items-center gap-3 mb-5">
@@ -131,19 +131,19 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
         </div>
 
         {/* Footer Buttons */}
-        <div className="flex items-center gap-2 mt-3 flex-fill">
+        <div className="flex items-center justify-center absolute top-0 right-0 m-4 gap-1">
           <button 
             onClick={() => setIsViewModalOpen(true)}
-            className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 active:scale-95 text-sm font-medium py-2 px-6 rounded-lg cursor-pointer w-full"
+            className="flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 active:scale-95 text-sm font-medium p-3 rounded-lg cursor-pointer w-full"
           >
-            <i className="fa-duotone fa-expand" /> Xem chi tiết
+            <i className="fa-duotone fa-expand" />
           </button>
           <button 
             onClick={() => onEdit(secret)}
-            className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 active:scale-95 text-sm font-medium py-2 px-6 rounded-lg cursor-pointer w-full"
+            className="flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 active:scale-95 text-sm font-medium p-3 rounded-lg cursor-pointer w-full"
             title="Chỉnh sửa"
           >
-            <i className="fa-duotone fa-pen-to-square"/> Chỉnh sửa
+            <i className="fa-duotone fa-pen"/>
           </button>
         </div>
       </div>

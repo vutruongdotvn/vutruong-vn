@@ -22,7 +22,7 @@ export default function SecretPage() {
 
   // 🚀 State giới hạn số lượng Card hiển thị
   const [cardLimit, setCardLimit] = useState(10);
-  const CARD_LOAD_MORE = 4; // Số lượng tải thêm mỗi lần bấm
+  const CARD_LOAD_MORE = 6; // Số lượng tải thêm mỗi lần bấm
 
   useEffect(() => {
     const handleResize = () => {
@@ -49,7 +49,7 @@ export default function SecretPage() {
 
   // Reset lại số lượng card hiển thị khi người dùng đổi từ khóa hoặc tag
   useEffect(() => {
-    setCardLimit(6);
+    setCardLimit(10);
   }, [searchQuery, selectedTag]);
 
   const handleOpenCreate = () => {
