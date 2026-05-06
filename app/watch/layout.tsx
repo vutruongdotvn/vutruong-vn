@@ -3,6 +3,7 @@ import WatchNavbar from "@/components/watch/WatchNavbar";
 import WatchFooter from "@/components/watch/WatchFooter";
 import FancyboxWrapper from "@/components/blog/FancyboxWrapper"; // ✅ ADD
 export const revalidate = 3600; // cache 1h
+import WatchGuard from "@/components/watch/WatchGuard"; // ✅ 1. Import Guard
 
 import {
   getCategories,
@@ -73,19 +74,21 @@ export default async function WatchLayout({
   ]);
 
   return (
-    <div className="bg-black text-white">
-      {/* ✅ GLOBAL FANCYBOX */}
-      <FancyboxWrapper />
+    <WatchGuard>
+      <div className="bg-black text-white">
+        {/* ✅ GLOBAL FANCYBOX */}
+        <FancyboxWrapper />
 
-      <WatchNavbar
-        categories={categories}
-        countries={countries}
-        listTypes={listTypes}
-      />
+        <WatchNavbar
+          categories={categories}
+          countries={countries}
+          listTypes={listTypes}
+        />
 
-      {children}
+        {children}
 
-      <WatchFooter />
-    </div>
+        <WatchFooter />
+      </div>
+    </WatchGuard>
   );
 }

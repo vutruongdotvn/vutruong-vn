@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import WatchGuard from "@/components/watch/WatchGuard"; // ✅ 1. Import Guard
 
 export const metadata: Metadata = {
     metadataBase: new URL("https://www.vutruong.vn"),
@@ -33,8 +32,6 @@ export default function WatchSlugLayout({
 }) {
     // ✅ 2. Bọc toàn bộ trang phim bằng WatchGuard
     return (
-        <WatchGuard>
-            {children}
-        </WatchGuard>
+        children
     );
 }

@@ -71,7 +71,7 @@ export default function WatchGuard({ children }: { children: React.ReactNode }) 
         <p className="mb-8 max-w-lg text-slate-400 text-sm sm:text-base">{config.desc}</p>
         
         <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-3">
-          <Link href="/watch" prefetch={false} className="flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-8 py-3 font-semibold text-sm sm:text-base text-white transition-all hover:bg-white/20 active:scale-95">
+          <Link href="/" prefetch={false} className="flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-8 py-3 font-semibold text-sm sm:text-base text-white transition-all hover:bg-white/20 active:scale-95">
             <i className="fa-duotone fa-arrow-left" /> Về trang chủ
           </Link>
 
