@@ -47,15 +47,15 @@ const shortcuts: ShortcutItem[] = [
     bgClass: "from-blue-400 to-blue-500",
   },
   {
-    title: "Telegram",
-    url: "https://web.telegram.org/",
-    icon: "fa-brands fa-telegram",
-    bgClass: "from-sky-500 to-sky-500",
+    title: "Threads",
+    url: "https://www.threads.com/",
+    icon: "fa-brands fa-threads",
+    bgClass: "from-slate-700 to-black",
   },
   {
     title: "Zalo",
     url: "https://chat.zalo.me/",
-    icon: "fa-duotone fa-comment-dots",
+    icon: "fa-duotone fa-comment",
     bgClass: "from-sky-400 to-sky-500",
   },
   {
@@ -65,10 +65,10 @@ const shortcuts: ShortcutItem[] = [
     bgClass: "from-indigo-500 to-indigo-600",
   },
   {
-    title: "VT Zone",
-    url: "/",
-    icon: "fa-duotone fa-earth-asia",
-    bgClass: "from-slate-600 to-black",
+    title: "VT Films",
+    url: "https://films.vutruong.vn",
+    icon: "fa-duotone fa-film-alt",
+    bgClass: "from-rose-500 to-rose-800",
   },
 ];
 
@@ -127,13 +127,13 @@ export default function WelcomePage() {
     <main className="min-h-screen bg-[#e9e9eb] text-black">
       <div className="mx-auto flex min-h-screen w-full max-w-[1200px] flex-col items-center px-6 pb-16 pt-14">
         {/* Date */}
-        <p className="mb-1 text-center text-[26px] font-medium tracking-tight text-black md:text-[32px]">
+        <p className="mb-1 text-center text-2xl font-medium tracking-tight text-black md:text-[32px]">
           {formattedDate}
         </p>
 
         {/* Clock */}
         <h1
-          className="select-none text-center font-black leading-none tracking-[-0.06em] text-black"
+          className="select-none text-center font-black leading-none tracking-[-0.016em] text-black"
           style={{
             fontSize: "clamp(5.5rem, 13vw, 11rem)",
           }}
