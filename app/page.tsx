@@ -47,7 +47,7 @@ export default function Page() {
           className="text-center max-w-3xl"
           contentClassName="py-16 select-none"
         >
-          {/* Badge */}
+          {/* Badge 
           <div className="flex justify-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-300 bg-teal-100 px-4 py-1.5 text-xs font-medium text-teal-600">
               <span className="relative flex size-2">
@@ -57,6 +57,7 @@ export default function Page() {
               Personal digital ecosystem
             </span>
           </div>
+          */}
 
           {/* Hello */}
           <div className="my-8" key={helloKey}>

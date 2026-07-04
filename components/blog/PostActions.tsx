@@ -51,7 +51,7 @@ export default function PostActions({
 
   return (
     <div className="postAction flex items-center gap-4 px-4 py-3">
-      {/* Buttons */}
+      {/* Buttons 
       <button
       onClick={() => showToast("Đăng nhập để Thích bài viết này.", "warning")}
       className="likeBtn cursor-pointer text-[.9375rem] sm:text-base text-gray-500 transition hover:text-black active:scale-80"
@@ -64,6 +64,7 @@ export default function PostActions({
     >
       <i className="fadt fa-comment-slash" />
     </button>
+    */}
       <button
         onClick={handleShare}
         disabled={sharing}

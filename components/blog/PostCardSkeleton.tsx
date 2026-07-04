@@ -243,8 +243,6 @@ export default function PostCardSkeleton({
           {/* ACTIONS */}
           <div className="flex items-center gap-3 py-3 px-3 sm:px-4">
             <SkeletonAction />
-            <SkeletonAction />
-            <SkeletonAction />
           </div>
         </div>
       </div>

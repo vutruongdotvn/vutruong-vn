@@ -69,8 +69,7 @@ export default function WatchGuard({ children }: { children: React.ReactNode }) 
         }}
       >
         {/* 🎬 Lớp phủ Cinematic Backdrop (Vignette & Blur nhẹ) */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/60 to-black backdrop-blur-sm pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_120%)] pointer-events-none opacity-90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/60 to-black backdrop-blur-xs pointer-events-none" />
 
         {/* 📦 Auth Box: Sang - Xịn - Mịn (Premium Glassmorphism) */}
         <div className="relative z-10 flex w-full max-w-xl flex-col items-center justify-center rounded-[2.5rem] border border-white/10 bg-white/[0.04] p-8 px-6 sm:px-12 sm:p-12 shadow-[0_24px_80px_rgba(0,0,0,0.6)] backdrop-blur-2xl">
