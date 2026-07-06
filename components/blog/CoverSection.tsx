@@ -147,7 +147,7 @@ export default function CoverSection() {
                     <div className="px-3 sm:px-4 pb-3 sm:pb-4">
                         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between text-white">
                             {/* LEFT */}
-                            <div className="flex items-center gap-4">
+                            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
 
                                 {/* AVATAR */}
                                 <div className="relative size-20 sm:size-26 md:size-30 rounded-full shadow-xl overflow-hidden pointer-events-none">
@@ -155,8 +155,8 @@ export default function CoverSection() {
                                 </div>
 
                                 {/* NAME */}
-                                <div className="flex items-start gap-0 sm:gap-0.5 flex-col">
-                                    <div className="text-base sm:text-xl md:text-2xl font-semibold flex items-center gap-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
+                                <div className="flex items-center sm:items-start gap-0 sm:gap-0.5 flex-col">
+                                    <div className="text-xl md:text-2xl font-medium flex items-center gap-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
                                         {profile.name || "User Name"}
                                         <i className="fad fa-badge-check text-sm sm:text-base text-blue-600 cursor-pointer active:scale-95" title="Tài khoản đã được xác thực." />
                                     </div>

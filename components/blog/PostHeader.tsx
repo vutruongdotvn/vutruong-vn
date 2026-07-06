@@ -177,13 +177,12 @@ export default function PostHeader({
           />
 
           <div className="flex flex-col gap-0.75">
-            <Link
-              href="/bio"
-              className="flex items-center gap-1 text-sm font-medium text-gray-800 hover:text-black active:scale-95"
+            <span
+              className="flex items-center gap-1 cursor-pointer text-sm font-medium text-gray-800 hover:text-black active:scale-97"
             >
               {name}
               <i className="fad fa-badge-check text-xs text-blue-600" title="Tài khoản đã được xác thực." />
-            </Link>
+            </span>
 
             <div className="flex items-center gap-1.5">
               {isPinned && (
@@ -201,14 +200,14 @@ export default function PostHeader({
                 <Link
                   href={`/blog/${postId}`}
                   title={fullTime}
-                  className="postPublish inline-flex items-center text-xs font-normal text-gray-600 hover:text-black active:scale-95"
+                  className="postPublish inline-flex items-center text-xs font-normal text-gray-600 hover:text-black active:scale-97"
                 >
                   {time}
                 </Link>
               ) : (
                 <span
                   title={fullTime}
-                  className="postPublish inline-flex items-center text-xs font-normal text-gray-600 hover:text-black active:scale-95"
+                  className="postPublish inline-flex items-center text-xs font-normal text-gray-600 hover:text-black active:scale-97"
                 >
                   {time}
                 </span>
@@ -222,7 +221,7 @@ export default function PostHeader({
                     setOpenPrivacyModal(true);
                     setOpen(false);
                   }}
-                  className={`fadt fa-earth-asia text-xs active:scale-95 cursor-pointer ${isAdmin ? "" : "publicPost"
+                  className={`fadt fa-earth-asia text-xs active:scale-97 cursor-pointer ${isAdmin ? "" : "publicPost"
                     }`}
                   title="Công khai"
                 />
@@ -233,7 +232,7 @@ export default function PostHeader({
                     setOpenPrivacyModal(true);
                     setOpen(false);
                   }}
-                  className={`fadt fa-lock text-xs active:scale-95 cursor-pointer ${isAdmin ? "" : "privacyPost"
+                  className={`fadt fa-lock text-xs active:scale-97 cursor-pointer ${isAdmin ? "" : "privacyPost"
                     }`}
                   title="Riêng tư"
                 />
@@ -348,7 +347,7 @@ export default function PostHeader({
 
                 <button
                   onClick={() => setOpenDateModal(false)}
-                  className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer active:scale-95"
+                  className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer active:scale-97"
                 >
                   <i className="fa-duotone fa-xmark" />
                 </button>
@@ -381,7 +380,7 @@ export default function PostHeader({
               <div className="border-t border-gray-100/80 bg-white/90 px-5 py-4 flex justify-end gap-2">
                 <button
                   onClick={() => setOpenDateModal(false)}
-                  className="px-4 py-2 rounded-xl text-sm text-gray-600 hover:bg-gray-100 cursor-pointer active:scale-95"
+                  className="px-4 py-2 rounded-xl text-sm text-gray-600 hover:bg-gray-100 cursor-pointer active:scale-97"
                 >
                   Hủy
                 </button>
@@ -407,7 +406,7 @@ export default function PostHeader({
                     (selectedDate.slice(0, 10) === createdAt.slice(0, 10) &&
                       selectedTime === new Date(createdAt).toTimeString().slice(0, 5))
                   }
-                  className="px-4 py-2 rounded-xl text-sm bg-gray-900 text-white disabled:opacity-50 cursor-pointer active:scale-95"
+                  className="px-4 py-2 rounded-xl text-sm bg-gray-900 text-white disabled:opacity-50 cursor-pointer active:scale-97"
                 >
                   Lưu thay đổi
                 </button>
@@ -443,7 +442,7 @@ export default function PostHeader({
 
                 <button
                   onClick={() => setOpenPrivacyModal(false)}
-                  className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer active:scale-95"
+                  className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer active:scale-97"
                 >
                   <i className="fa-duotone fa-xmark" />
                 </button>
@@ -496,7 +495,7 @@ export default function PostHeader({
               <div className="border-t border-gray-100/80 bg-white/90 px-5 py-4 flex justify-end gap-2">
                 <button
                   onClick={() => setOpenPrivacyModal(false)}
-                  className="px-4 py-2 rounded-xl text-sm text-gray-600 hover:bg-gray-100 cursor-pointer active:scale-95"
+                  className="px-4 py-2 rounded-xl text-sm text-gray-600 hover:bg-gray-100 cursor-pointer active:scale-97"
                 >
                   Hủy
                 </button>
@@ -510,7 +509,7 @@ export default function PostHeader({
                     setSavingPrivacy(false);
                   }}
                   disabled={selectedVisibility === visibility || savingPrivacy}
-                  className="px-4 py-2 rounded-xl text-sm bg-gray-900 text-white disabled:opacity-50 cursor-pointer active:scale-95"
+                  className="px-4 py-2 rounded-xl text-sm bg-gray-900 text-white disabled:opacity-50 cursor-pointer active:scale-97"
                 >
                   {savingPrivacy ? (
                     <>
