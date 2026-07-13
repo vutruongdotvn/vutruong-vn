@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AppleHelloVietnameseEffect } from "@/components/apple-hello-effect";
 import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
+import AboutSocials from "@/components/about/AboutSocials";
 
 const rotatingWords = [
   "ăn",
@@ -40,11 +41,11 @@ export default function Page() {
   const activeWord = useMemo(() => rotatingWords[wordIndex], [wordIndex]);
 
   return (
-    <main className="relative min-h-screen flex items-center justify-center pt-28 pb-16">
+    <main className="relative min-h-screen flex items-center justify-center py-28">
 
-      <div className="mx-auto flex min-h-full max-w-4xl w-full flex-col items-center justify-center">
+      <div className="mx-auto flex min-h-full w-full flex-col items-center justify-center">
         <PremiumGlassCard
-          className="text-center max-w-3xl"
+          className="text-center max-w-5xl"
           contentClassName="py-16 select-none"
         >
           {/* Badge 
@@ -60,10 +61,12 @@ export default function Page() {
           */}
 
           {/* Hello */}
-          <div className="my-8" key={helloKey}>
-            <AppleHelloVietnameseEffect className="lg:h-20 md:h-18 h-16 mx-auto"/>
+          <div className="space-y-8" key={helloKey}>
+            <AppleHelloVietnameseEffect className="lg:h-20 md:h-18 h-16 mx-auto" />
+            <div className="h-px w-[50%] mx-auto bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+            <AboutSocials />
           </div>
-          
+
           {/* Tagline 
           <div className="space-y-1">
             <div className="overflow-hidden">

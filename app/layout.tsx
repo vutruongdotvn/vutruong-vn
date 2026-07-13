@@ -8,7 +8,7 @@ import { ToastProvider } from "@/components/ui/ToastProvider";
 import ConditionalPageTransition from "@/components/ConditionalPageTransition";
 
 // Cache trong 1 giờ, hoặc thậm chí 1 ngày (86400)
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 // 🔤 Font
 const roboto = Roboto({
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.vutruong.vn"),
 
   title: {
-    default: "VT Zone",
+    default: "Zone",
     template: "%s",
   },
 

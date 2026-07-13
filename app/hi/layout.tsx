@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-export const revalidate = 3600; // cache 1h
+export const revalidate = 86400; // cache 1d
 
 export const metadata: Metadata = {
-  title: "Hi",
+  title: "Xin chào!",
   description: "Trang chào mừng trên trình duyệt Web.",
   robots: "noindex, nofollow", // Cấm Bot Google index
 };

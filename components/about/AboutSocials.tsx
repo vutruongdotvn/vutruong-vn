@@ -65,8 +65,8 @@ export default function AboutSocials() {
               <i className={`${social.isDuotone ? 'fa-duotone' : 'fa-brands'} ${social.icon} text-xl`} />
             </div>
             <div className="overflow-hidden">
-              <p className="font-bold text-sm text-slate-900 truncate hidden">{social.title}</p>
-              <p className="text-sm font-medium text-slate-500 truncate">{social.subtitle}</p>
+              <p className="font-bold text-sm text-slate-900 truncate">{social.title}</p>
+              <p className="text-sm font-medium text-slate-500 truncate hidden">{social.subtitle}</p>
             </div>
           </a>
         ))}

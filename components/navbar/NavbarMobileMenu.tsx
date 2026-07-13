@@ -73,7 +73,7 @@ export default function NavbarMobileMenu({
             className="absolute left-1/2 top-5 -translate-x-1/2 w-[calc(100%-24px)] max-w-md rounded-[2rem] border border-white/60 bg-white/88 backdrop-blur-2xl shadow-[0_24px_80px_rgba(0,0,0,0.18)] p-4"
           >
             <div className="flex items-center justify-between mb-4 mt-1">
-              <div className="flex items-center gap-3 min-w-0">
+              <div className="flex items-center gap-2 min-w-0">
                 <Image
                   src="/logo.png"
                   alt="logo"
@@ -87,11 +87,11 @@ export default function NavbarMobileMenu({
                   <Link
                     href={currentPageHref}
                     onClick={(e) => onNavClick(e, currentPageHref)}
-                    className="font-semibold text-gray-900 leading-5 truncate block"
+                    className="text-lg font-semibold text-gray-900 leading-5 truncate block"
                   >
                     {title}
                   </Link>
-                  <p className="text-xs text-gray-500 truncate">{subtitle}</p>
+                  <p className="text-xs text-gray-500 truncate hidden">{subtitle}</p>
                 </div>
               </div>
 

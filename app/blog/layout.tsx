@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 // Cache bài viết trong 1 giờ, hoặc thậm chí 1 ngày (86400)
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export default function BlogLayout({
   children,
