@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 
 export const uploadImage = async (
-  file: File | Blob, 
+  file: File | Blob,
   type: "post" | "avatar" = "post" // Mặc định là "post"
 ) => {
   try {
@@ -64,24 +64,45 @@ export function buildCloudinaryImage(
   const width = options?.width;
   const height = options?.height;
   const crop = options?.crop ?? "limit";
-  const quality = options?.quality ?? "auto";
+  const quality = options?.quality ?? "auto:good";
   const format = options?.format ?? "auto";
-  const dpr = options?.dpr ?? 1;
+  const dpr = options?.dpr ?? "auto";
   const gravity = options?.gravity;
   const sharpen = options?.sharpen ?? false;
 
-  const transforms: string[] = [
-    `f_${format}`,
-    `q_${quality === "auto" ? "auto:eco" : quality}`,
-    `dpr_${dpr}`,
-    "fl_strip_profile",
-  ];
+  const transforms = [];
+
+  if (format)
+    transforms.push(`f_${format}`);
+
+  if (quality)
+    transforms.push(`q_${quality}`);
+
+  if (dpr)
+    transforms.push(`dpr_${dpr}`);
+
+  if (width)
+    transforms.push(`w_${width}`);
+
+  if (height)
+    transforms.push(`h_${height}`);
+
+  if (crop)
+    transforms.push(`c_${crop}`);
+
+  if (gravity && crop === "fill")
+    transforms.push(`g_${gravity}`);
+
+  if (sharpen)
+    transforms.push("e_sharpen");
+
+  transforms.push("fl_strip_profile");
 
   if (width) transforms.push(`w_${width}`);
   if (height) transforms.push(`h_${height}`);
   if (crop) transforms.push(`c_${crop}`);
   if (gravity && crop === "fill") transforms.push(`g_${gravity}`);
-  if (sharpen) transforms.push("e_sharpen:30");
+  if (sharpen) transforms.push("e_sharpen");
 
   return url.replace("/upload/", `/upload/${transforms.join(",")}/`);
 }
@@ -89,13 +110,13 @@ export function buildCloudinaryImage(
 // avatar nhỏ
 export function getAvatarImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
     crop: "fill",
     gravity: "face",
     quality: "auto",
     format: "auto",
-    dpr: 1,
+    dpr: "auto",
   });
 }
 
@@ -106,7 +127,7 @@ export function getFeedImage(url?: string) {
     crop: "limit",
     quality: "auto",
     format: "auto",
-    dpr: 1,
+    dpr: "auto",
     sharpen: true,
   });
 }
@@ -114,11 +135,11 @@ export function getFeedImage(url?: string) {
 // ảnh lớn cho lightbox / preview chất lượng cao
 export function getLightboxImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 1600,
+    width: 5000,
     crop: "limit",
-    quality: "auto:good",
+    quality: "auto:best",
     format: "auto",
-    dpr: 1,
+    dpr: "auto",
   });
 }
 
@@ -165,8 +186,8 @@ type CloudinaryLoaderParams = {
 // avatar trong trang route app/profile và trong CoverSection
 export function getProfileAvatar(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 144,
-    height: 144,
+    width: 300,
+    height: 300,
     crop: "fill",
     gravity: "face",
     quality: "auto:good",

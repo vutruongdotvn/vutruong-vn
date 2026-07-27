@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { AppleHelloVietnameseEffect } from "@/components/apple-hello-effect";
 import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
-import AboutSocials from "@/components/about/AboutSocials";
 
 const rotatingWords = [
   "ăn",
@@ -45,8 +44,8 @@ export default function Page() {
 
       <div className="mx-auto flex min-h-full w-full flex-col items-center justify-center">
         <PremiumGlassCard
-          className="text-center max-w-5xl"
-          contentClassName="py-16 select-none"
+          className="text-center max-w-4xl"
+          contentClassName="py-36 sm:py-28 select-none"
         >
           {/* Badge 
           <div className="flex justify-center">
@@ -63,8 +62,6 @@ export default function Page() {
           {/* Hello */}
           <div className="space-y-8" key={helloKey}>
             <AppleHelloVietnameseEffect className="lg:h-20 md:h-18 h-16 mx-auto" />
-            <div className="h-px w-[50%] mx-auto bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
-            <AboutSocials />
           </div>
 
           {/* Tagline 
