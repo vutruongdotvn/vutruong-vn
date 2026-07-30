@@ -69,11 +69,11 @@ export default function WatchGuard({ children }: { children: React.ReactNode }) 
         }}
       >
         {/* 🎬 Lớp phủ Cinematic Backdrop (Vignette & Blur nhẹ) */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/60 to-black backdrop-blur-xs pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/50 to-black pointer-events-none" />
 
         {/* 📦 Auth Box: Sang - Xịn - Mịn (Premium Glassmorphism) */}
         <div className="relative z-10 flex w-full max-w-xl flex-col items-center justify-center rounded-[2.5rem] border border-white/10 bg-white/[0.04] p-8 px-6 sm:px-12 sm:p-12 shadow-[0_24px_80px_rgba(0,0,0,0.6)] backdrop-blur-2xl">
-          
+
           {/* Glow sáng mờ phía sau Icon tạo chiều sâu */}
           <div className="absolute top-12 left-1/2 h-32 w-32 -translate-x-1/2 rounded-full bg-white/5 blur-[40px] pointer-events-none" />
 
@@ -82,8 +82,8 @@ export default function WatchGuard({ children }: { children: React.ReactNode }) 
             <i className={`fad ${config.icon} text-4xl ${config.iconColor}`} />
           </div>
 
-          <h1 className="relative z-10 mb-3 text-lg sm:text-2xl font-bold tracking-tight drop-shadow-md">{config.title}</h1>
-          <p className="relative z-10 mb-8 max-w-lg text-slate-300 text-sm sm:text-base leading-relaxed">{config.desc}</p>
+          <h1 className="relative z-10 mb-3 text-base sm:text-xl font-bold tracking-tight drop-shadow-md">{config.title}</h1>
+          <p className="relative z-10 mb-8 max-w-lg text-slate-400 text-sm sm:text-base leading-relaxed">{config.desc}</p>
 
           {/* Các nút bấm (Giữ nguyên logic, thêm hover shadow đẹp hơn) */}
           <div className="relative z-10 flex flex-wrap items-center justify-center gap-3 w-full sm:w-auto">
