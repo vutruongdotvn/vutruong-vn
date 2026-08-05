@@ -132,7 +132,7 @@ export function getFeedImage(url?: string) {
   });
 }
 
-// ảnh lớn cho lightbox / preview chất lượng cao
+// ảnh lớn cho lightbox / preview chất lượng cao 4K
 export function getLightboxImage(url?: string) {
   return buildCloudinaryImage(url, {
     width: 4096,

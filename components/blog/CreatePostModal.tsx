@@ -104,9 +104,9 @@ const compressFilesBeforeUpload = async (files: File[]) => {
       if (!shouldCompress) return file;
 
       return await compressImage(file, {
-        maxSizeMB: 1.4,
-        maxWidthOrHeight: 2200,
-        initialQuality: 0.84,
+        maxSizeMB: 10,
+        maxWidthOrHeight: 4096,
+        initialQuality: 1,
       });
     })
   );
