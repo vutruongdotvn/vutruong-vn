@@ -125,17 +125,17 @@ export function getFeedImage(url?: string) {
   return buildCloudinaryImage(url, {
     width: 800,
     crop: "limit",
-    quality: "auto",
+    quality: "auto:best",
     format: "auto",
     dpr: "auto",
-    sharpen: true,
+    // sharpen: true,
   });
 }
 
 // ảnh lớn cho lightbox / preview chất lượng cao
 export function getLightboxImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 5000,
+    width: 4096,
     crop: "limit",
     quality: "auto:best",
     format: "auto",

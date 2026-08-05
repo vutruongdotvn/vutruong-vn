@@ -8,18 +8,19 @@ type CompressOptions = {
 
 export async function compressImage(
   file: File,
+  enableCompression = false,
   customOptions: CompressOptions = {}
 ): Promise<File> {
-  if (!file.type.startsWith("image/")) {
+  if (!enableCompression || !file.type.startsWith("image/")) {
     return file;
   }
 
   const options = {
-    maxSizeMB: customOptions.maxSizeMB ?? 1,
-    maxWidthOrHeight: customOptions.maxWidthOrHeight ?? 1600,
+    maxSizeMB: customOptions.maxSizeMB ?? 10, // dung lượng tối đa của 1 ảnh
+    maxWidthOrHeight: customOptions.maxWidthOrHeight ?? 4096, // kích thước ảnh phân giải 8K
     useWebWorker: true,
-    initialQuality: customOptions.initialQuality ?? 0.8,
-    alwaysKeepResolution: false,
+    initialQuality: customOptions.initialQuality ?? 1, // 100% chất lượng gốc
+    alwaysKeepResolution: true,
   };
 
   try {
