@@ -125,7 +125,7 @@ export function getFeedImage(url?: string) {
   return buildCloudinaryImage(url, {
     width: 800,
     crop: "limit",
-    quality: "auto:best",
+    quality: "auto",
     format: "auto",
     dpr: "auto",
     // sharpen: true,
