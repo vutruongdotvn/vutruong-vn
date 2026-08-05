@@ -95,24 +95,7 @@ const getOptimizedPreviewUrl = (
 };
 
 // compress ảnh trước khi upload để tối ưu tài nguyên và dữ liệu
-const compressFilesBeforeUpload = async (files: File[]) => {
-  const processed = await Promise.all(
-    files.map(async (file) => {
-      const shouldCompress =
-        file.size > 450 * 1024 || /image\/(jpeg|jpg|png|webp)/i.test(file.type);
 
-      if (!shouldCompress) return file;
-
-      return await compressImage(file, {
-        maxSizeMB: 1.4,
-        maxWidthOrHeight: 2200,
-        initialQuality: 0.84,
-      });
-    })
-  );
-
-  return processed;
-};
 
 
 const SortableImageCard = memo(function SortableImageCard({
