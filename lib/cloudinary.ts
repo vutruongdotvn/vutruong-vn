@@ -123,12 +123,11 @@ export function getAvatarImage(url?: string) {
 // thumbnail feed / card
 export function getFeedImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 800,
+    width: 1000,
     crop: "limit",
     quality: "auto",
     format: "auto",
     dpr: "auto",
-    // sharpen: true,
   });
 }
 
@@ -193,7 +192,6 @@ export function getProfileAvatar(url?: string) {
     quality: "auto:good",
     format: "auto",
     dpr: "auto",
-    sharpen: true,
   });
 }
 
@@ -206,8 +204,7 @@ export function getPhotoWidgetImage(url?: string) {
     gravity: "auto",
     quality: "auto:eco",
     format: "auto",
-    dpr: 1,
-    sharpen: true,
+    dpr: "auto",
   });
 }
 
