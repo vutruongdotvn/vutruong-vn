@@ -33,8 +33,7 @@ export default function NavbarBrand({
         width={40}
         height={40}
         className={`
-          pointer-events-none shrink-0 transition-all duration-300
-          ${scrolled ? "size-10" : "size-11"}
+          pointer-events-none shrink-0 transition-all duration-300 size-11
         `}
         priority unoptimized
       />
@@ -42,8 +41,7 @@ export default function NavbarBrand({
       <div className="min-w-0 leading-tight">
         <div
           className={`
-            font-bold text-gray-800 transition-all duration-300 truncate
-            ${scrolled ? "text-base" : "text-lg"}
+            font-bold text-gray-800 transition-all duration-300 truncate text-lg
           `}
         >
           {title}

@@ -112,7 +112,7 @@ export default function AdminUsersPage() {
 
   // 3. Giao diện chính (Grid System + Mobile Responsive)
   return (
-    <div className="min-h-screen py-26 px-4 sm:px-8 relative overflow-hidden">
+    <div className="min-h-screen py-24 px-4 sm:px-8 relative overflow-hidden">
       {/* Background Blobs Glassmorphism */}
       <div className="fixed top-0 left-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-blue-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob pointer-events-none"></div>
       <div className="fixed top-0 right-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-cyan-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000 pointer-events-none"></div>

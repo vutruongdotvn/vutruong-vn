@@ -70,7 +70,7 @@ export default function NavbarMobileMenu({
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 20, opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.28, ease: "easeOut" }}
-            className="absolute left-1/2 top-5 -translate-x-1/2 w-[calc(100%-24px)] max-w-md rounded-[2rem] border border-white/60 bg-white/88 backdrop-blur-2xl shadow-[0_24px_80px_rgba(0,0,0,0.18)] p-4"
+            className="absolute left-1/2 top-5 -translate-x-1/2 w-[calc(100%-24px)] max-w-md rounded-4xl border border-white/60 bg-white/88 backdrop-blur-2xl shadow-[0_24px_80px_rgba(0,0,0,0.18)] p-4"
           >
             <div className="flex items-center justify-between mb-4 mt-1">
               <div className="flex items-center gap-2 min-w-0">

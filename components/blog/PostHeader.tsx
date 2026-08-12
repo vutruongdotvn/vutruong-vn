@@ -178,10 +178,10 @@ export default function PostHeader({
 
           <div className="flex flex-col gap-0.75">
             <span
-              className="flex items-center gap-1 cursor-pointer text-sm font-medium text-gray-800 hover:text-black active:scale-97"
+              className="flex items-center gap-1 cursor-pointer text-sm font-medium text-gray-800 hover:text-black"
             >
               {name}
-              <i className="fad fa-badge-check text-xs text-blue-600" title="Tài khoản đã được xác thực." />
+              <i className="fas fa-badge-check text-xs text-blue-500" title="Tài khoản đã được xác thực" />
             </span>
 
             <div className="flex items-center gap-1.5">

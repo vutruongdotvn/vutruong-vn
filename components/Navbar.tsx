@@ -346,20 +346,20 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 z-50 flex w-full select-none justify-center px-4 pt-4">
+      <header className="fixed top-0 left-0 z-50 flex w-full select-none justify-center">
         <div
           className={`
-            topNavbar w-full transition-all duration-1200 ease-in-out
-            ${scrolled ? "max-w-[280px] sm:max-w-[360px] md:max-w-3xl" : "max-w-4xl"}
+            topNavbar w-full transition-all duration-1500 ease-in-out rounded-0
+            ${scrolled ? "max-w-full-scrolled" : "max-w-full"}
           `}
         >
           <div
             className={`
-              relative overflow-visible border transition-all duration-1200 ease-in-out hover:bg-white rounded-full 
+              relative overflow-visible border transition-all duration-900 ease-in-out hover:bg-white
               ${
                 scrolled
-                  ? "border-white/30 bg-white/50 backdrop-blur-xl shadow-[0_8px_48px_rgba(0,0,0,0.1)]"
-                  : "border-white/60 bg-white shadow-[0_12px_36px_rgba(0,0,0,0.015)]"
+                  ? "border-white/30 bg-white backdrop-blur-xl shadow-[0_8px_48px_rgba(0,0,0,0.1)]"
+                  : "border-white/60 bg-white shadow-[0_12px_36px_rgba(0,0,0,0.05)]"
               }
               ${
                 visible
@@ -370,8 +370,7 @@ export default function Navbar() {
           >
             <div
               className={`
-                relative flex items-center justify-between transition-all duration-300
-                ${scrolled ? "px-0.5 py-0.5 ps-1.5" : "px-3.5 py-2.5 ps-3"}
+                relative flex items-center justify-between transition-all duration-600 max-w-6xl mx-auto px-3.5 py-1.5
               `}
             >
               <NavbarBrand

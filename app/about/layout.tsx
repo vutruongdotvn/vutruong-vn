@@ -28,7 +28,7 @@ export default function AboutLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen">
       {/* Main Container */}
-      <main className="relative py-26" id="about">
+      <main className="relative pt-18 pb-5" id="about">
         {children}
       </main>
     </div>
