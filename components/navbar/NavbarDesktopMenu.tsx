@@ -19,7 +19,7 @@ export default function NavbarDesktopMenu({
   onNavClick,
 }: NavbarDesktopMenuProps) {
   return (
-    <nav className="flex items-center gap-1">
+    <nav className="flex items-center gap-1.5">
       {mainMenu.map((item) => {
         const active = isActive(item.href);
 

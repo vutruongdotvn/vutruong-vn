@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s",
   },
 
-  description: "Hệ sinh thái số của Vũ Trường trên Internet | vutruong.vn",
+  description: "Hệ sinh thái số cá nhân của Vũ Trường trên Internet | vutruong.vn",
 
   keywords: [
     "Vũ Trường",
@@ -36,7 +36,9 @@ export const metadata: Metadata = {
     "blog cá nhân",
     "VT Zone",
     "vt zone",
+    "vtzone",
     "vt blog",
+    "vtblog",
   ],
 
   authors: [
@@ -134,6 +136,9 @@ export default function RootLayout({
             </LayoutShell>
           </AuthProvider>
         </ToastProvider>
+
+
+
       </body>
     </html>
   );

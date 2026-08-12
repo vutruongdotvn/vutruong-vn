@@ -40,12 +40,12 @@ export default function Page() {
   const activeWord = useMemo(() => rotatingWords[wordIndex], [wordIndex]);
 
   return (
-    <main className="relative min-h-screen flex items-center justify-center py-28">
+    <main className="relative min-h-screen flex items-center justify-center py-20">
 
       <div className="mx-auto flex min-h-full w-full flex-col items-center justify-center">
         <PremiumGlassCard
-          className="text-center max-w-4xl"
-          contentClassName="py-36 sm:py-28 select-none"
+          className="text-center max-w-6xl"
+          contentClassName="py-36 sm:py-48 select-none"
         >
           {/* Badge 
           <div className="flex justify-center">
@@ -60,7 +60,7 @@ export default function Page() {
           */}
 
           {/* Hello */}
-          <div className="space-y-8" key={helloKey}>
+          <div key={helloKey}>
             <AppleHelloVietnameseEffect className="lg:h-20 md:h-18 h-16 mx-auto" />
           </div>
 
@@ -81,6 +81,7 @@ export default function Page() {
             </div>
           </div>
           */}
+
         </PremiumGlassCard>
 
       </div>

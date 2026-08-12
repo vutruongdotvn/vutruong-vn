@@ -66,7 +66,7 @@ export default function NavbarMoreMenu({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.97 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="absolute right-0 top-[calc(100%+14px)] w-72 rounded-3xl bg-white shadow-[0_20px_60px_rgba(0,0,0,0.14)] p-3"
+            className="absolute right-0 top-[calc(100%+24px)] w-72 rounded-2xl bg-white shadow-[0_20px_60px_rgba(0,0,0,0.14)] p-3"
           >
 
             <div className="flex flex-col gap-1.5">

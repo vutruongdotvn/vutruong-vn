@@ -114,8 +114,8 @@ export default function CoverSection() {
                 <div
                     className="
     absolute left-0 bottom-0 h-full w-full 
-    backdrop-blur-sm 
-    bg-gradient-to-t from-black/50 via-black/15 to-transparent 
+    backdrop-blur-none 
+    bg-gradient-to-t from-black/25 via-black/50 to-transparent 
     pointer-events-none 
     transition-opacity duration-900 ease-out
     group-hover:opacity-25
