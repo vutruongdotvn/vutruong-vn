@@ -62,17 +62,17 @@ export default function NavbarMobileMenu({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/35 to-black/45 backdrop-blur-[3px]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/35 to-black/45 backdrop-blur-[2px]" />
 
           <motion.div
             ref={menuRef}
-            initial={{ y: 30, opacity: 0, scale: 0.98 }}
+            initial={{ y: 0, opacity: 0, scale: 1 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 20, opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.28, ease: "easeOut" }}
-            className="absolute left-1/2 top-5 -translate-x-1/2 w-[calc(100%-24px)] max-w-md rounded-4xl border border-white/60 bg-white/88 backdrop-blur-2xl shadow-[0_24px_80px_rgba(0,0,0,0.18)] p-4"
+            exit={{ y: 0, opacity: 0, scale: 1 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="absolute left-1/2 sm:top-5 -translate-x-1/2 w-full sm:w-[calc(100%-24px)] sm:max-w-md sm:rounded-4xl border border-white/60 bg-white/80 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,0.18)] p-3"
           >
-            <div className="flex items-center justify-between mb-4 mt-1">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2 min-w-0">
                 <Image
                   src="/logo.png"
@@ -97,14 +97,14 @@ export default function NavbarMobileMenu({
 
               <button
                 onClick={() => setOpen(false)}
-                className="w-10 h-10 rounded-full bg-white border border-gray-100 shadow-sm flex items-center justify-center text-gray-600 hover:text-black cursor-pointer"
+                className="w-10 h-10 rounded-full hover:bg-white flex items-center justify-center text-gray-600 hover:text-black cursor-pointer"
                 aria-label="Close menu"
               >
                 <i className="fa-duotone fa-xmark" />
               </button>
             </div>
 
-            <div className="mb-4 rounded-3xl border border-white/60 bg-white/72 px-4 py-4 shadow-sm">
+            <div className="mb-4 rounded-3xl bg-white px-4 py-4">
               <div className="flex items-center gap-3">
                 <Image
                   src={avatar}
@@ -191,11 +191,11 @@ export default function NavbarMobileMenu({
                 return (
                   <motion.div
                     key={item.name}
-                    initial={{ opacity: 0, y: 14 }}
+                    initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      duration: 0.28,
-                      delay: 0.05 + index * 0.04,
+                      duration: 0.5,
+                      delay: 0.15 + index * 0.05,
                     }}
                   >
                     <Link
@@ -208,8 +208,8 @@ export default function NavbarMobileMenu({
                         }
                       }}
                       className={`
-                        rounded-3xl p-4 min-h-[96px]
-                        flex flex-col justify-between
+                        rounded-2xl p-4
+                        flex space-between gap-3
                         transition-all duration-300
                         ${
                           active
@@ -220,13 +220,13 @@ export default function NavbarMobileMenu({
                     >
                       <i className={`${item.icon} text-lg`} />
 
-                      <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center space-between gap-2">
                         <span className="text-sm font-semibold">{item.name}</span>
 
                         {active ? (
                           <span className="w-2 h-2 rounded-full bg-white/90 shrink-0" />
                         ) : (
-                          <i className="fa-duotone fa-arrow-up-right text-xs opacity-60 shrink-0" />
+                          <i className="fa-duotone fa-arrow-up-right text-xs opacity-0 shrink-0 hidden" />
                         )}
                       </div>
                     </Link>
