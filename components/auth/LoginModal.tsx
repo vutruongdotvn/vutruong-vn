@@ -137,7 +137,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
             </div>
             <input
               type="email"
-              placeholder="Email của bạn"
+              placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -196,7 +196,8 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
               )}
             </span>
           </button>
-
+            
+          {/*
           <div className="mt-6 text-center">
             <span className="text-sm text-slate-500">
               {isRegister ? "Đã có tài khoản? " : "Chưa có tài khoản? "}
@@ -213,6 +214,8 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
               {isRegister ? "Đăng nhập" : "Đăng ký ngay"}
             </button>
           </div>
+          */}
+
         </div>
       </div>
     </div>,

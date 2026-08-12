@@ -11,7 +11,7 @@ export default function BlogSidebarClient({ children }: { children: React.ReactN
   const { style, className } = useSmartStickySidebar({
     containerRef,
     sidebarRef,
-    offsetTop: 88,
+    offsetTop: 75,
     breakpoint: 1024,
   });
 

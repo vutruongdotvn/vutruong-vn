@@ -13,7 +13,7 @@ export default function ContactLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section id="contact" className="py-26">
+    <section id="contact" className="pt-18 pb-5">
       {children}
     </section>
   );

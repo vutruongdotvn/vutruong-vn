@@ -370,7 +370,7 @@ export default function Navbar() {
           >
             <div
               className={`
-                relative flex items-center justify-between transition-all duration-600 max-w-6xl mx-auto px-3.5 py-2.5
+                relative flex items-center justify-between transition-all duration-600 max-w-6xl mx-auto px-3.5 py-1.5
               `}
             >
               <NavbarBrand
