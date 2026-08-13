@@ -7,9 +7,9 @@ export default function AboutProjects() {
     { name: "VT Hi", description: "Trang chào mừng trên trình duyệt", href: "/hi", icon: "fa-hand-wave", gradient: "from-sky-400 to-blue-600" },
     { name: "VT Restaurant", description: "Quán ăn Gia đình Vũ Trường", href: "https://quanangiadinh.vutruong.vn", icon: "fa-bowl-food", gradient: "from-orange-400 to-red-500" },
     { name: "VT Invoice", description: "Hệ thống quản lý & vận hành Quán ăn", href: "https://hoadon.vutruong.vn", icon: "fa-file-invoice", gradient: "from-emerald-400 to-green-600" },
-    { name: "VT Watch", description: "Trang xem phim cá nhân - nội bộ", href: "/watch", icon: "fa-film", gradient: "from-purple-400 to-indigo-600" },
-    { name: "VT Blog", description: "Blog cá nhân - lưu giữ những điều giá trị", href: "/blog", icon: "fa-pen-nib", gradient: "from-pink-400 to-rose-500" },
-    { name: "VT Secret", description: "Hệ thống lưu trữ tài khoản quan trọng", href: "/secret", icon: "fa-shield-keyhole", gradient: "from-gray-600 to-black" },
+    { name: "VT Watch", description: "Trang xem phim cá nhân", href: "/watch", icon: "fa-film", gradient: "from-purple-400 to-indigo-600" },
+    { name: "VT Blog", description: "Blog cá nhân", href: "/blog", icon: "fa-pen-nib", gradient: "from-pink-400 to-rose-500" },
+    { name: "VT Secret", description: "Hệ thống lưu trữ tài khoản", href: "/secret", icon: "fa-shield-keyhole", gradient: "from-gray-600 to-black" },
     { name: "VT Admin", description: "Hệ thống quản lý và điều hành nội bộ", href: "/admin", icon: "fa-user-gear", gradient: "from-gray-600 to-black" },
     { name: "Coming Soon", description: "Một sản phẩm thú vị khác", href: "", icon: "fa-question", gradient: "from-gray-400 to-gray-400" },
   ];
@@ -26,7 +26,7 @@ export default function AboutProjects() {
           const isExternal = project.href.startsWith("http");
 
           const CardContent = (
-            <div className="relative group h-full flex flex-row sm:flex-col items-center sm:items-start gap-4 rounded-2xl border border-2 border-slate-200 bg-white/50 p-3 sm:p-5 duration-300 hover:-translate-y-1 hover:bg-white/90 active:scale-95 hover:shadow-[0_20px_40px_rgba(0,0,0,0.075)]">
+            <div className="relative group h-full flex items-center sm:items-start gap-4 rounded-2xl border border-2 border-slate-200 bg-white/50 p-3 sm:p-5 duration-300 hover:-translate-y-1 hover:bg-white/90 active:scale-95 hover:shadow-[0_20px_40px_rgba(0,0,0,0.075)]">
               <div className="flex items-start justify-between">
                 <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${project.gradient} text-xl text-white shadow-inner`}>
                   <i className={`fa-duotone ${project.icon}`} />

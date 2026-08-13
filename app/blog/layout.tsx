@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import BlogSidebarClient from "@/components/blog/sidebar/BlogSidebarClient";
 import BlogSidebar from "@/components/blog/sidebar/BlogSidebar";
 import CoverSection from "@/components/blog/CoverSection";
+// import LiquidMenu from "@/components/blog/LiquidMenu";
 
 export const metadata: Metadata = {
   title: "Blog",
