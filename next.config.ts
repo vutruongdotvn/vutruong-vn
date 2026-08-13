@@ -42,62 +42,27 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 ngày
   },
 
-  // Chuyển hướng QR Order từ Quán ăn Vũ Trường đến Link QR Order của SapoFnB
+  // Chuyển hướng từ SERVER
   async redirects() {
     return [
       {
-        source: "/qr/1",
-        destination: "https://link-ban-1.com",
-        permanent: false,
-      },
-      {
-        source: "/qr/2",
-        destination: "https://link-ban-2.com",
-        permanent: false,
-      },
-      {
-        source: "/qr/3",
-        destination: "https://link-ban-3.com",
-        permanent: false,
-      },
-      {
-        source: "/qr/4",
-        destination: "https://link-ban-4.com",
-        permanent: false,
-      },
-      {
-        source: "/qr/5",
-        destination: "https://link-ban-5.com",
-        permanent: false,
-      },
-      {
-        source: "/qr/6",
-        destination: "https://link-ban-6.com",
-        permanent: false,
-      },
-      {
-        source: "/qr/7",
-        destination: "https://link-ban-7.com",
-        permanent: false,
-      },
-      {
-        source: "/qr/8",
-        destination: "https://link-ban-8.com",
-        permanent: false,
-      },
-      {
-        source: "/qr/9",
-        destination: "https://link-ban-9.com",
-        permanent: false,
-      },
-      {
-        source: "/qr/10",
-        destination: "https://link-ban-10.com",
-        permanent: false,
-      },
-      {
         source: "/menu",
         destination: "https://menu.vutruong.vn",
+        permanent: false,
+      },
+      {
+        source: "/locket",
+        destination: "https://locket.camera/links/UJpdrfjVHXXhmNe68",
+        permanent: false,
+      },
+      {
+        source: "/fb",
+        destination: "https://fb.com/100014201562904",
+        permanent: false,
+      },
+      {
+        source: "/tiktok",
+        destination: "https://www.tiktok.com/@vutruong.vn",
         permanent: false,
       },
     ];

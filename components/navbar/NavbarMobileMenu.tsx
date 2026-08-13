@@ -70,15 +70,15 @@ export default function NavbarMobileMenu({
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 0, opacity: 0, scale: 1 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="absolute left-1/2 sm:top-5 -translate-x-1/2 w-full sm:w-[calc(100%-24px)] sm:max-w-md sm:rounded-4xl border border-white/60 bg-white/80 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,0.18)] p-3"
+            className="absolute left-1/2 sm:top-5 -translate-x-1/2 w-full sm:w-[calc(100%-24px)] sm:max-w-md sm:rounded-4xl border border-white/60 bg-white/80 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,0.18)] p-2.5"
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2 min-w-0">
                 <Image
                   src="/logo.png"
                   alt="logo"
-                  width={38}
-                  height={38}
+                  width={40}
+                  height={40}
                   className="pointer-events-none shrink-0"
                   priority
                   unoptimized
@@ -87,7 +87,7 @@ export default function NavbarMobileMenu({
                   <Link
                     href={currentPageHref}
                     onClick={(e) => onNavClick(e, currentPageHref)}
-                    className="text-lg font-semibold text-gray-900 leading-5 truncate block"
+                    className="text-lg font-bold text-gray-800 truncate block"
                   >
                     {title}
                   </Link>
@@ -191,10 +191,10 @@ export default function NavbarMobileMenu({
                 return (
                   <motion.div
                     key={item.name}
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, x: 0, scale: 1 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
                     transition={{
-                      duration: 0.5,
+                      duration: 0.9, ease: "easeOut",
                       delay: 0.15 + index * 0.05,
                     }}
                   >

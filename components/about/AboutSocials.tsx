@@ -3,7 +3,7 @@ export default function AboutSocials() {
   const socials = [
     { title: "Facebook", 
       subtitle: "www.vutruong.vn", 
-      href: "https://www.facebook.com/www.vutruong.vn", 
+      href: "/fb", 
       icon: "fa-facebook-f", 
       color: "text-[#1877F2]", 
       bg: "bg-[#1877F2]/10", hover: "hover:bg-[#1877F2]/20" },
@@ -17,7 +17,7 @@ export default function AboutSocials() {
 
     { title: "TikTok", 
       subtitle: "vutruong.vn", 
-      href: "https://www.tiktok.com/@vutruong.vn", 
+      href: "/tiktok", 
       icon: "fa-tiktok", 
       color: "text-slate-900", 
       bg: "bg-slate-200", hover: "hover:bg-slate-300" },

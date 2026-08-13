@@ -6,6 +6,7 @@ import AuthProvider from "@/components/AuthProvider";
 import LayoutShell from "@/components/LayoutShell";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import ConditionalPageTransition from "@/components/ConditionalPageTransition";
+import LiquidMenu from "@/components/LiquidMenu";
 
 // Cache trong 1 giờ, hoặc thậm chí 1 ngày (86400)
 export const revalidate = 86400;
@@ -114,7 +115,7 @@ export default function RootLayout({
           <div className="absolute top-[20%] -right-[10%] h-[40vw] w-[40vw] rounded-full bg-purple-400/10 blur-[100px] opacity-50" />
         </div>
 
-        {/* Background ô vuông */}
+        {/* Background ô vuông 
         <div
           className="pointer-events-none fixed -inset-1 -z-1 opacity-[0.5] mix-blend-overlay"
           style={{
@@ -125,6 +126,7 @@ export default function RootLayout({
             backgroundSize: "45px 45px",
           }}
         />
+        */}
 
 
         <ToastProvider>
@@ -138,6 +140,7 @@ export default function RootLayout({
         </ToastProvider>
 
 
+        <LiquidMenu />
 
       </body>
     </html>

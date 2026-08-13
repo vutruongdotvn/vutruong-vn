@@ -74,6 +74,19 @@ export default function Navbar() {
     setUserOpen(false);
   }, []);
 
+  useEffect(() => {
+    const handleMobileToggle = () => {
+      setOpen((prev) => !prev);
+    };
+
+    window.addEventListener("navbar-mobile-toggle", handleMobileToggle);
+
+    return () => {
+      window.removeEventListener("navbar-mobile-toggle", handleMobileToggle);
+    };
+  }, []);
+
+
   const isActive = useCallback(
     (href: string) => {
       return href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -149,53 +162,75 @@ export default function Navbar() {
   const fullName = user ? profile?.name || "User" : "Xin chào! 👋";
   const email = user?.email || "";
   const avatar = user
-  ? getAvatarImage(profile?.avatar || "") || "/images/default.jpg"
-  : "/images/default.jpg";
+    ? getAvatarImage(profile?.avatar || "") || "/images/default.jpg"
+    : "/images/default.jpg";
 
   const authReady = !userLoading && !profileLoading;
 
   // =========================
   // SAME PAGE / REFRESH LOGIC
   // =========================
-  const handleNavClick = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const handleSamePageNav = useCallback(
+    (href: string) => {
       const isSamePage = pathname === href;
       const isCurrentBlog = pathname === "/blog" && href === "/blog";
 
+      if (!isSamePage) return false;
+
+      closeAllMenus();
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
       if (isCurrentBlog) {
-        e.preventDefault();
-
-        closeAllMenus();
-
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
-
         setTimeout(() => {
           window.dispatchEvent(new Event("refresh-blog-feed"));
         }, 250);
-
-        return;
       }
 
-      if (isSamePage) {
+      return true;
+    },
+    [pathname, closeAllMenus]
+  );
+
+  const handleNavClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+      if (handleSamePageNav(href)) {
         e.preventDefault();
-
-        closeAllMenus();
-
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
-
         return;
       }
 
       closeAllMenus();
     },
-    [pathname, closeAllMenus]
+    [handleSamePageNav, closeAllMenus]
   );
+
+  // =========================
+  // LIQUID MENU NAV BRIDGE
+  // =========================
+  useEffect(() => {
+    const handleLiquidMenuNav = (event: Event) => {
+      const { href } = (
+        event as CustomEvent<{ href: string }>
+      ).detail;
+
+      handleSamePageNav(href);
+    };
+
+    window.addEventListener(
+      "navbar-handle-nav-click",
+      handleLiquidMenuNav
+    );
+
+    return () => {
+      window.removeEventListener(
+        "navbar-handle-nav-click",
+        handleLiquidMenuNav
+      );
+    };
+  }, [handleSamePageNav]);
 
   // =========================
   // CLICK OUTSIDE
@@ -356,21 +391,19 @@ export default function Navbar() {
           <div
             className={`
               relative overflow-visible border transition-all duration-900 ease-in-out hover:bg-white
-              ${
-                scrolled
-                  ? "border-white/30 bg-white backdrop-blur-xl shadow-[0_8px_48px_rgba(0,0,0,0.1)]"
-                  : "border-white/60 bg-white shadow-[0_12px_36px_rgba(0,0,0,0.05)]"
+              ${scrolled
+                ? "border-white/30 bg-white backdrop-blur-xl shadow-[0_8px_48px_rgba(0,0,0,0.1)]"
+                : "border-white/60 bg-white shadow-[0_12px_36px_rgba(0,0,0,0.05)]"
               }
-              ${
-                visible
-                  ? "translate-y-0 opacity-100"
-                  : "-translate-y-0 opacity-100"
+              ${visible
+                ? "translate-y-0 opacity-100"
+                : "-translate-y-0 opacity-100"
               }
             `}
           >
             <div
               className={`
-                relative flex items-center justify-between transition-all duration-600 max-w-6xl mx-auto px-3.5 py-1.5
+                relative flex items-center justify-between transition-all duration-600 max-w-6xl mx-auto p-1.5
               `}
             >
               <NavbarBrand
