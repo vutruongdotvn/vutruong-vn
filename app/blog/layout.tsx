@@ -19,13 +19,13 @@ export default function BlogLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main id="blog" className="pt-12 sm:pt-18 pb-23">
-      <div className="max-w-6xl w-full mx-auto px-0 sm:px-4 space-y-1 md:space-y-4">
+    <main id="blog" className="pt-14 pb-23">
+      <div className="w-full mx-auto space-y-1 md:space-y-4">
         
         {/* CoverSection giờ đây là Server Component tải siêu tốc */}
         <CoverSection />
 
-        <div className="mainBlog grid grid-cols-1 lg:grid-cols-10 gap-1 sm:gap-4">
+        <div className="mainBlog grid grid-cols-1 lg:grid-cols-10 gap-1 sm:gap-4 w-full max-w-6xl mx-auto">
           
           {/* SIDEBAR: Truyền Component con vào qua children */}
           <div className="sidebar-widget lg:col-span-4 order-1 relative">

@@ -392,8 +392,8 @@ export default function Navbar() {
             className={`
               relative overflow-visible border transition-all duration-900 ease-in-out hover:bg-white
               ${scrolled
-                ? "border-white/30 bg-white backdrop-blur-xl shadow-[0_8px_48px_rgba(0,0,0,0.1)]"
-                : "border-white/60 bg-white shadow-[0_12px_36px_rgba(0,0,0,0.05)]"
+                ? "border-white/30 bg-white backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
+                : "border-white/60 bg-white shadow-[0_12px_24px_rgba(0,0,0,0.01)]"
               }
               ${visible
                 ? "translate-y-0 opacity-100"

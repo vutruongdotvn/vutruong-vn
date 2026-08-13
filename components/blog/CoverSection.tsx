@@ -6,7 +6,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { getProfileAvatar } from "@/lib/cloudinary";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
- // import BlogNavbar from "@/components/blog/BlogNavbar";
+// import BlogNavbar from "@/components/blog/BlogNavbar";
 
 export default function CoverSection() {
     const { profile, loading } = useProfile();
@@ -53,9 +53,9 @@ export default function CoverSection() {
 
     if (loading) {
         return (
-            <div className="w-full">
+            <div className="w-full bg-white">
                 {/* COVER */}
-                <div className="relative w-full h-[240px] sm:h-[360px] md:h-[480px] overflow-hidden rounded-0 sm:rounded-2xl bg-white animate-pulse">
+                <div className="relative w-full max-w-6xl mx-auto h-[240px] sm:h-[360px] md:h-[480px] overflow-hidden bg-black/5 animate-pulse">
 
                     {/* OVERLAY */}
                     <div className="absolute inset-0 bg-none" />
@@ -97,7 +97,7 @@ export default function CoverSection() {
         <div className="w-full">
 
             {/* COVER WRAPPER */}
-            <div className="relative w-full h-[240px] sm:h-[360px] md:h-[480px] overflow-hidden rounded-0 sm:rounded-2xl group select-none">
+            <div className="relative bg-white w-full h-[240px] sm:h-[360px] md:h-[480px] overflow-hidden group select-none">
 
                 {/* COVER IMAGE */}
                 <Image
@@ -105,7 +105,16 @@ export default function CoverSection() {
                     alt="cover"
                     fill
                     unoptimized
-                    className="object-cover opacity-0 transition-opacity duration-1200 ease-out pointer-events-none"
+                    className="object-cover opacity-0 transition-opacity duration-1200 ease-out pointer-events-none w-full max-w-6xl h-full mx-auto relative z-1"
+                    onLoad={(e) => e.currentTarget.classList.remove("opacity-0")}
+                    priority loading="eager"
+                />
+                <Image
+                    src={cover}
+                    alt="cover"
+                    fill
+                    unoptimized
+                    className="object-cover opacity-0 transition-opacity duration-1200 ease-out pointer-events-none w-full h-full blur-xl scale-104"
                     onLoad={(e) => e.currentTarget.classList.remove("opacity-0")}
                     priority loading="eager"
                 />
@@ -113,7 +122,7 @@ export default function CoverSection() {
                 {/* OVERLAY BLUR GRADIENT */}
                 <div
                     className="
-    absolute left-0 bottom-0 h-full w-full 
+    absolute left-0 bottom-0 h-full w-full z-3
     backdrop-blur-none 
     bg-gradient-to-t from-black/25 via-black/50 to-transparent 
     pointer-events-none 
@@ -143,7 +152,7 @@ export default function CoverSection() {
                 />
 
                 {/* INFO CARD (ABSOLUTE) */}
-                <div className="absolute bottom-0 left-0 right-0">
+                <div className="absolute bottom-0 left-0 right-0 w-full max-w-6xl mx-auto z-4">
                     <div className="px-3 sm:px-4 pb-3 sm:pb-4">
                         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between text-white">
                             {/* LEFT */}
