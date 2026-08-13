@@ -14,12 +14,12 @@ const menuItems = [
   {
     label: "About",
     href: "/about",
-    icon: "fad fa-user",
+    icon: "fad fa-user-vneck",
   },
   {
     label: "Contact",
     href: "/contact",
-    icon: "fad fa-envelope",
+    icon: "fad fa-inbox",
   },
   {
     label: "Blog",
@@ -36,6 +36,10 @@ export default function LiquidMenu() {
       ? pathname === "/"
       : pathname === href || pathname.startsWith(`${href}/`);
   };
+
+  const activeIndex = menuItems.findIndex((item) =>
+    isActive(item.href)
+  );
 
   const handleNavClick = (
     event: MouseEvent<HTMLAnchorElement>,
@@ -59,9 +63,30 @@ export default function LiquidMenu() {
   return (
     <nav
       aria-label="Điều hướng mobile"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-[24] flex justify-center px-5 pb-[calc(20px+env(safe-area-inset-bottom))] md:hidden"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-[24] flex justify-center border border-white/25 px-6 pb-[calc(20px+env(safe-area-inset-bottom))] md:hidden"
     >
-      <div className="pointer-events-auto relative flex h-[50px] w-full max-w-[430px] items-center justify-around border border-white/25 rounded-[34px] bg-white/[0.5] px-1 backdrop-blur-xl">
+      <div className="pointer-events-auto relative flex h-[56px] w-full items-center justify-around
+      rounded-full border border-white/25 bg-white/50 hover:bg-white/65 transition duration-300 px-1 backdrop-blur-xl shadow-[0_12px_36px_rgba(0,0,0,0.05)]">
+
+        {/* ACTIVE PILL - CHỈ CHUYỂN ĐỘNG THEO TRỤC X */}
+        {activeIndex >= 0 && (
+          <div className="pointer-events-none absolute inset-x-1 top-[6.5px] h-[42px]">
+            <motion.span
+              initial={false}
+              animate={{
+                x: `${activeIndex * 100}%`,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 500,
+                damping: 35,
+                mass: 0.7,
+              }}
+              className="block h-full w-1/5 rounded-full bg-black/[0.1]"
+            />
+          </div>
+        )}
+
         {menuItems.map((item) => {
           const active = isActive(item.href);
 
@@ -75,29 +100,18 @@ export default function LiquidMenu() {
               onClick={(event) =>
                 handleNavClick(event, item.href)
               }
-              className={`relative flex h-[42px] min-w-0 flex-1 flex-col items-center justify-center gap-1.5 rounded-[27px]
-                ${active ? "text-black/80 font-bold" : "text-black/35"
+              className={`relative z-10 flex h-[44px] min-w-0 flex-1 flex-col items-center justify-center gap-0
+                ${active
+                  ? "font-bold text-black/80"
+                  : "text-black/35"
                 }`}
             >
-              {active && (
-                <motion.span
-                  layoutId="liquid-menu-active"
-                  transition={{
-                    type: "spring",
-                    stiffness: 500,
-                    damping: 35,
-                    mass: 0.7,
-                  }}
-                  className="absolute inset-0 rounded-[27px] bg-black/[0.1]"
-                />
-              )}
-
               <i
-                className={`${item.icon} relative z-10 text-[20px]`}
+                className={`${item.icon} relative z-10 text-lg`}
                 aria-hidden="true"
               />
 
-              <span className="relative z-10 text-[11px] leading-none hidden">
+              <span className="relative z-10 hidden text-[11px] leading-none">
                 {item.label}
               </span>
             </Link>
@@ -108,14 +122,14 @@ export default function LiquidMenu() {
           type="button"
           aria-label="Mở menu"
           onClick={toggleNavbarMobileMenu}
-          className="relative flex h-[54px] min-w-0 flex-1 flex-col items-center justify-center gap-1.5 rounded-[27px] text-black/50"
+          className="relative z-10 flex h-[54px] min-w-0 flex-1 flex-col items-center justify-center gap-1.5 rounded-[27px] text-black/50 cursor-pointer"
         >
           <i
-            className="fad fa-bars relative z-10 text-[20px]"
+            className="fad fa-bars relative z-10 text-lg"
             aria-hidden="true"
           />
 
-          <span className="relative z-10 text-[11px] leading-none hidden">
+          <span className="relative z-10 hidden text-[11px] leading-none">
             Menu
           </span>
         </button>

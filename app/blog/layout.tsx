@@ -19,7 +19,7 @@ export default function BlogLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main id="blog" className="pt-12 sm:pt-18 pb-5">
+    <main id="blog" className="pt-12 sm:pt-18 pb-23">
       <div className="max-w-6xl w-full mx-auto px-0 sm:px-4 space-y-1 md:space-y-4">
         
         {/* CoverSection giờ đây là Server Component tải siêu tốc */}
