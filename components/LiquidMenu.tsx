@@ -59,7 +59,7 @@ export default function LiquidMenu() {
   return (
     <nav
       aria-label="Điều hướng mobile"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-[24] flex justify-center px-3 pb-[calc(20px+env(safe-area-inset-bottom))] md:hidden"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-[24] flex justify-center px-5 pb-[calc(20px+env(safe-area-inset-bottom))] md:hidden"
     >
       <div className="pointer-events-auto relative flex h-[50px] w-full max-w-[430px] items-center justify-around border border-white/25 rounded-[34px] bg-white/[0.5] px-1 backdrop-blur-xl">
         {menuItems.map((item) => {
