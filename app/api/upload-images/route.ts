@@ -12,6 +12,7 @@ const UPLOAD_TARGETS = {
   post: "vutruong_vn/posts",
   avatar: "vutruong_vn/avatars",
   cover: "vutruong_vn/covers",
+  featured: "vutruong_vn/featureds",
 } as const;
 
 type UploadTarget = keyof typeof UPLOAD_TARGETS;
@@ -99,11 +100,7 @@ async function requireApprovedAdmin(
       autoRefreshToken: false,
       detectSessionInUrl: false,
     },
-    global: {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+    global: { headers: { Authorization: `Bearer ${token}` } },
   });
 
   const {
@@ -184,10 +181,7 @@ cloudinary.config({
 export async function POST(req: Request) {
   try {
     const authorization = await requireApprovedAdmin(req);
-
-    if (!authorization.ok) {
-      return authorization.response;
-    }
+    if (!authorization.ok) return authorization.response;
 
     if (!hasCloudinaryConfig()) {
       console.error("Upload image API: Thiếu cấu hình Cloudinary.");
@@ -222,7 +216,8 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           success: false,
-          error: "Loại upload không hợp lệ. Chỉ chấp nhận post, avatar hoặc cover.",
+          error:
+            "Loại upload không hợp lệ. Chỉ chấp nhận post, avatar, cover hoặc featured.",
         },
         { status: 400 }
       );
@@ -288,10 +283,7 @@ export async function POST(req: Request) {
         .end(buffer);
     });
 
-    return NextResponse.json({
-      success: true,
-      data: result,
-    });
+    return NextResponse.json({ success: true, data: result });
   } catch (error: unknown) {
     console.error("Upload image API error:", getErrorMessage(error));
     return NextResponse.json(

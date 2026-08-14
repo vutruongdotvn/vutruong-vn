@@ -2,21 +2,21 @@ import { supabase } from "@/lib/supabase";
 
 export const uploadImage = async (
   file: File | Blob,
-  type: "post" | "avatar" = "post" // Mặc định là "post"
+  type: "post" | "avatar" | "cover" | "featured" = "post"
 ) => {
   try {
-    // 1. Lấy token đăng nhập
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("type", type); // Gửi thêm loại ảnh để API biết đường phân quyền
+    formData.append("type", type);
 
-    // 2. Gửi request lên Server API nội bộ
     const res = await fetch("/api/upload-images", {
       method: "POST",
       headers: {
-        "Authorization": session ? `Bearer ${session.access_token}` : "",
+        Authorization: session ? `Bearer ${session.access_token}` : "",
       },
       body: formData,
     });
@@ -29,11 +29,11 @@ export const uploadImage = async (
     }
 
     return {
-      url: result.data.secure_url,
-      public_id: result.data.public_id,
-      width: result.data.width,
-      height: result.data.height,
-      format: result.data.format,
+      url: result.data.secure_url as string,
+      public_id: result.data.public_id as string,
+      width: result.data.width as number,
+      height: result.data.height as number,
+      format: result.data.format as string,
     };
   } catch (err) {
     console.error("Upload lỗi:", err);
@@ -69,35 +69,20 @@ export function buildCloudinaryImage(
   const dpr = options?.dpr ?? "auto";
   const gravity = options?.gravity;
   const sharpen = options?.sharpen ?? false;
-
   const transforms = [];
 
-  if (format)
-    transforms.push(`f_${format}`);
-
-  if (quality)
-    transforms.push(`q_${quality}`);
-
-  if (dpr)
-    transforms.push(`dpr_${dpr}`);
-
-  if (width)
-    transforms.push(`w_${width}`);
-
-  if (height)
-    transforms.push(`h_${height}`);
-
-  if (crop)
-    transforms.push(`c_${crop}`);
-
-  if (gravity && crop === "fill")
-    transforms.push(`g_${gravity}`);
-
-  if (sharpen)
-    transforms.push("e_sharpen");
+  if (format) transforms.push(`f_${format}`);
+  if (quality) transforms.push(`q_${quality}`);
+  if (dpr) transforms.push(`dpr_${dpr}`);
+  if (width) transforms.push(`w_${width}`);
+  if (height) transforms.push(`h_${height}`);
+  if (crop) transforms.push(`c_${crop}`);
+  if (gravity && crop === "fill") transforms.push(`g_${gravity}`);
+  if (sharpen) transforms.push("e_sharpen");
 
   transforms.push("fl_strip_profile");
 
+  // Giữ nguyên chuỗi transform hiện tại để không thay đổi hành vi ảnh cũ.
   if (width) transforms.push(`w_${width}`);
   if (height) transforms.push(`h_${height}`);
   if (crop) transforms.push(`c_${crop}`);
@@ -107,7 +92,6 @@ export function buildCloudinaryImage(
   return url.replace("/upload/", `/upload/${transforms.join(",")}/`);
 }
 
-// avatar nhỏ
 export function getAvatarImage(url?: string) {
   return buildCloudinaryImage(url, {
     width: 200,
@@ -120,7 +104,6 @@ export function getAvatarImage(url?: string) {
   });
 }
 
-// thumbnail feed / card
 export function getFeedImage(url?: string) {
   return buildCloudinaryImage(url, {
     width: 1000,
@@ -131,7 +114,6 @@ export function getFeedImage(url?: string) {
   });
 }
 
-// ảnh lớn cho lightbox / preview chất lượng cao 4K
 export function getLightboxImage(url?: string) {
   return buildCloudinaryImage(url, {
     width: 4096,
@@ -142,13 +124,10 @@ export function getLightboxImage(url?: string) {
   });
 }
 
-// tối ưu tài nguyên ảnh trong PostCard
 export function extractCloudinaryMeta(url?: string) {
   if (!url || !url.includes("res.cloudinary.com")) return null;
 
   try {
-    // Cloudinary không luôn nhét width/height vào URL gốc,
-    // nên helper này chủ yếu để parse các URL đã transform nếu có.
     const uploadIndex = url.indexOf("/upload/");
     if (uploadIndex === -1) return null;
 
@@ -159,7 +138,6 @@ export function extractCloudinaryMeta(url?: string) {
     const transformPart = afterUpload.slice(0, firstSlash);
     const widthMatch = transformPart.match(/(?:^|,)w_(\d+)(?:,|$)/);
     const heightMatch = transformPart.match(/(?:^|,)h_(\d+)(?:,|$)/);
-
     const width = widthMatch ? Number(widthMatch[1]) : undefined;
     const height = heightMatch ? Number(heightMatch[1]) : undefined;
 
@@ -174,15 +152,6 @@ export function extractCloudinaryMeta(url?: string) {
   }
 }
 
-
-// new
-type CloudinaryLoaderParams = {
-  src: string;
-  width: number;
-  quality?: number;
-};
-
-// avatar trong trang route app/profile và trong CoverSection
 export function getProfileAvatar(url?: string) {
   return buildCloudinaryImage(url, {
     width: 300,
@@ -195,10 +164,9 @@ export function getProfileAvatar(url?: string) {
   });
 }
 
-// ảnh PhotoWidget
 export function getPhotoWidgetImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 200,          // grid 3x3 → ~100px mỗi ảnh trên mobile, 200–300px desktop
+    width: 200,
     height: 200,
     crop: "fill",
     gravity: "auto",
@@ -208,3 +176,15 @@ export function getPhotoWidgetImage(url?: string) {
   });
 }
 
+// Thumbnail 3:4 của Tin nổi bật. URL gốc vẫn được dùng khi mở Fancybox.
+export function getFeaturedWidgetImage(url?: string) {
+  return buildCloudinaryImage(url, {
+    width: 300,
+    height: 400,
+    crop: "fill",
+    gravity: "auto",
+    quality: "auto:good",
+    format: "auto",
+    dpr: "auto",
+  });
+}

@@ -13,6 +13,7 @@ const ALLOWED_PUBLIC_ID_PREFIXES = [
   "vutruong_vn/posts/",
   "vutruong_vn/avatars/",
   "vutruong_vn/covers/",
+  "vutruong_vn/featureds/",
 ] as const;
 
 function getBearerToken(req: Request): string | null {
@@ -30,9 +31,7 @@ function safeParseArray(value: unknown): string[] {
     return value.filter((item): item is string => typeof item === "string");
   }
 
-  if (typeof value !== "string") {
-    return [];
-  }
+  if (typeof value !== "string") return [];
 
   try {
     const parsed: unknown = JSON.parse(value);
@@ -94,11 +93,7 @@ async function requireApprovedAdmin(
       autoRefreshToken: false,
       detectSessionInUrl: false,
     },
-    global: {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+    global: { headers: { Authorization: `Bearer ${token}` } },
   });
 
   const {
@@ -179,10 +174,7 @@ cloudinary.config({
 export async function POST(req: Request) {
   try {
     const authorization = await requireApprovedAdmin(req);
-
-    if (!authorization.ok) {
-      return authorization.response;
-    }
+    if (!authorization.ok) return authorization.response;
 
     if (!hasCloudinaryConfig()) {
       console.error("Delete images API: Thiếu cấu hình Cloudinary.");
@@ -250,11 +242,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const results: Array<{
-      id: string;
-      result: string;
-      error?: string;
-    }> = [];
+    const results: Array<{ id: string; result: string; error?: string }> = [];
 
     for (const publicId of publicIds) {
       try {
@@ -263,10 +251,7 @@ export async function POST(req: Request) {
           invalidate: true,
         });
 
-        results.push({
-          id: publicId,
-          result: result.result,
-        });
+        results.push({ id: publicId, result: result.result });
       } catch (error: unknown) {
         console.error("Delete images API: Cloudinary delete failed.", {
           publicId,
@@ -286,10 +271,7 @@ export async function POST(req: Request) {
     ).length;
 
     return NextResponse.json(
-      {
-        success: failedCount === 0,
-        results,
-      },
+      { success: failedCount === 0, results },
       { status: failedCount > 0 ? 207 : 200 }
     );
   } catch (error: unknown) {
