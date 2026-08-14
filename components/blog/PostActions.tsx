@@ -50,19 +50,19 @@ export default function PostActions({
   };
 
   return (
-    <div className="postAction flex items-center gap-4 px-4 py-3">
+    <div className="postAction flex items-center gap-3 px-4 py-3">
       {/* Buttons 
       <button
       onClick={() => showToast("Đăng nhập để Thích bài viết này.", "warning")}
       className="likeBtn cursor-pointer text-[.9375rem] sm:text-base text-gray-500 transition hover:text-black active:scale-80"
     >
-      <i className="fadt fa-heart" />
+      <i className="fad fa-heart" />
     </button>
       <button
       onClick={() => showToast("Bình luận đã bị tắt cho bài viết này.", "error")}
       className="commentBtn cursor-pointer text-[.9375rem] sm:text-base text-gray-500 transition hover:text-black active:scale-80"
     >
-      <i className="fadt fa-comment-slash" />
+      <i className="fad fa-comment-slash" />
     </button>
     */}
       <button
@@ -74,8 +74,8 @@ export default function PostActions({
         <i
           className={
             sharing
-              ? "fadt fa-spinner-third fa-spin"
-              : "fadt fa-share"
+              ? "fad fa-spinner-third fa-spin"
+              : "fad fa-share"
           }
         />
       </button>

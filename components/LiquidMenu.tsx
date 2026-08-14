@@ -9,22 +9,22 @@ const menuItems = [
   {
     label: "Home",
     href: "/",
-    icon: "fad fa-house",
+    icon: "fa-house",
   },
   {
     label: "About",
     href: "/about",
-    icon: "fad fa-user-vneck",
-  },
-  {
-    label: "Contact",
-    href: "/contact",
-    icon: "fad fa-inbox",
+    icon: "fa-user-vneck",
   },
   {
     label: "Blog",
     href: "/blog",
-    icon: "fad fa-pen-circle",
+    icon: "fa-pen",
+  },
+  {
+    label: "Watch",
+    href: "/watch",
+    icon: "fa-clapperboard-play",
   },
 ];
 
@@ -102,12 +102,12 @@ export default function LiquidMenu() {
               }
               className={`relative z-10 flex h-[44px] min-w-0 flex-1 flex-col items-center justify-center gap-0
                 ${active
-                  ? "font-bold text-black/80"
-                  : "text-black/35"
+                  ? "font-bold text-black"
+                  : "text-black/50"
                 }`}
             >
               <i
-                className={`${item.icon} relative z-10 text-lg`}
+                className={`${active ? "fad" : "fal"} ${item.icon} relative z-10 text-lg`}
                 aria-hidden="true"
               />
 
@@ -125,7 +125,7 @@ export default function LiquidMenu() {
           className="relative z-10 flex h-[54px] min-w-0 flex-1 flex-col items-center justify-center gap-1.5 rounded-[27px] text-black/50 cursor-pointer"
         >
           <i
-            className="fad fa-bars relative z-10 text-lg"
+            className="fal fa-bars relative z-10 text-lg"
             aria-hidden="true"
           />
 

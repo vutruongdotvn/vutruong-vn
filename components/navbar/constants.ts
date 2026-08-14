@@ -2,13 +2,12 @@ import { MenuItem } from "./types";
 
 export const mainMenu: MenuItem[] = [
   { name: "Home", href: "/", icon: "fa-duotone fa-house" },
-  { name: "About", href: "/about", icon: "fa-duotone fa-user-vneck" },
-  { name: "Contact", href: "/contact", icon: "fa-duotone fa-inbox" },
-  { name: "Blog", href: "/blog", icon: "fa-duotone fa-pen-circle" },
+  { name: "Me", href: "/about", icon: "fa-duotone fa-user-vneck" },
+  { name: "Blog", href: "/blog", icon: "fa-duotone fa-pen" },
+  { name: "Watch", href: "/watch", icon: "fa-duotone fa-clapperboard-play" },
 ];
 
 export const moreMenu: MenuItem[] = [
-  { name: "Watch", href: "/watch", icon: "fa-duotone fa-film" },
   { name: "Secret", href: "/secret", icon: "fa-duotone fa-shield-keyhole" },
   { name: "Admin", href: "/admin", icon: "fa-duotone fa-user-gear" },
 ];

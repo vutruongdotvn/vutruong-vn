@@ -51,6 +51,11 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
       {
+        source: "/contact",
+        destination: "/about",
+        permanent: false,
+      },
+      {
         source: "/locket",
         destination: "https://locket.camera/links/UJpdrfjVHXXhmNe68",
         permanent: false,

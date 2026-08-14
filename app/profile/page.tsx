@@ -291,7 +291,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <main className="relative min-h-screen flex items-center justify-center pt-18 pb-23">
+      <main className="relative min-h-screen flex items-center justify-center pt-18 md:pb-4 pb-23">
         <PremiumGlassCard
           className="max-w-6xl"
         >

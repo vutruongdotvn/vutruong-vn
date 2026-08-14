@@ -177,14 +177,14 @@ export default function PostHeader({
           />
 
           <div className="flex flex-col gap-0.75">
-            <span
-              className="flex items-center gap-1 cursor-pointer text-sm font-medium text-gray-800 hover:text-black"
+            <Link href="/about"
+              className="flex items-center gap-1 cursor-pointer text-sm font-medium text-gray-600 hover:text-black active:scale-98"
             >
               {name}
               <i className="fas fa-badge-check text-xs text-blue-500" title="Tài khoản đã được xác thực" />
-            </span>
+            </Link>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               {isPinned && (
                 <span
                   title={`${name} đã ghim bài viết này`}
@@ -221,7 +221,7 @@ export default function PostHeader({
                     setOpenPrivacyModal(true);
                     setOpen(false);
                   }}
-                  className={`fadt fa-earth-asia text-xs active:scale-97 cursor-pointer ${isAdmin ? "" : "publicPost"
+                  className={`fadt fa-earth-asia text-[10px] active:scale-97 cursor-pointer ${isAdmin ? "" : "publicPost"
                     }`}
                   title="Công khai"
                 />
@@ -232,7 +232,7 @@ export default function PostHeader({
                     setOpenPrivacyModal(true);
                     setOpen(false);
                   }}
-                  className={`fadt fa-lock text-xs active:scale-97 cursor-pointer ${isAdmin ? "" : "privacyPost"
+                  className={`fadt fa-lock text-[10px] active:scale-97 cursor-pointer ${isAdmin ? "" : "privacyPost"
                     }`}
                   title="Riêng tư"
                 />

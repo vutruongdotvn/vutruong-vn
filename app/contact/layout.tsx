@@ -13,7 +13,7 @@ export default function ContactLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section id="contact" className="pt-18 pb-23">
+    <section id="contact" className="pt-18 md:pb-4 pb-23">
       {children}
     </section>
   );

@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import { useToastContext } from "@/components/ui/ToastProvider";
-import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
 
 const GOOGLE_FORM_ACTION =
   "https://docs.google.com/forms/d/e/1FAIpQLSdlRS2GhB5GOIUFIDwUoMN1vSN6xJvqnrtoBSGjlGCZwHUByQ/formResponse";
@@ -155,18 +154,17 @@ export default function ContactForm() {
   };
 
   return (
-    <PremiumGlassCard className="max-w-3xl">
+    <div className="">
       {/* Header */}
       <div>
 
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900">
+        <h2 className="text-lg sm:text-xl font-bold text-slate-900">
           Liên hệ
         </h2>
 
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-gray-600 sm:text-base">
+        <p className="text-slate-500 text-sm mt-1">
           Mọi vấn đề cần liên hệ, trao đổi, cộng tác,
-          hãy gửi thông tin qua biểu mẫu bên dưới. <br />
-          Mình sẽ phản hồi trong thời gian sớm nhất có thể.
+          hãy gửi thông tin qua biểu mẫu liên hệ. 
         </p>
       </div>
 
@@ -343,6 +341,6 @@ export default function ContactForm() {
           </div>
         </div>
       </form>
-    </PremiumGlassCard>
+    </div>
   );
 }

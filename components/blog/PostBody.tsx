@@ -43,8 +43,8 @@ export default function PostBody({
       setResponsiveMaxLength(
         maxLength === 180
           ? mediaQuery.matches
-            ? 130
-            : 200
+            ? 80 // trên mobile giới hạn 80 ký tự
+            : 150 // trên PC
           : maxLength
       );
     };
