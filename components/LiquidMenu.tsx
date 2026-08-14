@@ -66,7 +66,7 @@ export default function LiquidMenu() {
       className="pointer-events-none fixed inset-x-0 bottom-0 z-[24] flex justify-center px-6 pb-[calc(20px+env(safe-area-inset-bottom))] md:hidden"
     >
       <div className="pointer-events-auto relative flex h-[56px] w-full max-w-xl items-center justify-around border border-white/25
-      rounded-full bg-white/50 hover:bg-white/65 transition duration-300 px-1 backdrop-blur-xl shadow-[0_12px_36px_rgba(0,0,0,0.05)]">
+      rounded-full bg-white/50 hover:bg-white/75 transition duration-300 px-1 backdrop-blur-xl shadow-[0_12px_36px_rgba(0,0,0,0.05)]">
 
         {/* ACTIVE PILL - CHỈ CHUYỂN ĐỘNG THEO TRỤC X */}
         {activeIndex >= 0 && (
