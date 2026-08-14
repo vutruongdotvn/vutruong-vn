@@ -16,7 +16,7 @@ export default function BlogSidebarClient({ children }: { children: React.ReactN
   });
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative h-full min-h-full">
       <div ref={sidebarRef} className={className} style={style}>
         {/* Component bên trong vẫn là Server Component */}
         {children}

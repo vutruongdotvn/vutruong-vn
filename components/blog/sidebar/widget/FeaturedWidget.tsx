@@ -1,7 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { TouchEvent } from "react";
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/hooks/useUser";
@@ -10,17 +16,28 @@ import { fetchFeaturedStories } from "@/lib/featuredStoryService";
 import type { FeaturedStory } from "@/types/featuredStory";
 import FeaturedManagerModal from "@/components/blog/sidebar/widget/featured/FeaturedManagerModal";
 
-const STORIES_PER_PAGE = 3;
+const VISIBLE_STORIES = 3;
 const SWIPE_THRESHOLD = 45;
 
-function chunkStories(stories: FeaturedStory[]) {
-  const pages: FeaturedStory[][] = [];
+function getSnapPositions(storyCount: number) {
+  if (storyCount <= VISIBLE_STORIES) return [0];
 
-  for (let index = 0; index < stories.length; index += STORIES_PER_PAGE) {
-    pages.push(stories.slice(index, index + STORIES_PER_PAGE));
+  const lastStart = storyCount - VISIBLE_STORIES;
+  const positions = [0];
+
+  for (
+    let position = VISIBLE_STORIES;
+    position < lastStart;
+    position += VISIBLE_STORIES
+  ) {
+    positions.push(position);
   }
 
-  return pages;
+  if (positions[positions.length - 1] !== lastStart) {
+    positions.push(lastStart);
+  }
+
+  return positions;
 }
 
 export default function FeaturedWidget() {
@@ -31,9 +48,13 @@ export default function FeaturedWidget() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [page, setPage] = useState(0);
+  const [slideUnit, setSlideUnit] = useState(0);
   const [managerOpen, setManagerOpen] = useState(false);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
   const touchStartXRef = useRef<number | null>(null);
   const reloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resizeFrameRef = useRef<number | null>(null);
 
   const loadStories = useCallback(async () => {
     try {
@@ -83,12 +104,64 @@ export default function FeaturedWidget() {
     [stories]
   );
 
-  const pages = useMemo(() => chunkStories(visibleStories), [visibleStories]);
-  const pageCount = pages.length;
+  const snapPositions = useMemo(
+    () => getSnapPositions(visibleStories.length),
+    [visibleStories.length]
+  );
+  const pageCount = snapPositions.length;
+  const startIndex = snapPositions[page] ?? 0;
 
   useEffect(() => {
     setPage((current) => Math.min(current, Math.max(pageCount - 1, 0)));
   }, [pageCount]);
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    const track = trackRef.current;
+
+    if (!viewport || !track || visibleStories.length === 0) {
+      setSlideUnit(0);
+      return;
+    }
+
+    const updateSlideUnit = () => {
+      if (resizeFrameRef.current !== null) {
+        cancelAnimationFrame(resizeFrameRef.current);
+      }
+
+      resizeFrameRef.current = requestAnimationFrame(() => {
+        const firstCard = track.firstElementChild as HTMLElement | null;
+        if (!firstCard) return;
+
+        const trackStyle = window.getComputedStyle(track);
+        const columnGap = Number.parseFloat(trackStyle.columnGap);
+        const fallbackGap = Number.parseFloat(trackStyle.gap);
+        const gap = Number.isFinite(columnGap)
+          ? columnGap
+          : Number.isFinite(fallbackGap)
+            ? fallbackGap
+            : 0;
+        const nextUnit = firstCard.getBoundingClientRect().width + gap;
+
+        setSlideUnit((current) =>
+          Math.abs(current - nextUnit) < 0.5 ? current : nextUnit
+        );
+      });
+    };
+
+    updateSlideUnit();
+
+    const resizeObserver = new ResizeObserver(updateSlideUnit);
+    resizeObserver.observe(viewport);
+
+    return () => {
+      resizeObserver.disconnect();
+      if (resizeFrameRef.current !== null) {
+        cancelAnimationFrame(resizeFrameRef.current);
+        resizeFrameRef.current = null;
+      }
+    };
+  }, [visibleStories.length]);
 
   const goPrev = () => setPage((current) => Math.max(current - 1, 0));
   const goNext = () =>
@@ -126,7 +199,7 @@ export default function FeaturedWidget() {
               onClick={() => setManagerOpen(true)}
               title="Quản lý Tin nổi bật"
               aria-label="Quản lý Tin nổi bật"
-              className="flex size-8 cursor-pointer items-center justify-center rounded-full text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 active:scale-95"
+              className="flex cursor-pointer items-center justify-center rounded-full text-neutral-500 hover:text-neutral-900 active:scale-97"
             >
               <i className="fad fa-sliders" aria-hidden="true" />
             </button>
@@ -158,70 +231,75 @@ export default function FeaturedWidget() {
         ) : (
           <div className="relative px-3 sm:px-0">
             <div
-              className="overflow-hidden"
+              ref={viewportRef}
+              className="touch-pan-y overflow-hidden"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
+              onTouchCancel={() => {
+                touchStartXRef.current = null;
+              }}
             >
               <div
-                className="flex transition-transform duration-500 ease-out"
-                style={{ transform: `translateX(-${page * 100}%)` }}
+                ref={trackRef}
+                className="flex gap-1.5 will-change-transform transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+                style={{
+                  transform: `translate3d(-${startIndex * slideUnit}px, 0, 0)`,
+                  backfaceVisibility: "hidden",
+                }}
               >
-                {pages.map((storyPage, pageIndex) => (
-                  <div
-                    key={pageIndex}
-                    className="grid min-w-full grid-cols-3 gap-1.5"
-                  >
-                    {storyPage.map((story, storyIndex) => {
-                      const [cover, ...remainingImages] = story.images;
-                      const gallery = `featured-${story.id}`;
-                      const globalIndex =
-                        pageIndex * STORIES_PER_PAGE + storyIndex;
+                {visibleStories.map((story, storyIndex) => {
+                  const [cover, ...remainingImages] = story.images;
+                  const gallery = `featured-${story.id}`;
 
-                      return (
-                        <div key={story.id} className="min-w-0">
-                          <a
-                            href={cover.secure_url}
-                            data-fancybox={gallery}
-                            className="group relative block aspect-[3/4] overflow-hidden rounded-xl bg-neutral-100"
-                            title="Bấm để xem Tin nổi bật"
-                          >
-                            <Image
-                              src={getFeaturedWidgetImage(cover.secure_url)}
-                              alt={`Tin nổi bật ${globalIndex + 1}`}
-                              fill
-                              unoptimized
-                              sizes="(max-width: 1024px) 33vw, 150px"
-                              loading={globalIndex < 3 ? "eager" : "lazy"}
-                              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  return (
+                    <div
+                      key={story.id}
+                      className="min-w-0 shrink-0"
+                      style={{
+                        flexBasis: "calc((100% - 0.75rem) / 3)",
+                      }}
+                    >
+                      <a
+                        href={cover.secure_url}
+                        data-fancybox={gallery}
+                        className="group relative block aspect-[3/4] overflow-hidden rounded-xl bg-neutral-100"
+                        title="Bấm để xem Tin nổi bật"
+                      >
+                        <Image
+                          src={getFeaturedWidgetImage(cover.secure_url)}
+                          alt={`Tin nổi bật ${storyIndex + 1}`}
+                          fill
+                          unoptimized
+                          sizes="(max-width: 1024px) 33vw, 150px"
+                          loading={storyIndex < 3 ? "eager" : "lazy"}
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                        />
+
+                        <span className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-80" />
+
+                        {remainingImages.length > 0 && (
+                          <span className="absolute bottom-2 left-2 rounded-full bg-black/55 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
+                            +{remainingImages.length}
+                          </span>
+                        )}
+                      </a>
+
+                      {remainingImages.length > 0 && (
+                        <div className="hidden">
+                          {remainingImages.map((image) => (
+                            <a
+                              key={image.id}
+                              href={image.secure_url}
+                              data-fancybox={gallery}
+                              aria-hidden="true"
+                              tabIndex={-1}
                             />
-
-                            <span className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-80" />
-
-                            {remainingImages.length > 0 && (
-                              <span className="absolute bottom-2 left-2 rounded-full bg-black/55 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
-                                +{remainingImages.length}
-                              </span>
-                            )}
-                          </a>
-
-                          {remainingImages.length > 0 && (
-                            <div className="hidden">
-                              {remainingImages.map((image) => (
-                                <a
-                                  key={image.id}
-                                  href={image.secure_url}
-                                  data-fancybox={gallery}
-                                  aria-hidden="true"
-                                  tabIndex={-1}
-                                />
-                              ))}
-                            </div>
-                          )}
+                          ))}
                         </div>
-                      );
-                    })}
-                  </div>
-                ))}
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -229,11 +307,11 @@ export default function FeaturedWidget() {
               <button
                 type="button"
                 onClick={goPrev}
-                title="3 Tin nổi bật trước"
-                aria-label="3 Tin nổi bật trước"
-                className="absolute -left-1 top-1/2 z-10 flex size-9 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-black/5 bg-white/95 text-neutral-800 shadow-md backdrop-blur transition hover:scale-105 active:scale-95"
+                title="Tin nổi bật trước"
+                aria-label="Tin nổi bật trước"
+                className="absolute -left-4 top-1/2 z-10 flex size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/75 border border-white/50 text-neutral-800 backdrop-blur active:scale-97"
               >
-                <i className="fad fa-chevron-left" aria-hidden="true" />
+                <i className="fad fa-arrow-left" aria-hidden="true" />
               </button>
             )}
 
@@ -241,11 +319,11 @@ export default function FeaturedWidget() {
               <button
                 type="button"
                 onClick={goNext}
-                title="3 Tin nổi bật tiếp theo"
-                aria-label="3 Tin nổi bật tiếp theo"
-                className="absolute -right-1 top-1/2 z-10 flex size-9 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-black/5 bg-white/95 text-neutral-800 shadow-md backdrop-blur transition hover:scale-105 active:scale-95"
+                title="Tin nổi bật tiếp theo"
+                aria-label="Tin nổi bật tiếp theo"
+                className="absolute -right-4 top-1/2 z-10 flex size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/75 border border-white/50 text-neutral-800 backdrop-blur active:scale-97"
               >
-                <i className="fad fa-chevron-right" aria-hidden="true" />
+                <i className="fad fa-arrow-right" aria-hidden="true" />
               </button>
             )}
           </div>

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { uploadImage, getFeaturedWidgetImage } from "@/lib/cloudinary";
 import { useToast } from "@/hooks/useToast";
 import {
@@ -36,6 +37,8 @@ export default function FeaturedManagerModal({
 }: Props) {
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const busyRef = useRef(false);
+  const onCloseRef = useRef(onClose);
 
   const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -60,6 +63,14 @@ export default function FeaturedManagerModal({
   );
 
   useEffect(() => {
+    busyRef.current = busy;
+  }, [busy]);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
     if (!open) return;
 
     setSelectedStoryId((current) => {
@@ -71,20 +82,48 @@ export default function FeaturedManagerModal({
   useEffect(() => {
     if (!open) return;
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const root = document.documentElement;
+    const body = document.body;
+    const previousRootOverflow = root.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+    const previousBodyPaddingRight = body.style.paddingRight;
+    const previousStickyPause = root.getAttribute("data-smart-sticky-paused");
+    const scrollbarWidth = Math.max(window.innerWidth - root.clientWidth, 0);
+
+    root.dataset.smartStickyPaused = "true";
+    root.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+
+    if (scrollbarWidth > 0) {
+      const currentPaddingRight = Number.parseFloat(
+        window.getComputedStyle(body).paddingRight
+      ) || 0;
+      body.style.paddingRight = `${currentPaddingRight + scrollbarWidth}px`;
+    }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !busy) onClose();
+      if (event.key === "Escape" && !busyRef.current) onCloseRef.current();
     };
 
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
+      root.style.overflow = previousRootOverflow;
+      body.style.overflow = previousBodyOverflow;
+      body.style.paddingRight = previousBodyPaddingRight;
+
+      if (previousStickyPause === null) {
+        delete root.dataset.smartStickyPaused;
+      } else {
+        root.setAttribute("data-smart-sticky-paused", previousStickyPause);
+      }
+
+      requestAnimationFrame(() => {
+        window.dispatchEvent(new Event("smart-sticky:refresh"));
+      });
     };
-  }, [open, busy, onClose]);
+  }, [open]);
 
   useEffect(() => {
     if (!pickerOpen || libraryAssets.length > 0) return;
@@ -296,7 +335,7 @@ export default function FeaturedManagerModal({
     if (!activeStory || busy) return;
 
     const accepted = window.confirm(
-      "Xóa vĩnh viễn ảnh này khỏi Tin nổi bật và Cloudinary?"
+      "Xóa vĩnh viễn ảnh này khỏi Tin nổi bật và hệ thống?"
     );
     if (!accepted) return;
 
@@ -341,7 +380,7 @@ export default function FeaturedManagerModal({
     if (!activeStory || busy) return;
 
     const accepted = window.confirm(
-      `Xóa Tin nổi bật này và toàn bộ ${activeStory.images.length} ảnh khỏi Cloudinary?`
+      `Xóa Tin nổi bật này và toàn bộ ${activeStory.images.length} ảnh vĩnh viễn?`
     );
     if (!accepted) return;
 
@@ -418,15 +457,15 @@ export default function FeaturedManagerModal({
     });
   };
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
   const activeStoryIndex = activeStory
     ? stories.findIndex((story) => story.id === activeStory.id)
     : -1;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-3 backdrop-blur-sm sm:p-6"
+      className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 p-3 backdrop-blur-sm sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-label="Quản lý Tin nổi bật"
@@ -437,12 +476,9 @@ export default function FeaturedManagerModal({
       <div className="flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
         <header className="flex shrink-0 items-center justify-between border-b border-black/5 px-4 py-3 sm:px-6">
           <div>
-            <h2 className="font-semibold text-neutral-900">
+            <h2 className="font-medium text-base sm:text-lg text-neutral-900">
               Quản lý Tin nổi bật
             </h2>
-            <p className="mt-0.5 text-xs text-neutral-500">
-              Mỗi story có gallery Fancybox riêng và dùng ảnh đầu tiên làm bìa.
-            </p>
           </div>
 
           <button
@@ -456,7 +492,7 @@ export default function FeaturedManagerModal({
           </button>
         </header>
 
-        <div className="overflow-y-auto p-4 sm:p-6">
+        <div className="overscroll-contain overflow-y-auto p-4 sm:p-6">
           <section>
             <div className="mb-3 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-neutral-800">
@@ -595,7 +631,7 @@ export default function FeaturedManagerModal({
             </div>
 
             {activeStory?.images.length ? (
-              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-6">
                 {activeStory.images.map((image, index) => (
                   <div
                     key={image.id}
@@ -626,7 +662,7 @@ export default function FeaturedManagerModal({
                           onClick={() => handleMoveImage(index, -1)}
                           disabled={busy || index === 0}
                           title="Đưa ảnh về trước"
-                          className="flex size-8 cursor-pointer items-center justify-center rounded-lg bg-white/90 text-neutral-700 backdrop-blur transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-35"
+                          className="flex size-6 cursor-pointer items-center justify-center rounded-full bg-white/90 text-neutral-700 backdrop-blur transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-35"
                         >
                           <i className="fad fa-chevron-left" aria-hidden="true" />
                         </button>
@@ -635,7 +671,7 @@ export default function FeaturedManagerModal({
                           onClick={() => handleMoveImage(index, 1)}
                           disabled={busy || index === activeStory.images.length - 1}
                           title="Đưa ảnh về sau"
-                          className="flex size-8 cursor-pointer items-center justify-center rounded-lg bg-white/90 text-neutral-700 backdrop-blur transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-35"
+                          className="flex size-6 cursor-pointer items-center justify-center rounded-full bg-white/90 text-neutral-700 backdrop-blur transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-35"
                         >
                           <i className="fad fa-chevron-right" aria-hidden="true" />
                         </button>
@@ -648,7 +684,7 @@ export default function FeaturedManagerModal({
                             onClick={() => handleSetCover(index)}
                             disabled={busy}
                             title="Đặt làm ảnh bìa"
-                            className="flex size-8 cursor-pointer items-center justify-center rounded-lg bg-white/90 text-amber-500 backdrop-blur transition hover:bg-white disabled:opacity-50"
+                            className="flex size-6 cursor-pointer items-center justify-center rounded-lg bg-white/90 text-amber-500 backdrop-blur transition hover:bg-white disabled:opacity-50"
                           >
                             <i className="fad fa-star" aria-hidden="true" />
                           </button>
@@ -658,7 +694,7 @@ export default function FeaturedManagerModal({
                           onClick={() => handleDeleteImage(image)}
                           disabled={busy}
                           title="Xóa ảnh vĩnh viễn"
-                          className="flex size-8 cursor-pointer items-center justify-center rounded-lg bg-red-500/90 text-white backdrop-blur transition hover:bg-red-600 disabled:opacity-50"
+                          className="flex size-6 cursor-pointer items-center justify-center rounded-lg bg-red-500/90 text-white backdrop-blur transition hover:bg-red-600 disabled:opacity-50"
                         >
                           <i className="fad fa-trash-can" aria-hidden="true" />
                         </button>
@@ -835,6 +871,7 @@ export default function FeaturedManagerModal({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
