@@ -39,7 +39,7 @@ const ALLOWED_IMAGE_FORMATS = [
   "heif",
 ];
 
-const DEFAULT_MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024;
+const DEFAULT_MAX_IMAGE_SIZE_BYTES = 20 * 1024 * 1024;
 
 function getMaxImageSizeBytes(): number {
   const configuredValue = Number(process.env.MAX_IMAGE_UPLOAD_BYTES);

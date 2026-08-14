@@ -1,8 +1,10 @@
 import { supabase } from "@/lib/supabase";
 
+export type UploadImageType = "post" | "avatar" | "cover" | "featured";
+
 export const uploadImage = async (
   file: File | Blob,
-  type: "post" | "avatar" | "cover" | "featured" = "post"
+  type: UploadImageType = "post"
 ) => {
   try {
     const {
@@ -35,9 +37,9 @@ export const uploadImage = async (
       height: result.data.height as number,
       format: result.data.format as string,
     };
-  } catch (err) {
-    console.error("Upload lỗi:", err);
-    throw err;
+  } catch (error) {
+    console.error("Upload lỗi:", error);
+    throw error;
   }
 };
 
@@ -52,6 +54,8 @@ type CloudinaryOptions = {
   dpr?: "auto" | number;
   gravity?: "auto" | "face" | "center";
   sharpen?: boolean;
+  blur?: number;
+  stripProfile?: boolean;
 };
 
 export function buildCloudinaryImage(
@@ -59,7 +63,9 @@ export function buildCloudinaryImage(
   options?: CloudinaryOptions
 ) {
   if (!url) return "/images/default.jpg";
-  if (!url.includes("res.cloudinary.com")) return url;
+  if (!url.includes("res.cloudinary.com") || !url.includes("/upload/")) {
+    return url;
+  }
 
   const width = options?.width;
   const height = options?.height;
@@ -69,7 +75,9 @@ export function buildCloudinaryImage(
   const dpr = options?.dpr ?? "auto";
   const gravity = options?.gravity;
   const sharpen = options?.sharpen ?? false;
-  const transforms = [];
+  const blur = options?.blur;
+  const stripProfile = options?.stripProfile ?? true;
+  const transforms: string[] = [];
 
   if (format) transforms.push(`f_${format}`);
   if (quality) transforms.push(`q_${quality}`);
@@ -79,15 +87,10 @@ export function buildCloudinaryImage(
   if (crop) transforms.push(`c_${crop}`);
   if (gravity && crop === "fill") transforms.push(`g_${gravity}`);
   if (sharpen) transforms.push("e_sharpen");
-
-  transforms.push("fl_strip_profile");
-
-  // Giữ nguyên chuỗi transform hiện tại để không thay đổi hành vi ảnh cũ.
-  if (width) transforms.push(`w_${width}`);
-  if (height) transforms.push(`h_${height}`);
-  if (crop) transforms.push(`c_${crop}`);
-  if (gravity && crop === "fill") transforms.push(`g_${gravity}`);
-  if (sharpen) transforms.push("e_sharpen");
+  if (typeof blur === "number" && blur > 0) {
+    transforms.push(`e_blur:${Math.min(Math.round(blur), 2000)}`);
+  }
+  if (stripProfile) transforms.push("fl_strip_profile");
 
   return url.replace("/upload/", `/upload/${transforms.join(",")}/`);
 }
@@ -161,6 +164,56 @@ export function getProfileAvatar(url?: string) {
     quality: "auto:good",
     format: "auto",
     dpr: "auto",
+  });
+}
+
+// Ảnh cover chính: đủ nét cho màn hình lớn nhưng không tải master full-size.
+export function getProfileCoverImage(url?: string, width = 1920) {
+  return buildCloudinaryImage(url, {
+    width,
+    crop: "limit",
+    quality: "auto:good",
+    format: "auto",
+    dpr: 1,
+    sharpen: true,
+  });
+}
+
+// Chỉ tải khi admin đã chọn một asset để crop. f_auto giúp đọc cả HEIC/HEIF
+// từ Cloudinary trên các trình duyệt không hỗ trợ định dạng nguồn.
+export function getProfileCropSource(url?: string, width = 4096) {
+  return buildCloudinaryImage(url, {
+    width,
+    crop: "limit",
+    quality: "auto:best",
+    format: "auto",
+    dpr: 1,
+    stripProfile: false,
+  });
+}
+
+// Nền blur chỉ dùng ảnh 160px, dpr_1 và chất lượng eco để giảm bandwidth/usage.
+export function getProfileCoverBackground(url?: string) {
+  return buildCloudinaryImage(url, {
+    width: 160,
+    crop: "limit",
+    quality: "auto:eco",
+    format: "auto",
+    dpr: 1,
+    blur: 1000,
+  });
+}
+
+// Thumbnail dùng trong thư viện Cloudinary của trình chỉnh sửa profile.
+export function getProfileLibraryThumbnail(url?: string) {
+  return buildCloudinaryImage(url, {
+    width: 320,
+    height: 220,
+    crop: "fill",
+    gravity: "auto",
+    quality: "auto:eco",
+    format: "auto",
+    dpr: 1,
   });
 }
 
