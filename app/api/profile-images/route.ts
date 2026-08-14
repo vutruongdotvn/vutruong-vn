@@ -10,8 +10,9 @@ const ADMIN_EMAIL = (
 ).toLowerCase();
 
 const ROOT_PREFIX = "vutruong_vn/";
-const MAX_RESULTS = 60;
-const LIBRARY_CACHE_TTL_MS = 30_000;
+const MAX_RESULTS = 20;
+const MAX_DELETE_ITEMS = 20;
+const LIBRARY_CACHE_TTL_MS = 60_000;
 const FOLDER_PREFIXES = {
   posts: `${ROOT_PREFIX}posts/`,
   avatars: `${ROOT_PREFIX}avatars/`,
@@ -47,6 +48,26 @@ type CloudinaryErrorShape = {
     rate_limit_reset_at?: unknown;
   };
 };
+
+type AdminProfile = {
+  id: string;
+  email: string | null;
+  role: string | null;
+  status: string | null;
+  avatar: string | null;
+  cover_image: string | string[] | null;
+};
+
+type ServerSupabaseClient = ReturnType<typeof createClient>;
+
+type AdminAuthorization =
+  | {
+      ok: true;
+      userId: string;
+      profile: AdminProfile;
+      supabase: ServerSupabaseClient;
+    }
+  | { ok: false; response: NextResponse };
 
 let adminApiCooldownUntil = 0;
 const resourcesCache = new Map<
@@ -206,9 +227,48 @@ function getAssetFolder(publicId: string) {
   return isFolderFilter(folder) ? folder : "other";
 }
 
+function getManagedPublicIdFromUrl(value: unknown) {
+  const url = Array.isArray(value) ? value[0] : value;
+  if (typeof url !== "string") return null;
+
+  try {
+    const path = new URL(url).pathname;
+    const rootIndex = path.indexOf(`/${ROOT_PREFIX}`);
+    if (rootIndex === -1) return null;
+
+    return decodeURIComponent(path.slice(rootIndex + 1)).replace(
+      /\.[A-Za-z0-9]+$/,
+      ""
+    );
+  } catch {
+    return null;
+  }
+}
+
+function getDeletePublicIds(value: unknown) {
+  if (!Array.isArray(value)) return [];
+
+  return [
+    ...new Set(
+      value
+        .filter((item): item is string => typeof item === "string")
+        .map((item) => item.trim())
+        .filter(
+          (item) =>
+            item.length > 0 &&
+            item.length <= 255 &&
+            !item.includes("..") &&
+            /^[A-Za-z0-9/_-]+$/.test(item) &&
+            (item.startsWith(FOLDER_PREFIXES.covers) ||
+              item.startsWith(FOLDER_PREFIXES.avatars))
+        )
+    ),
+  ];
+}
+
 async function requireApprovedAdmin(
   req: Request
-): Promise<{ ok: true } | { ok: false; response: NextResponse }> {
+): Promise<AdminAuthorization> {
   const token = getBearerToken(req);
 
   if (!token) {
@@ -274,7 +334,7 @@ async function requireApprovedAdmin(
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("id, email, role, status")
+    .select("id, email, role, status, avatar, cover_image")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -298,7 +358,12 @@ async function requireApprovedAdmin(
     };
   }
 
-  return { ok: true };
+  return {
+    ok: true,
+    userId: user.id,
+    profile: profile as AdminProfile,
+    supabase,
+  };
 }
 
 cloudinary.config({
@@ -408,6 +473,199 @@ export async function GET(req: Request) {
         error: "Không thể tải thư viện ảnh vào lúc này.",
       },
       { status: cloudinaryError.status }
+    );
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const authorization = await requireApprovedAdmin(req);
+    if (!authorization.ok) return authorization.response;
+
+    if (!hasCloudinaryConfig()) {
+      return NextResponse.json(
+        { success: false, error: "Server chưa được cấu hình đầy đủ." },
+        { status: 500 }
+      );
+    }
+
+    let body: unknown;
+
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json(
+        { success: false, error: "Dữ liệu xóa ảnh không hợp lệ." },
+        { status: 400 }
+      );
+    }
+
+    const rawPublicIds =
+      body && typeof body === "object" && "public_ids" in body
+        ? (body as { public_ids: unknown }).public_ids
+        : null;
+
+    if (!Array.isArray(rawPublicIds)) {
+      return NextResponse.json(
+        { success: false, error: "Thiếu danh sách public_id cần xóa." },
+        { status: 400 }
+      );
+    }
+
+    const normalizedPublicIds = [
+      ...new Set(
+        rawPublicIds
+          .filter((item): item is string => typeof item === "string")
+          .map((item) => item.trim())
+          .filter(Boolean)
+      ),
+    ];
+    const publicIds = getDeletePublicIds(rawPublicIds);
+
+    if (
+      publicIds.length === 0 ||
+      publicIds.length !== normalizedPublicIds.length
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Chỉ được xóa ảnh trong thư mục covers hoặc avatars.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (publicIds.length > MAX_DELETE_ITEMS) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Chỉ được xóa tối đa ${MAX_DELETE_ITEMS} ảnh mỗi lần.`,
+        },
+        { status: 400 }
+      );
+    }
+
+    const activePublicIds = new Set(
+      [
+        getManagedPublicIdFromUrl(authorization.profile.avatar),
+        getManagedPublicIdFromUrl(authorization.profile.cover_image),
+      ].filter((value): value is string => Boolean(value))
+    );
+    const activeRequestedIds = publicIds.filter((publicId) =>
+      activePublicIds.has(publicId)
+    );
+
+    if (activeRequestedIds.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Không thể xóa ảnh đang được sử dụng. Hãy đổi sang ảnh khác trước.",
+          active_public_ids: activeRequestedIds,
+        },
+        { status: 409 }
+      );
+    }
+
+    const avatarPublicIds = publicIds.filter((publicId) =>
+      publicId.startsWith(FOLDER_PREFIXES.avatars)
+    );
+
+    if (avatarPublicIds.length > 0) {
+      const { data: historyRows, error: historyReadError } =
+        await authorization.supabase
+          .from("user_avatars")
+          .select("id, public_id")
+          .eq("user_id", authorization.userId)
+          .in("public_id", avatarPublicIds);
+
+      if (historyReadError) {
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              "Không thể kiểm tra lịch sử avatar nên ảnh chưa bị xóa. Vui lòng kiểm tra RLS của user_avatars.",
+          },
+          { status: 409 }
+        );
+      }
+
+      const historyIds = (historyRows ?? []).map((row) => row.id);
+
+      if (historyIds.length > 0) {
+        const { data: deletedRows, error: historyDeleteError } =
+          await authorization.supabase
+            .from("user_avatars")
+            .delete()
+            .in("id", historyIds)
+            .select("id");
+
+        if (
+          historyDeleteError ||
+          (deletedRows?.length ?? 0) !== historyIds.length
+        ) {
+          return NextResponse.json(
+            {
+              success: false,
+              error:
+                "RLS chưa cho phép xóa lịch sử avatar. Cloudinary chưa bị thay đổi.",
+            },
+            { status: 409 }
+          );
+        }
+      }
+    }
+
+    const deletedPublicIds: string[] = [];
+    const failedPublicIds: string[] = [];
+
+    for (const publicId of publicIds) {
+      try {
+        const result = await cloudinary.uploader.destroy(publicId, {
+          resource_type: "image",
+          invalidate: true,
+        });
+
+        if (result.result === "ok" || result.result === "not found") {
+          deletedPublicIds.push(publicId);
+        } else {
+          failedPublicIds.push(publicId);
+        }
+      } catch (error) {
+        failedPublicIds.push(publicId);
+        console.error("Profile image delete failed:", {
+          publicId,
+          error: error instanceof Error ? error.message : "Lỗi không xác định",
+        });
+      }
+    }
+
+    resourcesCache.clear();
+
+    if (failedPublicIds.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Một số ảnh chưa thể xóa khỏi Cloudinary.",
+          deleted_public_ids: deletedPublicIds,
+          failed_public_ids: failedPublicIds,
+        },
+        { status: 502 }
+      );
+    }
+
+    return NextResponse.json(
+      { success: true, deleted_public_ids: deletedPublicIds },
+      { headers: { "Cache-Control": "private, no-store, max-age=0" } }
+    );
+  } catch (error) {
+    console.error(
+      "Profile images delete API error:",
+      error instanceof Error ? error.message : "Lỗi không xác định"
+    );
+    return NextResponse.json(
+      { success: false, error: "Không thể xóa ảnh vào lúc này." },
+      { status: 500 }
     );
   }
 }

@@ -197,8 +197,8 @@ export default function FeaturedWidget() {
             <button
               type="button"
               onClick={() => setManagerOpen(true)}
-              title="Quản lý Tin nổi bật"
-              aria-label="Quản lý Tin nổi bật"
+              title="Quản lý Khoảnh khắc"
+              aria-label="Quản lý Khoảnh khắc"
               className="flex cursor-pointer items-center justify-center rounded-full text-neutral-500 hover:text-neutral-900 active:scale-97"
             >
               <i className="fad fa-sliders" aria-hidden="true" />
@@ -217,7 +217,7 @@ export default function FeaturedWidget() {
           </div>
         ) : loadError ? (
           <div className="px-4 py-7 text-center text-sm text-neutral-500 sm:px-0">
-            Chưa thể tải Tin nổi bật.
+            Chưa thể tải Khoảnh khắc.
           </div>
         ) : visibleStories.length === 0 ? (
           <button
@@ -226,7 +226,7 @@ export default function FeaturedWidget() {
             className="mx-3 flex w-[calc(100%-1.5rem)] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-neutral-200 py-8 text-sm text-neutral-500 transition hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-800 sm:mx-0 sm:w-full"
           >
             <i className="fad fa-images text-xl" aria-hidden="true" />
-            Thêm Tin nổi bật đầu tiên
+            Thêm Khoảnh khắc đầu tiên
           </button>
         ) : (
           <div className="relative px-3 sm:px-0">
@@ -263,11 +263,10 @@ export default function FeaturedWidget() {
                         href={cover.secure_url}
                         data-fancybox={gallery}
                         className="group relative block aspect-[2/3] overflow-hidden rounded-xl bg-neutral-100"
-                        title="Bấm để xem Tin nổi bật"
                       >
                         <Image
                           src={getFeaturedWidgetImage(cover.secure_url)}
-                          alt={`Tin nổi bật ${storyIndex + 1}`}
+                          alt={`Khoảnh khắc ${storyIndex + 1}`}
                           fill
                           unoptimized
                           sizes="(max-width: 1024px) 33vw, 150px"
@@ -307,9 +306,9 @@ export default function FeaturedWidget() {
               <button
                 type="button"
                 onClick={goPrev}
-                title="Tin nổi bật trước"
-                aria-label="Tin nổi bật trước"
-                className="absolute -left-4 top-1/2 z-10 flex size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/75 border border-white/50 text-neutral-800 backdrop-blur active:scale-97"
+                title="Khoảnh khắc trước"
+                aria-label="Khoảnh khắc trước"
+                className="absolute -left-4 top-1/2 z-10 flex size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/75 border border-white/50 text-neutral-800 backdrop-blur active:scale-97 sm:opacity-100 opacity-0"
               >
                 <i className="fad fa-arrow-left" aria-hidden="true" />
               </button>
@@ -319,9 +318,9 @@ export default function FeaturedWidget() {
               <button
                 type="button"
                 onClick={goNext}
-                title="Tin nổi bật tiếp theo"
-                aria-label="Tin nổi bật tiếp theo"
-                className="absolute -right-4 top-1/2 z-10 flex size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/75 border border-white/50 text-neutral-800 backdrop-blur active:scale-97"
+                title="Khoảnh khắc tiếp theo"
+                aria-label="Khoảnh khắc tiếp theo"
+                className="absolute -right-4 top-1/2 z-10 flex size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/75 border border-white/50 text-neutral-800 backdrop-blur active:scale-97 sm:opacity-100 opacity-0"
               >
                 <i className="fad fa-arrow-right" aria-hidden="true" />
               </button>

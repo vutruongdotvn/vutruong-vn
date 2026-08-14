@@ -18,7 +18,9 @@ import {
 } from "@/lib/cloudinary";
 import {
   deleteProfileCloudinaryAssets,
+  deleteProfileLibraryAssets,
   fetchProfileCloudinaryAssets,
+  invalidateProfileAssetsCache,
   profileMediaServiceError,
   type ProfileCloudinaryAsset,
   type ProfileMediaFolder,
@@ -35,6 +37,7 @@ type Props = {
   open: boolean;
   kind: ProfileMediaKind;
   profileId: string;
+  currentUrl: string;
   onClose: () => void;
   onSaved: (url: string) => Promise<void> | void;
 };
@@ -78,10 +81,39 @@ function formatAssetDate(value: string) {
       }).format(date);
 }
 
+function getManagedPublicId(url?: string) {
+  if (!url) return null;
+
+  try {
+    const path = new URL(url).pathname;
+    const rootIndex = path.indexOf("/vutruong_vn/");
+    if (rootIndex === -1) return null;
+    return decodeURIComponent(path.slice(rootIndex + 1)).replace(
+      /\.[A-Za-z0-9]+$/,
+      ""
+    );
+  } catch {
+    return null;
+  }
+}
+
+function createUploadRequestId() {
+  if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
+
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const value = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0"));
+  return `${value.slice(0, 4).join("")}-${value.slice(4, 6).join("")}-${value
+    .slice(6, 8)
+    .join("")}-${value.slice(8, 10).join("")}-${value.slice(10).join("")}`;
+}
+
 export default function ProfileMediaEditorModal({
   open,
   kind,
   profileId,
+  currentUrl,
   onClose,
   onSaved,
 }: Props) {
@@ -94,31 +126,46 @@ export default function ProfileMediaEditorModal({
   const libraryRequestIdRef = useRef(0);
   const nextCursorRef = useRef<string | null>(null);
   const lastAutoLoadKeyRef = useRef<string | null>(null);
+  const uploadRequestIdRef = useRef<string | null>(null);
+  const deleteCandidateRef = useRef<ProfileCloudinaryAsset | null>(null);
 
   const [tab, setTab] = useState<"upload" | "library">("upload");
   const [source, setSource] = useState<SourceImage | null>(null);
   const [cropArea, setCropArea] = useState<CropAreaPixels | null>(null);
   const [saving, setSaving] = useState(false);
-  const [folder, setFolder] = useState<ProfileMediaFolder>("all");
+  const [folder, setFolder] = useState<ProfileMediaFolder>(
+    kind === "avatar" ? "avatars" : "covers"
+  );
   const [assets, setAssets] = useState<ProfileCloudinaryAsset[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loadingLibrary, setLoadingLibrary] = useState(false);
   const [libraryError, setLibraryError] = useState<string | null>(null);
+  const [deleteCandidate, setDeleteCandidate] =
+    useState<ProfileCloudinaryAsset | null>(null);
+  const [deletingPublicId, setDeletingPublicId] = useState<string | null>(null);
 
   const isAvatar = kind === "avatar";
   const title = isAvatar ? "Thay đổi ảnh đại diện" : "Thay đổi ảnh bìa";
+  const currentPublicId = useMemo(
+    () => getManagedPublicId(currentUrl),
+    [currentUrl]
+  );
 
   useEffect(() => {
     showToastRef.current = showToast;
   }, [showToast]);
 
   useEffect(() => {
-    busyRef.current = saving;
-  }, [saving]);
+    busyRef.current = saving || deletingPublicId !== null;
+  }, [deletingPublicId, saving]);
 
   useEffect(() => {
     onCloseRef.current = onClose;
   }, [onClose]);
+
+  useEffect(() => {
+    deleteCandidateRef.current = deleteCandidate;
+  }, [deleteCandidate]);
 
   const clearSource = useCallback(() => {
     setSource((current) => {
@@ -126,6 +173,7 @@ export default function ProfileMediaEditorModal({
       return null;
     });
     setCropArea(null);
+    uploadRequestIdRef.current = null;
     if (fileInputRef.current) fileInputRef.current.value = "";
   }, []);
 
@@ -133,10 +181,12 @@ export default function ProfileMediaEditorModal({
     if (!open) return;
 
     setTab("upload");
-    setFolder("all");
+    setFolder(kind === "avatar" ? "avatars" : "covers");
     setAssets([]);
     setNextCursor(null);
     setLibraryError(null);
+    setDeleteCandidate(null);
+    setDeletingPublicId(null);
     nextCursorRef.current = null;
     lastAutoLoadKeyRef.current = null;
     libraryRequestIdRef.current += 1;
@@ -162,7 +212,13 @@ export default function ProfileMediaEditorModal({
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !busyRef.current) onCloseRef.current();
+      if (event.key !== "Escape" || busyRef.current) return;
+
+      if (deleteCandidateRef.current) {
+        setDeleteCandidate(null);
+      } else {
+        onCloseRef.current();
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -185,7 +241,7 @@ export default function ProfileMediaEditorModal({
         window.dispatchEvent(new Event("smart-sticky:refresh"));
       });
     };
-  }, [clearSource, open]);
+  }, [clearSource, kind, open]);
 
   useEffect(() => {
     return () => {
@@ -265,6 +321,7 @@ export default function ProfileMediaEditorModal({
 
   const handleFolderChange = (value: ProfileMediaFolder) => {
     if (value === folder) return;
+    setDeleteCandidate(null);
     setAssets([]);
     setNextCursor(null);
     setLibraryError(null);
@@ -294,13 +351,47 @@ export default function ProfileMediaEditorModal({
   };
 
   const handleAsset = (asset: ProfileCloudinaryAsset) => {
-    if (saving) return;
+    if (saving || deletingPublicId) return;
     clearSource();
     setSource({
       url: getProfileCropSource(asset.secure_url, isAvatar ? 3072 : 4096),
       label: asset.public_id,
       objectUrl: false,
     });
+  };
+
+  const handleDeleteAsset = async () => {
+    if (!deleteCandidate || deletingPublicId) return;
+
+    if (deleteCandidate.public_id === currentPublicId) {
+      showToast("Hãy đổi sang ảnh khác trước khi xóa ảnh đang sử dụng.", "warning");
+      setDeleteCandidate(null);
+      return;
+    }
+
+    setDeletingPublicId(deleteCandidate.public_id);
+
+    try {
+      const deletedPublicIds = await deleteProfileLibraryAssets([
+        deleteCandidate.public_id,
+      ]);
+      const deletedSet = new Set(deletedPublicIds);
+
+      setAssets((current) =>
+        current.filter((asset) => !deletedSet.has(asset.public_id))
+      );
+      setDeleteCandidate(null);
+      showToast(
+        deleteCandidate.folder === "avatars"
+          ? "Đã xóa avatar cũ và dọn lịch sử liên quan."
+          : "Đã xóa ảnh bìa cũ khỏi Cloudinary.",
+        "success"
+      );
+    } catch (error) {
+      showToast(profileMediaServiceError(error), "error");
+    } finally {
+      setDeletingPublicId(null);
+    }
   };
 
   const handleCropAreaChange = useCallback(
@@ -327,7 +418,15 @@ export default function ProfileMediaEditorModal({
         throw new Error("Ảnh sau khi cắt vượt quá dung lượng tối đa 20MB.");
       }
 
-      const uploaded = await uploadImage(blob, kind);
+      const uploadRequestId =
+        uploadRequestIdRef.current ?? createUploadRequestId();
+      uploadRequestIdRef.current = uploadRequestId;
+      const outputExtension = blob.type === "image/jpeg" ? "jpg" : "webp";
+      const uploaded = await uploadImage(blob, kind, {
+        requestId: uploadRequestId,
+        filename: `${kind}-${uploadRequestId}.${outputExtension}`,
+        retryOnce: true,
+      });
       uploadedPublicId = uploaded.public_id;
       const field = isAvatar ? "avatar" : "cover_image";
       const { error: updateError } = await supabase
@@ -337,7 +436,14 @@ export default function ProfileMediaEditorModal({
         .select("id")
         .single();
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.warn("Profile media Supabase update failed:", updateError.message);
+        throw new Error(
+          `Ảnh đã upload nhưng chưa thể cập nhật ${
+            isAvatar ? "avatar" : "ảnh bìa"
+          } trong Supabase.`
+        );
+      }
       profileUpdated = true;
 
       let historyWarning = false;
@@ -353,11 +459,12 @@ export default function ProfileMediaEditorModal({
 
         if (historyError) {
           historyWarning = true;
-          console.error("Avatar history sync error:", historyError.message);
+          console.warn("Avatar history sync error:", historyError.message);
         }
       }
 
       await onSaved(uploaded.url);
+      invalidateProfileAssetsCache(isAvatar ? "avatars" : "covers");
       clearSource();
       onClose();
       showToast(
@@ -397,7 +504,14 @@ export default function ProfileMediaEditorModal({
       aria-modal="true"
       aria-label={title}
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget && !saving) onClose();
+        if (
+          event.target === event.currentTarget &&
+          !saving &&
+          !deletingPublicId &&
+          !deleteCandidate
+        ) {
+          onClose();
+        }
       }}
     >
       <div className="flex max-h-[94vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl sm:rounded-3xl">
@@ -416,7 +530,7 @@ export default function ProfileMediaEditorModal({
           <button
             type="button"
             onClick={onClose}
-            disabled={saving}
+            disabled={saving || deletingPublicId !== null}
             aria-label="Đóng"
             className="ml-4 flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full bg-neutral-100 text-neutral-600 transition hover:bg-neutral-200 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
           >
@@ -533,6 +647,11 @@ export default function ProfileMediaEditorModal({
                     ))}
                   </div>
 
+                  <div className="mb-3 flex items-center justify-between gap-3 text-[11px] text-neutral-400">
+                    <span>Tải tối đa 10 ảnh mỗi lần</span>
+                    {assets.length > 0 && <span>Đã tải {assets.length} ảnh</span>}
+                  </div>
+
                   {loadingLibrary && assets.length === 0 ? (
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4">
                       {Array.from({ length: 8 }).map((_, index) => (
@@ -572,33 +691,81 @@ export default function ProfileMediaEditorModal({
                     </div>
                   ) : (
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4">
-                      {assets.map((asset) => (
-                        <button
-                          key={asset.asset_id}
-                          type="button"
-                          title={asset.public_id}
-                          onClick={() => handleAsset(asset)}
-                          className="group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl bg-neutral-100 text-left ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
-                        >
-                          <Image
-                            src={getProfileLibraryThumbnail(asset.secure_url)}
-                            alt=""
-                            fill
-                            unoptimized
-                            loading="lazy"
-                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 240px"
-                            className="object-cover transition duration-300 group-hover:scale-[1.03]"
-                          />
-                          <span className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80" />
-                          <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-2.5 text-[10px] text-white/85">
-                            <span className="truncate">{formatAssetDate(asset.created_at)}</span>
-                            <span className="shrink-0">{formatBytes(asset.bytes)}</span>
-                          </span>
-                          <span className="absolute right-2 top-2 flex size-8 items-center justify-center rounded-full bg-white/90 text-neutral-900 opacity-0 shadow-sm backdrop-blur transition group-hover:opacity-100">
-                            <i className="fad fa-crop-simple" aria-hidden="true" />
-                          </span>
-                        </button>
-                      ))}
+                      {assets.map((asset) => {
+                        const isActive = asset.public_id === currentPublicId;
+                        const canDelete =
+                          asset.folder === "covers" || asset.folder === "avatars";
+                        const isDeleting =
+                          deletingPublicId === asset.public_id;
+
+                        return (
+                          <div
+                            key={asset.asset_id}
+                            title={asset.public_id}
+                            className="group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl bg-neutral-100 text-left ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
+                          >
+                            <Image
+                              src={getProfileLibraryThumbnail(asset.secure_url)}
+                              alt=""
+                              fill
+                              unoptimized
+                              loading="lazy"
+                              fetchPriority="low"
+                              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 240px"
+                              className="object-cover transition duration-300 group-hover:scale-[1.03]"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleAsset(asset)}
+                              disabled={isDeleting}
+                              aria-label={`Chọn ${asset.public_id} để cắt`}
+                              className="absolute inset-0 z-[1] cursor-pointer disabled:cursor-wait"
+                            />
+                            <span className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80" />
+                            <span className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] flex items-end justify-between gap-2 p-2.5 text-[10px] text-white/85">
+                              <span className="truncate">
+                                {formatAssetDate(asset.created_at)}
+                              </span>
+                              <span className="shrink-0">
+                                {formatBytes(asset.bytes)}
+                              </span>
+                            </span>
+                            <span className="pointer-events-none absolute right-2 top-2 z-[2] flex size-8 items-center justify-center rounded-full bg-white/90 text-neutral-900 opacity-0 shadow-sm backdrop-blur transition group-hover:opacity-100">
+                              <i
+                                className="fad fa-crop-simple"
+                                aria-hidden="true"
+                              />
+                            </span>
+
+                            {isActive ? (
+                              <span className="pointer-events-none absolute left-2 top-2 z-[3] rounded-full bg-emerald-500 px-2.5 py-1.5 text-[10px] font-medium text-white shadow-sm">
+                                Đang sử dụng
+                              </span>
+                            ) : canDelete ? (
+                              <button
+                                type="button"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  setDeleteCandidate(asset);
+                                }}
+                                disabled={Boolean(deletingPublicId)}
+                                aria-label={`Xóa ${asset.public_id}`}
+                                title="Xóa ảnh khỏi Cloudinary"
+                                className="absolute left-2 top-2 z-[3] flex size-8 cursor-pointer items-center justify-center rounded-full bg-red-500/95 text-xs text-white opacity-100 shadow-sm backdrop-blur transition hover:bg-red-600 active:scale-90 disabled:cursor-wait disabled:opacity-50 sm:opacity-0 sm:group-hover:opacity-100"
+                              >
+                                <i
+                                  className={`fad ${
+                                    isDeleting
+                                      ? "fa-spinner-third fa-spin"
+                                      : "fa-trash"
+                                  }`}
+                                  aria-hidden="true"
+                                />
+                              </button>
+                            ) : null}
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
 
@@ -622,7 +789,7 @@ export default function ProfileMediaEditorModal({
                           }`}
                           aria-hidden="true"
                         />
-                        {loadingLibrary ? "Đang tải" : "Xem thêm ảnh"}
+                        {loadingLibrary ? "Đang tải" : "Xem thêm 10 ảnh"}
                       </button>
                     </div>
                   )}
@@ -659,6 +826,65 @@ export default function ProfileMediaEditorModal({
           </footer>
         )}
       </div>
+
+      {deleteCandidate && (
+        <div
+          className="absolute inset-0 z-[40] flex items-center justify-center bg-black/35 p-4 backdrop-blur-sm"
+          role="alertdialog"
+          aria-modal="true"
+          aria-label="Xác nhận xóa ảnh"
+          onMouseDown={(event) => {
+            if (
+              event.target === event.currentTarget &&
+              !deletingPublicId
+            ) {
+              setDeleteCandidate(null);
+            }
+          }}
+        >
+          <div className="w-full max-w-sm rounded-3xl bg-white p-5 text-center shadow-2xl sm:p-6">
+            <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-red-50 text-xl text-red-500">
+              <i className="fad fa-trash-can" aria-hidden="true" />
+            </span>
+            <h3 className="mt-4 text-base font-semibold text-neutral-950">
+              Xóa ảnh khỏi Cloudinary?
+            </h3>
+            <p className="mt-2 text-sm leading-6 text-neutral-500">
+              Ảnh sẽ bị xóa vĩnh viễn cùng các biến thể đã tạo. Thao tác này
+              không thể hoàn tác.
+            </p>
+            <p className="mt-2 truncate rounded-xl bg-neutral-50 px-3 py-2 text-[11px] text-neutral-400">
+              {deleteCandidate.public_id}
+            </p>
+            <div className="mt-5 flex justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => setDeleteCandidate(null)}
+                disabled={Boolean(deletingPublicId)}
+                className="cursor-pointer rounded-full bg-neutral-100 px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-200 active:scale-95 disabled:opacity-50"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleDeleteAsset()}
+                disabled={Boolean(deletingPublicId)}
+                className="inline-flex min-w-28 cursor-pointer items-center justify-center gap-2 rounded-full bg-red-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-red-600 active:scale-95 disabled:cursor-wait disabled:opacity-60"
+              >
+                <i
+                  className={`fad ${
+                    deletingPublicId
+                      ? "fa-spinner-third fa-spin"
+                      : "fa-trash"
+                  }`}
+                  aria-hidden="true"
+                />
+                {deletingPublicId ? "Đang xóa" : "Xóa ảnh"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>,
     document.body
   );
