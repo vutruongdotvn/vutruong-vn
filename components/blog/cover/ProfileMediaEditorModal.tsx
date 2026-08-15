@@ -143,9 +143,11 @@ export default function ProfileMediaEditorModal({
   const [deleteCandidate, setDeleteCandidate] =
     useState<ProfileCloudinaryAsset | null>(null);
   const [deletingPublicId, setDeletingPublicId] = useState<string | null>(null);
+  const [reusingPublicId, setReusingPublicId] = useState<string | null>(null);
 
   const isAvatar = kind === "avatar";
   const title = isAvatar ? "Thay đổi ảnh đại diện" : "Thay đổi ảnh bìa";
+  const reusableFolder = isAvatar ? "avatars" : "covers";
   const currentPublicId = useMemo(
     () => getManagedPublicId(currentUrl),
     [currentUrl]
@@ -187,6 +189,7 @@ export default function ProfileMediaEditorModal({
     setLibraryError(null);
     setDeleteCandidate(null);
     setDeletingPublicId(null);
+    setReusingPublicId(null);
     nextCursorRef.current = null;
     lastAutoLoadKeyRef.current = null;
     libraryRequestIdRef.current += 1;
@@ -320,7 +323,7 @@ export default function ProfileMediaEditorModal({
   }, [folder, kind, loadLibrary, open, source, tab]);
 
   const handleFolderChange = (value: ProfileMediaFolder) => {
-    if (value === folder) return;
+    if (value === folder || saving) return;
     setDeleteCandidate(null);
     setAssets([]);
     setNextCursor(null);
@@ -350,8 +353,67 @@ export default function ProfileMediaEditorModal({
     });
   };
 
-  const handleAsset = (asset: ProfileCloudinaryAsset) => {
+  const handleAsset = async (asset: ProfileCloudinaryAsset) => {
     if (saving || deletingPublicId) return;
+
+    // Asset đã nằm đúng thư mục đích là một avatar/cover đã được chuẩn bị
+    // trước đó. Cập nhật thẳng URL để reuse, không crop và không upload bản sao.
+    if (asset.folder === reusableFolder) {
+      if (asset.public_id === currentPublicId) {
+        showToast("Ảnh này đang được sử dụng.", "warning");
+        return;
+      }
+
+      setSaving(true);
+      setReusingPublicId(asset.public_id);
+      let reuseSucceeded = false;
+
+      try {
+        const field = isAvatar ? "avatar" : "cover_image";
+        const { error: updateError } = await supabase
+          .from("profiles")
+          .update({ [field]: asset.secure_url })
+          .eq("id", profileId)
+          .select("id")
+          .single();
+
+        if (updateError) {
+          console.warn(
+            "Profile media reuse update failed:",
+            updateError.message
+          );
+          throw new Error(
+            `Không thể sử dụng lại ${isAvatar ? "avatar" : "ảnh bìa"} này.`
+          );
+        }
+
+        try {
+          await onSaved(asset.secure_url);
+        } catch (refreshError) {
+          // Database đã cập nhật thành công; lỗi refetch tạm thời không được
+          // biến thành lỗi reuse hoặc khiến người dùng bấm lại lần nữa.
+          console.warn("Profile media reuse refresh failed:", refreshError);
+        }
+        reuseSucceeded = true;
+        showToast(
+          isAvatar
+            ? "Đã sử dụng lại ảnh đại diện cũ."
+            : "Đã sử dụng lại ảnh bìa cũ.",
+          "success"
+        );
+      } catch (error) {
+        showToast(profileMediaServiceError(error), "error");
+      } finally {
+        setReusingPublicId(null);
+        setSaving(false);
+      }
+
+      if (reuseSucceeded) onClose();
+      return;
+    }
+
+    // Ảnh từ posts/featureds hoặc khác loại vẫn cần tạo asset profile độc lập,
+    // tránh avatar/cover bị mất khi asset nguồn bị xóa về sau.
     clearSource();
     setSource({
       url: getProfileCropSource(asset.secure_url, isAvatar ? 3072 : 4096),
@@ -361,7 +423,7 @@ export default function ProfileMediaEditorModal({
   };
 
   const handleDeleteAsset = async () => {
-    if (!deleteCandidate || deletingPublicId) return;
+    if (!deleteCandidate || deletingPublicId || saving) return;
 
     if (deleteCandidate.public_id === currentPublicId) {
       showToast("Hãy đổi sang ảnh khác trước khi xóa ảnh đang sử dụng.", "warning");
@@ -570,6 +632,7 @@ export default function ProfileMediaEditorModal({
                 <button
                   type="button"
                   onClick={() => setTab("upload")}
+                  disabled={saving}
                   className={`relative flex flex-1 cursor-pointer items-center justify-center gap-2 px-3 py-3.5 text-sm font-medium transition sm:flex-none sm:px-5 ${
                     tab === "upload"
                       ? "text-neutral-950"
@@ -586,6 +649,7 @@ export default function ProfileMediaEditorModal({
                 <button
                   type="button"
                   onClick={() => setTab("library")}
+                  disabled={saving}
                   className={`relative flex flex-1 cursor-pointer items-center justify-center gap-2 px-3 py-3.5 text-sm font-medium transition sm:flex-none sm:px-5 ${
                     tab === "library"
                       ? "text-neutral-950"
@@ -635,6 +699,7 @@ export default function ProfileMediaEditorModal({
                         key={item.value}
                         type="button"
                         onClick={() => handleFolderChange(item.value)}
+                        disabled={saving}
                         className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium transition active:scale-95 ${
                           folder === item.value
                             ? "bg-neutral-900 text-white"
@@ -697,6 +762,10 @@ export default function ProfileMediaEditorModal({
                           asset.folder === "covers" || asset.folder === "avatars";
                         const isDeleting =
                           deletingPublicId === asset.public_id;
+                        const isReusing =
+                          reusingPublicId === asset.public_id;
+                        const canReuseDirectly =
+                          asset.folder === reusableFolder;
 
                         return (
                           <div
@@ -716,9 +785,13 @@ export default function ProfileMediaEditorModal({
                             />
                             <button
                               type="button"
-                              onClick={() => handleAsset(asset)}
-                              disabled={isDeleting}
-                              aria-label={`Chọn ${asset.public_id} để cắt`}
+                              onClick={() => void handleAsset(asset)}
+                              disabled={saving || Boolean(deletingPublicId)}
+                              aria-label={
+                                canReuseDirectly
+                                  ? `Sử dụng lại ${asset.public_id}`
+                                  : `Chọn ${asset.public_id} để cắt`
+                              }
                               className="absolute inset-0 z-[1] cursor-pointer disabled:cursor-wait"
                             />
                             <span className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80" />
@@ -730,9 +803,21 @@ export default function ProfileMediaEditorModal({
                                 {formatBytes(asset.bytes)}
                               </span>
                             </span>
-                            <span className="pointer-events-none absolute right-2 top-2 z-[2] flex size-8 items-center justify-center rounded-full bg-white/90 text-neutral-900 opacity-0 shadow-sm backdrop-blur transition group-hover:opacity-100">
+                            <span
+                              className={`pointer-events-none absolute right-2 top-2 z-[2] flex size-8 items-center justify-center rounded-full bg-white/90 text-neutral-900 shadow-sm backdrop-blur transition ${
+                                isReusing
+                                  ? "opacity-100"
+                                  : "opacity-0 group-hover:opacity-100"
+                              }`}
+                            >
                               <i
-                                className="fad fa-crop-simple"
+                                className={`fad ${
+                                  isReusing
+                                    ? "fa-spinner-third fa-spin"
+                                    : canReuseDirectly
+                                      ? "fa-check"
+                                      : "fa-crop-simple"
+                                }`}
                                 aria-hidden="true"
                               />
                             </span>
@@ -748,7 +833,7 @@ export default function ProfileMediaEditorModal({
                                   event.stopPropagation();
                                   setDeleteCandidate(asset);
                                 }}
-                                disabled={Boolean(deletingPublicId)}
+                                disabled={saving || Boolean(deletingPublicId)}
                                 aria-label={`Xóa ${asset.public_id}`}
                                 title="Xóa ảnh khỏi Cloudinary"
                                 className="absolute left-2 top-2 z-[3] flex size-8 cursor-pointer items-center justify-center rounded-full bg-red-500/95 text-xs text-white opacity-100 shadow-sm backdrop-blur transition hover:bg-red-600 active:scale-90 disabled:cursor-wait disabled:opacity-50 sm:opacity-0 sm:group-hover:opacity-100"
@@ -780,7 +865,7 @@ export default function ProfileMediaEditorModal({
                             cursor: nextCursorRef.current,
                           })
                         }
-                        disabled={loadingLibrary}
+                        disabled={loadingLibrary || saving}
                         className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-neutral-100 px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-200 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <i

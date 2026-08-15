@@ -281,8 +281,8 @@ export function extractCloudinaryMeta(url?: string) {
 
 export function getProfileAvatar(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 300,
-    height: 300,
+    width: 200,
+    height: 200,
     crop: "fill",
     gravity: "face",
     quality: "auto:good",
