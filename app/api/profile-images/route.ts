@@ -58,15 +58,36 @@ type AdminProfile = {
   cover_image: string | string[] | null;
 };
 
-type ServerSupabaseClient = ReturnType<typeof createClient>;
+function createServerSupabaseClient(
+  supabaseUrl: string,
+  supabaseAnonKey: string,
+  token: string
+) {
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
+    global: {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  });
+}
+
+type ServerSupabaseClient = ReturnType<
+  typeof createServerSupabaseClient
+>;
 
 type AdminAuthorization =
   | {
-      ok: true;
-      userId: string;
-      profile: AdminProfile;
-      supabase: ServerSupabaseClient;
-    }
+    ok: true;
+    userId: string;
+    profile: AdminProfile;
+    supabase: ServerSupabaseClient;
+  }
   | { ok: false; response: NextResponse };
 
 let adminApiCooldownUntil = 0;
@@ -88,8 +109,8 @@ function getBearerToken(req: Request): string | null {
 function hasCloudinaryConfig() {
   return Boolean(
     process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME &&
-      process.env.CLOUDINARY_API_KEY &&
-      process.env.CLOUDINARY_API_SECRET
+    process.env.CLOUDINARY_API_KEY &&
+    process.env.CLOUDINARY_API_SECRET
   );
 }
 
@@ -295,14 +316,11 @@ async function requireApprovedAdmin(
     };
   }
 
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false,
-    },
-    global: { headers: { Authorization: `Bearer ${token}` } },
-  });
+  const supabase = createServerSupabaseClient(
+    supabaseUrl,
+    supabaseAnonKey,
+    token
+  );
 
   const {
     data: { user },
