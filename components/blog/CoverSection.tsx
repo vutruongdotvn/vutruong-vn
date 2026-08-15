@@ -85,7 +85,7 @@ export default function CoverSection() {
   return (
     <div className="w-full">
       <div className="group relative h-[240px] w-full select-none overflow-hidden bg-neutral-100 sm:h-[360px] md:h-[480px]">
-        {/* Nền blur dùng biến thể Cloudinary 160px/q_auto:eco/dpr_1 rất nhẹ. */}
+        {/* Nền blur dùng một biến thể Cloudinary 320px/q_auto:eco/dpr_1. */}
         <Image
           src={coverBackground}
           alt=""
@@ -93,16 +93,15 @@ export default function CoverSection() {
           unoptimized
           priority
           aria-hidden="true"
-          className="pointer-events-none z-0 scale-110 object-cover"
+          className="pointer-events-none z-0 scale-105 object-cover brightness-75"
         />
 
         {/* Ảnh chính tối ưu theo màn hình; URL master chỉ tải khi mở Fancybox. */}
         <a
           href={coverMaster}
-          data-fancybox="profile-media"
-          data-caption="Ảnh bìa"
+          data-fancybox="profile-cover"
           aria-label="Mở ảnh bìa chất lượng cao"
-          className="absolute inset-y-0 left-1/2 z-[1] block w-full max-w-6xl -translate-x-1/2 cursor-zoom-in overflow-hidden"
+          className="absolute inset-y-0 left-1/2 z-[1] block w-full max-w-6xl -translate-x-1/2 cursor-pointer overflow-hidden"
         >
           <picture className="relative block size-full">
             <source media="(max-width: 640px)" srcSet={coverDisplayMobile} />
@@ -146,17 +145,16 @@ export default function CoverSection() {
           </div>
         )}
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[4] mx-auto w-full max-w-6xl">
+        <div className="absolute inset-x-0 bottom-0 z-[4] mx-auto w-full max-w-6xl">
           <div className="px-3 pb-3 sm:px-4 sm:pb-4">
             <div className="flex flex-col items-center text-white sm:flex-row sm:items-end sm:justify-between">
               <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
                 <div className="pointer-events-auto relative size-20 shrink-0 sm:size-26 md:size-30">
                   <a
                     href={avatarMaster}
-                    data-fancybox="profile-media"
-                    data-caption="Ảnh đại diện"
+                    data-fancybox="profile-avatar"
                     aria-label="Mở ảnh đại diện chất lượng cao"
-                    className="relative block size-full cursor-zoom-in overflow-hidden rounded-full border border-white/35 shadow-xl"
+                    className="relative block size-full cursor-pointer overflow-hidden rounded-full shadow-xl"
                   >
                     <Image
                       src={avatarDisplay}
@@ -207,6 +205,7 @@ export default function CoverSection() {
           open
           kind={editorKind}
           profileId={profile.id}
+          currentUrl={editorKind === "cover" ? coverMaster : avatarMaster}
           onClose={() => setEditorKind(null)}
           onSaved={async () => {
             await refetch();

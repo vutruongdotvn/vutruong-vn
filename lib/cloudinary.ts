@@ -2,45 +2,169 @@ import { supabase } from "@/lib/supabase";
 
 export type UploadImageType = "post" | "avatar" | "cover" | "featured";
 
-export const uploadImage = async (
-  file: File | Blob,
-  type: UploadImageType = "post"
-) => {
-  try {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+type UploadImageOptions = {
+  requestId?: string;
+  filename?: string;
+  retryOnce?: boolean;
+};
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("type", type);
+type UploadApiPayload = {
+  success?: boolean;
+  error?: string;
+  data?: {
+    secure_url?: string;
+    public_id?: string;
+    width?: number;
+    height?: number;
+    format?: string;
+  };
+};
 
-    const res = await fetch("/api/upload-images", {
-      method: "POST",
-      headers: {
-        Authorization: session ? `Bearer ${session.access_token}` : "",
-      },
-      body: formData,
-    });
+class UploadResponseError extends Error {
+  retryable: boolean;
 
-    const result = await res.json();
+  constructor(message: string, retryable = false) {
+    super(message);
+    this.name = "UploadResponseError";
+    this.retryable = retryable;
+  }
+}
 
-    if (!res.ok || !result.success) {
-      console.error("Cloudinary error:", result);
-      throw new Error(result.error || "Upload ảnh thất bại");
+function extensionFromMimeType(mimeType: string) {
+  if (mimeType === "image/jpeg") return "jpg";
+  if (mimeType === "image/png") return "png";
+  if (mimeType === "image/avif") return "avif";
+  if (mimeType === "image/gif") return "gif";
+  return "webp";
+}
+
+async function parseUploadResponse(response: Response) {
+  const rawBody = await response.text();
+  let payload: UploadApiPayload | null = null;
+
+  if (rawBody.trim()) {
+    try {
+      payload = JSON.parse(rawBody) as UploadApiPayload;
+    } catch {
+      // Safari dùng thông báo rất mơ hồ khi response.json() nhận HTML hoặc
+      // JSON bị ngắt. Chuyển nó thành lỗi có ngữ cảnh và cho phép retry an toàn.
+    }
+  }
+
+  if (!payload || typeof payload !== "object") {
+    if (response.status === 413) {
+      throw new UploadResponseError(
+        "Ảnh vượt quá dung lượng mà máy chủ cho phép.",
+        false
+      );
     }
 
-    return {
-      url: result.data.secure_url as string,
-      public_id: result.data.public_id as string,
-      width: result.data.width as number,
-      height: result.data.height as number,
-      format: result.data.format as string,
-    };
-  } catch (error) {
-    console.error("Upload lỗi:", error);
-    throw error;
+    throw new UploadResponseError(
+      response.ok
+        ? "Phản hồi upload bị gián đoạn. Hệ thống sẽ thử lại một lần."
+        : `Máy chủ upload tạm thời không phản hồi đúng định dạng (${response.status}).`,
+      response.ok || response.status === 408 || response.status === 429 || response.status >= 500
+    );
   }
+
+  if (!response.ok || !payload.success) {
+    throw new UploadResponseError(
+      payload.error || "Không thể upload hình ảnh vào lúc này.",
+      response.status === 408 || response.status === 429 || response.status >= 500
+    );
+  }
+
+  if (
+    !payload.data ||
+    typeof payload.data.secure_url !== "string" ||
+    typeof payload.data.public_id !== "string"
+  ) {
+    throw new UploadResponseError(
+      "Cloudinary không trả về đầy đủ thông tin ảnh. Hệ thống sẽ thử lại một lần.",
+      true
+    );
+  }
+
+  return payload.data;
+}
+
+function isRetryableUploadError(error: unknown) {
+  if (error instanceof UploadResponseError) return error.retryable;
+  if (error instanceof DOMException) {
+    return ["AbortError", "NetworkError", "SyntaxError"].includes(error.name);
+  }
+  return error instanceof TypeError;
+}
+
+export const uploadImage = async (
+  file: File | Blob,
+  type: UploadImageType = "post",
+  options?: UploadImageOptions
+) => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session?.access_token) {
+    throw new Error("Phiên đăng nhập không hợp lệ hoặc đã hết hạn.");
+  }
+
+  const extension = extensionFromMimeType(file.type);
+  const filename =
+    options?.filename ||
+    (file instanceof File && file.name ? file.name : `${type}.${extension}`);
+  const maxAttempts = options?.requestId && options.retryOnce !== false ? 2 : 1;
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const formData = new FormData();
+    formData.append("file", file, filename);
+    formData.append("type", type);
+    if (options?.requestId) formData.append("request_id", options.requestId);
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 120_000);
+
+    try {
+      const response = await fetch("/api/upload-images", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        credentials: "same-origin",
+        cache: "no-store",
+        body: formData,
+        signal: controller.signal,
+      });
+      const data = await parseUploadResponse(response);
+
+      return {
+        url: data.secure_url!,
+        public_id: data.public_id!,
+        width: data.width ?? 0,
+        height: data.height ?? 0,
+        format: data.format ?? extension,
+      };
+    } catch (error) {
+      lastError = error;
+
+      if (attempt + 1 >= maxAttempts || !isRetryableUploadError(error)) {
+        break;
+      }
+
+      await new Promise((resolve) => window.setTimeout(resolve, 650));
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  }
+
+  console.warn("Upload image failed:", lastError);
+  throw new Error(
+    lastError instanceof UploadResponseError
+      ? lastError.message
+      : "Kết nối bị gián đoạn khi upload ảnh. Vui lòng kiểm tra mạng và thử lại."
+  );
 };
 
 type CloudinaryCrop = "fill" | "fit" | "thumb" | "scale" | "limit" | "pad";
@@ -157,8 +281,8 @@ export function extractCloudinaryMeta(url?: string) {
 
 export function getProfileAvatar(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 300,
-    height: 300,
+    width: 200,
+    height: 200,
     crop: "fill",
     gravity: "face",
     quality: "auto:good",
@@ -192,7 +316,7 @@ export function getProfileCropSource(url?: string, width = 4096) {
   });
 }
 
-// Nền blur chỉ dùng ảnh 160px, dpr_1 và chất lượng eco để giảm bandwidth/usage.
+// Nền blur chỉ dùng ảnh 320px, dpr_1 và chất lượng eco để giảm bandwidth/usage.
 export function getProfileCoverBackground(url?: string) {
   return buildCloudinaryImage(url, {
     width: 160,
@@ -207,8 +331,8 @@ export function getProfileCoverBackground(url?: string) {
 // Thumbnail dùng trong thư viện Cloudinary của trình chỉnh sửa profile.
 export function getProfileLibraryThumbnail(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 320,
-    height: 220,
+    width: 280,
+    height: 190,
     crop: "fill",
     gravity: "auto",
     quality: "auto:eco",

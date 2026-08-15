@@ -55,6 +55,19 @@ function isUploadTarget(value: FormDataEntryValue | null): value is UploadTarget
   return typeof value === "string" && value in UPLOAD_TARGETS;
 }
 
+function getRequestId(value: FormDataEntryValue | null) {
+  if (
+    typeof value === "string" &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      value
+    )
+  ) {
+    return value.toLowerCase();
+  }
+
+  return null;
+}
+
 function getBearerToken(req: Request): string | null {
   const authorization = req.headers.get("authorization");
   const match = authorization?.match(/^Bearer\s+(.+)$/i);
@@ -204,6 +217,8 @@ export async function POST(req: Request) {
 
     const fileValue = formData.get("file");
     const uploadTargetValue = formData.get("type");
+    const rawRequestId = formData.get("request_id");
+    const requestId = getRequestId(rawRequestId);
 
     if (!(fileValue instanceof File)) {
       return NextResponse.json(
@@ -219,6 +234,13 @@ export async function POST(req: Request) {
           error:
             "Loại upload không hợp lệ. Chỉ chấp nhận post, avatar, cover hoặc featured.",
         },
+        { status: 400 }
+      );
+    }
+
+    if (rawRequestId !== null && !requestId) {
+      return NextResponse.json(
+        { success: false, error: "Mã upload không hợp lệ." },
         { status: 400 }
       );
     }
@@ -263,8 +285,19 @@ export async function POST(req: Request) {
             folder,
             allowed_formats: ALLOWED_IMAGE_FORMATS,
             use_filename: false,
-            unique_filename: true,
-            overwrite: false,
+            // Profile editor gửi request_id ổn định. Nếu Safari mất response
+            // và retry, Cloudinary ghi đè cùng public_id thay vì tạo ảnh rác.
+            ...(requestId
+              ? {
+                  public_id: `${uploadTargetValue}-${requestId}`,
+                  unique_filename: false,
+                  overwrite: true,
+                  invalidate: false,
+                }
+              : {
+                  unique_filename: true,
+                  overwrite: false,
+                }),
           },
           (error, uploadResult) => {
             if (error) {
@@ -283,7 +316,10 @@ export async function POST(req: Request) {
         .end(buffer);
     });
 
-    return NextResponse.json({ success: true, data: result });
+    return NextResponse.json(
+      { success: true, data: result },
+      { headers: { "Cache-Control": "private, no-store, max-age=0" } }
+    );
   } catch (error: unknown) {
     console.error("Upload image API error:", getErrorMessage(error));
     return NextResponse.json(
