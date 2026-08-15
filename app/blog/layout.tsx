@@ -20,12 +20,12 @@ export default function BlogLayout({
 }) {
   return (
     <main id="blog" className="pt-14 pb-23">
-      <div className="w-full mx-auto space-y-1 md:space-y-4">
+      <div className="w-full mx-auto space-y-0.5 md:space-y-4">
         
         {/* CoverSection giờ đây là Server Component tải siêu tốc */}
         <CoverSection />
 
-        <div className="mainBlog grid grid-cols-1 lg:grid-cols-10 gap-1 sm:gap-4 w-full max-w-6xl mx-auto">
+        <div className="mainBlog grid grid-cols-1 lg:grid-cols-10 gap-0 lg:gap-4 w-full max-w-6xl mx-auto">
           
           {/* SIDEBAR: Truyền Component con vào qua children */}
           <div className="sidebar-widget lg:col-span-4 order-1 relative">

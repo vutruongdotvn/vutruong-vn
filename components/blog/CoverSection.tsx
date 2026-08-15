@@ -14,6 +14,8 @@ import {
 } from "@/lib/cloudinary";
 import ProfileMediaEditorModal from "@/components/blog/cover/ProfileMediaEditorModal";
 import type { ProfileMediaKind } from "@/components/blog/cover/ProfileImageCropper";
+import BlogNavbar from "@/components/blog/BlogNavbar";
+
 
 export default function CoverSection() {
   const { profile, loading, refetch } = useProfile();
@@ -55,17 +57,54 @@ export default function CoverSection() {
 
   if (loading) {
     return (
-      <div className="w-full bg-white">
-        <div className="relative mx-auto h-[240px] w-full max-w-6xl animate-pulse overflow-hidden bg-black/5 sm:h-[360px] md:h-[480px]">
-          <div className="absolute inset-x-0 bottom-0 px-3 pb-3 sm:px-4 sm:pb-4">
-            <div className="flex items-center gap-4">
-              <div className="size-20 rounded-full bg-gray-200 sm:size-26 md:size-30" />
-              <div className="flex flex-col gap-2">
-                <div className="h-4 w-28 rounded-md bg-gray-200 sm:h-5 sm:w-36 md:h-6 md:w-44" />
-                <div className="h-3 w-40 rounded-md bg-gray-200 sm:h-4 sm:w-56 md:w-64" />
+      <div
+        className="w-full bg-white shadow-[0_10px_30px_rgba(0,0,0,0.015)] border-b border-black/10"
+        aria-busy="true"
+      >
+        <span className="sr-only" role="status" aria-live="polite">
+          Đang tải thông tin trang Blog...
+        </span>
+
+        <div
+          className="relative h-[240px] w-full select-none overflow-hidden bg-neutral-100 sm:h-[360px] md:h-[480px]"
+          aria-hidden="true"
+        >
+          <div className="absolute inset-y-0 left-1/2 w-full max-w-6xl -translate-x-1/2 animate-pulse bg-gray-200" />
+
+          {isAdmin && (
+            <div className="pointer-events-none absolute inset-x-0 top-0 z-[6] mx-auto flex w-full max-w-6xl justify-end p-3 sm:p-4">
+              <div className="h-9 w-9 animate-pulse rounded-full border border-white/30 bg-black/10 sm:w-28" />
+            </div>
+          )}
+        </div>
+
+        <div className="w-full max-w-6xl mx-auto py-6 relative pb-20 mt-[-100px] relative z-3">
+          <div className="noclass" aria-hidden="true">
+            <div className="flex flex-col items-center text-white sm:flex-row sm:items-end sm:justify-between">
+              <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-5">
+                <div className="relative size-40 shrink-0 animate-pulse rounded-full border-4 border-white bg-gray-200 sm:size-48">
+                  {isAdmin && (
+                    <div className="absolute bottom-3 right-3 size-9 rounded-full border border-black/10 bg-gray-300 shadow-lg sm:size-10" />
+                  )}
+                </div>
+
+                <div className="mt-0 flex flex-col items-center gap-0 sm:mt-18 sm:items-start sm:gap-1">
+                  <div className="flex h-7 items-center gap-1 md:h-8 lg:h-9">
+                    <div className="h-6 w-40 animate-pulse rounded-md bg-gray-200 sm:w-44 md:h-7 md:w-48 lg:h-8" />
+                    <div className="size-3 animate-pulse rounded-full bg-blue-200 sm:size-4" />
+                  </div>
+
+                  <div className="flex h-4 items-center gap-1 sm:h-6">
+                    <div className="h-3.5 w-14 animate-pulse rounded bg-gray-200 sm:h-4" />
+                    <div className="size-1 rounded-full bg-gray-300" />
+                    <div className="h-3.5 w-12 animate-pulse rounded bg-gray-200 sm:h-4" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
+          <BlogNavbar />
         </div>
       </div>
     );
@@ -87,7 +126,7 @@ export default function CoverSection() {
   const avatarLightbox = getProfileAvatarLightbox(avatarMaster);
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-white shadow-[0_10px_30px_rgba(0,0,0,0.015)] border-b border-black/10">
       <div className="group relative h-[240px] w-full select-none overflow-hidden bg-neutral-100 sm:h-[360px] md:h-[480px]">
         {/* Nền blur dùng một biến thể Cloudinary 320px/q_auto:eco/dpr_1. */}
         <Image
@@ -148,60 +187,63 @@ export default function CoverSection() {
             </button>
           </div>
         )}
+      </div>
 
-        <div className="absolute inset-x-0 bottom-0 z-[4] mx-auto w-full max-w-6xl">
-          <div className="px-3 pb-3 sm:px-4 sm:pb-4">
-            <div className="flex flex-col items-center text-white sm:flex-row sm:items-end sm:justify-between">
-              <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
-                <div className="pointer-events-auto relative size-20 shrink-0 sm:size-26 md:size-30">
-                  <a
-                    href={avatarLightbox}
-                    data-fancybox="profile-avatar"
-                    aria-label="Mở ảnh đại diện chất lượng cao"
-                    className="relative block size-full cursor-pointer overflow-hidden rounded-full shadow-xl"
+      <div className="w-full max-w-6xl mx-auto py-6 relative pb-20 mt-[-100px] relative z-3">
+        <div className="noclass">
+          <div className="flex flex-col items-center text-white sm:flex-row sm:items-end sm:justify-between">
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-5">
+              <div className="pointer-events-auto relative shrink-0 size-40 sm:size-48">
+                <a
+                  href={avatarLightbox}
+                  data-fancybox="profile-avatar"
+                  aria-label="Mở ảnh đại diện chất lượng cao"
+                  className="relative block size-full cursor-pointer overflow-hidden rounded-full border-4 border-white"
+                >
+                  <Image
+                    src={avatarDisplay}
+                    alt="Ảnh đại diện"
+                    fill
+                    unoptimized
+                    priority
+                    sizes="120px"
+                    className="object-cover"
+                  />
+                </a>
+
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => setEditorKind("avatar")}
+                    aria-label="Thay đổi ảnh đại diện"
+                    title="Thay đổi ảnh đại diện"
+                    className="absolute bottom-3 right-3 flex size-9 cursor-pointer items-center justify-center rounded-full
+                      bg-black/40 hover:bg-black/60 backdrop-blur-xs border border-black/10
+                      text-base text-white/70 hover:text-white/90 shadow-lg transition duration-300 active:scale-98 sm:size-10"
                   >
-                    <Image
-                      src={avatarDisplay}
-                      alt="Ảnh đại diện"
-                      fill
-                      unoptimized
-                      priority
-                      sizes="120px"
-                      className="object-cover"
-                    />
-                  </a>
+                    <i className="fad fa-camera" aria-hidden="true" />
+                  </button>
+                )}
+              </div>
 
-                  {isAdmin && (
-                    <button
-                      type="button"
-                      onClick={() => setEditorKind("avatar")}
-                      aria-label="Thay đổi ảnh đại diện"
-                      title="Thay đổi ảnh đại diện"
-                      className="absolute -bottom-0.5 -right-0.5 flex size-8 cursor-pointer items-center justify-center rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-xs text-xs text-white/70 hover:text-white/90 shadow-lg transition duration-300 active:scale-98 sm:size-9"
-                    >
-                      <i className="fad fa-camera" aria-hidden="true" />
-                    </button>
-                  )}
+              <div className="flex flex-col items-center gap-0 sm:items-start sm:gap-1 mt-0 sm:mt-18">
+                <div className="flex items-center gap-1 text-xl font-bold md:text-2xl lg:text-3xl text-slate-800">
+                  {profile.name || "User Name"}
+                  <i
+                    className="fas fa-badge-check cursor-pointer text-sm text-blue-500 active:scale-95 sm:text-base"
+                    title="Tài khoản đã được xác thực"
+                  />
                 </div>
-
-                <div className="flex flex-col items-center gap-0 sm:items-start sm:gap-0.5">
-                  <div className="flex items-center gap-1 text-xl font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] md:text-2xl">
-                    {profile.name || "User Name"}
-                    <i
-                      className="fas fa-badge-check cursor-pointer text-sm text-blue-500 active:scale-95 sm:text-base"
-                      title="Tài khoản đã được xác thực"
-                    />
-                  </div>
-                  <div className="text-[.8375rem] text-white/80 sm:text-sm/6">
-                    <b>{postStats.total}</b> bài viết
-                    <span className="mx-0.5 text-sm"> • </span>
-                    <b>{postStats.today}</b> bài mới
-                  </div>
+                <div className="text-[.8375rem] text-slate-800 sm:text-sm/6">
+                  <b>{postStats.total}</b> bài viết
+                  <span className="mx-0.5 text-sm"> • </span>
+                  <b>{postStats.today}</b> bài mới
                 </div>
               </div>
             </div>
           </div>
         </div>
+        <BlogNavbar />
       </div>
 
       {editorKind && isAdmin && (

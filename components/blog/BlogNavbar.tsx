@@ -8,51 +8,54 @@ const tabs = [
   { label: "Giới thiệu", icon: "fa-user", href: "/blog/about" },
   { label: "Ảnh", icon: "fa-image", href: "/blog/photos" },
   { label: "Video", icon: "fa-video", href: "/blog/videos" },
-  { label: "Films", icon: "fa-film", href: "/blog/films" },
-  { label: "Thư viện", icon: "fa-photo-film", href: "/blog/library" },
-  { label: "Feed", icon: "fa-rss", href: "/blog/feed" },
+  { label: "Watch", icon: "fa-clapperboard-play", href: "/watch" },
 ];
 
+const childRoutes = tabs
+  .filter((tab) => tab.href !== "/blog")
+  .map((tab) => tab.href);
+
+function matchesRoute(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function isTabActive(pathname: string, href: string) {
+  if (href !== "/blog") {
+    return matchesRoute(pathname, href);
+  }
+
+  if (pathname === "/blog") return true;
+  if (!pathname.startsWith("/blog/")) return false;
+
+  // Trang chi tiết bài viết và trang tag vẫn thuộc tab "Bài viết".
+  return !childRoutes.some((childRoute) =>
+    matchesRoute(pathname, childRoute),
+  );
+}
+
 export default function BlogNavbar() {
-  const pathname = usePathname();
+  const pathname = usePathname().replace(/\/+$/, "") || "/";
 
   return (
-    <div
-      className="absolute bottom-0 left-0 m-3
-        rounded-0 sm:rounded-lg
-        bg-white/10 hover:bg-white/15 backdrop-blur-lg
-        shadow-[0_8px_30px_rgba(0,0,0,0.04)]
-        transition-all duration-300
-        hover:shadow-[0_12px_40px_rgba(0,0,0,0.075)]
-      "
-    >
-      <div className="px-4 sm:px-6">
-        <div className="flex gap-6 text-sm font-medium overflow-x-auto scrollbar-none">
+    <div className="absolute bottom-0 left-0 w-full border-t border-t-slate-200">
+      <div className="scrollbar-none flex gap-1 overflow-x-auto overscroll-x-contain whitespace-nowrap text-sm font-medium [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {tabs.map((tab) => {
+          const isActive = isTabActive(pathname, tab.href);
 
-          {tabs.map((tab) => {
-            const isActive =
-              pathname === tab.href ||
-              (tab.href !== "/blog" && pathname.startsWith(tab.href));
-
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={`text-white/70 hover:text-white active:scale-95 font-normal
-                  flex items-center gap-2 py-3 border-b-2 transition
-                  ${
-                    isActive
-                      ? "border-primary text-primary"
-                      : "border-transparent text-muted-foreground hover:text-foreground"
-                  }
-                `}
-              >
-                <i className={`fa-duotone ${tab.icon}`} />
-                {tab.label}
-              </Link>
-            );
-          })}
-        </div>
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              aria-current={isActive ? "page" : undefined}
+              className={`flex shrink-0 items-center gap-2 border-b-3 px-3 py-4 hover:border-primary active:scale-98 ${
+                isActive ? "border-primary" : "border-transparent"
+              }`}
+            >
+              <i className={`fad ${tab.icon}`} />
+              {tab.label}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

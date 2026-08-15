@@ -17,8 +17,8 @@ export default function PageTransition({
         initial={{ y: 0, opacity: 0 }} // trước
         animate={{ y: 0, opacity: 1 }} // sau 
         transition={{
-          duration: 0.85,
-          ease: "easeInOut",
+          duration: 1,
+          ease: "easeOut",
         }}
         className="min-h-screen will-change-opacity"
       >

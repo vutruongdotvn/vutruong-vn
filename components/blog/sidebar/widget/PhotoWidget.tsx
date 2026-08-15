@@ -44,10 +44,10 @@ export default function PhotoWidget() {
       const mapped: Photo[] = data
         .filter((post) => post.images?.length > 0)
         .map((post) => {
-          
+
           // ✅ 2. Dùng hàm extract chuẩn để lấy câu đầu tiên
           let safeTitle = extractPostTitle(post.content);
-          
+
           // ✅ 3. Cắt giới hạn ký tự (VD: 90 ký tự) cho vừa vặn với UI Widget
           if (safeTitle.length > 60) {
             safeTitle = safeTitle.slice(0, 60).trim() + "...";
@@ -74,6 +74,7 @@ export default function PhotoWidget() {
 
   return (
     <div className="
+      hidden lg:block
       sm:rounded-2xl bg-white
       shadow-[0_8px_30px_rgba(0,0,0,0.04)]
       transition-shadow duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.075)]

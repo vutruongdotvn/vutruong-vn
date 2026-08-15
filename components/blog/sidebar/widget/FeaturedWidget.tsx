@@ -211,7 +211,7 @@ export default function FeaturedWidget() {
             {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
-                className="aspect-[3/4] animate-pulse rounded-xl bg-neutral-100"
+                className="aspect-[9/16] animate-pulse rounded-xl bg-neutral-100"
               />
             ))}
           </div>
@@ -262,7 +262,7 @@ export default function FeaturedWidget() {
                       <a
                         href={cover.secure_url}
                         data-fancybox={gallery}
-                        className="group relative block aspect-[2/3] overflow-hidden rounded-xl bg-neutral-100"
+                        className="group relative block aspect-[9/16] overflow-hidden rounded-xl bg-neutral-100"
                       >
                         <Image
                           src={getFeaturedWidgetImage(cover.secure_url)}

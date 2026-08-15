@@ -1,6 +1,11 @@
 import React from "react";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import {
+  getPostRouteState,
+  isValidPostId,
+} from "@/lib/getPostRouteState";
 import {
   extractPostTitle,
   extractPostDescription,
@@ -24,6 +29,17 @@ const SITE_URL = "https://www.vutruong.vn";
 const SITE_NAME = "VT Zone";
 const FALLBACK_OG = `${SITE_URL}/og.png`;
 const FALLBACK_DESCRIPTION = "Xem bài viết này trên VT Zone";
+
+const NOT_FOUND_METADATA: Metadata = {
+  title: {
+    absolute: "Không tìm thấy bài viết",
+  },
+  description: "Bài viết không tồn tại, đã bị xóa hoặc URL không chính xác.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 // Metadata phải phản ánh visibility mới nhất, đặc biệt khi bài viết vừa được
 // chuyển từ public sang privacy.
@@ -328,13 +344,9 @@ async function getPost(id: string): Promise<Post | null> {
     .maybeSingle();
 
   if (error) {
-    console.error("[SEO:getPost] query failed:", {
-      code: error.code,
-      message: error.message,
-      details: error.details,
-      hint: error.hint,
-    });
-    return null;
+    throw new Error(
+      `[SEO:getPost] ${error.code || "QUERY_FAILED"}: ${error.message}`
+    );
   }
 
   return (data as Post | null) ?? null;
@@ -348,11 +360,20 @@ export async function generateMetadata({
   params,
 }: Props): Promise<Metadata> {
   const { id } = await params;
-  const post = await getPost(id);
 
+  if (!id || !isValidPostId(id)) {
+  return NOT_FOUND_METADATA;
+}
+
+  const routeState = await getPostRouteState(id);
+
+if (!routeState) {
+  return NOT_FOUND_METADATA;
+}
   const url = `${SITE_URL}/blog/${id}`;
 
-  if (!post) {
+  // Không truy vấn nội dung bài riêng tư để tạo metadata.
+  if (routeState.visibility === "privacy") {
     return {
       title: "Bài viết riêng tư",
       description: "Bài viết này chỉ dành cho người có quyền truy cập.",
@@ -387,6 +408,11 @@ export async function generateMetadata({
       },
     };
   }
+
+  const post = await getPost(id);
+
+  // Bài công khai có thể vừa bị xóa sau bước kiểm tra route.
+  if (!post) notFound();
 
   const titleText = extractPostTitle(post.content);
   const descriptionText = extractPostDescription(post.content);

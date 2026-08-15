@@ -1,5 +1,9 @@
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import {
+  getPostRouteState,
+  isValidPostId,
+} from "@/lib/getPostRouteState";
 import BlogDetailRealtime from "@/components/blog/BlogDetailRealtime";
 
 // Không cache HTML của route chi tiết: nếu admin đổi một bài từ public sang
@@ -14,26 +18,38 @@ export default async function BlogDetailPage({
 }) {
   const { id } = await params;
 
-  if (!id) notFound();
+  // Chặn ngay URL sai định dạng mà không cần gọi database.
+  if (!id || !isValidPostId(id)) notFound();
 
-  // Client Supabase dùng ở server không mang theo session đang lưu trong
-  // trình duyệt. Vì vậy server chỉ được phép lấy bài công khai.
-  // Nếu đây là bài riêng tư, BlogDetailRealtime sẽ xác thực admin ở client
-  // rồi mới thực hiện truy vấn bằng access token của người đang đăng nhập.
-  const { data: post, error: postError } = await supabase
-    .from("posts")
-    .select("*")
-    .eq("id", id)
-    .eq("visibility", "public")
-    .maybeSingle();
+  // Server-only lookup chỉ đọc id + visibility. Nhờ vậy có thể phân biệt
+  // chính xác bài riêng tư với một ID hoàn toàn không tồn tại.
+  const routeState = await getPostRouteState(id);
 
-  if (postError) {
-    console.error("[BlogDetailPage] public post query failed:", {
-      code: postError.code,
-      message: postError.message,
-      details: postError.details,
-      hint: postError.hint,
-    });
+  if (!routeState) notFound();
+
+  let post: any | null = null;
+
+  // Chỉ fetch toàn bộ dữ liệu ở server khi đây là bài công khai.
+  // Bài riêng tư tiếp tục được BlogDetailRealtime xác thực và fetch ở client
+  // bằng JWT admin, nên server-only lookup không làm lộ nội dung riêng tư.
+  if (routeState.visibility === "public") {
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .eq("id", id)
+      .eq("visibility", "public")
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(
+        `[BlogDetailPage] ${error.code || "QUERY_FAILED"}: ${error.message}`
+      );
+    }
+
+    // Bài có thể vừa bị xóa giữa hai query; trong trường hợp đó trả 404.
+    if (!data) notFound();
+
+    post = data;
   }
 
   let profile: { name?: string | null; avatar?: string | null } | null = null;
@@ -51,6 +67,7 @@ export default async function BlogDetailPage({
   return (
     <BlogDetailRealtime
       postId={id}
+      routeVisibility={routeState.visibility}
       initialPost={post}
       initialProfile={profile}
     />

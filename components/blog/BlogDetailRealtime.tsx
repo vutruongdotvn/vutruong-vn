@@ -18,6 +18,7 @@ import { pinPost, deletePost } from "@/services/postService";
 
 type Props = {
   postId: string;
+  routeVisibility: "public" | "privacy";
   initialPost: any | null;
   initialProfile: {
     name?: string | null;
@@ -26,9 +27,11 @@ type Props = {
 };
 
 const ADMIN_EMAIL = "admin@vutruong.vn";
+const ADMIN_USER_ID = "785f79e8-223a-41ea-a52d-dead8e2bf383";
 
 export default function BlogDetailRealtime({
   postId,
+  routeVisibility,
   initialPost,
   initialProfile,
 }: Props) {
@@ -40,7 +43,9 @@ export default function BlogDetailRealtime({
   const [profile, setProfile] = useState(initialProfile);
   const [open, setOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<any | null>(null);
-  const [isResolvingPost, setIsResolvingPost] = useState(!initialPost);
+  const [isResolvingPost, setIsResolvingPost] = useState(
+    !initialPost && routeVisibility === "privacy"
+  );
   const [isUnavailable, setIsUnavailable] = useState(false);
 
   const name = profile?.name || post?.author_name || "Người dùng";
@@ -55,7 +60,9 @@ export default function BlogDetailRealtime({
 
   useEffect(() => {
     // Bài công khai đã được server tải sẵn, không cần fetch lần hai.
-    if (initialPost || !postId) {
+    // Route không tồn tại đã bị page.tsx chặn bằng notFound() trước khi
+    // component này được mount.
+    if (initialPost || routeVisibility !== "privacy" || !postId) {
       return;
     }
 
@@ -74,6 +81,7 @@ export default function BlogDetailRealtime({
         } = await supabase.auth.getUser();
 
         const isAdminAccount =
+          authenticatedUser?.id === ADMIN_USER_ID &&
           authenticatedUser?.email?.trim().toLowerCase() === ADMIN_EMAIL;
 
         if (authError || !isAdminAccount) {
@@ -132,7 +140,7 @@ export default function BlogDetailRealtime({
     return () => {
       cancelled = true;
     };
-  }, [initialPost, postId]);
+  }, [initialPost, postId, routeVisibility]);
 
   const handlePin = async () => {
     if (!post) return;
@@ -278,15 +286,8 @@ export default function BlogDetailRealtime({
           Truy cập bị từ chối
         </h1>
         <p className="mt-1 text-sm text-gray-500">
-          Bạn không có quyền xem bài viết này
+          Bạn không có quyền xem nội dung này
         </p>
-        <Link
-          href="/blog"
-          className="mt-4 inline-flex items-center gap-2 text-sm text-slate-600 hover:text-black"
-        >
-          <i className="fa-duotone fa-arrow-left text-xs" />
-          Quay lại Blog
-        </Link>
       </article>
     );
   }
