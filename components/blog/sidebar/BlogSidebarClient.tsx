@@ -12,6 +12,7 @@ export default function BlogSidebarClient({ children }: { children: React.ReactN
     containerRef,
     sidebarRef,
     offsetTop: 75,
+    offsetBottom: 18,
     breakpoint: 1024,
   });
 

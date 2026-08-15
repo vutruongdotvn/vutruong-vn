@@ -473,7 +473,7 @@ export default function FeaturedManagerModal({
         if (event.target === event.currentTarget && !busy) onClose();
       }}
     >
-      <div className="flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+      <div className="flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl animate-fadeIn">
         <header className="flex shrink-0 items-center justify-between border-b border-black/5 px-4 py-3 sm:px-6">
           <div>
             <h2 className="font-medium text-base sm:text-lg text-neutral-900">

@@ -7,6 +7,7 @@ type Props = {
   containerRef: RefObject<HTMLDivElement | null>;
   sidebarRef: RefObject<HTMLDivElement | null>;
   offsetTop?: number;
+  offsetBottom?: number;
   breakpoint?: number;
 };
 
@@ -55,6 +56,7 @@ export function useSmartStickySidebar({
   containerRef,
   sidebarRef,
   offsetTop = 80,
+  offsetBottom = 80,
   breakpoint = 1024,
 }: Props) {
   const [view, setView] = useState<SidebarView>(NORMAL_VIEW);
@@ -122,6 +124,7 @@ export function useSmartStickySidebar({
       const containerBottom = containerTop + containerHeight;
       const sidebarHeight = sidebar.offsetHeight;
       const viewportHeight = window.innerHeight;
+      const viewportSafeBottom = viewportHeight - offsetBottom;
       const maximumTop = Math.max(containerHeight - sidebarHeight, 0);
       const columnLeft = containerRect.left;
       const columnWidth = containerRect.width;
@@ -135,7 +138,7 @@ export function useSmartStickySidebar({
 
       const fixedBottomStyle: CSSProperties = {
         position: "fixed",
-        bottom: 0,
+        bottom: offsetBottom,
         left: columnLeft,
         width: columnWidth,
       };
@@ -168,7 +171,7 @@ export function useSmartStickySidebar({
       }
 
       // Sidebar nằm gọn trong viewport: sticky đầu trang và dừng ở đáy cột.
-      if (sidebarHeight + offsetTop <= viewportHeight) {
+      if (sidebarHeight + offsetTop + offsetBottom <= viewportHeight) {
         const relativeTop = scrollY + offsetTop - containerTop;
 
         if (relativeTop >= maximumTop) setAbsolute(maximumTop);
@@ -178,7 +181,7 @@ export function useSmartStickySidebar({
       }
 
       // Khi viewport đã tới cuối cột, sidebar phải dừng đúng đáy container.
-      if (scrollY + viewportHeight >= containerBottom) {
+      if (scrollY + viewportSafeBottom >= containerBottom) {
         setAbsolute(maximumTop);
         return;
       }
@@ -198,7 +201,7 @@ export function useSmartStickySidebar({
 
       if (mode === "fixed-bottom") {
         if (direction === "up") {
-          const viewportTop = viewportHeight - sidebarHeight;
+          const viewportTop = viewportSafeBottom - sidebarHeight;
           setAbsolute(scrollY + viewportTop - containerTop);
         } else {
           commit("fixed-bottom", fixedBottomStyle);
@@ -215,7 +218,7 @@ export function useSmartStickySidebar({
           commit("fixed-top", fixedTopStyle);
         } else if (
           (direction === "down" || direction === "idle") &&
-          viewportBottom <= viewportHeight
+          viewportBottom <= viewportSafeBottom
         ) {
           commit("fixed-bottom", fixedBottomStyle);
         }
@@ -227,7 +230,7 @@ export function useSmartStickySidebar({
       // chạm đáy viewport, sau đó mới cố định.
       const naturalViewportBottom = containerTop - scrollY + sidebarHeight;
 
-      if (naturalViewportBottom <= viewportHeight) {
+      if (naturalViewportBottom <= viewportSafeBottom) {
         commit("fixed-bottom", fixedBottomStyle);
       }
     };
@@ -267,7 +270,7 @@ export function useSmartStickySidebar({
 
       if (frameId !== null) cancelAnimationFrame(frameId);
     };
-  }, [breakpoint, containerRef, offsetTop, sidebarRef]);
+  }, [breakpoint, containerRef, offsetBottom, offsetTop, sidebarRef]);
 
   return {
     style: view.style,

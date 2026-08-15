@@ -17,12 +17,18 @@ type Post = {
   cover_image?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
+  visibility?: "public" | "privacy" | null;
 };
 
 const SITE_URL = "https://www.vutruong.vn";
 const SITE_NAME = "VT Zone";
 const FALLBACK_OG = `${SITE_URL}/og.png`;
 const FALLBACK_DESCRIPTION = "Xem bài viết này trên VT Zone";
+
+// Metadata phải phản ánh visibility mới nhất, đặc biệt khi bài viết vừa được
+// chuyển từ public sang privacy.
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 /* ---------------------------------- */
 /* Helpers */
@@ -314,16 +320,24 @@ function toAbsoluteUrl(url?: string | null) {
 async function getPost(id: string): Promise<Post | null> {
   const { data, error } = await supabase
     .from("posts")
-    .select("id, content, cover_image, created_at, updated_at")
+    .select("id, content, cover_image, created_at, updated_at, visibility")
     .eq("id", id)
-    .single();
+    // Metadata chạy ở server và không có session localStorage của admin.
+    // Chỉ lấy metadata của bài công khai để không vô tình làm lộ nội dung riêng tư.
+    .eq("visibility", "public")
+    .maybeSingle();
 
-  if (error || !data) {
-    console.error("[SEO:getPost] error:", error);
+  if (error) {
+    console.error("[SEO:getPost] query failed:", {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    });
     return null;
   }
 
-  return data as Post;
+  return (data as Post | null) ?? null;
 }
 
 /* ---------------------------------- */
@@ -340,8 +354,8 @@ export async function generateMetadata({
 
   if (!post) {
     return {
-      title: "Bài viết không tồn tại",
-      description: FALLBACK_DESCRIPTION,
+      title: "Bài viết riêng tư",
+      description: "Bài viết này chỉ dành cho người có quyền truy cập.",
       alternates: {
         canonical: url,
       },
@@ -350,8 +364,8 @@ export async function generateMetadata({
         follow: false,
       },
       openGraph: {
-        title: "Bài viết không tồn tại",
-        description: FALLBACK_DESCRIPTION,
+        title: "Bài viết riêng tư",
+        description: "Bài viết này chỉ dành cho người có quyền truy cập.",
         url,
         siteName: SITE_NAME,
         locale: "vi_VN",
@@ -367,15 +381,15 @@ export async function generateMetadata({
       },
       twitter: {
         card: "summary_large_image",
-        title: "Bài viết không tồn tại",
-        description: FALLBACK_DESCRIPTION,
+        title: "Bài viết riêng tư",
+        description: "Bài viết này chỉ dành cho người có quyền truy cập.",
         images: [FALLBACK_OG],
       },
     };
   }
 
   const titleText = extractPostTitle(post.content);
-const descriptionText = extractPostDescription(post.content);
+  const descriptionText = extractPostDescription(post.content);
   const firstImage = extractFirstImage(post.content);
 
   // Ưu tiên cover_image, nếu không có thì lấy ảnh đầu tiên trong bài

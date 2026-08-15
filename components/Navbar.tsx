@@ -95,10 +95,12 @@ export default function Navbar() {
   );
 
   const currentMeta =
-    pageMeta[pathname as keyof typeof pageMeta] || {
-      title: "VT Zone",
-      subtitle: "Personal ecosystem",
-    };
+    pathname === "/blog" || pathname.startsWith("/blog/")
+      ? pageMeta["/blog"]
+      : pageMeta[pathname as keyof typeof pageMeta] || {
+          title: "VT Zone",
+          subtitle: "Personal ecosystem",
+        };
 
   const title = currentMeta.title;
   const subtitle = currentMeta.subtitle;

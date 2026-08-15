@@ -576,13 +576,13 @@ export default function ProfileMediaEditorModal({
         }
       }}
     >
-      <div className="flex max-h-[94vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl sm:rounded-3xl">
+      <div className="flex max-h-[94vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl sm:rounded-3xl animate-fadeIn">
         <header className="flex shrink-0 items-center justify-between border-b border-black/5 px-4 py-3 sm:px-6 sm:py-4">
           <div className="min-w-0">
             <h2 className="truncate text-base font-semibold text-neutral-900 sm:text-lg">
               {title}
             </h2>
-            <p className="mt-0.5 truncate text-xs text-neutral-500 sm:text-sm">
+            <p className="mt-0.5 truncate text-xs text-neutral-500 sm:text-sm hidden">
               {source
                 ? source.label
                 : "Upload ảnh mới hoặc chọn lại ảnh đã có trên Cloudinary"}
@@ -657,7 +657,7 @@ export default function ProfileMediaEditorModal({
                   }`}
                 >
                   <i className="fad fa-photo-film" aria-hidden="true" />
-                  Thư viện Cloudinary
+                  Thư viện
                   {tab === "library" && (
                     <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-neutral-950" />
                   )}
@@ -932,13 +932,12 @@ export default function ProfileMediaEditorModal({
               <i className="fad fa-trash-can" aria-hidden="true" />
             </span>
             <h3 className="mt-4 text-base font-semibold text-neutral-950">
-              Xóa ảnh khỏi Cloudinary?
+              Xóa ảnh này?
             </h3>
             <p className="mt-2 text-sm leading-6 text-neutral-500">
-              Ảnh sẽ bị xóa vĩnh viễn cùng các biến thể đã tạo. Thao tác này
-              không thể hoàn tác.
+              Ảnh này sẽ bị xóa vĩnh viễn.
             </p>
-            <p className="mt-2 truncate rounded-xl bg-neutral-50 px-3 py-2 text-[11px] text-neutral-400">
+            <p className="mt-2 truncate rounded-xl bg-neutral-50 px-3 py-2 text-[11px] text-neutral-400 hidden">
               {deleteCandidate.public_id}
             </p>
             <div className="mt-5 flex justify-center gap-2">

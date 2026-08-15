@@ -140,7 +140,7 @@ export default function CoverSection() {
               className="pointer-events-auto inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/30 bg-black/45 px-3 py-2 text-xs font-medium text-white shadow-lg backdrop-blur-md transition hover:bg-black/60 active:scale-95 sm:px-4 sm:text-sm"
             >
               <i className="fad fa-camera" aria-hidden="true" />
-              <span className="hidden sm:inline">Thay đổi ảnh bìa</span>
+              <span className="hidden sm:inline">Chỉnh sửa</span>
             </button>
           </div>
         )}
@@ -173,7 +173,7 @@ export default function CoverSection() {
                       onClick={() => setEditorKind("avatar")}
                       aria-label="Thay đổi ảnh đại diện"
                       title="Thay đổi ảnh đại diện"
-                      className="absolute -bottom-0.5 -right-0.5 flex size-8 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-neutral-900 text-xs text-white shadow-lg transition hover:bg-neutral-700 active:scale-90 sm:size-9"
+                      className="absolute -bottom-0.5 -right-0.5 flex size-8 cursor-pointer items-center justify-center rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-xs text-xs text-white/70 hover:text-white/90 shadow-lg transition duration-300 active:scale-98 sm:size-9"
                     >
                       <i className="fad fa-camera" aria-hidden="true" />
                     </button>

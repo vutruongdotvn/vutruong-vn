@@ -12,20 +12,23 @@ import PostActions from "@/components/blog/PostActions";
 import CreatePostModal from "@/components/blog/CreatePostModal";
 import { getAvatarImage } from "@/lib/cloudinary";
 import { extractPostTitle, extractPostDescription } from "@/lib/postMeta";
-import { buildCloudinaryImage } from "@/lib/cloudinary";
 import { useUser } from "@/hooks/useUser";
 import { useToastContext } from "@/components/ui/ToastProvider";
 import { pinPost, deletePost } from "@/services/postService";
 
 type Props = {
-  initialPost: any;
+  postId: string;
+  initialPost: any | null;
   initialProfile: {
     name?: string | null;
     avatar?: string | null;
   } | null;
 };
 
+const ADMIN_EMAIL = "admin@vutruong.vn";
+
 export default function BlogDetailRealtime({
+  postId,
   initialPost,
   initialProfile,
 }: Props) {
@@ -37,6 +40,8 @@ export default function BlogDetailRealtime({
   const [profile, setProfile] = useState(initialProfile);
   const [open, setOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<any | null>(null);
+  const [isResolvingPost, setIsResolvingPost] = useState(!initialPost);
+  const [isUnavailable, setIsUnavailable] = useState(false);
 
   const name = profile?.name || post?.author_name || "Người dùng";
   const avatar = useMemo(() => {
@@ -47,6 +52,87 @@ export default function BlogDetailRealtime({
   }, [profile?.avatar, post?.author_avatar]);
 
   const isAdmin = !!user && role === "admin";
+
+  useEffect(() => {
+    // Bài công khai đã được server tải sẵn, không cần fetch lần hai.
+    if (initialPost || !postId) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const resolvePrivatePost = async () => {
+      setIsResolvingPost(true);
+      setIsUnavailable(false);
+
+      try {
+        // getUser() xác minh access token với Supabase Auth, đồng thời chờ
+        // session trong localStorage được khôi phục trước khi query RLS.
+        const {
+          data: { user: authenticatedUser },
+          error: authError,
+        } = await supabase.auth.getUser();
+
+        const isAdminAccount =
+          authenticatedUser?.email?.trim().toLowerCase() === ADMIN_EMAIL;
+
+        if (authError || !isAdminAccount) {
+          if (!cancelled) setIsUnavailable(true);
+          return;
+        }
+
+        const { data: privatePost, error: postError } = await supabase
+          .from("posts")
+          .select("*")
+          .eq("id", postId)
+          .eq("visibility", "privacy")
+          .maybeSingle();
+
+        if (postError) throw postError;
+
+        if (!privatePost) {
+          if (!cancelled) setIsUnavailable(true);
+          return;
+        }
+
+        const { data: privateProfile, error: profileError } = await supabase
+          .from("profiles")
+          .select("name, avatar")
+          .eq("id", privatePost.user_id)
+          .maybeSingle();
+
+        if (profileError) {
+          console.error("[BlogDetail] profile query failed:", {
+            code: profileError.code,
+            message: profileError.message,
+          });
+        }
+
+        if (!cancelled) {
+          setPost(privatePost);
+          setProfile(privateProfile ?? null);
+          setIsUnavailable(false);
+        }
+      } catch (error: any) {
+        console.error("[BlogDetail] private post query failed:", {
+          code: error?.code,
+          message: error?.message || "Unknown error",
+          details: error?.details,
+          hint: error?.hint,
+        });
+
+        if (!cancelled) setIsUnavailable(true);
+      } finally {
+        if (!cancelled) setIsResolvingPost(false);
+      }
+    };
+
+    void resolvePrivatePost();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialPost, postId]);
 
   const handlePin = async () => {
     if (!post) return;
@@ -171,7 +257,39 @@ export default function BlogDetailRealtime({
     };
   }, [post?.id, router, showToast]);
 
-  if (!post) return null;
+  if (isResolvingPost) {
+    return (
+      <article
+        aria-busy="true"
+        aria-live="polite"
+        className="rounded-0 sm:rounded-2xl bg-white/80 p-6 text-center text-sm text-gray-500 shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur-md"
+      >
+        <i className="fad fa-spinner-third fa-spin mr-2" />
+        Đang xác minh tài khoản
+      </article>
+    );
+  }
+
+  if (!post || isUnavailable) {
+    return (
+      <article className="rounded-0 sm:rounded-2xl bg-white/80 p-6 py-18 text-center shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur-md">
+        <i className="fa-duotone fa-lock-keyhole mb-3 text-2xl text-red-400" />
+        <h1 className="text-lg font-semibold text-red-400">
+          Truy cập bị từ chối
+        </h1>
+        <p className="mt-1 text-sm text-gray-500">
+          Bạn không có quyền xem bài viết này
+        </p>
+        <Link
+          href="/blog"
+          className="mt-4 inline-flex items-center gap-2 text-sm text-slate-600 hover:text-black"
+        >
+          <i className="fa-duotone fa-arrow-left text-xs" />
+          Quay lại Blog
+        </Link>
+      </article>
+    );
+  }
 
   return (
     <>
@@ -199,7 +317,9 @@ export default function BlogDetailRealtime({
           postId={post.id}
           showLink={false}
           showMenu={isAdmin}
+          isAdmin={isAdmin}
           isPinned={post.is_pinned}
+          visibility={post.visibility}
           onPin={handlePin}
           onEdit={handleEdit}
           onDelete={handleDelete}
