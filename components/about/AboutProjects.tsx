@@ -26,7 +26,7 @@ export default function AboutProjects() {
           const isExternal = project.href.startsWith("http");
 
           const CardContent = (
-            <div className="relative group h-full flex items-center sm:items-start gap-4 rounded-2xl border border-2 border-slate-200 bg-white/50 p-3 sm:p-5 duration-300 hover:-translate-y-1 hover:bg-white/90 active:scale-95 hover:shadow-[0_20px_40px_rgba(0,0,0,0.075)]">
+            <div className="relative group h-full flex items-center sm:items-start gap-4 rounded-2xl bg-black/3 border border-black/5 p-3 sm:p-5 duration-300 hover:bg-white active:scale-98 hover:shadow-[0_20px_40px_rgba(0,0,0,0.075)]">
               <div className="flex items-start justify-between">
                 <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${project.gradient} text-xl text-white shadow-inner`}>
                   <i className={`fa-duotone ${project.icon}`} />
