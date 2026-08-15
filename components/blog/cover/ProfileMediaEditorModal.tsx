@@ -1,13 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/useToast";
 import { supabase } from "@/lib/supabase";
@@ -27,6 +21,8 @@ import {
 } from "@/lib/profileMediaService";
 import {
   createCroppedImageBlob,
+  getProfileCropOutputMimeType,
+  normalizeProfileMediaFile,
   type CropAreaPixels,
 } from "@/lib/profileMediaCrop";
 import ProfileImageCropper, {
@@ -90,7 +86,7 @@ function getManagedPublicId(url?: string) {
     if (rootIndex === -1) return null;
     return decodeURIComponent(path.slice(rootIndex + 1)).replace(
       /\.[A-Za-z0-9]+$/,
-      ""
+      "",
     );
   } catch {
     return null;
@@ -128,13 +124,15 @@ export default function ProfileMediaEditorModal({
   const lastAutoLoadKeyRef = useRef<string | null>(null);
   const uploadRequestIdRef = useRef<string | null>(null);
   const deleteCandidateRef = useRef<ProfileCloudinaryAsset | null>(null);
+  const sourcePreparationIdRef = useRef(0);
 
   const [tab, setTab] = useState<"upload" | "library">("upload");
   const [source, setSource] = useState<SourceImage | null>(null);
   const [cropArea, setCropArea] = useState<CropAreaPixels | null>(null);
+  const [preparingSource, setPreparingSource] = useState(false);
   const [saving, setSaving] = useState(false);
   const [folder, setFolder] = useState<ProfileMediaFolder>(
-    kind === "avatar" ? "avatars" : "covers"
+    kind === "avatar" ? "avatars" : "covers",
   );
   const [assets, setAssets] = useState<ProfileCloudinaryAsset[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -150,7 +148,7 @@ export default function ProfileMediaEditorModal({
   const reusableFolder = isAvatar ? "avatars" : "covers";
   const currentPublicId = useMemo(
     () => getManagedPublicId(currentUrl),
-    [currentUrl]
+    [currentUrl],
   );
 
   useEffect(() => {
@@ -158,8 +156,8 @@ export default function ProfileMediaEditorModal({
   }, [showToast]);
 
   useEffect(() => {
-    busyRef.current = saving || deletingPublicId !== null;
-  }, [deletingPublicId, saving]);
+    busyRef.current = preparingSource || saving || deletingPublicId !== null;
+  }, [deletingPublicId, preparingSource, saving]);
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -170,6 +168,8 @@ export default function ProfileMediaEditorModal({
   }, [deleteCandidate]);
 
   const clearSource = useCallback(() => {
+    sourcePreparationIdRef.current += 1;
+    setPreparingSource(false);
     setSource((current) => {
       if (current?.objectUrl) URL.revokeObjectURL(current.url);
       return null;
@@ -278,9 +278,11 @@ export default function ProfileMediaEditorModal({
         if (requestId !== libraryRequestIdRef.current) return;
 
         setAssets((current) => {
-          const combined = reset ? result.assets : [...current, ...result.assets];
+          const combined = reset
+            ? result.assets
+            : [...current, ...result.assets];
           return Array.from(
-            new Map(combined.map((asset) => [asset.public_id, asset])).values()
+            new Map(combined.map((asset) => [asset.public_id, asset])).values(),
           );
         });
         setNextCursor(result.next_cursor);
@@ -298,7 +300,7 @@ export default function ProfileMediaEditorModal({
         }
       }
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -332,8 +334,8 @@ export default function ProfileMediaEditorModal({
     setFolder(value);
   };
 
-  const handleFile = (file?: File) => {
-    if (!file || saving) return;
+  const handleFile = async (file?: File) => {
+    if (!file || saving || preparingSource) return;
 
     if (!file.type.toLowerCase().startsWith("image/")) {
       showToast("Vui lòng chọn một file hình ảnh hợp lệ.", "warning");
@@ -346,11 +348,35 @@ export default function ProfileMediaEditorModal({
     }
 
     clearSource();
-    setSource({
-      url: URL.createObjectURL(file),
-      label: file.name || "Ảnh vừa chọn",
-      objectUrl: true,
-    });
+    const preparationId = ++sourcePreparationIdRef.current;
+    setPreparingSource(true);
+
+    try {
+      // Ảnh từ camera/Photos có thể chỉ vài trăm KB nhưng giải mã thành hơn
+      // 100MB. Chuẩn hóa trước giúp Cropper không giữ bitmap 28MP trên iOS.
+      const preparedFile = await normalizeProfileMediaFile(file, kind);
+      if (preparationId !== sourcePreparationIdRef.current) return;
+
+      setSource({
+        url: URL.createObjectURL(preparedFile),
+        label: file.name || "Ảnh vừa chọn",
+        objectUrl: true,
+      });
+    } catch (error) {
+      if (preparationId !== sourcePreparationIdRef.current) return;
+
+      const message = profileMediaServiceError(
+        error,
+        "Thiết bị không thể chuẩn hóa ảnh này. Vui lòng thử ảnh khác.",
+      );
+      console.warn("Profile media source preparation failed:", message);
+      showToast(message, "error");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } finally {
+      if (preparationId === sourcePreparationIdRef.current) {
+        setPreparingSource(false);
+      }
+    }
   };
 
   const handleAsset = async (asset: ProfileCloudinaryAsset) => {
@@ -380,10 +406,10 @@ export default function ProfileMediaEditorModal({
         if (updateError) {
           console.warn(
             "Profile media reuse update failed:",
-            updateError.message
+            updateError.message,
           );
           throw new Error(
-            `Không thể sử dụng lại ${isAvatar ? "avatar" : "ảnh bìa"} này.`
+            `Không thể sử dụng lại ${isAvatar ? "avatar" : "ảnh bìa"} này.`,
           );
         }
 
@@ -399,7 +425,7 @@ export default function ProfileMediaEditorModal({
           isAvatar
             ? "Đã sử dụng lại ảnh đại diện cũ."
             : "Đã sử dụng lại ảnh bìa cũ.",
-          "success"
+          "success",
         );
       } catch (error) {
         showToast(profileMediaServiceError(error), "error");
@@ -416,7 +442,7 @@ export default function ProfileMediaEditorModal({
     // tránh avatar/cover bị mất khi asset nguồn bị xóa về sau.
     clearSource();
     setSource({
-      url: getProfileCropSource(asset.secure_url, isAvatar ? 3072 : 4096),
+      url: getProfileCropSource(asset.secure_url, isAvatar ? 2048 : 3072),
       label: asset.public_id,
       objectUrl: false,
     });
@@ -426,7 +452,10 @@ export default function ProfileMediaEditorModal({
     if (!deleteCandidate || deletingPublicId || saving) return;
 
     if (deleteCandidate.public_id === currentPublicId) {
-      showToast("Hãy đổi sang ảnh khác trước khi xóa ảnh đang sử dụng.", "warning");
+      showToast(
+        "Hãy đổi sang ảnh khác trước khi xóa ảnh đang sử dụng.",
+        "warning",
+      );
       setDeleteCandidate(null);
       return;
     }
@@ -440,14 +469,14 @@ export default function ProfileMediaEditorModal({
       const deletedSet = new Set(deletedPublicIds);
 
       setAssets((current) =>
-        current.filter((asset) => !deletedSet.has(asset.public_id))
+        current.filter((asset) => !deletedSet.has(asset.public_id)),
       );
       setDeleteCandidate(null);
       showToast(
         deleteCandidate.folder === "avatars"
           ? "Đã xóa avatar cũ và dọn lịch sử liên quan."
           : "Đã xóa ảnh bìa cũ khỏi Cloudinary.",
-        "success"
+        "success",
       );
     } catch (error) {
       showToast(profileMediaServiceError(error), "error");
@@ -458,7 +487,7 @@ export default function ProfileMediaEditorModal({
 
   const handleCropAreaChange = useCallback(
     (area: CropAreaPixels | null) => setCropArea(area),
-    []
+    [],
   );
 
   const handleSave = async () => {
@@ -467,13 +496,15 @@ export default function ProfileMediaEditorModal({
     setSaving(true);
     let uploadedPublicId: string | null = null;
     let profileUpdated = false;
+    let saveStage: "crop" | "upload" | "profile" = "crop";
 
     try {
+      const outputMimeType = getProfileCropOutputMimeType();
       const blob = await createCroppedImageBlob(source.url, cropArea, {
         maxWidth: isAvatar ? 2048 : 4096,
         maxHeight: isAvatar ? 2048 : 1707,
-        mimeType: "image/webp",
-        quality: 0.95,
+        mimeType: outputMimeType,
+        quality: outputMimeType === "image/jpeg" ? 0.93 : 0.95,
       });
 
       if (blob.size > MAX_OUTPUT_FILE_BYTES) {
@@ -484,12 +515,14 @@ export default function ProfileMediaEditorModal({
         uploadRequestIdRef.current ?? createUploadRequestId();
       uploadRequestIdRef.current = uploadRequestId;
       const outputExtension = blob.type === "image/jpeg" ? "jpg" : "webp";
+      saveStage = "upload";
       const uploaded = await uploadImage(blob, kind, {
         requestId: uploadRequestId,
         filename: `${kind}-${uploadRequestId}.${outputExtension}`,
         retryOnce: true,
       });
       uploadedPublicId = uploaded.public_id;
+      saveStage = "profile";
       const field = isAvatar ? "avatar" : "cover_image";
       const { error: updateError } = await supabase
         .from("profiles")
@@ -499,11 +532,14 @@ export default function ProfileMediaEditorModal({
         .single();
 
       if (updateError) {
-        console.warn("Profile media Supabase update failed:", updateError.message);
+        console.warn(
+          "Profile media Supabase update failed:",
+          updateError.message,
+        );
         throw new Error(
           `Ảnh đã upload nhưng chưa thể cập nhật ${
             isAvatar ? "avatar" : "ảnh bìa"
-          } trong Supabase.`
+          } trong Supabase.`,
         );
       }
       profileUpdated = true;
@@ -525,17 +561,32 @@ export default function ProfileMediaEditorModal({
         }
       }
 
-      await onSaved(uploaded.url);
+      let refreshWarning = false;
+
+      try {
+        await onSaved(uploaded.url);
+      } catch (refreshError) {
+        // Database đã cập nhật thành công. Một lần refetch lỗi trên mạng di động
+        // không được biến thành lỗi lưu ảnh hoặc khiến admin bấm upload lại.
+        refreshWarning = true;
+        console.warn(
+          "Profile media refresh after save failed:",
+          profileMediaServiceError(refreshError),
+        );
+      }
+
       invalidateProfileAssetsCache(isAvatar ? "avatars" : "covers");
       clearSource();
       onClose();
       showToast(
-        historyWarning
-          ? "Đã đổi avatar, nhưng lịch sử avatar chưa đồng bộ."
-          : isAvatar
-            ? "Đã cập nhật ảnh đại diện."
-            : "Đã cập nhật ảnh bìa.",
-        historyWarning ? "warning" : "success"
+        refreshWarning
+          ? "Đã lưu ảnh. Giao diện sẽ đồng bộ lại khi kết nối ổn định."
+          : historyWarning
+            ? "Đã đổi avatar, nhưng lịch sử avatar chưa đồng bộ."
+            : isAvatar
+              ? "Đã cập nhật ảnh đại diện."
+              : "Đã cập nhật ảnh bìa.",
+        refreshWarning || historyWarning ? "warning" : "success",
       );
     } catch (error) {
       if (uploadedPublicId && !profileUpdated) {
@@ -546,15 +597,29 @@ export default function ProfileMediaEditorModal({
         }
       }
 
-      showToast(profileMediaServiceError(error), "error");
+      const fallbackByStage = {
+        crop: "Thiết bị không thể xử lý vùng cắt ảnh này.",
+        upload: "Kết nối bị gián đoạn khi upload ảnh.",
+        profile: "Ảnh đã upload nhưng chưa thể cập nhật hồ sơ.",
+      } as const;
+      const message = profileMediaServiceError(
+        error,
+        fallbackByStage[saveStage],
+      );
+      console.warn("Profile media save failed:", {
+        stage: saveStage,
+        message,
+      });
+      showToast(message, "error");
     } finally {
       setSaving(false);
     }
   };
 
   const folderLabel = useMemo(
-    () => FOLDER_OPTIONS.find((item) => item.value === folder)?.label ?? "Tất cả",
-    [folder]
+    () =>
+      FOLDER_OPTIONS.find((item) => item.value === folder)?.label ?? "Tất cả",
+    [folder],
   );
 
   if (!open || typeof document === "undefined") return null;
@@ -568,6 +633,7 @@ export default function ProfileMediaEditorModal({
       onMouseDown={(event) => {
         if (
           event.target === event.currentTarget &&
+          !preparingSource &&
           !saving &&
           !deletingPublicId &&
           !deleteCandidate
@@ -592,7 +658,7 @@ export default function ProfileMediaEditorModal({
           <button
             type="button"
             onClick={onClose}
-            disabled={saving || deletingPublicId !== null}
+            disabled={preparingSource || saving || deletingPublicId !== null}
             aria-label="Đóng"
             className="ml-4 flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full bg-neutral-100 text-neutral-600 transition hover:bg-neutral-200 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
           >
@@ -632,7 +698,7 @@ export default function ProfileMediaEditorModal({
                 <button
                   type="button"
                   onClick={() => setTab("upload")}
-                  disabled={saving}
+                  disabled={preparingSource || saving}
                   className={`relative flex flex-1 cursor-pointer items-center justify-center gap-2 px-3 py-3.5 text-sm font-medium transition sm:flex-none sm:px-5 ${
                     tab === "upload"
                       ? "text-neutral-950"
@@ -649,7 +715,7 @@ export default function ProfileMediaEditorModal({
                 <button
                   type="button"
                   onClick={() => setTab("library")}
-                  disabled={saving}
+                  disabled={preparingSource || saving}
                   className={`relative flex flex-1 cursor-pointer items-center justify-center gap-2 px-3 py-3.5 text-sm font-medium transition sm:flex-none sm:px-5 ${
                     tab === "library"
                       ? "text-neutral-950"
@@ -671,23 +737,38 @@ export default function ProfileMediaEditorModal({
                     type="file"
                     accept="image/jpeg,image/png,image/webp,image/avif,image/gif,image/heic,image/heif"
                     className="hidden"
-                    onChange={(event) => handleFile(event.target.files?.[0])}
+                    disabled={preparingSource}
+                    onChange={(event) =>
+                      void handleFile(event.target.files?.[0])
+                    }
                   />
 
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="group flex min-h-[320px] w-full cursor-pointer flex-col items-center justify-center rounded-3xl border border-dashed border-neutral-300 bg-gradient-to-b from-neutral-50 to-white p-8 text-center transition hover:border-sky-300 hover:from-sky-50/60 active:scale-[0.995]"
+                    disabled={preparingSource}
+                    aria-busy={preparingSource}
+                    className="group flex min-h-[320px] w-full cursor-pointer flex-col items-center justify-center rounded-3xl border border-dashed border-neutral-300 bg-gradient-to-b from-neutral-50 to-white p-8 text-center transition hover:border-sky-300 hover:from-sky-50/60 active:scale-[0.995] disabled:cursor-wait disabled:opacity-70"
                   >
                     <span className="mb-5 flex size-16 items-center justify-center rounded-2xl bg-neutral-900 text-2xl text-white shadow-lg transition group-hover:-translate-y-0.5 group-hover:shadow-xl">
-                      <i className="fad fa-image-circle-plus" aria-hidden="true" />
+                      <i
+                        className={`fad ${
+                          preparingSource
+                            ? "fa-spinner-third animate-spin"
+                            : "fa-image-circle-plus"
+                        }`}
+                        aria-hidden="true"
+                      />
                     </span>
                     <span className="text-base font-semibold text-neutral-900">
-                      Chọn hình ảnh từ thiết bị
+                      {preparingSource
+                        ? "Đang tối ưu ảnh cho thiết bị..."
+                        : "Chọn hình ảnh từ thiết bị"}
                     </span>
                     <span className="mt-2 max-w-md text-sm leading-6 text-neutral-500">
-                      Ảnh chỉ được upload sau khi bạn crop và xác nhận. Hỗ trợ JPG,
-                      PNG, WebP, AVIF, HEIC/HEIF và tối đa 20MB.
+                      {preparingSource
+                        ? "Vui lòng giữ cửa sổ này mở trong giây lát."
+                        : "Ảnh chỉ được upload sau khi bạn crop và xác nhận. Hỗ trợ JPG, PNG, WebP, AVIF, HEIC/HEIF và tối đa 20MB."}
                     </span>
                   </button>
                 </div>
@@ -714,7 +795,9 @@ export default function ProfileMediaEditorModal({
 
                   <div className="mb-3 flex items-center justify-between gap-3 text-[11px] text-neutral-400">
                     <span>Tải tối đa 10 ảnh mỗi lần</span>
-                    {assets.length > 0 && <span>Đã tải {assets.length} ảnh</span>}
+                    {assets.length > 0 && (
+                      <span>Đã tải {assets.length} ảnh</span>
+                    )}
                   </div>
 
                   {loadingLibrary && assets.length === 0 ? (
@@ -759,11 +842,10 @@ export default function ProfileMediaEditorModal({
                       {assets.map((asset) => {
                         const isActive = asset.public_id === currentPublicId;
                         const canDelete =
-                          asset.folder === "covers" || asset.folder === "avatars";
-                        const isDeleting =
-                          deletingPublicId === asset.public_id;
-                        const isReusing =
-                          reusingPublicId === asset.public_id;
+                          asset.folder === "covers" ||
+                          asset.folder === "avatars";
+                        const isDeleting = deletingPublicId === asset.public_id;
+                        const isReusing = reusingPublicId === asset.public_id;
                         const canReuseDirectly =
                           asset.folder === reusableFolder;
 
@@ -870,7 +952,9 @@ export default function ProfileMediaEditorModal({
                       >
                         <i
                           className={`fad ${
-                            loadingLibrary ? "fa-spinner-third fa-spin" : "fa-images"
+                            loadingLibrary
+                              ? "fa-spinner-third fa-spin"
+                              : "fa-images"
                           }`}
                           aria-hidden="true"
                         />
@@ -919,10 +1003,7 @@ export default function ProfileMediaEditorModal({
           aria-modal="true"
           aria-label="Xác nhận xóa ảnh"
           onMouseDown={(event) => {
-            if (
-              event.target === event.currentTarget &&
-              !deletingPublicId
-            ) {
+            if (event.target === event.currentTarget && !deletingPublicId) {
               setDeleteCandidate(null);
             }
           }}
@@ -957,9 +1038,7 @@ export default function ProfileMediaEditorModal({
               >
                 <i
                   className={`fad ${
-                    deletingPublicId
-                      ? "fa-spinner-third fa-spin"
-                      : "fa-trash"
+                    deletingPublicId ? "fa-spinner-third fa-spin" : "fa-trash"
                   }`}
                   aria-hidden="true"
                 />
@@ -970,6 +1049,6 @@ export default function ProfileMediaEditorModal({
         </div>
       )}
     </div>,
-    document.body
+    document.body,
   );
 }

@@ -15,6 +15,15 @@ export type AdminProfile = {
   created_at?: string | null;
 };
 
+function createProfileRealtimeChannelName(profileId: string) {
+  const nonce =
+    typeof globalThis.crypto?.randomUUID === "function"
+      ? globalThis.crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+  return `cover-section-profile-${profileId}-${nonce}`;
+}
+
 export function useProfile() {
   const [profile, setProfile] = useState<AdminProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,8 +57,12 @@ export function useProfile() {
   useEffect(() => {
     if (!profile?.id) return;
 
+    let active = true;
     const channel = supabase
-      .channel(`cover-section-profile-${profile.id}`)
+      // Supabase Realtime tái sử dụng channel nếu topic trùng nhau. Một nonce
+      // riêng cho mỗi lần effect chạy ngăn Strict Mode/HMR lấy lại channel cũ
+      // đã subscribe nhưng chưa được removeChannel() hoàn tất.
+      .channel(createProfileRealtimeChannelName(profile.id))
       .on(
         "postgres_changes",
         {
@@ -59,12 +72,14 @@ export function useProfile() {
           filter: `id=eq.${profile.id}`,
         },
         (payload) => {
+          if (!active) return;
           setProfile(payload.new as AdminProfile);
-        }
+        },
       )
       .subscribe();
 
     return () => {
+      active = false;
       void supabase.removeChannel(channel);
     };
   }, [profile?.id]);

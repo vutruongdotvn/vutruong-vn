@@ -7,8 +7,10 @@ import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
 import {
   getProfileAvatar,
+  getProfileAvatarLightbox,
   getProfileCoverBackground,
   getProfileCoverImage,
+  getProfileCoverLightbox,
 } from "@/lib/cloudinary";
 import ProfileMediaEditorModal from "@/components/blog/cover/ProfileMediaEditorModal";
 import type { ProfileMediaKind } from "@/components/blog/cover/ProfileImageCropper";
@@ -27,7 +29,7 @@ export default function CoverSection() {
       const startOfDay = new Date(
         now.getFullYear(),
         now.getMonth(),
-        now.getDate()
+        now.getDate(),
       );
 
       const [totalRes, todayRes] = await Promise.all([
@@ -81,6 +83,8 @@ export default function CoverSection() {
   const coverDisplayTablet = getProfileCoverImage(coverMaster, 1280);
   const coverBackground = getProfileCoverBackground(coverMaster);
   const avatarDisplay = getProfileAvatar(avatarMaster);
+  const coverLightbox = getProfileCoverLightbox(coverMaster);
+  const avatarLightbox = getProfileAvatarLightbox(avatarMaster);
 
   return (
     <div className="w-full">
@@ -96,9 +100,9 @@ export default function CoverSection() {
           className="pointer-events-none z-0 scale-105 object-cover brightness-75"
         />
 
-        {/* Ảnh chính tối ưu theo màn hình; URL master chỉ tải khi mở Fancybox. */}
+        {/* Fancybox chỉ tải biến thể tối đa 1920px, không tải master 4096px. */}
         <a
-          href={coverMaster}
+          href={coverLightbox}
           data-fancybox="profile-cover"
           aria-label="Mở ảnh bìa chất lượng cao"
           className="absolute inset-y-0 left-1/2 z-[1] block w-full max-w-6xl -translate-x-1/2 cursor-pointer overflow-hidden"
@@ -151,7 +155,7 @@ export default function CoverSection() {
               <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
                 <div className="pointer-events-auto relative size-20 shrink-0 sm:size-26 md:size-30">
                   <a
-                    href={avatarMaster}
+                    href={avatarLightbox}
                     data-fancybox="profile-avatar"
                     aria-label="Mở ảnh đại diện chất lượng cao"
                     className="relative block size-full cursor-pointer overflow-hidden rounded-full shadow-xl"

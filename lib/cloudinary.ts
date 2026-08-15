@@ -10,7 +10,7 @@ type UploadImageOptions = {
 
 type UploadApiPayload = {
   success?: boolean;
-  error?: string;
+  error?: unknown;
   data?: {
     secure_url?: string;
     public_id?: string;
@@ -19,6 +19,28 @@ type UploadApiPayload = {
     format?: string;
   };
 };
+
+function readUploadError(value: unknown, depth = 0): string | null {
+  if (depth > 3) return null;
+
+  if (
+    typeof value === "string" &&
+    value.trim() &&
+    value !== "[object Object]"
+  ) {
+    return value.trim();
+  }
+
+  if (value && typeof value === "object") {
+    const object = value as { message?: unknown; error?: unknown };
+    const message = readUploadError(object.message, depth + 1);
+    if (message) return message;
+
+    return readUploadError(object.error, depth + 1);
+  }
+
+  return null;
+}
 
 class UploadResponseError extends Error {
   retryable: boolean;
@@ -55,7 +77,7 @@ async function parseUploadResponse(response: Response) {
     if (response.status === 413) {
       throw new UploadResponseError(
         "Ảnh vượt quá dung lượng mà máy chủ cho phép.",
-        false
+        false,
       );
     }
 
@@ -63,14 +85,20 @@ async function parseUploadResponse(response: Response) {
       response.ok
         ? "Phản hồi upload bị gián đoạn. Hệ thống sẽ thử lại một lần."
         : `Máy chủ upload tạm thời không phản hồi đúng định dạng (${response.status}).`,
-      response.ok || response.status === 408 || response.status === 429 || response.status >= 500
+      response.ok ||
+        response.status === 408 ||
+        response.status === 429 ||
+        response.status >= 500,
     );
   }
 
   if (!response.ok || !payload.success) {
     throw new UploadResponseError(
-      payload.error || "Không thể upload hình ảnh vào lúc này.",
-      response.status === 408 || response.status === 429 || response.status >= 500
+      readUploadError(payload.error) ||
+        "Không thể upload hình ảnh vào lúc này.",
+      response.status === 408 ||
+        response.status === 429 ||
+        response.status >= 500,
     );
   }
 
@@ -81,7 +109,7 @@ async function parseUploadResponse(response: Response) {
   ) {
     throw new UploadResponseError(
       "Cloudinary không trả về đầy đủ thông tin ảnh. Hệ thống sẽ thử lại một lần.",
-      true
+      true,
     );
   }
 
@@ -99,7 +127,7 @@ function isRetryableUploadError(error: unknown) {
 export const uploadImage = async (
   file: File | Blob,
   type: UploadImageType = "post",
-  options?: UploadImageOptions
+  options?: UploadImageOptions,
 ) => {
   const {
     data: { session },
@@ -160,10 +188,14 @@ export const uploadImage = async (
   }
 
   console.warn("Upload image failed:", lastError);
+  const lastMessage =
+    lastError instanceof Error
+      ? readUploadError(lastError.message)
+      : readUploadError(lastError);
   throw new Error(
-    lastError instanceof UploadResponseError
-      ? lastError.message
-      : "Kết nối bị gián đoạn khi upload ảnh. Vui lòng kiểm tra mạng và thử lại."
+    lastError instanceof UploadResponseError && lastMessage
+      ? lastMessage
+      : "Kết nối bị gián đoạn khi upload ảnh. Vui lòng kiểm tra mạng và thử lại.",
   );
 };
 
@@ -184,7 +216,7 @@ type CloudinaryOptions = {
 
 export function buildCloudinaryImage(
   url?: string,
-  options?: CloudinaryOptions
+  options?: CloudinaryOptions,
 ) {
   if (!url) return "/images/default.jpg";
   if (!url.includes("res.cloudinary.com") || !url.includes("/upload/")) {
@@ -291,12 +323,37 @@ export function getProfileAvatar(url?: string) {
   });
 }
 
+// URL chỉ dùng khi mở avatar bằng Fancybox. c_limit không phóng lớn ảnh nhỏ.
+export function getProfileAvatarLightbox(url?: string) {
+  return buildCloudinaryImage(url, {
+    width: 1024,
+    height: 1024,
+    crop: "limit",
+    quality: "auto:best",
+    format: "auto",
+    dpr: 1,
+    sharpen: true,
+  });
+}
+
 // Ảnh cover chính: đủ nét cho màn hình lớn nhưng không tải master full-size.
 export function getProfileCoverImage(url?: string, width = 1920) {
   return buildCloudinaryImage(url, {
     width,
     crop: "limit",
     quality: "auto:good",
+    format: "auto",
+    dpr: 1,
+    sharpen: true,
+  });
+}
+
+// URL chỉ dùng khi mở cover bằng Fancybox; giữ tỷ lệ và giới hạn rộng 1920px.
+export function getProfileCoverLightbox(url?: string) {
+  return buildCloudinaryImage(url, {
+    width: 1920,
+    crop: "limit",
+    quality: "auto:best",
     format: "auto",
     dpr: 1,
     sharpen: true,

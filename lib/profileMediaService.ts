@@ -26,7 +26,7 @@ export type ProfileAssetsPage = {
 
 type ProfileAssetsApiResponse = {
   success?: boolean;
-  error?: string;
+  error?: unknown;
   assets?: ProfileCloudinaryAsset[];
   next_cursor?: string | null;
   retry_at?: string | null;
@@ -43,12 +43,49 @@ const libraryPageCache = new Map<
 >();
 let memoryCooldownUntil = 0;
 
+function readErrorMessage(value: unknown, depth = 0): string | null {
+  if (depth > 3) return null;
+
+  if (
+    typeof value === "string" &&
+    value.trim() &&
+    value.trim() !== "[object Object]"
+  ) {
+    return value.trim();
+  }
+
+  if (value instanceof Error) {
+    const message = readErrorMessage(value.message, depth + 1);
+    if (message) return message;
+
+    return readErrorMessage(value.cause, depth + 1);
+  }
+
+  if (value && typeof value === "object") {
+    const object = value as {
+      message?: unknown;
+      error?: unknown;
+      details?: unknown;
+      hint?: unknown;
+    };
+
+    return (
+      readErrorMessage(object.message, depth + 1) ||
+      readErrorMessage(object.error, depth + 1) ||
+      readErrorMessage(object.details, depth + 1) ||
+      readErrorMessage(object.hint, depth + 1)
+    );
+  }
+
+  return null;
+}
+
 async function readJsonPayload(response: Response) {
   const rawBody = await response.text();
 
   if (!rawBody.trim()) {
     throw new Error(
-      `Máy chủ không trả về dữ liệu (${response.status}). Vui lòng thử lại.`
+      `Máy chủ không trả về dữ liệu (${response.status}). Vui lòng thử lại.`,
     );
   }
 
@@ -56,7 +93,7 @@ async function readJsonPayload(response: Response) {
     return JSON.parse(rawBody) as ProfileAssetsApiResponse;
   } catch {
     throw new Error(
-      `Phản hồi từ máy chủ không hợp lệ (${response.status}). Vui lòng thử lại.`
+      `Phản hồi từ máy chủ không hợp lệ (${response.status}). Vui lòng thử lại.`,
     );
   }
 }
@@ -164,18 +201,22 @@ export async function fetchProfileCloudinaryAssets(options?: {
       {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
-      }
+      },
     );
     const result = await readJsonPayload(response);
 
     if (response.status === 420 || response.status === 429) {
       const retryTimestamp = getRetryTimestamp(result);
       writeCooldownUntil(retryTimestamp);
-      throw new Error(result.error || formatCooldownMessage(retryTimestamp));
+      throw new Error(
+        readErrorMessage(result.error) || formatCooldownMessage(retryTimestamp),
+      );
     }
 
     if (!response.ok || !result.success) {
-      throw new Error(result.error || "Không thể tải thư viện Cloudinary.");
+      throw new Error(
+        readErrorMessage(result.error) || "Không thể tải thư viện Cloudinary.",
+      );
     }
 
     const page = {
@@ -229,7 +270,10 @@ export async function deleteProfileLibraryAssets(publicIds: string[]) {
   const result = await readJsonPayload(response);
 
   if (!response.ok || !result.success) {
-    throw new Error(result.error || "Không thể xóa ảnh profile khỏi Cloudinary.");
+    throw new Error(
+      readErrorMessage(result.error) ||
+        "Không thể xóa ảnh profile khỏi Cloudinary.",
+    );
   }
 
   invalidateProfileAssetsCache();
@@ -255,19 +299,22 @@ export async function deleteProfileCloudinaryAssets(publicIds: string[]) {
   const result = await readJsonPayload(response);
 
   if (!response.ok || !result.success) {
-    throw new Error(result.error || "Không thể dọn ảnh upload chưa sử dụng.");
+    throw new Error(
+      readErrorMessage(result.error) ||
+        "Không thể dọn ảnh upload chưa sử dụng.",
+    );
   }
 }
 
-export function profileMediaServiceError(error: unknown) {
-  const message =
-    error instanceof Error && error.message
-      ? error.message
-      : "Có lỗi xảy ra, vui lòng thử lại.";
+export function profileMediaServiceError(
+  error: unknown,
+  fallback = "Có lỗi xảy ra, vui lòng thử lại.",
+) {
+  const message = readErrorMessage(error) || fallback;
 
   if (
     /the string did not match|failed to fetch|load failed|networkerror/i.test(
-      message
+      message,
     )
   ) {
     return "Kết nối bị gián đoạn khi xử lý ảnh. Vui lòng kiểm tra mạng và thử lại.";
