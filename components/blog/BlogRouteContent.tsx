@@ -23,23 +23,36 @@ export default function BlogRouteContent({
     matchesRoute(pathname, route),
   );
 
-  // Các trang nội dung độc lập dùng toàn bộ chiều rộng, không render sidebar.
-  if (isFullWidthRoute) {
-    return (
-      <section className="blogFullWidthContent mx-auto w-full max-w-6xl">
-        {children}
-      </section>
-    );
-  }
-
-  // Giữ nguyên layout hiện tại cho mọi route Blog còn lại.
   return (
-    <div className="mainBlog mx-auto grid w-full max-w-6xl grid-cols-1 gap-0 lg:grid-cols-10 lg:gap-4">
-      <div className="sidebar-widget relative order-1 lg:col-span-4">
+    <div
+      className={
+        isFullWidthRoute
+          ? "mx-auto w-full max-w-6xl"
+          : "mainBlog mx-auto grid w-full max-w-6xl grid-cols-1 gap-0 lg:grid-cols-10 lg:gap-4"
+      }
+    >
+      {/*
+        Luôn giữ sidebar trong cây React để bảo toàn state và dữ liệu widget
+        khi chuyển route nội bộ; chỉ ẩn khỏi layout ở các trang full-width.
+      */}
+      <div
+        className={
+          isFullWidthRoute
+            ? "hidden"
+            : "sidebar-widget relative order-1 lg:col-span-4"
+        }
+        aria-hidden={isFullWidthRoute || undefined}
+      >
         {sidebar}
       </div>
 
-      <section className="postFeeds order-2 space-y-1 sm:space-y-4 lg:col-span-6">
+      <section
+        className={
+          isFullWidthRoute
+            ? "blogFullWidthContent mx-auto w-full max-w-6xl"
+            : "postFeeds order-2 space-y-1 sm:space-y-4 lg:col-span-6"
+        }
+      >
         {children}
       </section>
     </div>

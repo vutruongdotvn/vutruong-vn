@@ -78,11 +78,11 @@ export default function CoverSection() {
           )}
         </div>
 
-        <div className="w-full max-w-6xl mx-auto py-6 relative pb-20 mt-[-100px] relative z-3">
+        <div className="w-full max-w-6xl mx-auto py-6 relative pb-18 mt-[-100px] relative z-3">
           <div className="noclass" aria-hidden="true">
             <div className="flex flex-col items-center text-white sm:flex-row sm:items-end sm:justify-between">
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-5">
-                <div className="relative size-40 shrink-0 animate-pulse rounded-full border-4 border-white bg-gray-200 sm:size-48">
+                <div className="relative size-40 shrink-0 rounded-full border-4 border-white bg-gray-200 sm:size-48">
                   {isAdmin && (
                     <div className="absolute bottom-3 right-3 size-9 rounded-full border border-black/10 bg-gray-300 shadow-lg sm:size-10" />
                   )}
@@ -189,7 +189,7 @@ export default function CoverSection() {
         )}
       </div>
 
-      <div className="w-full max-w-6xl mx-auto py-6 relative pb-20 mt-[-100px] relative z-3">
+      <div className="w-full max-w-6xl mx-auto py-6 relative pb-18 mt-[-100px] relative z-3">
         <div className="noclass">
           <div className="flex flex-col items-center text-white sm:flex-row sm:items-end sm:justify-between">
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-5">

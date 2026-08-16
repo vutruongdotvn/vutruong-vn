@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
@@ -37,7 +38,7 @@ export default function BlogNavbar() {
   const pathname = usePathname().replace(/\/+$/, "") || "/";
 
   return (
-    <div className="absolute bottom-0 left-0 w-full border-t border-t-slate-200">
+    <div className="absolute bottom-0 left-0 w-full">
       <div className="scrollbar-none flex gap-1 overflow-x-auto overscroll-x-contain whitespace-nowrap text-sm font-medium [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {tabs.map((tab) => {
           const isActive = isTabActive(pathname, tab.href);
@@ -47,12 +48,25 @@ export default function BlogNavbar() {
               key={tab.href}
               href={tab.href}
               aria-current={isActive ? "page" : undefined}
-              className={`flex shrink-0 items-center gap-2 border-b-3 px-3 py-4 hover:border-primary active:scale-98 ${
-                isActive ? "border-primary" : "border-transparent"
-              }`}
+              className="relative flex shrink-0 items-center gap-2 border-b-3 border-transparent px-3 py-4 rounded-md hover:bg-slate-100 active:scale-98"
             >
               <i className={`fad ${tab.icon}`} />
               {tab.label}
+
+              {isActive && (
+                <motion.span
+                  layoutId="blog-navbar-active-border"
+                  initial={false}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 40,
+                    mass: 0.6,
+                  }}
+                  className="pointer-events-none absolute inset-x-0 -bottom-[2px] h-[2px] bg-primary"
+                  aria-hidden="true"
+                />
+              )}
             </Link>
           );
         })}
