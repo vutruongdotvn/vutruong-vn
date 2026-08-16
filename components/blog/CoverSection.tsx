@@ -207,7 +207,7 @@ export default function CoverSection() {
                     unoptimized
                     priority
                     sizes="120px"
-                    className="object-cover"
+                    className="object-cover hover:brightness-80 transition duration-300"
                   />
                 </a>
 

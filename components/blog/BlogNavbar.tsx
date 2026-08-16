@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const tabs = [
   { label: "Bài viết", icon: "fa-feed", href: "/blog" },
-  { label: "Giới thiệu", icon: "fa-user", href: "/blog/about" },
+  { label: "Giới thiệu", icon: "fa-user-vneck", href: "/blog/about" },
   { label: "Ảnh", icon: "fa-image", href: "/blog/photos" },
   { label: "Video", icon: "fa-video", href: "/blog/videos" },
   { label: "Watch", icon: "fa-clapperboard-play", href: "/watch" },

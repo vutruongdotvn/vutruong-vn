@@ -81,9 +81,10 @@ export default function PhotoWidget() {
       p-3 sm:p-4 px-0 pb-0 sm:pb-4 sm:px-4
     ">
       {/* Header */}
-      <div className="flex items-center justify-between mb-3 px-4 sm:px-0">
-        <h3 className="text-[.9375rem] sm:text-base font-semibold">
-          Ảnh
+      <div className="mb-3 px-4 sm:px-0">
+        <h3 className="flex items-center justify-between text-[.9375rem] sm:text-base w-full">
+          <div className="font-semibold">Ảnh</div>
+          <Link className="text-sm text-gray-500 hover:text-gray-800 active:scale-95 cursor-pointer" href="/blog/photos">Xem thêm</Link>
         </h3>
 
         {isMobile && visibleCount < photos.length && (
