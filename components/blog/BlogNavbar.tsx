@@ -63,7 +63,7 @@ export default function BlogNavbar() {
                     damping: 40,
                     mass: 0.6,
                   }}
-                  className="pointer-events-none absolute inset-x-0 -bottom-[2px] h-[2px] bg-primary"
+                  className="pointer-events-none absolute inset-x-0 -bottom-[3px] h-[3px] bg-primary"
                   aria-hidden="true"
                 />
               )}

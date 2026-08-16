@@ -2,7 +2,7 @@ import { MenuItem } from "./types";
 
 export const mainMenu: MenuItem[] = [
   { name: "Home", href: "/", icon: "fa-duotone fa-house" },
-  { name: "Me", href: "/about", icon: "fa-duotone fa-user-vneck" },
+//  { name: "Me", href: "/about", icon: "fa-duotone fa-user-vneck" },
   { name: "Blog", href: "/blog", icon: "fa-duotone fa-pen" },
   { name: "Watch", href: "/watch", icon: "fa-duotone fa-clapperboard-play" },
 ];

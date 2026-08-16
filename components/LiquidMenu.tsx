@@ -13,7 +13,7 @@ const menuItems = [
   },
   {
     label: "About",
-    href: "/about",
+    href: "/blog/about",
     icon: "fa-user-vneck",
   },
   {

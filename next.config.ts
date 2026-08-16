@@ -51,8 +51,13 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
       {
+        source: "/about",
+        destination: "/blog/about",
+        permanent: false,
+      },
+      {
         source: "/contact",
-        destination: "/about",
+        destination: "/blog/about",
         permanent: false,
       },
       {
