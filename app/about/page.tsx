@@ -3,7 +3,6 @@ import AboutProjects from "@/components/about/AboutProjects";
 import AboutSocials from "@/components/about/AboutSocials";
 import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
 import ContactForm from "@/components/contact/ContactForm";
-
 export default function AboutPage() {
     return (
         <PremiumGlassCard className="w-6xl max-w-screen mx-auto" contentClassName="p-6">
