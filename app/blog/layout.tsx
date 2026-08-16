@@ -20,7 +20,7 @@ export default function BlogLayout({
 }) {
   return (
     <main id="blog" className="pt-14 pb-23">
-      <div className="mx-auto w-full space-y-0.5 md:space-y-4">
+      <div className="mx-auto w-full space-y-0 md:space-y-4">
         <CoverSection />
 
         <BlogRouteContent

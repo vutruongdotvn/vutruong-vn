@@ -19,7 +19,7 @@ export default function IntroWidget() {
 
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const [isExpanded, setIsExpanded] = useState(false);
 
   const isAdmin = role === "admin";
@@ -30,11 +30,11 @@ export default function IntroWidget() {
   const [loadingProfile, setLoadingProfile] = useState(true);
 
   // ⚙️ TỐI ƯU LOGIC RENDER (Không dùng JS Truncate nữa)
-  const MAX_LENGTH = 110; 
-  
+  const MAX_LENGTH = 110;
+
   const normalizedBio = useMemo(() => normalizePostContent(bio), [bio]);
   const fullParagraphs = useMemo(() => getPostParagraphs(normalizedBio), [normalizedBio]);
-  
+
   // Chỉ dùng MAX_LENGTH làm mốc để quyết định "có cho phép thu gọn/mở rộng không"
   const isLong = normalizedBio.length > MAX_LENGTH;
   const isCollapsed = isLong && !isExpanded;
@@ -54,7 +54,7 @@ export default function IntroWidget() {
             target="_blank"
             rel="noopener noreferrer"
             className="text-sky-700 font-medium hover:text-sky-900 break-words"
-            onClick={(e) => e.stopPropagation()} 
+            onClick={(e) => e.stopPropagation()}
           >
             {part.value}
           </Link>
@@ -68,7 +68,7 @@ export default function IntroWidget() {
             key={partIndex}
             href={`/blog/tag/${encodeURIComponent(tagName)}`}
             className="text-sky-700 font-medium hover:underline active:scale-95 inline-flex break-words"
-            onClick={(e) => e.stopPropagation()} 
+            onClick={(e) => e.stopPropagation()}
           >
             {part.value}
           </Link>
@@ -170,7 +170,7 @@ export default function IntroWidget() {
             <div className="h-[1rem] bg-gray-100 rounded-full w-1/3"></div>
           </div>
         ) : (
-          <div className="text-sm sm:text-base/6 text-gray-800 dark:text-neutral-400">
+          <div className="text-sm sm:text-base/6 text-gray-800 space-y-3">
             {isCollapsed ? (
               // BẢN RÚT GỌN (CSS TỰ ĐỘNG CẮT Ở DÒNG 3)
               <div
@@ -198,7 +198,7 @@ export default function IntroWidget() {
                 ) : (
                   <p>...</p>
                 )}
-                
+
                 {/*isLong && (
                   <button
                     onClick={() => setIsExpanded(false)}
@@ -210,7 +210,16 @@ export default function IntroWidget() {
                 */}
               </div>
             )}
+            <div className="border-t border-slate-200 pt-3 space-y-1 lg:space-y-3 text-sm sm:text-base/6 text-gray-800">
+              <div className="flex items-center gap-2">
+                <span className="flex items-center justify-center xt-sm sm:text-lg bg-slate-100 text-center rounded-full size-8"><i className="far fa-blog" /></span> <b>Trang</b> <span>•</span> <span>Blog cá nhân</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="flex items-center justify-center xt-sm sm:text-lg bg-slate-100 text-center rounded-full size-8"><i className="far fa-clock" /></span> <b>Tham gia</b> <span>•</span> <span>Tháng 7 năm 2017</span>
+              </div>
+            </div>
           </div>
+
         )
       )}
 

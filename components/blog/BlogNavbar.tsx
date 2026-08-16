@@ -48,7 +48,7 @@ export default function BlogNavbar() {
               key={tab.href}
               href={tab.href}
               aria-current={isActive ? "page" : undefined}
-              className="relative flex shrink-0 items-center gap-2 border-b-3 border-transparent px-3 py-4 rounded-md hover:bg-slate-100 active:scale-98"
+              className="relative flex shrink-0 items-center gap-2 border-b-3 border-transparent px-5 py-4 rounded-md hover:bg-slate-100 active:scale-98"
             >
               <i className={`fad ${tab.icon}`} />
               {tab.label}

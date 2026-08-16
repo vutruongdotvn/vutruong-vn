@@ -58,7 +58,7 @@ export default function PremiumGlassCard({
         <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-black/3 to-transparent transition-transform duration-[1200ms] ease-in-out group-hover:translate-x-full" />
 
         {/* 📦 CONTENT WRAPPER */}
-        <div className="relative z-10 h-full w-full px-6 py-8 sm:px-8 sm:py-8" id="glassCard">{children}</div>
+        <div className="relative z-10 h-full w-full" id="glassCard">{children}</div>
       </div>
     </div>
   );
