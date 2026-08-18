@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
@@ -7,6 +8,7 @@ import LayoutShell from "@/components/LayoutShell";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import ConditionalPageTransition from "@/components/ConditionalPageTransition";
 import LiquidMenu from "@/components/LiquidMenu";
+import RouteChangeIndicator from "@/components/RouteChangeIndicator";
 
 // Cache trong 1 giờ, hoặc thậm chí 1 ngày (86400)
 export const revalidate = 86400;
@@ -109,6 +111,10 @@ export default function RootLayout({
       </head>
 
       <body className="antialiased bg-[#f2f3f5]">
+        <Suspense fallback={null}>
+          <RouteChangeIndicator />
+        </Suspense>
+
         {/* Background Decor (Tạo hiệu ứng gradient mờ ảo phía sau) */}
         <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
           <div className="absolute -top-[20%] -left-[10%] h-[50vw] w-[50vw] rounded-full bg-blue-400/10 blur-[100px] opacity-50" />

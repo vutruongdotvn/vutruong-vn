@@ -178,7 +178,7 @@ export default function PostHeader({
 
           <div className="flex flex-col gap-0.75">
             <Link href="/about"
-              className="flex items-center gap-1 cursor-pointer text-sm font-medium text-gray-600 hover:text-black active:scale-98"
+              className="flex items-center gap-1 cursor-pointer text-sm font-medium text-gray-800 hover:text-black active:scale-98"
             >
               {name}
               <i className="fas fa-badge-check text-xs text-blue-500" title="Tài khoản đã được xác thực" />
