@@ -10,7 +10,7 @@ export default function AboutSocials() {
 
     { title: "Instagram", 
       subtitle: "vutruong.vn", 
-      href: "https://www.instagram.com/vutruong.vn", 
+      href: "/instagram", 
       icon: "fa-instagram", 
       color: "text-[#E4405F]", 
       bg: "bg-[#E4405F]/10", hover: "hover:bg-[#E4405F]/20" },
@@ -24,21 +24,21 @@ export default function AboutSocials() {
 
     { title: "Threads", 
       subtitle: "vutruong.vn", 
-      href: "https://www.threads.com/vutruong.vn", 
+      href: "/threads", 
       icon: "fa-threads", 
       color: "text-slate-900", 
       bg: "bg-slate-200", hover: "hover:bg-slate-300" },
 
     { title: "X", 
       subtitle: "vutruong.vn", 
-      href: "https://x.com/vutruong.vn", 
+      href: "/x", 
       icon: "fa-x-twitter", 
       color: "text-slate-900", 
       bg: "bg-slate-200", hover: "hover:bg-slate-300" },
 
     { title: "Locket", 
       subtitle: "vutruong.vn", 
-      href: "https://locket.camera/links/UJpdrfjVHXXhmNe68", 
+      href: "/locket", 
       icon: "fa-heart", 
       color: "text-[#FFB800]", 
       bg: "bg-[#FFB800]/10", hover: "hover:bg-[#FFB800]/20", 

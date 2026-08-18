@@ -75,6 +75,21 @@ const nextConfig: NextConfig = {
         destination: "https://www.tiktok.com/@vutruong.vn",
         permanent: false,
       },
+      {
+        source: "/instagram",
+        destination: "https://www.instagram.com/vutruong.vn",
+        permanent: false,
+      },
+      {
+        source: "/threads",
+        destination: "https://www.threads.com/vutruong.vn",
+        permanent: false,
+      },
+      {
+        source: "/x",
+        destination: "https://www.x.com/vutruong.vn",
+        permanent: false,
+      },
     ];
   },
 
