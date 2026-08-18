@@ -15,7 +15,7 @@ export default function PremiumGlassCard({
 }: PremiumGlassCardProps) {
   return (
     // Thêm class "group" để các thành phần bên trong bắt được sự kiện hover từ thẻ cha
-    <div className={cn("group relative w-full mx-auto px-0 sm:px-4", className)}>
+    <div className={cn("group relative w-full", className)}>
       
       {/* 🔮 MAIN GLASS SHELL (Lớp kính chính) */}
       <div

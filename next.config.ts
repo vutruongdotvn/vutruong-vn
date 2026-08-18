@@ -57,7 +57,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/contact",
-        destination: "/blog/about",
+        destination: "/blog/contact",
         permanent: false,
       },
       {
