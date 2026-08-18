@@ -293,7 +293,7 @@ export default function ProfilePage() {
     return (
       <main className="relative min-h-screen flex items-center justify-center pt-18 md:pb-4 pb-23">
         <PremiumGlassCard
-          className="max-w-6xl"
+          className="max-w-6xl" contentClassName="p-4"
         >
           <div className="animate-pulse">
             <div className="mx-auto mb-8 h-10 w-40 rounded-full bg-black/10" />
@@ -426,7 +426,7 @@ export default function ProfilePage() {
       )}
 
       <PremiumGlassCard
-        className="max-w-6xl"
+        className="max-w-6xl" contentClassName="p-4"
       >
         <div className="space-y-10">
           <div className="text-center">

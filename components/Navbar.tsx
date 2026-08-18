@@ -49,10 +49,9 @@ export default function Navbar() {
   // =========================
   // AUTH / PROFILE STATE
   // =========================
-  const { user, role, loading: userLoading } = useUser();
+  const { user, role } = useUser();
 
   const [profile, setProfile] = useState<ProfileData>(null);
-  const [profileLoading, setProfileLoading] = useState(true);
 
   // =========================
   // REFS
@@ -112,7 +111,6 @@ export default function Navbar() {
   const fetchProfile = useCallback(async (currentUser: User | null) => {
     if (!currentUser) {
       setProfile(null);
-      setProfileLoading(false);
       return;
     }
 
@@ -133,30 +131,21 @@ export default function Navbar() {
     } catch (err) {
       console.error("Navbar fetchProfile crash:", err);
       setProfile(null);
-    } finally {
-      setProfileLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    if (userLoading) return;
-
     if (!user) {
       lastFetchedUserId.current = null;
       setProfile(null);
-      setProfileLoading(false);
       return;
     }
 
-    if (lastFetchedUserId.current === user.id) {
-      setProfileLoading(false);
-      return;
-    }
+    if (lastFetchedUserId.current === user.id) return;
 
     lastFetchedUserId.current = user.id;
-    setProfileLoading(true);
-    fetchProfile(user);
-  }, [user, userLoading, fetchProfile]);
+    void fetchProfile(user);
+  }, [user, fetchProfile]);
 
   // =========================
   // DERIVED AUTH UI DATA
@@ -166,8 +155,6 @@ export default function Navbar() {
   const avatar = user
     ? getAvatarImage(profile?.avatar || "") || "/images/default.jpg"
     : "/images/default.jpg";
-
-  const authReady = !userLoading && !profileLoading;
 
   // =========================
   // SAME PAGE / REFRESH LOGIC
@@ -442,8 +429,8 @@ export default function Navbar() {
                   setMoreOpen={setMoreOpen}
                   setShowCreatePost={setShowCreatePost}
                   setShowLogin={setShowLogin}
-                  user={authReady ? user : null}
-                  role={authReady ? role : null}
+                  user={user}
+                  role={role}
                   avatar={avatar}
                   fullName={fullName}
                   email={email}
@@ -469,8 +456,8 @@ export default function Navbar() {
             avatar={avatar}
             fullName={fullName}
             email={email}
-            user={authReady ? user : null}
-            role={authReady ? role : null}
+            user={user}
+            role={role}
             isActive={isActive}
             setOpen={setOpen}
             setShowCreatePost={setShowCreatePost}

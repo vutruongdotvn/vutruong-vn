@@ -521,7 +521,7 @@ export default function BlogPostFeed() {
                   style={{ "--fa-animation-duration": ".65s" } as React.CSSProperties}
                 />
               ) : (
-                <i className="fad fa-circle-check text-sky-600" />
+                <i className="fas fa-circle-check text-green-600" />
               )}
             </div>
           </div>

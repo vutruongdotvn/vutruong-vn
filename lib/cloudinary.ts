@@ -253,8 +253,8 @@ export function buildCloudinaryImage(
 
 export function getAvatarImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 200,
-    height: 200,
+    width: 80,
+    height: 80,
     crop: "fill",
     gravity: "face",
     quality: "auto",
@@ -265,7 +265,7 @@ export function getAvatarImage(url?: string) {
 
 export function getFeedImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 1000,
+    width: 800,
     crop: "limit",
     quality: "auto",
     format: "auto",

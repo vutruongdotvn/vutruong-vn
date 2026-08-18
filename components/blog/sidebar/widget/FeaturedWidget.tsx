@@ -1,14 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import type { TouchEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/hooks/useUser";
 import { getFeaturedWidgetImage } from "@/lib/cloudinary";
@@ -17,28 +11,6 @@ import type { FeaturedStory } from "@/types/featuredStory";
 import FeaturedManagerModal from "@/components/blog/sidebar/widget/featured/FeaturedManagerModal";
 
 const VISIBLE_STORIES = 3;
-const SWIPE_THRESHOLD = 45;
-
-function getSnapPositions(storyCount: number) {
-  if (storyCount <= VISIBLE_STORIES) return [0];
-
-  const lastStart = storyCount - VISIBLE_STORIES;
-  const positions = [0];
-
-  for (
-    let position = VISIBLE_STORIES;
-    position < lastStart;
-    position += VISIBLE_STORIES
-  ) {
-    positions.push(position);
-  }
-
-  if (positions[positions.length - 1] !== lastStart) {
-    positions.push(lastStart);
-  }
-
-  return positions;
-}
 
 export default function FeaturedWidget() {
   const { role, status } = useUser();
@@ -47,14 +19,22 @@ export default function FeaturedWidget() {
   const [stories, setStories] = useState<FeaturedStory[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
-  const [page, setPage] = useState(0);
-  const [slideUnit, setSlideUnit] = useState(0);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
   const [managerOpen, setManagerOpen] = useState(false);
-  const viewportRef = useRef<HTMLDivElement | null>(null);
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  const touchStartXRef = useRef<number | null>(null);
   const reloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const resizeFrameRef = useRef<number | null>(null);
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "start",
+    containScroll: "trimSnaps",
+    dragFree: false,
+    duration: 32,
+    loop: false,
+    skipSnaps: false,
+    slidesToScroll: VISIBLE_STORIES,
+    breakpoints: {
+      "(prefers-reduced-motion: reduce)": { duration: 0 },
+    },
+  });
 
   const loadStories = useCallback(async () => {
     try {
@@ -104,84 +84,28 @@ export default function FeaturedWidget() {
     [stories]
   );
 
-  const snapPositions = useMemo(
-    () => getSnapPositions(visibleStories.length),
-    [visibleStories.length]
-  );
-  const pageCount = snapPositions.length;
-  const startIndex = snapPositions[page] ?? 0;
+  const syncNavigationState = useCallback(() => {
+    if (!emblaApi) return;
+
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
 
   useEffect(() => {
-    setPage((current) => Math.min(current, Math.max(pageCount - 1, 0)));
-  }, [pageCount]);
+    if (!emblaApi) return;
 
-  useEffect(() => {
-    const viewport = viewportRef.current;
-    const track = trackRef.current;
-
-    if (!viewport || !track || visibleStories.length === 0) {
-      setSlideUnit(0);
-      return;
-    }
-
-    const updateSlideUnit = () => {
-      if (resizeFrameRef.current !== null) {
-        cancelAnimationFrame(resizeFrameRef.current);
-      }
-
-      resizeFrameRef.current = requestAnimationFrame(() => {
-        const firstCard = track.firstElementChild as HTMLElement | null;
-        if (!firstCard) return;
-
-        const trackStyle = window.getComputedStyle(track);
-        const columnGap = Number.parseFloat(trackStyle.columnGap);
-        const fallbackGap = Number.parseFloat(trackStyle.gap);
-        const gap = Number.isFinite(columnGap)
-          ? columnGap
-          : Number.isFinite(fallbackGap)
-            ? fallbackGap
-            : 0;
-        const nextUnit = firstCard.getBoundingClientRect().width + gap;
-
-        setSlideUnit((current) =>
-          Math.abs(current - nextUnit) < 0.5 ? current : nextUnit
-        );
-      });
-    };
-
-    updateSlideUnit();
-
-    const resizeObserver = new ResizeObserver(updateSlideUnit);
-    resizeObserver.observe(viewport);
+    syncNavigationState();
+    emblaApi.on("select", syncNavigationState);
+    emblaApi.on("reInit", syncNavigationState);
 
     return () => {
-      resizeObserver.disconnect();
-      if (resizeFrameRef.current !== null) {
-        cancelAnimationFrame(resizeFrameRef.current);
-        resizeFrameRef.current = null;
-      }
+      emblaApi.off("select", syncNavigationState);
+      emblaApi.off("reInit", syncNavigationState);
     };
-  }, [visibleStories.length]);
+  }, [emblaApi, syncNavigationState]);
 
-  const goPrev = () => setPage((current) => Math.max(current - 1, 0));
-  const goNext = () =>
-    setPage((current) => Math.min(current + 1, pageCount - 1));
-
-  const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
-    touchStartXRef.current = event.touches[0]?.clientX ?? null;
-  };
-
-  const handleTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
-    if (touchStartXRef.current === null) return;
-
-    const endX = event.changedTouches[0]?.clientX ?? touchStartXRef.current;
-    const distance = endX - touchStartXRef.current;
-    touchStartXRef.current = null;
-
-    if (Math.abs(distance) < SWIPE_THRESHOLD) return;
-    if (distance > 0) goPrev();
-    else goNext();
-  };
+  const goPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const goNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
   if (!loading && visibleStories.length === 0 && !isAdmin) return null;
 
@@ -231,22 +155,13 @@ export default function FeaturedWidget() {
         ) : (
           <div className="relative px-3 sm:px-0">
             <div
-              ref={viewportRef}
-              className="touch-pan-y overflow-hidden"
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-              onTouchCancel={() => {
-                touchStartXRef.current = null;
-              }}
+              ref={emblaRef}
+              role="region"
+              aria-roledescription="carousel"
+              aria-label="Danh sách Khoảnh khắc"
+              className="touch-pan-y cursor-grab overflow-hidden select-none active:cursor-grabbing"
             >
-              <div
-                ref={trackRef}
-                className="flex gap-1.5 will-change-transform transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-                style={{
-                  transform: `translate3d(-${startIndex * slideUnit}px, 0, 0)`,
-                  backfaceVisibility: "hidden",
-                }}
-              >
+              <div className="flex touch-pan-y gap-1.5 will-change-transform">
                 {visibleStories.map((story, storyIndex) => {
                   const [cover, ...remainingImages] = story.images;
                   const gallery = `featured-${story.id}`;
@@ -254,6 +169,9 @@ export default function FeaturedWidget() {
                   return (
                     <div
                       key={story.id}
+                      role="group"
+                      aria-roledescription="slide"
+                      aria-label={`${storyIndex + 1} / ${visibleStories.length}`}
                       className="min-w-0 shrink-0"
                       style={{
                         flexBasis: "calc((100% - 0.75rem) / 3)",
@@ -271,6 +189,7 @@ export default function FeaturedWidget() {
                           unoptimized
                           sizes="(max-width: 1024px) 33vw, 150px"
                           loading={storyIndex < 3 ? "eager" : "lazy"}
+                          draggable={false}
                           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                         />
 
@@ -302,7 +221,7 @@ export default function FeaturedWidget() {
               </div>
             </div>
 
-            {page > 0 && (
+            {canScrollPrev && (
               <button
                 type="button"
                 onClick={goPrev}
@@ -314,7 +233,7 @@ export default function FeaturedWidget() {
               </button>
             )}
 
-            {page < pageCount - 1 && (
+            {canScrollNext && (
               <button
                 type="button"
                 onClick={goNext}

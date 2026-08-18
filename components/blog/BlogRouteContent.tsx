@@ -2,6 +2,8 @@
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import CreatePostBox from "@/components/blog/CreatePostBox";
+import { useUser } from "@/hooks/useUser";
 
 type BlogRouteContentProps = {
   children: ReactNode;
@@ -18,7 +20,11 @@ export default function BlogRouteContent({
   children,
   sidebar,
 }: BlogRouteContentProps) {
+  const { user, loading: userLoading } = useUser();
   const pathname = usePathname().replace(/\/+$/, "") || "/";
+  const adminUser =
+    user?.email?.trim().toLowerCase() === "admin@vutruong.vn" ? user : null;
+  const isBlogFeedRoute = pathname === "/blog";
   const isFullWidthRoute = FULL_WIDTH_ROUTES.some((route) =>
     matchesRoute(pathname, route),
   );
@@ -53,6 +59,17 @@ export default function BlogRouteContent({
             : "postFeeds order-2 space-y-1 sm:space-y-4 lg:col-span-6"
         }
       >
+        {/*
+          CreatePostBox luôn được mount ở layout /blog và chỉ đổi trạng thái
+          hiển thị, nên profile/modal không bị khởi tạo lại khi đổi route con.
+        */}
+        {adminUser && (
+          <CreatePostBox
+            user={adminUser}
+            authLoading={userLoading}
+            visible={isBlogFeedRoute}
+          />
+        )}
         {children}
       </section>
     </div>

@@ -58,7 +58,7 @@ export function useUser() {
       throw new Error("Không thể hoàn tất truy vấn profile.");
     };
 
-    const syncUser = async (currentUser: User | null, force = false) => {
+    const syncUser = async (currentUser: User | null) => {
       if (!currentUser) {
         requestedUserId = null;
         requestId += 1;
@@ -68,9 +68,19 @@ export function useUser() {
 
       setUser(currentUser);
 
-      // getSession() và INITIAL_SESSION có thể đến gần như đồng thời.
-      // Không tạo truy vấn profiles thứ hai cho cùng một user.
-      if (!force && requestedUserId === currentUser.id) return;
+      // getSession(), INITIAL_SESSION và SIGNED_IN có thể cùng trả về một user.
+      // SIGNED_IN cũng có thể lặp lại khi tab trình duyệt được focus.
+      // Chỉ tải profile khi danh tính thực sự thay đổi.
+      if (requestedUserId === currentUser.id) return;
+
+      if (
+        requestedUserId !== undefined &&
+        requestedUserId !== currentUser.id
+      ) {
+        setRole(null);
+        setStatus("unknown");
+      }
+
       requestedUserId = currentUser.id;
       const currentRequestId = ++requestId;
       setLoading(true);
@@ -119,17 +129,47 @@ export function useUser() {
       event: AuthChangeEvent,
       session: Session | null
     ) => {
-      if (event === "TOKEN_REFRESHED" && session?.user) {
+      if (!active) return;
+
+      // Chỉ SIGNED_OUT mới được phép xóa user đã xác thực.
+      if (event === "SIGNED_OUT") {
+        void syncUser(null);
+        return;
+      }
+
+      // Một event không có session không đồng nghĩa người dùng đã đăng xuất.
+      // Bỏ qua để tránh UI nhảy về trạng thái guest trong lúc đồng bộ token.
+      if (!session?.user) return;
+
+      if (event === "TOKEN_REFRESHED") {
         setUser(session.user);
         return;
       }
 
-      void syncUser(session?.user ?? null, event !== "INITIAL_SESSION");
+      void syncUser(session.user);
     };
 
-    void supabase.auth.getSession().then(({ data }) => {
-      void syncUser(data.session?.user ?? null);
-    });
+    void supabase.auth
+      .getSession()
+      .then(({ data, error }) => {
+        if (!active) return;
+
+        if (error) {
+          console.warn("Không thể khôi phục Supabase session:", error.message);
+          setLoading(false);
+          return;
+        }
+
+        void syncUser(data.session?.user ?? null);
+      })
+      .catch((error) => {
+        if (!active) return;
+        console.warn(
+          "Không thể khôi phục Supabase session:",
+          error instanceof Error ? error.message : error
+        );
+        setLoading(false);
+      });
 
     const {
       data: { subscription },
