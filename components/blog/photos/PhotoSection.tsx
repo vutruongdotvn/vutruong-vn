@@ -101,9 +101,9 @@ async function getBlogPhotosPage(
     nextCursor:
       rows.length > BLOG_PHOTOS_PAGE_SIZE && lastRow
         ? {
-            createdAt: lastRow.created_at,
-            id: String(lastRow.id),
-          }
+          createdAt: lastRow.created_at,
+          id: String(lastRow.id),
+        }
         : null,
   };
 }
@@ -112,12 +112,18 @@ function PhotoGridSkeleton({ count }: { count: number }) {
   return (
     <div className={GRID_CLASS} aria-hidden="true">
       {Array.from({ length: count }).map((_, index) => (
-        <div
-          key={index}
-          className="aspect-square animate-pulse bg-slate-200 sm:rounded-lg"
-        />
+        <PhotoSkeletonItem key={index} />
       ))}
     </div>
+  );
+}
+
+function PhotoSkeletonItem() {
+  return (
+    <div
+      className="aspect-square animate-pulse bg-slate-200 sm:rounded-lg"
+      aria-hidden="true"
+    />
   );
 }
 
@@ -136,9 +142,16 @@ export default function PhotoSection() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const requestIdRef = useRef(0);
+  const loadingMoreRef = useRef(false);
+  const loadMoreSentinelRef = useRef<HTMLDivElement>(null);
+  const canLoadMoreAfterScrollRef = useRef(false);
+  const isLoadMoreSentinelVisibleRef = useRef(false);
 
   const loadFirstPage = useCallback(async () => {
     const requestId = ++requestIdRef.current;
+    loadingMoreRef.current = false;
+    canLoadMoreAfterScrollRef.current = false;
+    isLoadMoreSentinelVisibleRef.current = false;
     setInitialLoading(true);
     setLoadingMore(false);
     setError(null);
@@ -201,10 +214,12 @@ export default function PhotoSection() {
     };
   }, [loadFirstPage]);
 
-  const loadMore = async () => {
-    if (!nextCursor || loadingMore) return;
+  const loadMore = useCallback(async () => {
+    if (!nextCursor || loadingMoreRef.current) return;
 
     const requestId = ++requestIdRef.current;
+    loadingMoreRef.current = true;
+    canLoadMoreAfterScrollRef.current = false;
     setLoadingMore(true);
     setError(null);
 
@@ -223,9 +238,67 @@ export default function PhotoSection() {
           : "Không thể tải thêm ảnh.",
       );
     } finally {
-      if (requestId === requestIdRef.current) setLoadingMore(false);
+      if (requestId === requestIdRef.current) {
+        // Mỗi trang mới cần một lần cuộn xuống mới được phép tải trang kế tiếp.
+        // Điều này ngăn observer tự nạp liên hoàn trên màn hình cao.
+        canLoadMoreAfterScrollRef.current = false;
+        loadingMoreRef.current = false;
+        setLoadingMore(false);
+      }
     }
-  };
+  }, [nextCursor]);
+
+  useEffect(() => {
+    const sentinel = loadMoreSentinelRef.current;
+
+    if (!sentinel || !nextCursor || initialLoading || error) {
+      return;
+    }
+
+    let lastScrollY = window.scrollY;
+
+    const tryLoadMore = () => {
+      if (
+        canLoadMoreAfterScrollRef.current &&
+        isLoadMoreSentinelVisibleRef.current &&
+        !loadingMoreRef.current
+      ) {
+        void loadMore();
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isLoadMoreSentinelVisibleRef.current = entry.isIntersecting;
+        tryLoadMore();
+      },
+      {
+        // Chỉ xem là chạm đáy khi sentinel thực sự đi vào viewport.
+        rootMargin: "0px",
+        threshold: 0,
+      },
+    );
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY) {
+        canLoadMoreAfterScrollRef.current = true;
+        tryLoadMore();
+      }
+
+      lastScrollY = currentScrollY;
+    };
+
+    observer.observe(sentinel);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", handleScroll);
+      isLoadMoreSentinelVisibleRef.current = false;
+    };
+  }, [error, initialLoading, loadMore, nextCursor]);
 
   return (
     <section
@@ -239,7 +312,9 @@ export default function PhotoSection() {
         >
           Ảnh
         </h1>
-        <div className="text-sm text-slate-400 hover:text-slate-600 transition duration-300">Tất cả ảnh trong Blog, bấm vào ảnh để xem bài viết.</div>
+        <div className="text-sm text-slate-400 transition duration-300 hover:text-slate-600">
+          Tất cả ảnh trong Blog, bấm vào ảnh để xem bài viết.
+        </div>
       </header>
 
       {initialLoading ? (
@@ -281,51 +356,47 @@ export default function PhotoSection() {
                   fill
                   unoptimized
                   loading="lazy"
-                  sizes="(max-width: 639px) 50vw, (max-width: 767px) 33vw, (max-width: 1023px) 25vw, 20vw"
+                  sizes="(max-width: 767px) 33vw, (max-width: 1023px) 25vw, 20vw"
                   className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.035]"
                 />
+
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/75 via-black/25 to-transparent px-2.5 pb-2 pt-8 opacity-100 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100 md:group-focus-visible:opacity-100">
+                  <p className="line-clamp-2 text-xs leading-snug text-white drop-shadow-sm sm:text-xs">
+                    {photo.title}
+                  </p>
+                </div>
               </Link>
             ))}
 
             {loadingMore &&
               Array.from({ length: BLOG_PHOTOS_PAGE_SIZE }).map((_, index) => (
-                <div
-                  key={`loading-more-${index}`}
-                  className="aspect-square animate-pulse bg-slate-200 sm:rounded-lg"
-                  aria-hidden="true"
-                />
+                <PhotoSkeletonItem key={`loading-more-${index}`} />
               ))}
           </div>
 
           <div className="px-3 sm:px-0">
             {error && (
-              <p
-                role="alert"
-                className="mt-4 text-center text-sm text-red-500"
-              >
-                {error}
-              </p>
-            )}
-
-            {nextCursor && (
-              <div className="mt-5 flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => void loadMore()}
-                  disabled={loadingMore}
-                  aria-busy={loadingMore}
-                  className="inline-flex min-w-32 cursor-pointer items-center justify-center gap-2 rounded-full bg-slate-100 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 active:scale-95 disabled:cursor-wait disabled:opacity-70"
-                >
-                  {loadingMore && (
-                    <i
-                      className="fal fa-spinner-third animate-spin"
-                      aria-hidden="true"
-                    />
-                  )}
-                  {loadingMore ? "Đang tải..." : "Tải thêm"}
-                </button>
+              <div className="mt-4 flex flex-col items-center gap-2 text-center">
+                <p role="alert" className="text-sm text-red-500">
+                  {error}
+                </p>
+                {nextCursor && (
+                  <button
+                    type="button"
+                    onClick={() => void loadMore()}
+                    className="cursor-pointer rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-200 active:scale-95"
+                  >
+                    Thử lại
+                  </button>
+                )}
               </div>
             )}
+
+            <div
+              ref={loadMoreSentinelRef}
+              className="h-px"
+              aria-hidden="true"
+            />
           </div>
         </>
       )}

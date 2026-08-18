@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Video trong Blog",
+  title: "Video trên Blog",
   description: "Video trên Blog của Vũ Trường.",
   alternates: {
     canonical: "/blog/videos",
