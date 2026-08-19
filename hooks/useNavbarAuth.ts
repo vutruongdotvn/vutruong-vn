@@ -65,7 +65,7 @@ export function useNavbarAuth() {
     fetchProfile();
   }, [user, userLoading]);
 
-  const fullName = user ? profile?.name || "User" : "Xin chào! 👋";
+  const fullName = user ? profile?.name || "User" : "Xin chĂ o! đŸ‘‹";
   const email = user?.email || "";
   const avatar = user
     ? getAvatarImage(profile?.avatar) || "/images/default.jpg"
@@ -74,7 +74,7 @@ export function useNavbarAuth() {
   const authReady = !userLoading && !profileLoading;
 
   const handleLogout = async (onDone?: () => void) => {
-    const { error } = await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut({ scope: "local" });
 
     if (error) {
       console.error("Sign out error:", error);

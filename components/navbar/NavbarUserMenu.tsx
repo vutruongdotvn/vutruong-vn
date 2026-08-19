@@ -117,6 +117,7 @@ export default function NavbarUserMenu({
                 </Link>
               )}
 
+              {/*
               {user && role === "admin" && (
                 <button
                   onClick={() => {
@@ -132,6 +133,7 @@ export default function NavbarUserMenu({
                   <i className="fa-duotone fa-plus text-xs text-gray-400" />
                 </button>
               )}
+              */}
 
               {!user ? (
                 <button

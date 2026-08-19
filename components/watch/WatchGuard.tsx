@@ -21,6 +21,17 @@ export default function WatchGuard({ children }: { children: React.ReactNode }) 
 
   const isAuthorized = user && (role === "admin" || status === "approved");
 
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut({ scope: "local" });
+
+    if (error) {
+      console.error("WatchGuard sign out error:", error);
+      return;
+    }
+
+    window.location.reload();
+  };
+
   // ✅ SỬA ĐIỀU KIỆN: Chỉ hiện loading toàn màn hình ở lần check đầu tiên
   if (loading && isInitialCheck) {
     return (
@@ -96,7 +107,7 @@ export default function WatchGuard({ children }: { children: React.ReactNode }) 
                 <i className="fa-duotone fa-user-lock" /> Đăng nhập
               </button>
             ) : (
-              <button onClick={async () => { await supabase.auth.signOut(); window.location.reload(); }} className="flex flex-1 sm:flex-none justify-center items-center gap-2 rounded-full bg-red-600 px-8 py-3 font-semibold text-white text-sm sm:text-base transition-all duration-300 hover:bg-red-500 hover:shadow-[0_12px_30px_rgba(220,38,38,0.4)] active:scale-95 cursor-pointer">
+              <button onClick={handleLogout} className="flex flex-1 sm:flex-none justify-center items-center gap-2 rounded-full bg-red-600 px-8 py-3 font-semibold text-white text-sm sm:text-base transition-all duration-300 hover:bg-red-500 hover:shadow-[0_12px_30px_rgba(220,38,38,0.4)] active:scale-95 cursor-pointer">
                 <i className="fa-duotone fa-sign-out" /> Đăng xuất
               </button>
             )}

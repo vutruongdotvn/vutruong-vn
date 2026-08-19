@@ -31,7 +31,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
       showToast("Vui lòng nhập họ tên", "warning");
       return;
     }
-    
+
     if (!email.trim() || !password.trim()) {
       showToast("Vui lòng điền đầy đủ thông tin", "warning");
       return;
@@ -85,13 +85,13 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-0">
-      <div 
-        className="absolute inset-0 bg-black/30 backdrop-blur-xs transition-opacity animate-in fade-in duration-300" 
+      <div
+        className="absolute inset-0 bg-black/30 backdrop-blur-xs transition-opacity animate-in fade-in duration-300"
         onClick={onClose}
       />
 
       <div className="relative w-full max-w-md bg-white/95 backdrop-blur-2xl border border-white rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] p-6 sm:p-8 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-500 overflow-hidden">
-        
+
         <button
           onClick={onClose}
           className="absolute top-5 right-5 size-8 flex items-center justify-center rounded-full bg-slate-100/50 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
@@ -101,7 +101,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
 
         <div className="mb-8 pr-8">
           <div className="size-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 border border-blue-100 shadow-sm">
-             <i className={`fa-duotone ${isRegister ? "fa-user-plus" : "fa-shield-keyhole"} text-2xl`} />
+            <i className={`fa-duotone ${isRegister ? "fa-user-plus" : "fa-shield-keyhole"} text-2xl`} />
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">
             {isRegister ? "Tạo tài khoản" : "Đăng nhập"}
@@ -151,9 +151,17 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
             </div>
             <input
               type="password"
+              inputMode="numeric"
+              pattern="[0-9]*"
               placeholder="Mật khẩu"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+
+                if (/^\d*$/.test(value)) {
+                  setPassword(value);
+                }
+              }}
               onKeyDown={handleKeyDown}
               className="w-full bg-slate-50/50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3.5 text-slate-800 placeholder-slate-400 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
             />
@@ -196,7 +204,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
               )}
             </span>
           </button>
-            
+
           {/*
           <div className="mt-6 text-center">
             <span className="text-sm text-slate-500">
