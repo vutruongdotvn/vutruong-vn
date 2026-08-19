@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getPhotoWidgetImage } from "@/lib/cloudinary";
+import { getBlogPhotosGridImage } from "@/lib/cloudinary";
 import { extractPostTitle } from "@/lib/postMeta";
 import { supabase } from "@/lib/supabase";
 
@@ -88,7 +88,7 @@ async function getBlogPhotosPage(
     return [
       {
         id: String(row.id),
-        src: getPhotoWidgetImage(source),
+        src: getBlogPhotosGridImage(source),
         title: getPhotoTitle(row),
       },
     ];

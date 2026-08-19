@@ -107,19 +107,13 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="VT Zone" />
         <link rel="apple-touch-icon" href="/app.jpg" />
-        <link href="https://kit-pro.fontawesome.com/releases/v7.2.0/css/pro.min.css" rel="stylesheet" />
+        <link href="//kit-pro.fontawesome.com/releases/v7.3.1/css/pro.min.css" rel="stylesheet" />
       </head>
 
       <body className="antialiased bg-[#f2f3f5]">
         <Suspense fallback={null}>
           <RouteChangeIndicator />
         </Suspense>
-
-        {/* Background Decor (Tạo hiệu ứng gradient mờ ảo phía sau) */}
-        <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-          <div className="absolute -top-[20%] -left-[10%] h-[50vw] w-[50vw] rounded-full bg-blue-400/10 blur-[100px] opacity-50" />
-          <div className="absolute top-[20%] -right-[10%] h-[40vw] w-[40vw] rounded-full bg-purple-400/10 blur-[100px] opacity-50" />
-        </div>
 
         {/* Background ô vuông 
         <div

@@ -6,8 +6,10 @@ import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
 import Cropper from "react-easy-crop";
 import { useToast } from "@/hooks/useToast";
 import { supabase } from "@/lib/supabase";
-import { getProfileAvatar } from "@/lib/cloudinary";
-import { uploadImage } from "@/lib/cloudinary";
+import {
+  getProfileManagerAvatarImage,
+  uploadImage,
+} from "@/lib/cloudinary";
 
 const DEFAULT_AVATAR = "/images/default.jpg";
 
@@ -39,7 +41,7 @@ export default function ProfilePage() {
     avatar && avatar !== "null" && avatar !== "undefined"
       ? avatar
       : DEFAULT_AVATAR;
-  const optimizedAvatar = getProfileAvatar(safeAvatar);
+  const optimizedAvatar = getProfileManagerAvatarImage(safeAvatar);
   // LOAD DATA
   useEffect(() => {
     const fetchData = async () => {
@@ -454,10 +456,9 @@ export default function ProfilePage() {
                 <label className="relative mx-auto block h-36 w-36 cursor-pointer group/avatar-main">
                   <div className="absolute -inset-3 rounded-full bg-gradient-to-br from-sky-200/50 via-white/0 to-purple-200/40 blur-2xl opacity-90" />
 
-                  <Image
+                  <img
                     src={optimizedAvatar}
                     alt="avatar"
-                    fill
                     sizes="144px"
                     className="relative rounded-full object-cover border border-white/80 shadow-[0_14px_50px_rgba(0,0,0,0.18)]"
                     onError={() => setAvatar(DEFAULT_AVATAR)}
@@ -569,7 +570,12 @@ export default function ProfilePage() {
                       className="group/avatar relative overflow-hidden rounded-3xl border border-white/70 bg-white/40 shadow-sm"
                     >
                       <img
-                        src={item.url || DEFAULT_AVATAR}
+                        src={getProfileManagerAvatarImage(
+                          item.url || DEFAULT_AVATAR
+                        )}
+                        alt="Avatar cũ"
+                        loading="lazy"
+                        decoding="async"
                         className="aspect-square w-full object-cover transition duration-300 group-hover/avatar:scale-[1.03]"
                         onClick={() => handleReuse(item.url)}
                         onError={(e) => {

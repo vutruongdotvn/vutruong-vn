@@ -11,7 +11,10 @@ import {
 import type { TouchEvent } from "react";
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/hooks/useUser";
-import { getFeaturedWidgetImage } from "@/lib/cloudinary";
+import {
+  getFeaturedWidgetImage,
+  getFeaturedWidgetLightboxImage,
+} from "@/lib/cloudinary";
 import { fetchFeaturedStories } from "@/lib/featuredStoryService";
 import type { FeaturedStory } from "@/types/featuredStory";
 import FeaturedManagerModal from "@/components/blog/sidebar/widget/featured/FeaturedManagerModal";
@@ -260,7 +263,7 @@ export default function FeaturedWidget() {
                       }}
                     >
                       <a
-                        href={cover.secure_url}
+                        href={getFeaturedWidgetLightboxImage(cover.secure_url)}
                         data-fancybox={gallery}
                         className="group relative block aspect-[9/16] overflow-hidden rounded-xl bg-neutral-100"
                       >
@@ -288,7 +291,9 @@ export default function FeaturedWidget() {
                           {remainingImages.map((image) => (
                             <a
                               key={image.id}
-                              href={image.secure_url}
+                              href={getFeaturedWidgetLightboxImage(
+                                image.secure_url
+                              )}
                               data-fancybox={gallery}
                               aria-hidden="true"
                               tabIndex={-1}
