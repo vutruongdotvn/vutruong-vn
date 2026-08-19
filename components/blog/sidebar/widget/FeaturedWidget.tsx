@@ -265,7 +265,7 @@ export default function FeaturedWidget() {
                       <a
                         href={getFeaturedWidgetLightboxImage(cover.secure_url)}
                         data-fancybox={gallery}
-                        className="group relative block aspect-[9/16] overflow-hidden rounded-xl bg-neutral-100"
+                        className="group relative block aspect-[2/3] overflow-hidden rounded-xl bg-neutral-100"
                       >
                         <Image
                           src={getFeaturedWidgetImage(cover.secure_url)}

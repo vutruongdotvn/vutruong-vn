@@ -2,228 +2,339 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import PostImages from "./PostImages";
+import PostEmbed from "@/components/blog/PostEmbed";
 import {
+  extractYouTubeId,
   getPostParagraphs,
   normalizePostContent,
+  parsePostBlocks,
   parsePostInline,
   smartTruncatePostContent,
+  type PostBlock,
 } from "@/lib/utils";
-import { parsePostBlocks } from "@/lib/utils";
-import PostEmbed from "@/components/blog/PostEmbed";
+import PostImages from "./PostImages";
+
+const MOBILE_MEDIA_QUERY = "(max-width: 767px)";
+const MOBILE_PREVIEW_LENGTH = 90;
+const DESKTOP_PREVIEW_LENGTH = 220;
 
 type Props = {
   content: string;
   images?: string[];
   postId: string;
   truncate?: boolean;
+  /**
+   * Giới hạn cố định cho mọi kích thước màn hình.
+   * Bỏ trống để dùng mặc định responsive: mobile 90, desktop 220 ký tự.
+   */
   maxLength?: number;
   priority?: boolean;
 };
 
+function getSafeExternalHref(value: string) {
+  let href = value.trim().replace(/[.,;:]+$/g, "");
+
+  const unbalancedClosers: Record<string, string> = {
+    ")": "(",
+    "]": "[",
+    "}": "{",
+  };
+
+  while (href) {
+    const closer = href[href.length - 1];
+    const opener = closer ? unbalancedClosers[closer] : undefined;
+
+    if (!closer || !opener) break;
+
+    const openerCount = href.split(opener).length - 1;
+    const closerCount = href.split(closer).length - 1;
+
+    if (closerCount <= openerCount) break;
+    href = href.slice(0, -1);
+  }
+
+  return /^https?:\/\//i.test(href) ? href : null;
+}
+
+function parseParagraphBlocks(paragraph: string): PostBlock[] {
+  return paragraph.split("\n").flatMap<PostBlock>((line) => {
+    const [block] = parsePostBlocks(line);
+
+    if (!block || block.type !== "youtube") {
+      return block ? [block] : [];
+    }
+
+    // parsePostBlocks coi cả dòng là video nếu tìm thấy URL YouTube. Giữ lại
+    // phần chữ đứng trước/sau URL để nội dung không bị mất khi render.
+    const videoUrl = line
+      .match(/https?:\/\/[^\s]+/gi)
+      ?.find((url) => extractYouTubeId(url) === block.videoId);
+
+    if (!videoUrl) {
+      return [block];
+    }
+
+    const videoUrlIndex = line.indexOf(videoUrl);
+    const beforeVideo = line.slice(0, videoUrlIndex).trim();
+    const afterVideo = line.slice(videoUrlIndex + videoUrl.length).trim();
+    const blocks: PostBlock[] = [];
+
+    if (beforeVideo) blocks.push({ type: "text", value: beforeVideo });
+    blocks.push(block);
+    if (afterVideo) blocks.push({ type: "text", value: afterVideo });
+
+    return blocks;
+  });
+}
+
+function renderInlineParts(text: string) {
+  return parsePostInline(text).map((part, partIndex) => {
+    const key = `${part.type}-${partIndex}`;
+
+    if (part.type === "bold") {
+      return (
+        <strong key={key} className="font-semibold">
+          {part.value}
+        </strong>
+      );
+    }
+
+    if (part.type === "link") {
+      const href = getSafeExternalHref(part.value);
+
+      if (!href) {
+        return <span key={key}>{part.value}</span>;
+      }
+
+      return (
+        <a
+          key={key}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="break-words font-medium text-sky-800 hover:text-black hover:underline"
+        >
+          {part.value}
+        </a>
+      );
+    }
+
+    if (part.type === "hashtag") {
+      const tagName = part.value
+        .replace(/^#/, "")
+        .trim()
+        .normalize("NFC")
+        .toLowerCase();
+
+      if (!tagName) {
+        return <span key={key}>{part.value}</span>;
+      }
+
+      return (
+        <Link
+          key={key}
+          title={`Xem hashtag #${tagName}`}
+          href={`/blog/tag/${encodeURIComponent(tagName)}`}
+          prefetch={false}
+          className="break-words font-medium text-sky-800 hover:underline active:opacity-70"
+        >
+          {part.value}
+        </Link>
+      );
+    }
+
+    return <span key={key}>{part.value}</span>;
+  });
+}
+
 export default function PostBody({
   content,
-  images = [],
+  images,
   postId,
   truncate = false,
-  maxLength = 180,
+  maxLength,
   priority = false,
 }: Props) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [responsiveMaxLength, setResponsiveMaxLength] = useState(maxLength);
+  const [isMobile, setIsMobile] = useState(false);
+  const [expandedContentKey, setExpandedContentKey] = useState<string | null>(
+    null
+  );
+  const fixedMaxLength =
+    typeof maxLength === "number" &&
+    Number.isFinite(maxLength) &&
+    maxLength >= 1
+      ? Math.floor(maxLength)
+      : undefined;
 
   useEffect(() => {
-    // Tailwind lg breakpoint: desktop >= 1024px
-    // mobile + tablet: < 1024px
-    const mediaQuery = window.matchMedia("(max-width: 767px)");
-
-    const updateResponsiveMaxLength = () => {
-      // Chỉ auto responsive khi đang dùng default maxLength = 180
-      // Nếu component cha truyền maxLength custom vào thì giữ nguyên
-      setResponsiveMaxLength(
-        maxLength === 180
-          ? mediaQuery.matches
-            ? 80 // trên mobile giới hạn 80 ký tự
-            : 150 // trên PC
-          : maxLength
-      );
-    };
-
-    updateResponsiveMaxLength();
-
-    // Safari cũ fallback
-    if (typeof mediaQuery.addEventListener === "function") {
-      mediaQuery.addEventListener("change", updateResponsiveMaxLength);
-      return () => {
-        mediaQuery.removeEventListener("change", updateResponsiveMaxLength);
-      };
-    } else {
-      mediaQuery.addListener(updateResponsiveMaxLength);
-      return () => {
-        mediaQuery.removeListener(updateResponsiveMaxLength);
-      };
+    // maxLength được truyền vào là giới hạn cố định, không cần theo dõi màn hình.
+    if (fixedMaxLength !== undefined) {
+      return;
     }
-  }, [maxLength]);
+
+    const mediaQuery = window.matchMedia(MOBILE_MEDIA_QUERY);
+    const updateIsMobile = () => setIsMobile(mediaQuery.matches);
+
+    updateIsMobile();
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", updateIsMobile);
+      return () => mediaQuery.removeEventListener("change", updateIsMobile);
+    }
+
+    // Fallback cho Safari cũ.
+    mediaQuery.addListener(updateIsMobile);
+    return () => mediaQuery.removeListener(updateIsMobile);
+  }, [fixedMaxLength]);
+
+  const responsiveMaxLength =
+    fixedMaxLength ??
+    (isMobile ? MOBILE_PREVIEW_LENGTH : DESKTOP_PREVIEW_LENGTH);
 
   const normalizedContent = useMemo(
-    () => normalizePostContent(content),
+    () => normalizePostContent(content ?? ""),
     [content]
   );
 
-  const isLong = normalizedContent.length > responsiveMaxLength;
-  const isCollapsed = truncate && isLong && !isExpanded;
-
-  // Full content giữ nguyên format paragraph
-  const fullParagraphs = useMemo(
-    () => getPostParagraphs(normalizedContent),
+  const paragraphBlocks = useMemo(
+    () =>
+      getPostParagraphs(normalizedContent)
+        .map(parseParagraphBlocks)
+        .filter((blocks) => blocks.length > 0),
     [normalizedContent]
   );
 
-  // Preview content kiểu Facebook: flatten toàn bộ về 1 dòng logic
-  const previewText = useMemo(() => {
-    const flat = fullParagraphs
-      .map((p) => p.trim())
-      .filter(Boolean)
-      .join(" ");
+  const previewSource = useMemo(
+    () =>
+      paragraphBlocks
+        .flatMap((blocks) =>
+          blocks.flatMap((block) =>
+            block.type === "youtube" ? [] : [block.value.trim()]
+          )
+        )
+        .filter(Boolean)
+        .join(" "),
+    [paragraphBlocks]
+  );
 
-    return smartTruncatePostContent(flat, responsiveMaxLength);
-  }, [fullParagraphs, responsiveMaxLength]);
+  const previewText = useMemo(
+    () => smartTruncatePostContent(previewSource, responsiveMaxLength),
+    [previewSource, responsiveMaxLength]
+  );
 
-  const renderInlineParts = (text: string) => {
-    const inlineParts = parsePostInline(text);
+  const collapsedVideoBlocks = useMemo(() => {
+    const seenVideoIds = new Set<string>();
 
-    return inlineParts.map((part, partIndex) => {
-      if (part.type === "bold") {
-        return (
-          <strong
-            key={partIndex}
-            className="font-semibold"
-          >
-            {part.value}
-          </strong>
-        );
-      }
+    return paragraphBlocks
+      .flatMap((blocks) =>
+        blocks.flatMap((block) =>
+          block.type === "youtube" ? [block] : []
+        )
+      )
+      .filter((block) => {
+        const videoId = block.videoId.trim();
 
-      if (part.type === "link") {
-        return (
-          <Link
-            key={partIndex}
-            href={part.value}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sky-800 font-medium hover:text-black break-words"
-          >
-            {part.value}
-          </Link>
-        );
-      }
+        if (!videoId || seenVideoIds.has(videoId)) {
+          return false;
+        }
 
-      if (part.type === "hashtag") {
-        const tagName = part.value.replace(/^#/, "").trim().toLowerCase();
+        seenVideoIds.add(videoId);
+        return true;
+      });
+  }, [paragraphBlocks]);
 
-        return (
-          <Link
-            title={`Xem hashtag #${encodeURIComponent(tagName)}`}
-            key={partIndex}
-            href={`/blog/tag/${encodeURIComponent(tagName)}`}
-            className="text-sky-800 font-medium hover:underline active:scale-97 inline-flex break-words"
-          >
-            {part.value}
-          </Link>
-        );
-      }
+  const validImages = useMemo(() => {
+    if (!Array.isArray(images)) {
+      return [];
+    }
 
-      return <span key={partIndex}>{part.value}</span>;
-    });
-  };
+    return images
+      .filter(
+        (image): image is string =>
+          typeof image === "string" && image.trim() !== ""
+      )
+      .map((image) => image.trim());
+  }, [images]);
 
-  const videoBlocks = useMemo(() => {
-    const paragraphs = getPostParagraphs(normalizedContent);
-
-    return paragraphs.flatMap((p) =>
-      parsePostBlocks(p).filter((b) => b.type === "youtube")
-    );
-  }, [normalizedContent]);
+  const hasBodyContent = paragraphBlocks.some((blocks) =>
+    blocks.some((block) =>
+      block.type === "youtube"
+        ? block.videoId.trim() !== ""
+        : block.value.trim() !== ""
+    )
+  );
+  const hasHiddenText = previewText !== previewSource;
+  const contentKey = `${postId}\u0000${normalizedContent}`;
+  const isExpanded = expandedContentKey === contentKey;
+  const isCollapsed = truncate && hasHiddenText && !isExpanded;
 
   return (
     <>
-      <div className="postBody text-left pt-3 text-gray-800">
-        {isCollapsed ? (
-          <>
-            <div className="postShortPreview sm:text-base/6 text-[.9375rem]/6 break-words overflow-hidden px-3 sm:px-4">
-              {renderInlineParts(previewText)}
+      {hasBodyContent && (
+        <div className="postBody pt-3 text-left text-gray-800">
+          {isCollapsed ? (
+            <>
+              <div className="postShortPreview break-words px-3 text-[.9375rem]/6 sm:px-4 sm:text-base/6">
+                {renderInlineParts(previewText)}
 
-              <button
-                title="Xem toàn bộ bài viết"
-                onClick={() => setIsExpanded(true)}
-                className="ml-1 inline-flex items-center gap-1 align-baseline whitespace-nowrap font-medium text-gray-800 hover:underline cursor-pointer"
-              >
-                <span>Xem thêm</span>
-              </button>
-            </div>
+                <button
+                  type="button"
+                  title="Xem toàn bộ bài viết"
+                  aria-label="Xem toàn bộ bài viết"
+                  onClick={() => setExpandedContentKey(contentKey)}
+                  className="ml-1 inline-flex cursor-pointer items-center whitespace-nowrap align-baseline font-medium text-gray-800 hover:underline"
+                >
+                  Xem thêm
+                </button>
+              </div>
 
-            {/* ✅ VIDEO LUÔN HIỂN THỊ */}
-            {videoBlocks.map((block, index) => (
-              <PostEmbed key={index} videoId={block.videoId} />
-            ))}
-          </>
-        ) : (
-          fullParagraphs.map((paragraph, index) => {
-            // const isLast = index === fullParagraphs.length - 1;
-
-            // ✅ NEW: parse block
-            const blocks = parsePostBlocks(paragraph);
-
-            return (
+              {collapsedVideoBlocks.map((block) => (
+                <PostEmbed
+                  key={block.videoId.trim()}
+                  videoId={block.videoId.trim()}
+                />
+              ))}
+            </>
+          ) : (
+            paragraphBlocks.map((blocks, paragraphIndex) => (
               <div
-                key={index}
+                key={paragraphIndex}
                 className="postParagraph mb-3 last:mb-0"
               >
                 {blocks.map((block, blockIndex) => {
-                  // 🎬 VIDEO EMBED
                   if (block.type === "youtube") {
-                    return (
+                    const videoId = block.videoId.trim();
+
+                    return videoId ? (
                       <PostEmbed
-                        key={blockIndex}
-                        videoId={block.videoId}
+                        key={`youtube-${videoId}-${blockIndex}`}
+                        videoId={videoId}
                       />
-                    );
+                    ) : null;
                   }
 
-                  // 📝 TEXT (GIỮ NGUYÊN STYLE CŨ)
-                  return (
+                  return block.value.trim() ? (
                     <p
-                      key={blockIndex}
-                      className="sm:text-base/6 text-[.9375rem]/6 whitespace-pre-line break-words px-3 sm:px-4"
+                      key={`text-${blockIndex}`}
+                      className="whitespace-pre-line break-words px-3 text-[.9375rem]/6 sm:px-4 sm:text-base/6"
                     >
                       {renderInlineParts(block.value)}
-
-                      {/*isLast && truncate && isLong && (
-                  <button
-                    title="Thu gọn"
-                    onClick={() => setIsExpanded(false)}
-                    className="ml-1 align-baseline whitespace-nowrap font-medium text-gray-800 hover:text-black cursor-pointer"
-                  >
-                    <i className="fa-duotone fa-angle-up text-sm" />
-                  </button>
-                )*/}
                     </p>
-                  );
+                  ) : null;
                 })}
               </div>
-            );
-          })
-        )}
-      </div>
+            ))
+          )}
+        </div>
+      )}
 
-      {Array.isArray(images) &&
-        images.some((img) => typeof img === "string" && img.trim() !== "") && (
-          <PostImages
-            images={images}
-            postId={postId}
-            priority={priority}
-          />
-        )}
+      {validImages.length > 0 && (
+        <PostImages
+          images={validImages}
+          postId={postId}
+          priority={priority}
+        />
+      )}
     </>
   );
 }
