@@ -49,7 +49,7 @@ export default function BlogNavbar() {
               key={tab.href}
               href={tab.href}
               aria-current={isActive ? "page" : undefined}
-              className="relative flex shrink-0 items-center gap-2 border-b-3 border-transparent px-5 py-4 rounded-md hover:bg-slate-100 active:scale-98"
+              className="relative flex shrink-0 items-center gap-2 border-b-3 border-transparent px-3 sm:px-5 py-3 sm:py-4 rounded-md hover:bg-slate-100 active:scale-98"
             >
               <i className={`fad ${tab.icon}`} />
               {tab.label}
@@ -60,9 +60,9 @@ export default function BlogNavbar() {
                   initial={false}
                   transition={{
                     type: "spring",
-                    stiffness: 500,
-                    damping: 40,
-                    mass: 0.6,
+                    stiffness: 400,
+                    damping: 80,
+                    mass: 1,
                   }}
                   className="pointer-events-none absolute inset-x-0 -bottom-[3px] h-[3px] bg-primary"
                   aria-hidden="true"

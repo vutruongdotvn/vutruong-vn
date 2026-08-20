@@ -77,10 +77,10 @@ export default function LiquidMenu() {
                 x: `${activeIndex * 100}%`,
               }}
               transition={{
-                type: "spring",
-                stiffness: 500,
-                damping: 35,
-                mass: 0.7,
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 20,
+                    mass: 0.5,
               }}
               className="block h-full w-1/5 rounded-full bg-black/[0.1]"
             />

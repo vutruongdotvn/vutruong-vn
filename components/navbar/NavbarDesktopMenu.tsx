@@ -74,8 +74,8 @@ export default function NavbarDesktopMenu({
           }}
           transition={{
             type: "spring",
-            stiffness: 380,
-            damping: 30,
+            stiffness: 350,
+            damping: 20,
           }}
           className="pointer-events-none absolute left-0 top-0 h-full rounded-full bg-black shadow-lg"
         />
