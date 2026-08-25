@@ -41,32 +41,8 @@ const socialLinks = [
     username: "",
     visible: true,
     href: "/fb",
-    icon: "fab fa-facebook-f",
+    icon: "fab fa-facebook",
     iconClassName: "bg-[#1877F2] text-white",
-  },
-  {
-    name: "TikTok",
-    username: "",
-    visible: true,
-    href: "/tiktok",
-    icon: "fab fa-tiktok",
-    iconClassName: "bg-slate-950 text-white",
-  },
-  {
-    name: "Locket",
-    username: "",
-    visible: true,
-    href: "/locket",
-    icon: "fad fa-heart",
-    iconClassName: "bg-amber-400 text-slate-950",
-  },
-  {
-    name: "Threads",
-    username: "",
-    visible: true,
-    href: "/threads",
-    icon: "fab fa-threads",
-    iconClassName: "bg-slate-950 text-white",
   },
   {
     name: "Instagram",
@@ -77,9 +53,33 @@ const socialLinks = [
     iconClassName: "bg-[#E4405F] text-white",
   },
   {
-    name: "X",
+    name: "Locket",
     username: "",
     visible: true,
+    href: "/locket",
+    icon: "fad fa-heart",
+    iconClassName: "bg-amber-400 text-slate-950",
+  },
+  {
+    name: "TikTok",
+    username: "",
+    visible: true,
+    href: "/tiktok",
+    icon: "fab fa-tiktok",
+    iconClassName: "bg-slate-950 text-white",
+  },
+  {
+    name: "Threads",
+    username: "",
+    visible: true,
+    href: "/threads",
+    icon: "fab fa-threads",
+    iconClassName: "bg-slate-950 text-white",
+  },
+  {
+    name: "X",
+    username: "",
+    visible: false,
     href: "/x",
     icon: "fab fa-x-twitter",
     iconClassName: "bg-slate-950 text-white",
@@ -163,7 +163,7 @@ const hobbyGroups: AboutMultiValueItem[] = [
     label: "Sở thích",
     icon: "fad fa-hearts",
     visible: true,
-    items: ["Đạp xe", "Đi dạo", "Nghe nhạc", "Xem phim", "Chơi Guitar"],
+    items: ["Đi dạo", "Nghe nhạc", "Xem phim"],
   },
   {
     label: "Ăn & Uống",
@@ -175,28 +175,34 @@ const hobbyGroups: AboutMultiValueItem[] = [
       "Phở bò",
       "Hủ tiếu Nam Vang",
       "Mì cay",
-      "Bún đậu",
       "Mì Ý",
+      "Bún đậu",
     ],
   },
   {
     label: "Vận động",
     icon: "fad fa-person-running",
     visible: true,
-    items: ["Chạy bộ", "Đạp xe", "Leo núi"],
+    items: ["Chạy bộ", "Chạy xe đạp", "Leo núi"],
   },
   {
-    label: "Sáng tạo",
+    label: "Năng khiếu",
+    icon: "fad fa-guitars",
+    visible: true,
+    items: ["Ca hát", "Chơi Guitar", "Chơi Piano"],
+  },
+  {
+    label: "Sở thích khác",
     icon: "fad fa-wand-magic-sparkles",
     visible: true,
-    items: ["Chụp ảnh", "Quay video", "Ca hát"],
+    items: ["Chụp ảnh", "Quay video", "Viết Blog"],
   },
 ];
 
 const entertainmentInfo: AboutMultiValueItem[] = [
   {
-    label: "Trò chơi yêu thích",
-    items: ["PUBG Battlegrounds", "Đột Kích", "Liên Quân Mobile"],
+    label: "Trò chơi",
+    items: ["PUBG Battlegrounds", "Cities Skylines", "Đột Kích", "Liên Quân Mobile"],
     icon: "fad fa-gamepad",
     visible: true,
   },
@@ -213,7 +219,7 @@ const entertainmentInfo: AboutMultiValueItem[] = [
     visible: true,
   },
   {
-    label: "Phim yêu thích",
+    label: "Phim",
     items: ["Tình cảm", "Gia đình", "Hài hước", "Linh dị"],
     icon: "fad fa-film",
     visible: true,
@@ -225,7 +231,7 @@ const entertainmentInfo: AboutMultiValueItem[] = [
     visible: true,
   },
   {
-    label: "Nghệ sĩ yêu thích",
+    label: "Nghệ sĩ",
     items: ["Sơn Tùng M-TP", "Quốc Thiên", "Noo Phước Thịnh", "Hồ Quang Hiếu", "Lâm Chấn Khang"],
     icon: "fad fa-microphone-stand",
     visible: true,
@@ -295,7 +301,7 @@ const tabItems = [
   {
     id: "hobbies",
     label: "Sở thích",
-    icon: "fad fa-heart",
+    icon: "fad fa-hearts",
     visible: true,
   },
   {
@@ -342,14 +348,14 @@ const getVisibleContentItems = (
     .filter((item) => item.values.length > 0);
 
 const itemRowClassName =
-  "flex min-w-0 items-start gap-3 border-b border-slate-100 py-3 last:border-b-0 sm:gap-4 sm:py-3.5";
+  "flex min-w-0 items-start gap-3 border-b border-slate-100 py-2 last:border-b-0 sm:gap-4 sm:py-3.5";
 const itemIconClassName =
-  "flex h-10 w-10 shrink-0 items-center justify-center text-xl text-slate-500 sm:h-11 sm:w-11 sm:text-[22px]";
-const itemLabelClassName = "text-xs leading-5 text-slate-500";
-const itemValueClassName = "text-sm font-semibold leading-5";
+  "flex items-center justify-center rounded-full text-lg lg:text-2xl bg-black/5 w-8 lg:w-12 h-8 lg:h-12 text-slate-500";
+const itemLabelClassName = "text-xs leading-5 text-slate-400";
+const itemValueClassName = "text-sm lg:text-base font-medium leading-6";
 
 const panelClassName =
-  "about-tab-panel mb-3 rounded-lg border border-black/10 p-4 lg:mb-0 lg:rounded-none lg:border-0 lg:p-0";
+  "about-tab-panel mb-12 lg:mb-0 lg:rounded-none lg:border-0";
 
 const aboutTabsCss = [
   ".about-tab-input { display: none; }",
@@ -385,7 +391,7 @@ const aboutTabsCss = [
   "  #about-tab-entertainment:checked ~ .about-tabs-layout [data-about-panel='entertainment'],",
   "  #about-tab-contact:checked ~ .about-tabs-layout [data-about-panel='contact'] {",
   "    display: block;",
-  "    animation: about-panel-enter 500ms ease-out both;",
+  "    animation: about-panel-enter 300ms ease-in-out both;",
   "  }",
   "",
   "  #about-tab-intro:checked ~ .about-tabs-layout [data-about-tab='intro'],",
@@ -445,10 +451,10 @@ export default function BlogAboutPage() {
     if (!tab) return null;
 
     return (
-      <div className="mb-1 flex items-center gap-3 border-b border-slate-200 pb-3 lg:hidden uppercase">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center text-lg text-slate-500">
+      <div className="mb-3 flex items-center gap-3 border-b border-slate-200 pb-3 font-bold">
+        {/* <span className="flex h-10 w-10 shrink-0 items-center justify-center text-lg text-slate-500">
           <i className={tab.icon} aria-hidden="true" />
-        </span>
+        </span> */}
         <h2 className="text-base font-semibold text-slate-900">{tab.label}</h2>
       </div>
     );
@@ -495,19 +501,16 @@ export default function BlogAboutPage() {
                     />
                   </a>
                 ) : item.isCollection ? (
-                  <div className="flex flex-wrap items-baseline">
+                  <div className="">
                     {item.values.map((value, index) => (
-                      <span
-                        key={item.label + "-" + value + "-" + index}
-                        className="inline-flex min-w-0 items-baseline"
-                      >
+                      <span key={item.label + "-" + value + "-" + index}>
                         {index > 0 && (
-                          <span className="mx-2 text-slate-400">•</span>
+                          <span className="text-slate-300 mx-2">+</span>
                         )}
                         <span
                           className={
                             itemValueClassName +
-                            " cursor-pointer break-words text-slate-900 transition-colors hover:text-sky-700"
+                            " cursor-pointer break-words text-slate-700 transition-colors hover:text-black"
                           }
                         >
                           {value}
@@ -534,7 +537,7 @@ export default function BlogAboutPage() {
 
   return (
     <PremiumGlassCard
-      className="w-full max-w-6xl px-0 sm:px-4"
+      className="w-full max-w-6xl"
       contentClassName="overflow-hidden p-0"
     >
       <article className="overflow-hidden bg-white">
@@ -576,7 +579,7 @@ export default function BlogAboutPage() {
               </nav>
             </aside>
 
-            <div className="min-w-0 bg-white p-4 lg:min-h-[38rem]">
+            <div className="min-w-0 bg-white p-4 lg:min-h-[40rem]">
               {visibleSectionIds.has("intro") && (
                 <section
                   id="about-panel-intro"
@@ -586,7 +589,7 @@ export default function BlogAboutPage() {
                 >
                   {renderMobileSectionHeader("intro")}
 
-                  <div className="max-w-3xl space-y-4 text-sm leading-7 text-slate-800 sm:text-[15px] sm:leading-7 lg:text-base lg:leading-8">
+                  <div className="max-w-3xl space-y-4 text-sm/7 text-slate-800 sm:text-[15px]/7 lg:text-base/7 text-justify">
                     <p className="text-slate-950">
                       <strong>
                         Chào mừng bạn đến với Hệ sinh thái số cá nhân của mình.
@@ -620,13 +623,13 @@ export default function BlogAboutPage() {
                   {renderMobileSectionHeader("social")}
 
                   <ul
-                    className="max-w-4xl lg:grid lg:grid-cols-1 lg:gap-x-6"
+                    className="max-w-4xl flex flex-col"
                     role="list"
                   >
                     {visibleSocialLinks.map((link) => (
                       <li
                         key={link.name}
-                        className="border-b border-slate-100 last:border-b-0"
+                        className="group/social border-b border-slate-100 py-2 lg:py-4 last:border-b-0"
                       >
                         <a
                           href={link.href}
@@ -637,23 +640,20 @@ export default function BlogAboutPage() {
                               ? link.name + ": " + link.username
                               : link.name
                           }
-                          className="group -mx-2 flex min-w-0 items-center gap-3 rounded-lg px-2 py-3 transition-colors hover:bg-slate-50 sm:py-3.5"
+                          // className={"group flex min-w-0 items-center gap-3 " +
+                          //   link.iconClassName}
+                          className="flex items-center justify-center gap-3 group-hover/social:text-sky-700"
                         >
-                          <span
-                            className={
-                              "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-base " +
-                              link.iconClassName
-                            }
-                          >
-                            <i className={link.icon} aria-hidden="true" />
+                          <span className="flex items-center justify-center rounded-full text-lg lg:text-2xl bg-black/5 w-8 lg:w-12 h-8 lg:h-12">
+                            <i className={"flex items-center text-center text-slate-500 " + link.icon} aria-hidden="true" />
                           </span>
 
-                          <span className="min-w-0 flex-1">
+                          <span className="flex flex-col flex-1 gap-0">
                             {hasText(link.username) && (
                               <span
                                 className={
                                   itemLabelClassName +
-                                  " block truncate transition-colors group-hover:text-blue-500"
+                                  " block truncate text-sm"
                                 }
                               >
                                 {link.username}
@@ -662,7 +662,7 @@ export default function BlogAboutPage() {
                             <span
                               className={
                                 itemValueClassName +
-                                " block truncate text-slate-900 transition-colors group-hover:text-blue-600"
+                                " block truncate text-sm"
                               }
                             >
                               {link.name}
