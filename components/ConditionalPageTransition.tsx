@@ -11,13 +11,5 @@ export default function ConditionalPageTransition({
   children,
 }: ConditionalPageTransitionProps) {
   const pathname = usePathname();
-
-  const disableTransition =
-    pathname === "/watch" || pathname.startsWith("/watch/");
-
-  if (disableTransition) {
-    return <>{children}</>;
-  }
-
   return <PageTransition>{children}</PageTransition>;
 }

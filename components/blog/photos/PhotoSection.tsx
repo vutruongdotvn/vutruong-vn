@@ -312,9 +312,6 @@ export default function PhotoSection() {
         >
           Ảnh
         </h1>
-        <div className="text-sm text-slate-400 transition duration-300 hover:text-slate-600">
-          Tất cả ảnh trong Blog, bấm vào ảnh để xem bài viết.
-        </div>
       </header>
 
       {initialLoading ? (

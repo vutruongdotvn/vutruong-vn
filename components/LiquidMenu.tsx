@@ -22,9 +22,9 @@ const menuItems = [
     icon: "fa-pen",
   },
   {
-    label: "Watch",
-    href: "/watch",
-    icon: "fa-clapperboard-play",
+    label: "Secret",
+    href: "/secret",
+    icon: "fa-shield-keyhole",
   },
 ];
 

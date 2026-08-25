@@ -5,12 +5,11 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 const tabs = [
-  { label: "Bài viết", icon: "fa-feed", href: "/blog" },
+  { label: "Tất cả", icon: "fa-feed", href: "/blog" },
   { label: "Giới thiệu", icon: "fa-user-vneck", href: "/blog/about" },
   { label: "Liên hệ", icon: "fa-envelope", href: "/blog/contact" },
   { label: "Ảnh", icon: "fa-image", href: "/blog/photos" },
   { label: "Video", icon: "fa-video", href: "/blog/videos" },
-  { label: "Watch", icon: "fa-clapperboard-play", href: "/watch" },
 ];
 
 const childRoutes = tabs
@@ -60,8 +59,8 @@ export default function BlogNavbar() {
                   initial={false}
                   transition={{
                     type: "spring",
-                    stiffness: 400,
-                    damping: 80,
+                    stiffness: 600,
+                    damping: 40,
                     mass: 1,
                   }}
                   className="pointer-events-none absolute inset-x-0 -bottom-[3px] h-[3px] bg-primary"

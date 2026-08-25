@@ -11,8 +11,9 @@ export default function LayoutShell({
   const pathname = usePathname();
 
   const hideNavbar =
-    pathname === "/hi" || pathname.startsWith("/watch");
-
+    // pathname === "/hi" || pathname.startsWith("/router_need_to_hide_Navbar"); thêm router để ẩn Navbar
+    pathname === "/hi";
+    
   return (
     <>
       {!hideNavbar && <Navbar />}

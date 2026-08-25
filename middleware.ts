@@ -14,8 +14,8 @@ export function middleware(request: NextRequest) {
   // 3. Nếu danh tính khớp với Bot rác
   const isBot = blockedBots.some(bot => userAgent.includes(bot));
 
-  // 4. Khóa mõm ngay lập tức nếu chúng cố vào khu vực /watch
-  if (isBot && request.nextUrl.pathname.startsWith('/watch')) {
+  // 4. Khóa mõm ngay lập tức nếu chúng cố vào khu vực có URL được chỉ định
+  if (isBot && request.nextUrl.pathname.startsWith('/')) {
     // Trả về mã lỗi 403 (Forbidden) cực nhẹ, không tốn tài nguyên Server
     return new NextResponse('Access Denied: Bad Bot', { status: 403 });
   }
@@ -25,5 +25,5 @@ export function middleware(request: NextRequest) {
 
 // Chỉ chạy middleware cho các đường dẫn cụ thể để tối ưu hiệu năng
 export const config = {
-  matcher: ['/watch/:path*'],
+  matcher: ['/:path*'],
 };

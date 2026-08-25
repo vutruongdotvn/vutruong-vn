@@ -91,7 +91,6 @@ export default function CoverSection() {
                 <div className="mt-0 flex flex-col items-center gap-0 sm:mt-18 sm:items-start sm:gap-1">
                   <div className="flex h-7 items-center gap-1 md:h-8 lg:h-9">
                     <div className="h-6 w-40 animate-pulse rounded-md bg-gray-200 sm:w-44 md:h-7 md:w-48 lg:h-8" />
-                    <div className="size-3 animate-pulse rounded-full bg-blue-200 sm:size-4" />
                   </div>
 
                   <div className="flex h-4 items-center gap-1 sm:h-6">
@@ -230,8 +229,7 @@ export default function CoverSection() {
                 <div className="flex items-center gap-1 text-xl font-bold md:text-2xl lg:text-3xl text-slate-800">
                   {profile.name || "User Name"}
                   <i
-                    className="fas fa-badge-check cursor-pointer text-sm text-blue-500 active:scale-95 sm:text-base"
-                    title="Tài khoản đã được xác thực"
+                    className="fas fa-badge-check cursor-pointer text-sm text-blue-500 active:scale-95 sm:text-lg"
                   />
                 </div>
                 <div className="text-[.8375rem] text-slate-800 sm:text-sm/6">

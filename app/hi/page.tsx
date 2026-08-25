@@ -55,7 +55,7 @@ const shortcuts: ShortcutItem[] = [
   {
     title: "Zalo",
     url: "https://chat.zalo.me/",
-    icon: "fa-duotone fa-comment",
+    icon: "fa-duotone fa-comment-lines",
     bgClass: "from-sky-400 to-sky-500",
   },
   {
