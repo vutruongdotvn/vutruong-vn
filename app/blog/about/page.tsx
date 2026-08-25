@@ -42,7 +42,6 @@ const socialLinks = [
     visible: true,
     href: "/fb",
     icon: "fab fa-facebook",
-    iconClassName: "bg-[#1877F2] text-white",
   },
   {
     name: "Instagram",
@@ -50,7 +49,6 @@ const socialLinks = [
     visible: true,
     href: "/instagram",
     icon: "fab fa-instagram",
-    iconClassName: "bg-[#E4405F] text-white",
   },
   {
     name: "Locket",
@@ -58,7 +56,6 @@ const socialLinks = [
     visible: true,
     href: "/locket",
     icon: "fad fa-heart",
-    iconClassName: "bg-amber-400 text-slate-950",
   },
   {
     name: "TikTok",
@@ -66,7 +63,6 @@ const socialLinks = [
     visible: true,
     href: "/tiktok",
     icon: "fab fa-tiktok",
-    iconClassName: "bg-slate-950 text-white",
   },
   {
     name: "Threads",
@@ -74,7 +70,6 @@ const socialLinks = [
     visible: true,
     href: "/threads",
     icon: "fab fa-threads",
-    iconClassName: "bg-slate-950 text-white",
   },
   {
     name: "X",
@@ -82,7 +77,6 @@ const socialLinks = [
     visible: false,
     href: "/x",
     icon: "fab fa-x-twitter",
-    iconClassName: "bg-slate-950 text-white",
   },
 ];
 
@@ -350,12 +344,11 @@ const getVisibleContentItems = (
 const itemRowClassName =
   "flex min-w-0 items-start gap-3 border-b border-slate-100 py-2 last:border-b-0 sm:gap-4 sm:py-3.5";
 const itemIconClassName =
-  "flex items-center justify-center rounded-full text-lg lg:text-2xl bg-black/5 w-8 lg:w-12 h-8 lg:h-12 text-slate-500";
+  "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 text-lg text-slate-500 lg:h-12 lg:w-12 lg:text-2xl";
 const itemLabelClassName = "text-xs leading-5 text-slate-400";
-const itemValueClassName = "text-sm lg:text-base font-medium leading-6";
+const itemValueClassName = "text-sm font-medium leading-6 lg:text-base";
 
-const panelClassName =
-  "about-tab-panel mb-12 lg:mb-0 lg:rounded-none lg:border-0";
+const panelClassName = "about-tab-panel mb-12 lg:mb-0";
 
 const aboutTabsCss = [
   ".about-tab-input { display: none; }",
@@ -445,16 +438,13 @@ export default function BlogAboutPage() {
   );
   const visibleSectionIds = new Set(visibleTabItems.map((tab) => tab.id));
 
-  const renderMobileSectionHeader = (tabId: string) => {
+  const renderSectionHeader = (tabId: string) => {
     const tab = tabItems.find((item) => item.id === tabId);
 
     if (!tab) return null;
 
     return (
-      <div className="mb-3 flex items-center gap-3 border-b border-slate-200 pb-3 font-bold">
-        {/* <span className="flex h-10 w-10 shrink-0 items-center justify-center text-lg text-slate-500">
-          <i className={tab.icon} aria-hidden="true" />
-        </span> */}
+      <div className="mb-3 flex items-center gap-3 border-b border-slate-200 pb-3">
         <h2 className="text-base font-semibold text-slate-900">{tab.label}</h2>
       </div>
     );
@@ -474,7 +464,7 @@ export default function BlogAboutPage() {
         aria-label={tab?.label ?? panel.id}
         className={panelClassName}
       >
-        {renderMobileSectionHeader(panel.id)}
+        {renderSectionHeader(panel.id)}
 
         <ul className="max-w-3xl" role="list">
           {visibleItems.map((item) => (
@@ -501,16 +491,19 @@ export default function BlogAboutPage() {
                     />
                   </a>
                 ) : item.isCollection ? (
-                  <div className="">
+                  <div>
                     {item.values.map((value, index) => (
-                      <span key={item.label + "-" + value + "-" + index}>
+                      <span
+                        key={item.label + "-" + value + "-" + index}
+                        // className="inline-flex min-w-0 items-baseline"
+                      >
                         {index > 0 && (
-                          <span className="text-slate-300 mx-2">+</span>
+                          <span className="mx-2 text-slate-300">+</span>
                         )}
                         <span
                           className={
                             itemValueClassName +
-                            " cursor-pointer break-words text-slate-700 transition-colors hover:text-black"
+                            " break-words text-slate-700 transition-colors hover:text-black"
                           }
                         >
                           {value}
@@ -587,7 +580,7 @@ export default function BlogAboutPage() {
                   aria-label="Lời giới thiệu"
                   className={panelClassName}
                 >
-                  {renderMobileSectionHeader("intro")}
+                  {renderSectionHeader("intro")}
 
                   <div className="max-w-3xl space-y-4 text-sm/7 text-slate-800 sm:text-[15px]/7 lg:text-base/7 text-justify">
                     <p className="text-slate-950">
@@ -620,16 +613,13 @@ export default function BlogAboutPage() {
                   aria-label="Liên kết xã hội"
                   className={panelClassName}
                 >
-                  {renderMobileSectionHeader("social")}
+                  {renderSectionHeader("social")}
 
-                  <ul
-                    className="max-w-4xl flex flex-col"
-                    role="list"
-                  >
+                  <ul className="max-w-4xl" role="list">
                     {visibleSocialLinks.map((link) => (
                       <li
                         key={link.name}
-                        className="group/social border-b border-slate-100 py-2 lg:py-4 last:border-b-0"
+                        className="group/social border-b border-slate-100 last:border-b-0"
                       >
                         <a
                           href={link.href}
@@ -640,20 +630,18 @@ export default function BlogAboutPage() {
                               ? link.name + ": " + link.username
                               : link.name
                           }
-                          // className={"group flex min-w-0 items-center gap-3 " +
-                          //   link.iconClassName}
-                          className="flex items-center justify-center gap-3 group-hover/social:text-sky-700"
+                          className="flex items-center gap-3 py-2 group-hover/social:text-sky-700 lg:py-4"
                         >
-                          <span className="flex items-center justify-center rounded-full text-lg lg:text-2xl bg-black/5 w-8 lg:w-12 h-8 lg:h-12">
-                            <i className={"flex items-center text-center text-slate-500 " + link.icon} aria-hidden="true" />
+                          <span className={itemIconClassName}>
+                            <i className={link.icon} aria-hidden="true" />
                           </span>
 
-                          <span className="flex flex-col flex-1 gap-0">
+                          <span className="flex min-w-0 flex-1 flex-col">
                             {hasText(link.username) && (
                               <span
                                 className={
                                   itemLabelClassName +
-                                  " block truncate text-sm"
+                                  " block truncate"
                                 }
                               >
                                 {link.username}
@@ -662,7 +650,7 @@ export default function BlogAboutPage() {
                             <span
                               className={
                                 itemValueClassName +
-                                " block truncate text-sm"
+                                " block truncate"
                               }
                             >
                               {link.name}
