@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import PostCard from "@/components/blog/PostCard";
-import SmartPostSkeletonFeed from "@/components/blog/SmartPostSkeletonFeed";
+import PostCardSkeleton from "@/components/blog/PostCardSkeleton";
 import CreatePostModal from "@/components/blog/CreatePostModal";
 import FancyboxWrapper from "@/components/blog/FancyboxWrapper";
 import LoginModal from "@/components/auth/LoginModal";
@@ -402,7 +402,7 @@ export default function BlogTagPage() {
               <div className="w-25 h-5 bg-gray-200 rounded-xl" />
             </div>
 
-            <SmartPostSkeletonFeed mode="initial" />
+            <PostCardSkeleton count={LIMIT} />
           </div>
         </>
       )}
@@ -442,8 +442,6 @@ export default function BlogTagPage() {
             </p>
           )*/}
 
-          {loading && <SmartPostSkeletonFeed mode="initial" />}
-
           {!loading && posts.length === 0 && (
             <div className="text-center text-gray-500 py-8">
               Chưa có bài viết nào có hashtag{" "}
@@ -463,7 +461,7 @@ export default function BlogTagPage() {
             />
           ))}
 
-          {loadingMore && <SmartPostSkeletonFeed mode="loadMore" />}
+          {loadingMore && <PostCardSkeleton count={LIMIT} />}
 
           <div ref={loadMoreRef}></div>
 
