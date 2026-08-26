@@ -136,7 +136,7 @@ function renderInlineParts(text: string) {
           title={`Xem hashtag #${tagName}`}
           href={`/blog/tag/${encodeURIComponent(tagName)}`}
           prefetch={false}
-          className="break-words font-medium text-sky-800 hover:underline active:opacity-70"
+          className="break-words font-medium text-sky-800 hover:underline active:opacity-80"
         >
           {part.value}
         </Link>

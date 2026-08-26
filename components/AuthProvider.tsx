@@ -1,9 +1,12 @@
 "use client";
 
+import type { ReactNode } from "react";
+import { UserProvider } from "@/hooks/useUser";
+
 export default function AuthProvider({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
-  return <>{children}</>;
+  return <UserProvider>{children}</UserProvider>;
 }

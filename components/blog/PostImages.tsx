@@ -287,13 +287,13 @@ export default function PostImages({
           // Bật hiệu ứng nảy trở lại khi trượt quá điểm đầu/cuối.
           momentumBounce: true,
           // Độ nảy: càng lớn càng nảy mạnh. Có thể thử khoảng 0.3–0.8.
-          momentumBounceRatio: 0.55,
+          momentumBounceRatio: 1,
           // Quãng đường trượt theo quán tính: thấp hơn = dừng sớm hơn.
-          momentumRatio: 1.0,
+          momentumRatio: 1,
           // Tốc độ quán tính: thấp hơn = chuyển động chậm và kiểm soát hơn.
-          momentumVelocityRatio: 0.5,
+          momentumVelocityRatio: 1,
           // Vận tốc tối thiểu để tạo quán tính; tăng lên nếu slider quá nhạy.
-          minimumVelocity: 0.01,
+          minimumVelocity: 0,
           // false = dừng tự do; true = tự hút về vị trí đầu của slide gần nhất.
           sticky: false,
         }}
@@ -320,7 +320,7 @@ export default function PostImages({
                 index,
                 // Giao diện khung: rounded-lg/xl/2xl chỉnh bo góc;
                 // bg-* chỉnh nền; ring-1/ring-2 và ring-* chỉnh viền.
-                "h-full w-full rounded-lg bg-slate-100 ring-1 ring-inset ring-slate-200",
+                "h-full w-full rounded-lg bg-slate-100",
                 // Gợi ý kích thước tải; không thay đổi chiều cao/chiều rộng CSS.
                 "(max-width:640px) 90vw, (max-width:1024px) 70vw, 720px"
               )}

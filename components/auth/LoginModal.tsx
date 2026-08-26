@@ -1,9 +1,93 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/useToast";
+
+type AuthErrorDetails = {
+  code: string | null;
+  message: string;
+  name: string;
+  status: number | null;
+};
+
+const NETWORK_ERROR_PATTERN =
+  /failed to fetch|fetch failed|network\s*error|network request failed|load failed|err_network/i;
+
+function getAuthErrorDetails(error: unknown): AuthErrorDetails {
+  if (typeof error === "string") {
+    return {
+      code: null,
+      message: error,
+      name: "AuthError",
+      status: null,
+    };
+  }
+
+  if (!error || typeof error !== "object") {
+    return {
+      code: null,
+      message: "",
+      name: "UnknownAuthError",
+      status: null,
+    };
+  }
+
+  const candidate = error as {
+    code?: unknown;
+    message?: unknown;
+    name?: unknown;
+    status?: unknown;
+  };
+
+  return {
+    code: typeof candidate.code === "string" ? candidate.code : null,
+    message: typeof candidate.message === "string" ? candidate.message : "",
+    name: typeof candidate.name === "string" ? candidate.name : "AuthError",
+    status: typeof candidate.status === "number" ? candidate.status : null,
+  };
+}
+
+function getAuthErrorMessage(error: unknown, isRegister: boolean) {
+  const { code, message, status } = getAuthErrorDetails(error);
+
+  if (NETWORK_ERROR_PATTERN.test(message)) {
+    return "Không thể kết nối máy chủ. Vui lòng kiểm tra mạng và thử lại.";
+  }
+
+  if (status === 429) {
+    return "Bạn đã thử quá nhiều lần. Vui lòng đợi vài phút rồi thử lại.";
+  }
+
+  switch (code) {
+    case "invalid_credentials":
+      return "Email hoặc mật khẩu không chính xác.";
+    case "email_not_confirmed":
+      return "Email chưa được xác nhận. Vui lòng kiểm tra hộp thư.";
+    case "user_banned":
+      return "Tài khoản của bạn đang bị khóa.";
+    case "over_request_rate_limit":
+      return "Bạn đã thử quá nhiều lần. Vui lòng đợi vài phút rồi thử lại.";
+    case "request_timeout":
+      return "Yêu cầu đã quá thời gian chờ. Vui lòng thử lại.";
+    case "email_address_invalid":
+    case "validation_failed":
+      return "Thông tin tài khoản không hợp lệ.";
+    case "weak_password":
+      return "Mật khẩu chưa đáp ứng yêu cầu bảo mật.";
+    case "email_exists":
+    case "user_already_exists":
+      return "Email này đã được đăng ký.";
+    case "signup_disabled":
+    case "email_provider_disabled":
+      return "Tính năng đăng ký hiện không khả dụng.";
+    default:
+      return isRegister
+        ? "Không thể đăng ký lúc này. Vui lòng thử lại."
+        : "Không thể đăng nhập lúc này. Vui lòng thử lại.";
+  }
+}
 
 export default function LoginModal({ onClose }: { onClose: () => void }) {
   const [isRegister, setIsRegister] = useState(false);
@@ -13,6 +97,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
 
   const { showToast } = useToast();
 
@@ -26,7 +111,25 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
     };
   }, []);
 
+  const handleAuthError = (error: unknown) => {
+    const details = getAuthErrorDetails(error);
+
+    // Sai thông tin đăng nhập là tình huống dự kiến, không phải lỗi ứng dụng.
+    if (details.code !== "invalid_credentials") {
+      console.warn("Auth request failed:", details);
+    }
+
+    showToast(getAuthErrorMessage(error, isRegister), "error");
+
+    requestAnimationFrame(() => {
+      passwordInputRef.current?.focus();
+      passwordInputRef.current?.select();
+    });
+  };
+
   const handleAction = async () => {
+    if (loading) return;
+
     if (isRegister && !name.trim()) {
       showToast("Vui lòng nhập họ tên", "warning");
       return;
@@ -53,10 +156,14 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
           options: {
             data: {
               name: name.trim(), // Metadata này sẽ được Trigger lấy ra
-            }
-          }
+            },
+          },
         });
-        if (error) throw error;
+        if (error) {
+          handleAuthError(error);
+          return;
+        }
+
         showToast("Đăng ký thành công và đang chờ phê duyệt.", "success");
         onClose();
       } else {
@@ -65,20 +172,26 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
           email: email.trim(),
           password,
         });
-        if (error) throw error;
+        if (error) {
+          handleAuthError(error);
+          return;
+        }
+
         showToast("Chào mừng bạn trở lại hệ thống!", "success");
         onClose();
       }
-    } catch (error: any) {
-      console.error("Auth error:", error);
-      showToast(error.message || "Có lỗi xảy ra", "error");
+    } catch (error: unknown) {
+      handleAuthError(error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleAction();
+    if (e.key !== "Enter" || loading) return;
+
+    e.preventDefault();
+    void handleAction();
   };
 
   if (!mounted) return null;
@@ -150,6 +263,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
               <i className="fa-duotone fa-lock-keyhole" />
             </div>
             <input
+              ref={passwordInputRef}
               type="password"
               inputMode="numeric"
               pattern="[0-9]*"

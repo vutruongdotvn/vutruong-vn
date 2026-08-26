@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import type { User } from "@supabase/supabase-js";
 
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/hooks/useUser";
@@ -25,11 +24,6 @@ import {
   pageMeta,
 } from "@/components/navbar/constants";
 
-type ProfileData = {
-  name?: string | null;
-  avatar?: string | null;
-} | null;
-
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -49,9 +43,7 @@ export default function Navbar() {
   // =========================
   // AUTH / PROFILE STATE
   // =========================
-  const { user, role } = useUser();
-
-  const [profile, setProfile] = useState<ProfileData>(null);
+  const { user, role, profile } = useUser();
 
   // =========================
   // REFS
@@ -60,7 +52,6 @@ export default function Navbar() {
   const moreRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
 
-  const lastFetchedUserId = useRef<string | null>(null);
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
 
@@ -104,48 +95,6 @@ export default function Navbar() {
   const title = currentMeta.title;
   const subtitle = currentMeta.subtitle;
   const currentPageHref = pathname || "/";
-
-  // =========================
-  // PROFILE FETCH
-  // =========================
-  const fetchProfile = useCallback(async (currentUser: User | null) => {
-    if (!currentUser) {
-      setProfile(null);
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("name, avatar")
-        .eq("id", currentUser.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error("Navbar fetchProfile error:", error);
-        setProfile(null);
-        return;
-      }
-
-      setProfile((data as ProfileData) || null);
-    } catch (err) {
-      console.error("Navbar fetchProfile crash:", err);
-      setProfile(null);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!user) {
-      lastFetchedUserId.current = null;
-      setProfile(null);
-      return;
-    }
-
-    if (lastFetchedUserId.current === user.id) return;
-
-    lastFetchedUserId.current = user.id;
-    void fetchProfile(user);
-  }, [user, fetchProfile]);
 
   // =========================
   // DERIVED AUTH UI DATA
@@ -364,8 +313,6 @@ export default function Navbar() {
     }
 
     closeAllMenus();
-    setProfile(null);
-    lastFetchedUserId.current = null;
   }, [closeAllMenus]);
 
   return (

@@ -316,7 +316,7 @@ export function buildCloudinaryImage(
  */
 export function getBlogPostFeedImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 800,
+    width: 400,
     crop: "limit",
     quality: "auto:good",
     format: "webp",
