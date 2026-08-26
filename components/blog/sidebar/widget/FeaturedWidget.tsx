@@ -1,14 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import type { TouchEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { Swiper as SwiperInstance } from "swiper";
+import { FreeMode } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+
+/*
+ * Chỉ import CSS cốt lõi và FreeMode để giữ bundle gọn.
+ * Không import Mousewheel: con lăn/trackpad không điều khiển slider.
+ */
+import "swiper/css";
+import "swiper/css/free-mode";
+
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/hooks/useUser";
 import {
@@ -20,7 +24,70 @@ import type { FeaturedStory } from "@/types/featuredStory";
 import FeaturedManagerModal from "@/components/blog/sidebar/widget/featured/FeaturedManagerModal";
 
 const VISIBLE_STORIES = 3;
-const SWIPE_THRESHOLD = 45;
+
+/*
+ * THỜI GIAN CHUYỂN SLIDE KHI BẤM NÚT MŨI TÊN (milliseconds):
+ * - 350–450: nhanh, gọn.
+ * - 500–600: cân bằng, đang dùng 550.
+ * - 700–900: chậm và mềm hơn.
+ * Giá trị này không ảnh hưởng quán tính khi kéo/vuốt trực tiếp.
+ */
+const NAVIGATION_SPEED = 750;
+
+/*
+ * PHYSICS TƯƠNG TÁC — đồng bộ với PostImages final:
+ *
+ * POINTER_PHYSICS áp dụng cho click-giữ chuột trái trên PC.
+ * TOUCH_PHYSICS chỉ áp dụng cho touch/pen trên mobile/tablet.
+ *
+ * - threshold: quãng kéo tối thiểu trước khi slider bắt đầu di chuyển.
+ * - resistanceRatio: độ mềm khi kéo quá mép; gần 1 = kéo vượt mép nhiều hơn.
+ * - momentumBounceRatio: cường độ nảy trở lại ở đầu/cuối.
+ * - momentumRatio: quãng đường tiếp tục trượt sau khi thả.
+ * - momentumVelocityRatio: vận tốc quán tính sau khi thả.
+ * - minimumVelocity: vận tốc tối thiểu để kích hoạt quán tính.
+ */
+const POINTER_PHYSICS = {
+  threshold: 5,
+  resistanceRatio: 0.4,
+  momentumBounceRatio: 0.3,
+  momentumRatio: 0.3,
+  momentumVelocityRatio: 0.3,
+  minimumVelocity: 0,
+};
+
+const TOUCH_PHYSICS = {
+  threshold: 2,
+  resistanceRatio: 0.85,
+  momentumBounceRatio: 0.85,
+  momentumRatio: 1,
+  momentumVelocityRatio: 1,
+  minimumVelocity: 0.02,
+};
+
+const SWIPER_MODULES = [FreeMode];
+
+function applyInteractionPhysics(
+  swiper: SwiperInstance,
+  isTouchInput: boolean
+) {
+  const physics = isTouchInput ? TOUCH_PHYSICS : POINTER_PHYSICS;
+
+  swiper.params.threshold = physics.threshold;
+  swiper.params.resistanceRatio = physics.resistanceRatio;
+
+  if (
+    swiper.params.freeMode &&
+    typeof swiper.params.freeMode === "object"
+  ) {
+    Object.assign(swiper.params.freeMode, {
+      momentumBounceRatio: physics.momentumBounceRatio,
+      momentumRatio: physics.momentumRatio,
+      momentumVelocityRatio: physics.momentumVelocityRatio,
+      minimumVelocity: physics.minimumVelocity,
+    });
+  }
+}
 
 function getSnapPositions(storyCount: number) {
   if (storyCount <= VISIBLE_STORIES) return [0];
@@ -50,14 +117,11 @@ export default function FeaturedWidget() {
   const [stories, setStories] = useState<FeaturedStory[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
-  const [page, setPage] = useState(0);
-  const [slideUnit, setSlideUnit] = useState(0);
+  const [canSlidePrev, setCanSlidePrev] = useState(false);
+  const [canSlideNext, setCanSlideNext] = useState(false);
   const [managerOpen, setManagerOpen] = useState(false);
-  const viewportRef = useRef<HTMLDivElement | null>(null);
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  const touchStartXRef = useRef<number | null>(null);
+  const swiperRef = useRef<SwiperInstance | null>(null);
   const reloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const resizeFrameRef = useRef<number | null>(null);
 
   const loadStories = useCallback(async () => {
     try {
@@ -111,80 +175,82 @@ export default function FeaturedWidget() {
     () => getSnapPositions(visibleStories.length),
     [visibleStories.length]
   );
-  const pageCount = snapPositions.length;
-  const startIndex = snapPositions[page] ?? 0;
 
+  const syncNavigationState = useCallback(
+    (swiper: SwiperInstance) => {
+      const hasOverflow = visibleStories.length > VISIBLE_STORIES;
+      const nextCanSlidePrev = hasOverflow && !swiper.isBeginning;
+      const nextCanSlideNext = hasOverflow && !swiper.isEnd;
+
+      setCanSlidePrev((current) =>
+        current === nextCanSlidePrev ? current : nextCanSlidePrev
+      );
+      setCanSlideNext((current) =>
+        current === nextCanSlideNext ? current : nextCanSlideNext
+      );
+    },
+    [visibleStories.length]
+  );
+
+  /*
+   * Khi realtime thêm/xóa story, cập nhật Swiper và bảo đảm activeIndex không
+   * vượt quá vị trí cuối cùng vẫn hiển thị đủ 3 story.
+   */
   useEffect(() => {
-    setPage((current) => Math.min(current, Math.max(pageCount - 1, 0)));
-  }, [pageCount]);
+    const swiper = swiperRef.current;
+    if (!swiper) return;
 
-  useEffect(() => {
-    const viewport = viewportRef.current;
-    const track = trackRef.current;
+    const frame = requestAnimationFrame(() => {
+      swiper.update();
 
-    if (!viewport || !track || visibleStories.length === 0) {
-      setSlideUnit(0);
-      return;
+      const lastStart = Math.max(
+        visibleStories.length - VISIBLE_STORIES,
+        0
+      );
+
+      if (swiper.activeIndex > lastStart) {
+        swiper.slideTo(lastStart, 0);
+      }
+
+      syncNavigationState(swiper);
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [syncNavigationState, visibleStories.length]);
+
+  /*
+   * Nút mũi tên vẫn dùng các mốc trang cũ:
+   * - 4 story: 0 → 1.
+   * - 5 story: 0 → 2.
+   * - 6 story: 0 → 3.
+   * - 7 story: 0 → 3 → 4.
+   * Nhờ vậy trang cuối không bao giờ có cột trống.
+   */
+  const goPrev = useCallback(() => {
+    const swiper = swiperRef.current;
+    if (!swiper) return;
+
+    let target = 0;
+
+    for (const position of snapPositions) {
+      if (position >= swiper.activeIndex) break;
+      target = position;
     }
 
-    const updateSlideUnit = () => {
-      if (resizeFrameRef.current !== null) {
-        cancelAnimationFrame(resizeFrameRef.current);
-      }
+    swiper.slideTo(target, NAVIGATION_SPEED);
+  }, [snapPositions]);
 
-      resizeFrameRef.current = requestAnimationFrame(() => {
-        const firstCard = track.firstElementChild as HTMLElement | null;
-        if (!firstCard) return;
+  const goNext = useCallback(() => {
+    const swiper = swiperRef.current;
+    if (!swiper) return;
 
-        const trackStyle = window.getComputedStyle(track);
-        const columnGap = Number.parseFloat(trackStyle.columnGap);
-        const fallbackGap = Number.parseFloat(trackStyle.gap);
-        const gap = Number.isFinite(columnGap)
-          ? columnGap
-          : Number.isFinite(fallbackGap)
-            ? fallbackGap
-            : 0;
-        const nextUnit = firstCard.getBoundingClientRect().width + gap;
+    const target =
+      snapPositions.find((position) => position > swiper.activeIndex) ??
+      snapPositions[snapPositions.length - 1] ??
+      0;
 
-        setSlideUnit((current) =>
-          Math.abs(current - nextUnit) < 0.5 ? current : nextUnit
-        );
-      });
-    };
-
-    updateSlideUnit();
-
-    const resizeObserver = new ResizeObserver(updateSlideUnit);
-    resizeObserver.observe(viewport);
-
-    return () => {
-      resizeObserver.disconnect();
-      if (resizeFrameRef.current !== null) {
-        cancelAnimationFrame(resizeFrameRef.current);
-        resizeFrameRef.current = null;
-      }
-    };
-  }, [visibleStories.length]);
-
-  const goPrev = () => setPage((current) => Math.max(current - 1, 0));
-  const goNext = () =>
-    setPage((current) => Math.min(current + 1, pageCount - 1));
-
-  const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
-    touchStartXRef.current = event.touches[0]?.clientX ?? null;
-  };
-
-  const handleTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
-    if (touchStartXRef.current === null) return;
-
-    const endX = event.changedTouches[0]?.clientX ?? touchStartXRef.current;
-    const distance = endX - touchStartXRef.current;
-    touchStartXRef.current = null;
-
-    if (Math.abs(distance) < SWIPE_THRESHOLD) return;
-    if (distance > 0) goPrev();
-    else goNext();
-  };
+    swiper.slideTo(target, NAVIGATION_SPEED);
+  }, [snapPositions]);
 
   if (!loading && visibleStories.length === 0 && !isAdmin) return null;
 
@@ -214,7 +280,7 @@ export default function FeaturedWidget() {
             {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
-                className="aspect-[9/16] animate-pulse rounded-xl bg-neutral-100"
+                className="aspect-[2/3] animate-pulse rounded-xl bg-neutral-100"
               />
             ))}
           </div>
@@ -233,99 +299,152 @@ export default function FeaturedWidget() {
           </button>
         ) : (
           <div className="relative px-3 sm:px-0">
-            <div
-              ref={viewportRef}
-              className="touch-pan-y overflow-hidden"
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-              onTouchCancel={() => {
-                touchStartXRef.current = null;
+            <Swiper
+              modules={SWIPER_MODULES}
+              onSwiper={(swiper) => {
+                swiperRef.current = swiper;
+                syncNavigationState(swiper);
               }}
+              onBeforeDestroy={(swiper) => {
+                if (swiperRef.current === swiper) {
+                  swiperRef.current = null;
+                }
+              }}
+              onTouchStart={(swiper, event) => {
+                const isTouchInput =
+                  ("pointerType" in event &&
+                    event.pointerType !== "mouse") ||
+                  event.type.startsWith("touch");
+
+                applyInteractionPhysics(swiper, isTouchInput);
+              }}
+              /*
+               * Chỉ cập nhật trạng thái nút ở các sự kiện cần thiết, không gọi
+               * setState liên tục trên từng frame khi đang kéo/vuốt.
+               */
+              onReachBeginning={syncNavigationState}
+              onReachEnd={syncNavigationState}
+              onFromEdge={syncNavigationState}
+              onSlideChange={syncNavigationState}
+              onResize={syncNavigationState}
+              /*
+               * LAYOUT:
+               * - slidesPerView={3}: luôn hiển thị đúng 3 story như giao diện cũ.
+               * - spaceBetween={6}: tương đương gap-1.5 (6 px) trước đây.
+               * Có thể đổi hai giá trị này nếu muốn thay số lượng/khoảng cách.
+               */
+              slidesPerView={VISIBLE_STORIES}
+              spaceBetween={6}
+              /*
+               * TƯƠNG TÁC:
+               * - grabCursor: con trỏ bàn tay trên PC.
+               * - simulateTouch: cho phép click-giữ chuột trái để kéo.
+               * - watchOverflow={false}: vẫn giữ resistance/nảy ở hai mép.
+               * - preventClicks*: không mở Fancybox nhầm sau một thao tác kéo.
+               */
+              grabCursor
+              simulateTouch
+              threshold={POINTER_PHYSICS.threshold}
+              watchOverflow={false}
+              resistance
+              resistanceRatio={POINTER_PHYSICS.resistanceRatio}
+              preventClicks
+              preventClicksPropagation
+              freeMode={{
+                // Bật cuộn tự do thay vì bắt buộc dừng đúng từng story.
+                enabled: false,
+                // Tiếp tục trượt theo quán tính sau khi thả tay/chuột.
+                momentum: true,
+                // Cho phép nảy trở lại khi trượt quá đầu/cuối.
+                momentumBounce: true,
+                momentumBounceRatio:
+                  POINTER_PHYSICS.momentumBounceRatio,
+                // Tăng để trượt xa hơn; giảm để dừng sớm hơn.
+                momentumRatio: POINTER_PHYSICS.momentumRatio,
+                // Tăng để quán tính nhanh hơn; giảm để chuyển động chậm hơn.
+                momentumVelocityRatio:
+                  POINTER_PHYSICS.momentumVelocityRatio,
+                // Tăng nếu slider tạo quán tính từ những chuyển động quá nhỏ.
+                minimumVelocity: POINTER_PHYSICS.minimumVelocity,
+                // false = dừng tự do; true = hút về story gần nhất.
+                sticky: true,
+              }}
+              className="w-full min-w-0 max-w-full touch-pan-y select-none"
             >
-              <div
-                ref={trackRef}
-                className="flex gap-1.5 will-change-transform transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-                style={{
-                  transform: `translate3d(-${startIndex * slideUnit}px, 0, 0)`,
-                  backfaceVisibility: "hidden",
-                }}
-              >
-                {visibleStories.map((story, storyIndex) => {
-                  const [cover, ...remainingImages] = story.images;
-                  const gallery = `featured-${story.id}`;
+              {visibleStories.map((story, storyIndex) => {
+                const [cover, ...remainingImages] = story.images;
+                const gallery = `featured-${story.id}`;
 
-                  return (
-                    <div
-                      key={story.id}
-                      className="min-w-0 shrink-0"
-                      style={{
-                        flexBasis: "calc((100% - 0.75rem) / 3)",
-                      }}
+                return (
+                  <SwiperSlide
+                    key={story.id}
+                    className="!h-auto min-w-0"
+                  >
+                    <a
+                      href={getFeaturedWidgetLightboxImage(cover.secure_url)}
+                      data-fancybox={gallery}
+                      draggable={false}
+                      className="group relative block aspect-[2/3] overflow-hidden rounded-xl bg-neutral-100"
                     >
-                      <a
-                        href={getFeaturedWidgetLightboxImage(cover.secure_url)}
-                        data-fancybox={gallery}
-                        className="group relative block aspect-[2/3] overflow-hidden rounded-xl bg-neutral-100"
-                      >
-                        <Image
-                          src={getFeaturedWidgetImage(cover.secure_url)}
-                          alt={`Khoảnh khắc ${storyIndex + 1}`}
-                          fill
-                          unoptimized
-                          sizes="(max-width: 1024px) 33vw, 150px"
-                          loading={storyIndex < 3 ? "eager" : "lazy"}
-                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                        />
+                      <Image
+                        src={getFeaturedWidgetImage(cover.secure_url)}
+                        alt={`Khoảnh khắc ${storyIndex + 1}`}
+                        fill
+                        unoptimized
+                        draggable={false}
+                        sizes="(max-width: 1024px) 33vw, 150px"
+                        loading={storyIndex < 3 ? "eager" : "lazy"}
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      />
 
-                        <span className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-80" />
-
-                        {remainingImages.length > 0 && (
-                          <span className="absolute bottom-2 left-2 rounded-full bg-black/55 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
-                            +{remainingImages.length}
-                          </span>
-                        )}
-                      </a>
+                      <span className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-80" />
 
                       {remainingImages.length > 0 && (
-                        <div className="hidden">
-                          {remainingImages.map((image) => (
-                            <a
-                              key={image.id}
-                              href={getFeaturedWidgetLightboxImage(
-                                image.secure_url
-                              )}
-                              data-fancybox={gallery}
-                              aria-hidden="true"
-                              tabIndex={-1}
-                            />
-                          ))}
-                        </div>
+                        <span className="absolute bottom-2 left-2 rounded-full bg-black/55 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
+                          +{remainingImages.length}
+                        </span>
                       )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+                    </a>
 
-            {page > 0 && (
+                    {remainingImages.length > 0 && (
+                      <div className="hidden">
+                        {remainingImages.map((image) => (
+                          <a
+                            key={image.id}
+                            href={getFeaturedWidgetLightboxImage(
+                              image.secure_url
+                            )}
+                            data-fancybox={gallery}
+                            aria-hidden="true"
+                            tabIndex={-1}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </SwiperSlide>
+                );
+              })}
+            </Swiper>
+
+            {canSlidePrev && (
               <button
                 type="button"
                 onClick={goPrev}
                 title="Khoảnh khắc trước"
                 aria-label="Khoảnh khắc trước"
-                className="absolute -left-4 top-1/2 z-10 flex size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/75 border border-white/50 text-neutral-800 backdrop-blur active:scale-97 sm:opacity-100 opacity-0"
+                className="pointer-events-none absolute -left-4 top-1/2 z-10 flex size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/50 bg-white/75 text-neutral-800 opacity-0 backdrop-blur active:scale-97 sm:pointer-events-auto sm:opacity-100"
               >
                 <i className="fad fa-arrow-left" aria-hidden="true" />
               </button>
             )}
 
-            {page < pageCount - 1 && (
+            {canSlideNext && (
               <button
                 type="button"
                 onClick={goNext}
                 title="Khoảnh khắc tiếp theo"
                 aria-label="Khoảnh khắc tiếp theo"
-                className="absolute -right-4 top-1/2 z-10 flex size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/75 border border-white/50 text-neutral-800 backdrop-blur active:scale-97 sm:opacity-100 opacity-0"
+                className="pointer-events-none absolute -right-4 top-1/2 z-10 flex size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/50 bg-white/75 text-neutral-800 opacity-0 backdrop-blur active:scale-97 sm:pointer-events-auto sm:opacity-100"
               >
                 <i className="fad fa-arrow-right" aria-hidden="true" />
               </button>

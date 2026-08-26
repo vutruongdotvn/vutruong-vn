@@ -113,7 +113,7 @@ const personalInfo: AboutInfoItem[] = [
     visible: true,
   },
   {
-    label: "Tình trạng hôn nhân",
+    label: "Tình trạng",
     value: "Độc thân",
     icon: "fad fa-heart",
     visible: true,
@@ -269,19 +269,19 @@ const tabItems = [
   {
     id: "social",
     label: "Mạng xã hội",
-    icon: "fad fa-share-nodes",
+    icon: "fad fa-users",
     visible: true,
   },
   {
     id: "personal",
-    label: "Thông tin cá nhân",
-    icon: "fad fa-address-card",
+    label: "Cá nhân",
+    icon: "fad fa-address-book",
     visible: true,
   },
   {
     id: "contact",
-    label: "Thông tin liên hệ",
-    icon: "fad fa-address-book",
+    label: "Liên hệ",
+    icon: "fad fa-phone",
     visible: true,
   },
   {

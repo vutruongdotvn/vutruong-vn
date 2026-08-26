@@ -258,6 +258,8 @@ export default function PostImages({
    * TƯƠNG TÁC:
    * - grabCursor: hiện con trỏ bàn tay khi rê chuột.
    * - simulateTouch: cho phép giữ và kéo bằng chuột giống thao tác cảm ứng.
+   * - onTouchStart: chỉ tinh chỉnh physics khi input thực tế là touch/pen;
+   *   chuột vẫn được trả về đúng toàn bộ thông số hiện tại.
    * - watchOverflow={false}: không tự khóa khi 1 hoặc 2 ảnh đã vừa khung,
    *   nhờ đó vẫn có thể kéo/vuốt và thấy hiệu ứng nảy ở hai mép.
    * - resistance/resistanceRatio: độ kháng và độ kéo quá mép.
@@ -268,6 +270,36 @@ export default function PostImages({
         modules={SWIPER_MODULES}
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
+        }}
+        onTouchStart={(swiper, event) => {
+          const isTouchInput =
+            ("pointerType" in event && event.pointerType !== "mouse") ||
+            event.type.startsWith("touch");
+
+          /*
+           * TOUCH/MOBILE:
+           * - threshold 2: phản hồi sớm hơn theo chuyển động ngón tay.
+           * - resistance 0.85: kéo ở hai mép mềm và tự nhiên hơn.
+           * - minimumVelocity 0.02: loại bỏ quán tính từ những rung/chạm rất nhỏ.
+           *
+           * MOUSE/PC:
+           * Khôi phục nguyên các giá trị 0.4 / 1 / 1 / 1 / 0 của file gốc.
+           * Không có bất kỳ thay đổi nào đối với layout hoặc tỉ lệ ảnh.
+           */
+          swiper.params.threshold = isTouchInput ? 2 : 5;
+          swiper.params.resistanceRatio = isTouchInput ? 0.85 : 0.4;
+
+          if (
+            swiper.params.freeMode &&
+            typeof swiper.params.freeMode === "object"
+          ) {
+            Object.assign(swiper.params.freeMode, {
+              momentumBounceRatio: isTouchInput ? 0.85 : 1,
+              momentumRatio: 1,
+              momentumVelocityRatio: 1,
+              minimumVelocity: isTouchInput ? 0.02 : 0,
+            });
+          }
         }}
         slidesPerView="auto"
         spaceBetween={4}
@@ -293,7 +325,7 @@ export default function PostImages({
           // Tốc độ quán tính: thấp hơn = chuyển động chậm và kiểm soát hơn.
           momentumVelocityRatio: 1,
           // Vận tốc tối thiểu để tạo quán tính; tăng lên nếu slider quá nhạy.
-          minimumVelocity: 0,
+          minimumVelocity: 0.001,
           // false = dừng tự do; true = tự hút về vị trí đầu của slide gần nhất.
           sticky: false,
         }}
