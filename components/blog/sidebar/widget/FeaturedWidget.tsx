@@ -2,16 +2,14 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { Swiper as SwiperInstance } from "swiper";
-import { FreeMode } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 /*
- * Chỉ import CSS cốt lõi và FreeMode để giữ bundle gọn.
+ * Chỉ import CSS cốt lõi để giữ bundle gọn.
+ * Không dùng FreeMode: story phải luôn bám vào một snap point cố định.
  * Không import Mousewheel: con lăn/trackpad không điều khiển slider.
  */
 import "swiper/css";
-import "swiper/css/free-mode";
 
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/hooks/useUser";
@@ -26,89 +24,23 @@ import FeaturedManagerModal from "@/components/blog/sidebar/widget/featured/Feat
 const VISIBLE_STORIES = 3;
 
 /*
- * THỜI GIAN CHUYỂN SLIDE KHI BẤM NÚT MŨI TÊN (milliseconds):
- * - 350–450: nhanh, gọn.
- * - 500–600: cân bằng, đang dùng 550.
- * - 700–900: chậm và mềm hơn.
- * Giá trị này không ảnh hưởng quán tính khi kéo/vuốt trực tiếp.
+ * THỜI GIAN HÚT VỀ SNAP POINT (milliseconds):
+ * - 300–400: nhanh và dứt khoát.
+ * - 450: cân bằng, đang dùng.
+ * - 500–600: chậm và mềm hơn.
  */
-const NAVIGATION_SPEED = 750;
+const SNAP_SPEED = 450;
 
 /*
- * PHYSICS TƯƠNG TÁC — đồng bộ với PostImages final:
- *
- * POINTER_PHYSICS áp dụng cho click-giữ chuột trái trên PC.
- * TOUCH_PHYSICS chỉ áp dụng cho touch/pen trên mobile/tablet.
- *
- * - threshold: quãng kéo tối thiểu trước khi slider bắt đầu di chuyển.
- * - resistanceRatio: độ mềm khi kéo quá mép; gần 1 = kéo vượt mép nhiều hơn.
- * - momentumBounceRatio: cường độ nảy trở lại ở đầu/cuối.
- * - momentumRatio: quãng đường tiếp tục trượt sau khi thả.
- * - momentumVelocityRatio: vận tốc quán tính sau khi thả.
- * - minimumVelocity: vận tốc tối thiểu để kích hoạt quán tính.
+ * NGƯỠNG VÀ RESISTANCE THEO LOẠI INPUT:
+ * - Touch phản hồi sớm hơn và có mép mềm hơn để gần cảm giác vuốt trên iOS.
+ * - Chuột có ngưỡng cao hơn và mép chắc hơn để dễ kiểm soát trên PC.
+ * - resistanceRatio càng gần 1 thì càng kéo vượt mép nhiều.
  */
-const POINTER_PHYSICS = {
-  threshold: 5,
-  resistanceRatio: 0.4,
-  momentumBounceRatio: 0.3,
-  momentumRatio: 0.3,
-  momentumVelocityRatio: 0.3,
-  minimumVelocity: 0,
-};
-
-const TOUCH_PHYSICS = {
-  threshold: 2,
-  resistanceRatio: 0.85,
-  momentumBounceRatio: 0.85,
-  momentumRatio: 1,
-  momentumVelocityRatio: 1,
-  minimumVelocity: 0.02,
-};
-
-const SWIPER_MODULES = [FreeMode];
-
-function applyInteractionPhysics(
-  swiper: SwiperInstance,
-  isTouchInput: boolean
-) {
-  const physics = isTouchInput ? TOUCH_PHYSICS : POINTER_PHYSICS;
-
-  swiper.params.threshold = physics.threshold;
-  swiper.params.resistanceRatio = physics.resistanceRatio;
-
-  if (
-    swiper.params.freeMode &&
-    typeof swiper.params.freeMode === "object"
-  ) {
-    Object.assign(swiper.params.freeMode, {
-      momentumBounceRatio: physics.momentumBounceRatio,
-      momentumRatio: physics.momentumRatio,
-      momentumVelocityRatio: physics.momentumVelocityRatio,
-      minimumVelocity: physics.minimumVelocity,
-    });
-  }
-}
-
-function getSnapPositions(storyCount: number) {
-  if (storyCount <= VISIBLE_STORIES) return [0];
-
-  const lastStart = storyCount - VISIBLE_STORIES;
-  const positions = [0];
-
-  for (
-    let position = VISIBLE_STORIES;
-    position < lastStart;
-    position += VISIBLE_STORIES
-  ) {
-    positions.push(position);
-  }
-
-  if (positions[positions.length - 1] !== lastStart) {
-    positions.push(lastStart);
-  }
-
-  return positions;
-}
+const POINTER_THRESHOLD = 5;
+const TOUCH_THRESHOLD = 2;
+const POINTER_RESISTANCE_RATIO = 0.4;
+const TOUCH_RESISTANCE_RATIO = 0.85;
 
 export default function FeaturedWidget() {
   const { role, status } = useUser();
@@ -117,10 +49,7 @@ export default function FeaturedWidget() {
   const [stories, setStories] = useState<FeaturedStory[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
-  const [canSlidePrev, setCanSlidePrev] = useState(false);
-  const [canSlideNext, setCanSlideNext] = useState(false);
   const [managerOpen, setManagerOpen] = useState(false);
-  const swiperRef = useRef<SwiperInstance | null>(null);
   const reloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadStories = useCallback(async () => {
@@ -171,87 +100,6 @@ export default function FeaturedWidget() {
     [stories]
   );
 
-  const snapPositions = useMemo(
-    () => getSnapPositions(visibleStories.length),
-    [visibleStories.length]
-  );
-
-  const syncNavigationState = useCallback(
-    (swiper: SwiperInstance) => {
-      const hasOverflow = visibleStories.length > VISIBLE_STORIES;
-      const nextCanSlidePrev = hasOverflow && !swiper.isBeginning;
-      const nextCanSlideNext = hasOverflow && !swiper.isEnd;
-
-      setCanSlidePrev((current) =>
-        current === nextCanSlidePrev ? current : nextCanSlidePrev
-      );
-      setCanSlideNext((current) =>
-        current === nextCanSlideNext ? current : nextCanSlideNext
-      );
-    },
-    [visibleStories.length]
-  );
-
-  /*
-   * Khi realtime thêm/xóa story, cập nhật Swiper và bảo đảm activeIndex không
-   * vượt quá vị trí cuối cùng vẫn hiển thị đủ 3 story.
-   */
-  useEffect(() => {
-    const swiper = swiperRef.current;
-    if (!swiper) return;
-
-    const frame = requestAnimationFrame(() => {
-      swiper.update();
-
-      const lastStart = Math.max(
-        visibleStories.length - VISIBLE_STORIES,
-        0
-      );
-
-      if (swiper.activeIndex > lastStart) {
-        swiper.slideTo(lastStart, 0);
-      }
-
-      syncNavigationState(swiper);
-    });
-
-    return () => cancelAnimationFrame(frame);
-  }, [syncNavigationState, visibleStories.length]);
-
-  /*
-   * Nút mũi tên vẫn dùng các mốc trang cũ:
-   * - 4 story: 0 → 1.
-   * - 5 story: 0 → 2.
-   * - 6 story: 0 → 3.
-   * - 7 story: 0 → 3 → 4.
-   * Nhờ vậy trang cuối không bao giờ có cột trống.
-   */
-  const goPrev = useCallback(() => {
-    const swiper = swiperRef.current;
-    if (!swiper) return;
-
-    let target = 0;
-
-    for (const position of snapPositions) {
-      if (position >= swiper.activeIndex) break;
-      target = position;
-    }
-
-    swiper.slideTo(target, NAVIGATION_SPEED);
-  }, [snapPositions]);
-
-  const goNext = useCallback(() => {
-    const swiper = swiperRef.current;
-    if (!swiper) return;
-
-    const target =
-      snapPositions.find((position) => position > swiper.activeIndex) ??
-      snapPositions[snapPositions.length - 1] ??
-      0;
-
-    swiper.slideTo(target, NAVIGATION_SPEED);
-  }, [snapPositions]);
-
   if (!loading && visibleStories.length === 0 && !isAdmin) return null;
 
   return (
@@ -298,77 +146,58 @@ export default function FeaturedWidget() {
             Thêm Khoảnh khắc đầu tiên
           </button>
         ) : (
-          <div className="relative px-3 sm:px-0">
+          <div className="px-3 sm:px-0">
             <Swiper
-              modules={SWIPER_MODULES}
-              onSwiper={(swiper) => {
-                swiperRef.current = swiper;
-                syncNavigationState(swiper);
-              }}
-              onBeforeDestroy={(swiper) => {
-                if (swiperRef.current === swiper) {
-                  swiperRef.current = null;
-                }
-              }}
               onTouchStart={(swiper, event) => {
                 const isTouchInput =
                   ("pointerType" in event &&
                     event.pointerType !== "mouse") ||
                   event.type.startsWith("touch");
 
-                applyInteractionPhysics(swiper, isTouchInput);
+                swiper.params.threshold = isTouchInput
+                  ? TOUCH_THRESHOLD
+                  : POINTER_THRESHOLD;
+                swiper.params.resistanceRatio = isTouchInput
+                  ? TOUCH_RESISTANCE_RATIO
+                  : POINTER_RESISTANCE_RATIO;
               }}
               /*
-               * Chỉ cập nhật trạng thái nút ở các sự kiện cần thiết, không gọi
-               * setState liên tục trên từng frame khi đang kéo/vuốt.
-               */
-              onReachBeginning={syncNavigationState}
-              onReachEnd={syncNavigationState}
-              onFromEdge={syncNavigationState}
-              onSlideChange={syncNavigationState}
-              onResize={syncNavigationState}
-              /*
-               * LAYOUT:
+               * LAYOUT VÀ SNAP POINT:
                * - slidesPerView={3}: luôn hiển thị đúng 3 story như giao diện cũ.
+               * - slidesPerGroup={1}: mỗi điểm dừng dịch đúng 1 story.
                * - spaceBetween={6}: tương đương gap-1.5 (6 px) trước đây.
-               * Có thể đổi hai giá trị này nếu muốn thay số lượng/khoảng cách.
+               * - speed={450}: thời gian hút và bám vào cạnh story gần nhất.
                */
               slidesPerView={VISIBLE_STORIES}
+              slidesPerGroup={1}
               spaceBetween={6}
+              speed={SNAP_SPEED}
               /*
                * TƯƠNG TÁC:
                * - grabCursor: con trỏ bàn tay trên PC.
                * - simulateTouch: cho phép click-giữ chuột trái để kéo.
-               * - watchOverflow={false}: vẫn giữ resistance/nảy ở hai mép.
+               * - followFinger: story di chuyển trực tiếp theo ngón tay/con trỏ.
+               * - watchOverflow: tự khóa nếu có không quá 3 story.
                * - preventClicks*: không mở Fancybox nhầm sau một thao tác kéo.
+               * - shortSwipes: vuốt nhanh vẫn chuyển sang story kế tiếp.
+               * - longSwipesRatio={0.5}: kéo qua 50% thì sang story kế tiếp;
+               *   chưa tới 50% thì quay về story gần nhất.
                */
               grabCursor
               simulateTouch
-              threshold={POINTER_PHYSICS.threshold}
-              watchOverflow={false}
+              followFinger
+              threshold={POINTER_THRESHOLD}
+              touchRatio={1}
+              touchAngle={45}
+              watchOverflow
               resistance
-              resistanceRatio={POINTER_PHYSICS.resistanceRatio}
+              resistanceRatio={POINTER_RESISTANCE_RATIO}
               preventClicks
               preventClicksPropagation
-              freeMode={{
-                // Bật cuộn tự do thay vì bắt buộc dừng đúng từng story.
-                enabled: false,
-                // Tiếp tục trượt theo quán tính sau khi thả tay/chuột.
-                momentum: true,
-                // Cho phép nảy trở lại khi trượt quá đầu/cuối.
-                momentumBounce: true,
-                momentumBounceRatio:
-                  POINTER_PHYSICS.momentumBounceRatio,
-                // Tăng để trượt xa hơn; giảm để dừng sớm hơn.
-                momentumRatio: POINTER_PHYSICS.momentumRatio,
-                // Tăng để quán tính nhanh hơn; giảm để chuyển động chậm hơn.
-                momentumVelocityRatio:
-                  POINTER_PHYSICS.momentumVelocityRatio,
-                // Tăng nếu slider tạo quán tính từ những chuyển động quá nhỏ.
-                minimumVelocity: POINTER_PHYSICS.minimumVelocity,
-                // false = dừng tự do; true = hút về story gần nhất.
-                sticky: true,
-              }}
+              shortSwipes
+              longSwipes
+              longSwipesMs={300}
+              longSwipesRatio={0.5}
               className="w-full min-w-0 max-w-full touch-pan-y select-none"
             >
               {visibleStories.map((story, storyIndex) => {
@@ -425,30 +254,6 @@ export default function FeaturedWidget() {
                 );
               })}
             </Swiper>
-
-            {canSlidePrev && (
-              <button
-                type="button"
-                onClick={goPrev}
-                title="Khoảnh khắc trước"
-                aria-label="Khoảnh khắc trước"
-                className="pointer-events-none absolute -left-4 top-1/2 z-10 flex size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/50 bg-white/75 text-neutral-800 opacity-0 backdrop-blur active:scale-97 sm:pointer-events-auto sm:opacity-100"
-              >
-                <i className="fad fa-arrow-left" aria-hidden="true" />
-              </button>
-            )}
-
-            {canSlideNext && (
-              <button
-                type="button"
-                onClick={goNext}
-                title="Khoảnh khắc tiếp theo"
-                aria-label="Khoảnh khắc tiếp theo"
-                className="pointer-events-none absolute -right-4 top-1/2 z-10 flex size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/50 bg-white/75 text-neutral-800 opacity-0 backdrop-blur active:scale-97 sm:pointer-events-auto sm:opacity-100"
-              >
-                <i className="fad fa-arrow-right" aria-hidden="true" />
-              </button>
-            )}
           </div>
         )}
       </section>

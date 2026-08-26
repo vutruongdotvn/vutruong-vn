@@ -325,11 +325,11 @@ export default function PostImages({
           // Tốc độ quán tính: thấp hơn = chuyển động chậm và kiểm soát hơn.
           momentumVelocityRatio: 1,
           // Vận tốc tối thiểu để tạo quán tính; tăng lên nếu slider quá nhạy.
-          minimumVelocity: 0.001,
+          minimumVelocity: 0,
           // false = dừng tự do; true = tự hút về vị trí đầu của slide gần nhất.
           sticky: false,
         }}
-        className="h-[clamp(240px,68vw,250px)] max-h-[60svh]"
+        className="h-[clamp(180px,68vw,180px)] md:h-[clamp(180px,68vw,250px)] max-h-[60svh]"
       >
         {safeImages.map((src, index) => {
           const meta = getMeta(src);
