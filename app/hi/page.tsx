@@ -56,7 +56,7 @@ const shortcuts: ShortcutItem[] = [
     title: "Zalo",
     url: "https://chat.zalo.me/",
     icon: "fa-duotone fa-comment-lines",
-    bgClass: "from-sky-400 to-sky-500",
+    bgClass: "from-blue-400 to-blue-500",
   },
   {
     title: "SoundCloud",
@@ -65,10 +65,10 @@ const shortcuts: ShortcutItem[] = [
     bgClass: "from-indigo-500 to-indigo-600",
   },
   {
-    title: "VT Films",
-    url: "https://films.vutruong.vn",
-    icon: "fa-duotone fa-film-alt",
-    bgClass: "from-rose-500 to-rose-800",
+    title: "iCloud",
+    url: "https://icloud.com",
+    icon: "fab fa-apple",
+    bgClass: "from-sky-300 to-sky-600",
   },
 ];
 

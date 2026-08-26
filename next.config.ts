@@ -47,7 +47,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/fb",
-        destination: "https://fb.com/100014201562904",
+        destination: "https://www.facebook.com/100014201562904",
         permanent: false,
       },
       {

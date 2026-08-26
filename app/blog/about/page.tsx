@@ -1,5 +1,6 @@
 import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
 import type { Metadata } from "next";
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "Giới thiệu",
@@ -38,35 +39,35 @@ type AboutDisplayItem = {
 const socialLinks = [
   {
     name: "Facebook",
-    username: "",
+    username: "Liên kết đã xác thực",
     visible: true,
     href: "/fb",
-    icon: "fab fa-facebook",
+    icon: "fab fa-facebook-f",
   },
   {
     name: "Instagram",
-    username: "",
+    username: "Liên kết đã xác thực",
     visible: true,
     href: "/instagram",
     icon: "fab fa-instagram",
   },
   {
     name: "Locket",
-    username: "",
+    username: "Liên kết đã xác thực",
     visible: true,
     href: "/locket",
     icon: "fad fa-heart",
   },
   {
     name: "TikTok",
-    username: "",
+    username: "Liên kết đã xác thực",
     visible: true,
     href: "/tiktok",
     icon: "fab fa-tiktok",
   },
   {
     name: "Threads",
-    username: "",
+    username: "Liên kết đã xác thực",
     visible: true,
     href: "/threads",
     icon: "fab fa-threads",
@@ -128,8 +129,8 @@ const personalInfo: AboutInfoItem[] = [
 const workInfo: AboutInfoItem[] = [
   {
     label: "Công việc hiện tại",
-    value: "Kinh doanh & lao động tự do",
-    icon: "fad fa-laptop-code",
+    value: "Kinh doanh",
+    icon: "fad fa-fork-knife",
     visible: true,
   },
   {
@@ -140,13 +141,13 @@ const workInfo: AboutInfoItem[] = [
   },
   {
     label: "Vai trò",
-    value: "",
+    value: "Quản lý",
     icon: "fad fa-id-badge",
     visible: true,
   },
   {
     label: "Lĩnh vực hoạt động",
-    value: "",
+    value: "Dịch vụ Ăn uống, Dịch vụ Du lịch",
     icon: "fad fa-layer-group",
     visible: true,
   },
@@ -157,7 +158,7 @@ const hobbyGroups: AboutMultiValueItem[] = [
     label: "Sở thích",
     icon: "fad fa-hearts",
     visible: true,
-    items: ["Đi dạo", "Nghe nhạc", "Xem phim"],
+    items: ["Đi dạo", "Nghe nhạc", "Ca hát"],
   },
   {
     label: "Ăn & Uống",
@@ -168,9 +169,6 @@ const hobbyGroups: AboutMultiValueItem[] = [
       "Cơm tấm",
       "Phở bò",
       "Hủ tiếu Nam Vang",
-      "Mì cay",
-      "Mì Ý",
-      "Bún đậu",
     ],
   },
   {
@@ -180,23 +178,23 @@ const hobbyGroups: AboutMultiValueItem[] = [
     items: ["Chạy bộ", "Chạy xe đạp", "Leo núi"],
   },
   {
-    label: "Năng khiếu",
+    label: "Nhạc cụ",
     icon: "fad fa-guitars",
     visible: true,
-    items: ["Ca hát", "Chơi Guitar", "Chơi Piano"],
+    items: ["Guitar", "Piano"],
   },
   {
     label: "Sở thích khác",
     icon: "fad fa-wand-magic-sparkles",
     visible: true,
-    items: ["Chụp ảnh", "Quay video", "Viết Blog"],
+    items: ["Chụp ảnh", "Quay video", "Viết Blog", "Code"],
   },
 ];
 
 const entertainmentInfo: AboutMultiValueItem[] = [
   {
     label: "Trò chơi",
-    items: ["PUBG Battlegrounds", "Cities Skylines", "Đột Kích", "Liên Quân Mobile"],
+    items: ["PUBG Battlegrounds", "Cities Skylines"],
     icon: "fad fa-gamepad",
     visible: true,
   },
@@ -214,19 +212,19 @@ const entertainmentInfo: AboutMultiValueItem[] = [
   },
   {
     label: "Phim",
-    items: ["Tình cảm", "Gia đình", "Hài hước", "Linh dị"],
+    items: ["Tình cảm", "Gia đình", "Linh dị"],
     icon: "fad fa-film",
     visible: true,
   },
   {
     label: "Âm nhạc",
-    items: ["Ballad", "Rap", "RnB", "Bolero"],
+    items: ["Ballad", "Rap", "Bolero"],
     icon: "fad fa-music",
     visible: true,
   },
   {
     label: "Nghệ sĩ",
-    items: ["Sơn Tùng M-TP", "Quốc Thiên", "Noo Phước Thịnh", "Hồ Quang Hiếu", "Lâm Chấn Khang"],
+    items: ["Sơn Tùng M-TP", "Quốc Thiên"],
     icon: "fad fa-microphone-stand",
     visible: true,
   },
@@ -384,7 +382,7 @@ const aboutTabsCss = [
   "  #about-tab-entertainment:checked ~ .about-tabs-layout [data-about-panel='entertainment'],",
   "  #about-tab-contact:checked ~ .about-tabs-layout [data-about-panel='contact'] {",
   "    display: block;",
-  "    animation: about-panel-enter 300ms ease-in-out both;",
+  "    animation: about-panel-enter 500ms ease-in-out both;",
   "  }",
   "",
   "  #about-tab-intro:checked ~ .about-tabs-layout [data-about-tab='intro'],",
@@ -466,7 +464,7 @@ export default function BlogAboutPage() {
       >
         {renderSectionHeader(panel.id)}
 
-        <ul className="max-w-3xl" role="list">
+        <ul className="" role="list">
           {visibleItems.map((item) => (
             <li key={item.label} className={itemRowClassName}>
               <span className={itemIconClassName}>
@@ -495,10 +493,10 @@ export default function BlogAboutPage() {
                     {item.values.map((value, index) => (
                       <span
                         key={item.label + "-" + value + "-" + index}
-                        // className="inline-flex min-w-0 items-baseline"
+                      // className="inline-flex min-w-0 items-baseline"
                       >
                         {index > 0 && (
-                          <span className="mx-2 text-slate-300">+</span>
+                          <span className="mx-2 text-slate-300 select-none">/</span>
                         )}
                         <span
                           className={
@@ -531,143 +529,142 @@ export default function BlogAboutPage() {
   return (
     <PremiumGlassCard
       className="w-full max-w-6xl"
-      contentClassName="overflow-hidden p-0"
+    // contentClassName="overflow-hidden p-0"
     >
-      <article className="overflow-hidden bg-white">
-        <style>{aboutTabsCss}</style>
+      <style>{aboutTabsCss}</style>
 
-        <div className="min-w-0">
-          {visibleTabItems.map((tab, index) => (
-            <input
-              key={tab.id}
-              id={"about-tab-" + tab.id}
-              type="radio"
-              name="about-tab"
-              defaultChecked={index === 0}
-              aria-controls={"about-panel-" + tab.id}
-              className="about-tab-input"
-            />
-          ))}
+      <div className="min-w-0">
+        {visibleTabItems.map((tab, index) => (
+          <input
+            key={tab.id}
+            id={"about-tab-" + tab.id}
+            type="radio"
+            name="about-tab"
+            defaultChecked={index === 0}
+            aria-controls={"about-panel-" + tab.id}
+            className="about-tab-input"
+          />
+        ))}
 
-          <div className="about-tabs-layout lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
-            <aside className="hidden min-w-0 border-r border-slate-200 bg-white lg:block">
-              <nav
-                aria-label="Các mục giới thiệu"
-                className="max-h-[calc(100vh-7rem)] space-y-1 overflow-y-auto p-4"
+        <div className="about-tabs-layout lg:grid lg:grid-cols-[18rem_minmax(0,1fr)]">
+          <aside className="hidden min-w-0 border-r border-slate-200 bg-white lg:block">
+            <nav
+              aria-label="Các mục giới thiệu"
+              className="max-h-[calc(100vh-7rem)] space-y-1 overflow-y-auto p-4"
+            >
+              {visibleTabItems.map((tab) => (
+                <label
+                  key={tab.id}
+                  htmlFor={"about-tab-" + tab.id}
+                  data-about-tab={tab.id}
+                  className="flex w-full cursor-pointer select-none items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900"
+                >
+                  <i
+                    className={tab.icon + " w-5 shrink-0 text-center text-sm"}
+                    aria-hidden="true"
+                  />
+                  <span>{tab.label}</span>
+                </label>
+              ))}
+            </nav>
+          </aside>
+
+          <div className="min-w-0 bg-white p-4 lg:min-h-[36rem]">
+            {visibleSectionIds.has("intro") && (
+              <section
+                id="about-panel-intro"
+                data-about-panel="intro"
+                aria-label="Lời giới thiệu"
+                className={panelClassName}
               >
-                {visibleTabItems.map((tab) => (
-                  <label
-                    key={tab.id}
-                    htmlFor={"about-tab-" + tab.id}
-                    data-about-tab={tab.id}
-                    className="flex w-full cursor-pointer select-none items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900"
-                  >
-                    <i
-                      className={tab.icon + " w-5 shrink-0 text-center text-sm"}
-                      aria-hidden="true"
-                    />
-                    <span>{tab.label}</span>
-                  </label>
-                ))}
-              </nav>
-            </aside>
+                {renderSectionHeader("intro")}
 
-            <div className="min-w-0 bg-white p-4 lg:min-h-[40rem]">
-              {visibleSectionIds.has("intro") && (
-                <section
-                  id="about-panel-intro"
-                  data-about-panel="intro"
-                  aria-label="Lời giới thiệu"
-                  className={panelClassName}
-                >
-                  {renderSectionHeader("intro")}
+                <div className="space-y-4 text-sm/7 text-slate-800 sm:text-[15px]/7 lg:text-base/8 text-justify">
+                  <p className="text-slate-950">
+                    <strong>
+                      Chào mừng bạn đến với Hệ sinh thái số cá nhân của mình.
+                    </strong>
+                    <br />
+                    VT Zone là dự án cá nhân - xây dựng những thứ mình thích và chủ yếu
+                    phục vụ cho nhu cầu cá nhân của mình.
+                  </p>
+                  <p>
+                    Đam mê xây dựng những sản phẩm công nghệ tinh tế, tối ưu và mang lại
+                    giá trị thực tế.
+                    <br />
+                    Yêu thích sự hoàn hảo trong UX/UI và luôn tìm tòi những công nghệ mới
+                    nhất.
+                  </p>
+                  <p>
+                    Dự án nhằm mục đích cá nhân, phục vụ cho nhu cầu cá nhân, hoàn toàn
+                    phi lợi nhuận.
+                  </p>
+                </div>
+              </section>
+            )}
 
-                  <div className="max-w-3xl space-y-4 text-sm/7 text-slate-800 sm:text-[15px]/7 lg:text-base/7 text-justify">
-                    <p className="text-slate-950">
-                      <strong>
-                        Chào mừng bạn đến với Hệ sinh thái số cá nhân của mình.
-                      </strong>
-                      <br />
-                      VT Zone là dự án cá nhân - xây dựng những thứ mình thích và chủ yếu
-                      phục vụ cho nhu cầu cá nhân của mình.
-                    </p>
-                    <p>
-                      Đam mê xây dựng những sản phẩm công nghệ tinh tế, tối ưu và mang lại
-                      giá trị thực tế.
-                      <br />
-                      Yêu thích sự hoàn hảo trong UX/UI và luôn tìm tòi những công nghệ mới
-                      nhất.
-                    </p>
-                    <p>
-                      Dự án nhằm mục đích cá nhân, phục vụ cho nhu cầu cá nhân, hoàn toàn
-                      phi lợi nhuận.
-                    </p>
-                  </div>
-                </section>
-              )}
+            {visibleSectionIds.has("social") && (
+              <section
+                id="about-panel-social"
+                data-about-panel="social"
+                aria-label="Liên kết xã hội"
+                className={panelClassName}
+              >
+                {renderSectionHeader("social")}
 
-              {visibleSectionIds.has("social") && (
-                <section
-                  id="about-panel-social"
-                  data-about-panel="social"
-                  aria-label="Liên kết xã hội"
-                  className={panelClassName}
-                >
-                  {renderSectionHeader("social")}
-
-                  <ul className="max-w-4xl" role="list">
-                    {visibleSocialLinks.map((link) => (
-                      <li
-                        key={link.name}
-                        className="group/social border-b border-slate-100 last:border-b-0"
+                <ul className="max-w-4xl" role="list">
+                  {visibleSocialLinks.map((link) => (
+                    <li
+                      key={link.name}
+                      className="group/social border-b border-slate-100 last:border-b-0"
+                    >
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={
+                          hasText(link.username)
+                            ? link.name + ": " + link.username
+                            : link.name
+                        }
+                        className="flex items-center gap-3 py-2 group-hover/social:text-sky-600 lg:py-4"
                       >
-                        <a
-                          href={link.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={
-                            hasText(link.username)
-                              ? link.name + ": " + link.username
-                              : link.name
-                          }
-                          className="flex items-center gap-3 py-2 group-hover/social:text-sky-700 lg:py-4"
-                        >
-                          <span className={itemIconClassName}>
-                            <i className={link.icon} aria-hidden="true" />
-                          </span>
+                        <span className={itemIconClassName}>
+                          <i className={link.icon} aria-hidden="true" />
+                        </span>
 
-                          <span className="flex min-w-0 flex-1 flex-col">
-                            {hasText(link.username) && (
-                              <span
-                                className={
-                                  itemLabelClassName +
-                                  " block truncate"
-                                }
-                              >
-                                {link.username}
-                              </span>
-                            )}
+                        <span className="flex min-w-0 flex-1 flex-col">
+                          <span
+                            className={
+                              itemValueClassName +
+                              " block truncate"
+                            }
+                          >
+                            {link.name}
+                          </span>
+                          {hasText(link.username) && (
                             <span
                               className={
-                                itemValueClassName +
+                                itemLabelClassName +
                                 " block truncate"
                               }
                             >
-                              {link.name}
+                              {link.username}
                             </span>
-                          </span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
+                          )}
 
-              {contentPanels.map(renderContentPanel)}
-            </div>
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            {contentPanels.map(renderContentPanel)}
           </div>
         </div>
-      </article>
+      </div>
     </PremiumGlassCard>
   );
 }

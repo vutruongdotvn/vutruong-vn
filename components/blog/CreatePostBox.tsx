@@ -74,24 +74,24 @@ export default function CreatePostBox({
     <div className={visible ? "w-full" : "hidden"} aria-hidden={!visible}>
       {loading ? (
         <div
-          className="flex min-h-20 items-center gap-2 border border-gray-200/80 bg-white px-3 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.04)] sm:gap-3 sm:rounded-2xl sm:px-4"
+          className="flex items-center gap-2 border border-gray-200/80 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] sm:gap-3 sm:rounded-2xl p-3 sm:p-4"
           aria-label="Đang tải hộp đăng bài viết"
           aria-busy="true"
         >
-          <div className="h-12 w-12 shrink-0 animate-pulse rounded-full bg-gray-200" />
+          <div className="h-[40px] w-[40px] shrink-0 animate-pulse rounded-full bg-gray-200" />
 
-          <div className="h-12 min-w-0 flex-1 animate-pulse rounded-full bg-gray-100" />
+          <div className="h-[40px] min-w-0 flex-1 animate-pulse rounded-full bg-gray-100" />
 
           <div className="flex shrink-0 items-center gap-0 sm:gap-1">
             <div className="h-10 w-8 animate-pulse rounded-xl bg-gray-100 sm:w-10" />
           </div>
         </div>
       ) : (
-        <div className="flex min-h-20 items-center gap-2 bg-white px-3 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-shadow duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.07)] sm:gap-3 sm:rounded-2xl sm:px-4">
+        <div className="flex items-center gap-2 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-shadow duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.07)] sm:gap-3 sm:rounded-2xl p-3 sm:p-4">
           <button
             type="button"
             onClick={() => setModalOpen(true)}
-            className="shrink-0 cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+            className="shrink-0 cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 pointer-events-none"
             aria-label="Mở hộp đăng bài viết"
           >
             <Image
@@ -100,16 +100,16 @@ export default function CreatePostBox({
               width={40}
               height={40}
               unoptimized
-              className="h-12 w-12 rounded-full object-cover"
+              className="h-[40px] w-[40px] rounded-full object-cover"
             />
           </button>
 
           <button
             type="button"
             onClick={() => setModalOpen(true)}
-            className="h-12 min-w-0 flex-1 cursor-pointer truncate rounded-full bg-gray-100 px-4 text-left text-[15px] font-normal text-gray-500 transition-colors hover:bg-gray-200/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 sm:px-5 sm:text-base"
+            className="h-[40px] min-w-0 flex-1 cursor-pointer truncate rounded-full bg-gray-100 px-4 text-left text-[15px] font-normal text-gray-500 transition-colors hover:bg-gray-200/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 sm:px-5 sm:text-base"
           >
-            {callName} ơi, hôm nay có gì vui không?
+            {callName} ơi, có điều gì muốn chia sẻ không?
           </button>
 
           <div className="flex shrink-0 items-center gap-0 sm:gap-1">

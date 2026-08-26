@@ -34,7 +34,7 @@ export default function BlogRouteContent({
       className={
         isFullWidthRoute
           ? "mx-auto w-full max-w-6xl"
-          : "mainBlog mx-auto grid w-full max-w-6xl grid-cols-1 gap-0 lg:grid-cols-10 lg:gap-4"
+          : "mainBlog mx-auto grid w-full max-w-6xl grid-cols-1 gap-0 lg:grid-cols-10 lg:gap-3"
       }
     >
       {/*
@@ -56,7 +56,7 @@ export default function BlogRouteContent({
         className={
           isFullWidthRoute
             ? "blogFullWidthContent mx-auto w-full max-w-6xl"
-            : "postFeeds order-2 space-y-1 sm:space-y-4 lg:col-span-6"
+            : "postFeeds order-2 space-y-1 sm:space-y-3 lg:col-span-6"
         }
       >
         {/*

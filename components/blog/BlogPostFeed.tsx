@@ -2,9 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import PostCard from "@/components/blog/PostCard";
-import SmartPostSkeletonFeed, {
-  buildSkeletonLayoutsFromPosts,
-} from "@/components/blog/SmartPostSkeletonFeed";
+import PostCardSkeleton from "@/components/blog/PostCardSkeleton";
 import CreatePostModal from "@/components/blog/CreatePostModal";
 import { getPosts, pinPost, deletePost } from "@/services/postService";
 import { useToastContext } from "@/components/ui/ToastProvider";
@@ -49,39 +47,11 @@ export default function BlogPostFeed() {
   const INITIAL_LIMIT = 5;
   const LOAD_MORE_LIMIT = 5;
 
-  const buildFeedSkeletonSnapshot = (items: any[], fallbackCount = 1) => {
-    if (Array.isArray(items) && items.length > 0) {
-      return buildSkeletonLayoutsFromPosts(items);
-    }
-
-    return Array.from({ length: fallbackCount }, (_, index) => ({
-      variant:
-        index === 0
-          ? ("single-landscape" as const)
-          : index === 1
-            ? ("text" as const)
-            : index === 2
-              ? ("triple-top-hero" as const)
-              : ("grid" as const),
-      isPinned: index === 0,
-      textDensity:
-        index === 0
-          ? ("medium" as const)
-          : index === 1
-            ? ("short" as const)
-            : index === 2
-              ? ("long" as const)
-              : ("medium" as const),
-      moreCount: 0,
-    }));
-  };
-
-
   /**
    * ⚙️ Độ trễ (ms) áp dụng cho chế độ infinity scroll.
    *
    * Luồng hoạt động khi scroll chạm sentinel:
-   *   1. SmartPostSkeletonFeed hiển thị ngay lập tức (setLoadingMore → true)
+   *   1. PostCardSkeleton hiển thị ngay lập tức (setLoadingMore → true)
    *   2. Chờ SCROLL_FETCH_DELAY ms
    *   3. Gọi fetchPosts() → thực sự lấy dữ liệu từ API/database
    *
@@ -413,7 +383,7 @@ export default function BlogPostFeed() {
   /**
    * Luồng khi sentinel vào viewport (chế độ "scroll"):
    *   1. isScrollPendingRef = true  → khóa trigger kép trong thời gian delay
-   *   2. setLoadingMore(true)        → SmartPostSkeletonFeed hiển thị ngay
+   *   2. setLoadingMore(true)        → PostCardSkeleton hiển thị ngay
    *   3. setTimeout(SCROLL_FETCH_DELAY) → chờ
    *   4. fetchPosts()                → gọi API, skeleton tắt sau khi xong
    */
@@ -484,18 +454,6 @@ export default function BlogPostFeed() {
     };
   }, []);
 
-
-  const initialSkeletonLayouts = buildFeedSkeletonSnapshot(
-    postsRef.current.slice(0, INITIAL_LIMIT),
-    INITIAL_LIMIT
-  );
-
-  const loadMoreSkeletonLayouts = buildFeedSkeletonSnapshot(
-    postsRef.current.slice(-LOAD_MORE_LIMIT),
-    Math.min(LOAD_MORE_LIMIT, Math.max(postsRef.current.length, 2))
-  );
-
-
   // ─── Render ──────────────────────────────────────────────────────────────────
   return (
     <>
@@ -528,21 +486,9 @@ export default function BlogPostFeed() {
         </div>
       )}
 
-      {showRefreshSkeleton && (
-        <div className="mb-0">
-          <SmartPostSkeletonFeed
-            mode="loadMore"
-            layouts={initialSkeletonLayouts}
-          />
-        </div>
-      )}
+      {showRefreshSkeleton && <PostCardSkeleton count={INITIAL_LIMIT} />}
 
-      {loading && (
-        <SmartPostSkeletonFeed
-          mode="initial"
-          layouts={initialSkeletonLayouts}
-        />
-      )}
+      {loading && <PostCardSkeleton count={INITIAL_LIMIT} />}
 
       {!loading && posts.length === 0 && (
         <p className="text-center text-gray-500">Chưa có bài viết nào 🧐</p>
@@ -566,14 +512,7 @@ export default function BlogPostFeed() {
           />
         ))}
       {/* Skeleton khi tải thêm */}
-      {loadingMore && (
-        <div className="m-0">
-          <SmartPostSkeletonFeed
-            mode="loadMore"
-            layouts={loadMoreSkeletonLayouts}
-          />
-        </div>
-      )}
+      {loadingMore && <PostCardSkeleton count={LOAD_MORE_LIMIT} />}
 
       {/*
         Sentinel cho infinity scroll – luôn có trong DOM khi FEED_MODE = "scroll".
