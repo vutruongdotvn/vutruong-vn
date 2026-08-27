@@ -37,26 +37,11 @@ export default function BlogRouteContent({
           : "mainBlog mx-auto grid w-full max-w-6xl grid-cols-1 gap-0 lg:grid-cols-10 lg:gap-3"
       }
     >
-      {/*
-        Luôn giữ sidebar trong cây React để bảo toàn state và dữ liệu widget
-        khi chuyển route nội bộ; chỉ ẩn khỏi layout ở các trang full-width.
-      */}
-      <div
-        className={
-          isFullWidthRoute
-            ? "hidden"
-            : "sidebar-widget relative order-1 lg:col-span-4"
-        }
-        aria-hidden={isFullWidthRoute || undefined}
-      >
-        {sidebar}
-      </div>
-
       <section
         className={
           isFullWidthRoute
             ? "blogFullWidthContent mx-auto w-full max-w-6xl"
-            : "postFeeds order-2 space-y-1 sm:space-y-3 lg:col-span-6"
+            : "postFeeds order-2 self-start overflow-hidden rounded-0 sm:rounded-2xl lg:order-1 lg:col-span-6 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)]"
         }
       >
         {/*
@@ -72,6 +57,21 @@ export default function BlogRouteContent({
         )}
         {children}
       </section>
+
+      {/*
+        Luôn giữ sidebar trong cây React để bảo toàn state và dữ liệu widget
+        khi chuyển route nội bộ; chỉ ẩn khỏi layout ở các trang full-width.
+      */}
+      <div
+        className={
+          isFullWidthRoute
+            ? "hidden"
+            : "sidebar-widget relative order-1 lg:order-2 lg:col-span-4"
+        }
+        aria-hidden={isFullWidthRoute || undefined}
+      >
+        {sidebar}
+      </div>
     </div>
   );
 }

@@ -297,9 +297,7 @@ export default function BlogDetailRealtime({
       <FancyboxWrapper />
 
       <article
-        className="fullPost rounded-0 sm:rounded-2xl bg-white/80 backdrop-blur-md
-        shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300
-        hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)]"
+        className="fullPost"
       >
         <div className="actionFooter md:px-4 px-3 md:pt-4 pt-3">
           <Link

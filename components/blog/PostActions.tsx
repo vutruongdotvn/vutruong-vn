@@ -50,21 +50,21 @@ export default function PostActions({
   };
 
   return (
-    <div className="postAction flex items-center gap-3 px-4 py-3">
-      {/* Buttons 
+    <div className="postAction flex items-center gap-4 px-4 py-3">
+      {/* Buttons */}
       <button
-      onClick={() => showToast("Đăng nhập để Thích bài viết này.", "warning")}
-      className="likeBtn cursor-pointer text-[.9375rem] sm:text-base text-gray-500 transition hover:text-black active:scale-80"
-    >
-      <i className="fad fa-heart" />
-    </button>
+        onClick={() => showToast("Đăng nhập để Thích bài viết này.", "warning")}
+        className="likeBtn cursor-pointer text-[.9375rem] sm:text-base text-gray-500 transition hover:text-black active:scale-80"
+      >
+        <i className="fadt fa-heart" />
+      </button>
       <button
-      onClick={() => showToast("Bình luận đã bị tắt cho bài viết này.", "error")}
-      className="commentBtn cursor-pointer text-[.9375rem] sm:text-base text-gray-500 transition hover:text-black active:scale-80"
-    >
-      <i className="fad fa-comment-slash" />
-    </button>
-    */}
+        onClick={() => showToast("Bình luận đã bị tắt cho bài viết này.", "error")}
+        className="commentBtn cursor-pointer text-[.9375rem] sm:text-base text-gray-500 transition hover:text-black active:scale-80"
+      >
+        <i className="fadt fa-comment-slash" />
+      </button>
+
       <button
         onClick={handleShare}
         disabled={sharing}
@@ -74,8 +74,8 @@ export default function PostActions({
         <i
           className={
             sharing
-              ? "fad fa-spinner-third fa-spin"
-              : "fad fa-share"
+              ? "fadt fa-spinner-third fa-spin"
+              : "fadt fa-share"
           }
         />
       </button>

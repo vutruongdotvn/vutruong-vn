@@ -57,7 +57,7 @@ export default function BlogPostFeed() {
    *
    * Tăng giá trị này để giảm tần suất gọi API; giảm để phản hồi nhanh hơn.
    */
-  const SCROLL_FETCH_DELAY = 1000;
+  const SCROLL_FETCH_DELAY = 500;
 
   const { user, role } = useUser();
   const { showToast, removeToast } = useToastContext();
@@ -521,12 +521,12 @@ export default function BlogPostFeed() {
         Guard "đang loading / chưa có bài" được xử lý bên trong observer callback.
       */}
       {FEED_MODE === "scroll" && (
-        <div ref={sentinelRef} aria-hidden="true" className="h-1 w-full" />
+        <div ref={sentinelRef} aria-hidden="true" className="h-0 w-0" />
       )}
 
       {/* ── Khu vực "Xem thêm" / end ── */}
       {!loading && !loadingMore && (
-        <div className="flex flex-col items-center gap-3 pt-6">
+        <div className="flex flex-col items-center gap-3 py-6">
 
           {/* Nút Xem thêm – chỉ hiện ở chế độ button */}
           {hasMore && FEED_MODE === "button" && (
@@ -540,9 +540,8 @@ export default function BlogPostFeed() {
             </button>
           )}
 
-          {/* Hết feed */}
           {!hasMore && posts.length > 0 && (
-            <p className="text-sm text-gray-400">Hết</p>
+            <p className="text-sm text-gray-400">Không còn kết quả nào khác</p>
           )}
         </div>
       )}

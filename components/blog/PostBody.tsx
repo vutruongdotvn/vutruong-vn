@@ -16,7 +16,7 @@ import PostImages from "./PostImages";
 
 const MOBILE_MEDIA_QUERY = "(max-width: 767px)";
 const MOBILE_PREVIEW_LENGTH = 90;
-const DESKTOP_PREVIEW_LENGTH = 220;
+const DESKTOP_PREVIEW_LENGTH = 230;
 
 type Props = {
   content: string;
@@ -161,8 +161,8 @@ export default function PostBody({
   );
   const fixedMaxLength =
     typeof maxLength === "number" &&
-    Number.isFinite(maxLength) &&
-    maxLength >= 1
+      Number.isFinite(maxLength) &&
+      maxLength >= 1
       ? Math.floor(maxLength)
       : undefined;
 
@@ -274,14 +274,16 @@ export default function PostBody({
         <div className="postBody pt-3 text-left text-gray-800">
           {isCollapsed ? (
             <>
-              <div className="postShortPreview break-words px-3 text-[.9375rem]/6 sm:px-4 sm:text-base/6">
+              <div className="postShortPreview break-words px-3 text-[.9375rem]/6 sm:px-4 sm:text-[.9375rem]/6 cursor-pointer hover:text-black text-justify"
+                onClick={() => setExpandedContentKey(contentKey)}
+                title="Xem toàn bộ bài viết"
+              >
                 {renderInlineParts(previewText)}
 
                 <button
                   type="button"
                   title="Xem toàn bộ bài viết"
                   aria-label="Xem toàn bộ bài viết"
-                  onClick={() => setExpandedContentKey(contentKey)}
                   className="ml-1 inline-flex cursor-pointer items-center whitespace-nowrap align-baseline font-medium text-gray-800 hover:underline"
                 >
                   Xem thêm
@@ -316,7 +318,7 @@ export default function PostBody({
                   return block.value.trim() ? (
                     <p
                       key={`text-${blockIndex}`}
-                      className="whitespace-pre-line break-words px-3 text-[.9375rem]/6 sm:px-4 sm:text-base/6"
+                      className="whitespace-pre-line break-words px-3 text-[.9375rem]/6 sm:px-4 sm:text-[.9375rem]/6 text-justify"
                     >
                       {renderInlineParts(block.value)}
                     </p>

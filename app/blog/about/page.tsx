@@ -340,7 +340,7 @@ const getVisibleContentItems = (
     .filter((item) => item.values.length > 0);
 
 const itemRowClassName =
-  "flex min-w-0 items-start gap-3 border-b border-slate-100 py-2 last:border-b-0 sm:gap-4 sm:py-3.5";
+  "flex min-w-0 items-start gap-3 border-b border-slate-100 py-2 last:border-b-0 sm:gap-4 sm:py-3";
 const itemIconClassName =
   "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 text-lg text-slate-500 lg:h-12 lg:w-12 lg:text-2xl";
 const itemLabelClassName = "text-xs leading-5 text-slate-400";
@@ -627,7 +627,7 @@ export default function BlogAboutPage() {
                             ? link.name + ": " + link.username
                             : link.name
                         }
-                        className="flex items-center gap-3 py-2 group-hover/social:text-sky-600 lg:py-4"
+                        className="flex items-center gap-3 py-2 group-hover/social:text-sky-600 lg:py-3"
                       >
                         <span className={itemIconClassName}>
                           <i className={link.icon} aria-hidden="true" />

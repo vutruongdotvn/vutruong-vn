@@ -71,10 +71,10 @@ export default function CreatePostBox({
   const loading = authLoading || profileLoading;
 
   return (
-    <div className={visible ? "w-full" : "hidden"} aria-hidden={!visible}>
+    <div className={visible ? "createPostBox" : "hidden"} aria-hidden={!visible}>
       {loading ? (
         <div
-          className="flex items-center gap-2 border border-gray-200/80 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] sm:gap-3 sm:rounded-2xl p-3 sm:p-4"
+          className="flex items-center gap-2 sm:gap-3 rounded-0 sm:rounded-2xl p-3 sm:p-4"
           aria-label="Đang tải hộp đăng bài viết"
           aria-busy="true"
         >
@@ -87,7 +87,7 @@ export default function CreatePostBox({
           </div>
         </div>
       ) : (
-        <div className="flex items-center gap-2 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-shadow duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.07)] sm:gap-3 sm:rounded-2xl p-3 sm:p-4">
+        <div className="flex items-center gap-2 transition-shadow duration-300 sm:gap-3 p-3 sm:p-4 border-b border-slate-200">
           <button
             type="button"
             onClick={() => setModalOpen(true)}
@@ -107,7 +107,7 @@ export default function CreatePostBox({
           <button
             type="button"
             onClick={() => setModalOpen(true)}
-            className="h-[40px] min-w-0 flex-1 cursor-pointer truncate rounded-full bg-gray-100 px-4 text-left text-[15px] font-normal text-gray-500 transition-colors hover:bg-gray-200/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 sm:px-5 sm:text-base"
+            className="h-[40px] min-w-0 flex-1 cursor-pointer truncate rounded-full bg-gray-100 px-4 text-left text-[15px] font-normal text-gray-500 transition-colors hover:bg-gray-200/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 sm:text-base"
           >
             {callName} ơi, có điều gì muốn chia sẻ không?
           </button>

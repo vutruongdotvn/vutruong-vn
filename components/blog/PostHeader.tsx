@@ -162,23 +162,25 @@ export default function PostHeader({
     }, 50);
   };
 
+  const publishHref = showLink && postId ? `/blog/${postId}` : null;
+
   return (
     <>
       <div className="flex items-center justify-between px-3 pt-3 select-none sm:px-4 sm:pt-4">
         <div className="flex min-w-0 items-center gap-2">
           <Image
             src={avatar || "/images/default.jpg"}
-            alt="avatar"
-            width={40}
-            height={40}
-            sizes="100px"
+            alt="Ảnh đại diện"
+            width={30}
+            height={30}
+            sizes="30px"
             unoptimized
-            className="w-[40px] h-[40px] rounded-full object-cover pointer-events-none"
+            className="w-[30px] h-[30px] rounded-full object-cover"
           />
 
-          <div className="flex flex-col gap-0.75">
+          <div className="flex items-center gap-1">
             <Link href="/about"
-              className="flex items-center gap-0.75 cursor-pointer text-sm font-medium text-gray-800 hover:text-black active:scale-98"
+              className="flex items-center gap-0.75 cursor-pointer text-[.9375rem] font-medium text-slate-800 hover:text-sky-800 transition-colors"
             >
               {name}
               <i className="fas fa-badge-check text-xs text-blue-500" />
@@ -190,28 +192,22 @@ export default function PostHeader({
                   title={`${name} đã ghim bài viết này`}
                   className="text-xs text-gray-600 hover:text-black"
                 >
-                  <i className="fa-duotone fa-thumbtack text-xs" /> Bài ghim
+                  đã ghim
                 </span>
               )}
 
               {isPinned && <span className="opacity-50 text-xs">•</span>}
 
-              {showLink && postId ? (
-                <Link
-                  href={`/blog/${postId}`}
-                  title={fullTime}
-                  className="postPublish inline-flex items-center text-xs font-normal text-gray-600 hover:text-black active:scale-98"
-                >
-                  {time}
-                </Link>
-              ) : (
-                <span
-                  title={fullTime}
-                  className="postPublish inline-flex items-center text-xs font-normal text-gray-600 hover:text-black active:scale-98"
-                >
-                  {time}
-                </span>
-              )}
+              <Link
+                href={publishHref ?? ""}
+                title={fullTime}
+                aria-disabled={!publishHref}
+                tabIndex={publishHref ? undefined : -1}
+                onClick={publishHref ? undefined : (event) => event.preventDefault()}
+                className="postPublish inline-flex items-center text-xs font-normal text-gray-600 hover:text-black active:scale-98"
+              >
+                {time}
+              </Link>
 
               {/* ✅ BẬT LOGIC */}
               {visibility === "public" ? (
@@ -221,7 +217,7 @@ export default function PostHeader({
                     setOpenPrivacyModal(true);
                     setOpen(false);
                   }}
-                  className={`fadt fa-earth-asia text-[10px] active:scale-98 cursor-pointer ${isAdmin ? "" : "publicPost"
+                  className={`fadt fa-earth-asia text-[10px] active:scale-98 cursor-pointer opacity-0 ${isAdmin ? "" : "publicPost"
                     }`}
                   title="Công khai"
                 />

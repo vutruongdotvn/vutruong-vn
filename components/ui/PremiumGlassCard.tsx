@@ -20,16 +20,15 @@ export default function PremiumGlassCard({
       {/* 🔮 MAIN GLASS SHELL (Lớp kính chính) */}
       <div
         className={cn(
-          "relative overflow-hidden rounded-0 sm:rounded-[1.5rem] border border-white/60 bg-white backdrop-blur-2xl",
+          "relative overflow-hidden rounded-0 sm:rounded-2xl border border-slate-100 bg-white",
           "shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-1200 ease-out",
           "hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)]",
           contentClassName
         )}
       >
 
-
-        {/* 5. Vệt sáng lướt qua (Diagonal Shine Effect) - Kích hoạt khi Hover */}
-        <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-black/3 to-transparent transition-transform duration-[1200ms] ease-in-out group-hover:translate-x-full" />
+        {/* Vệt sáng lướt qua (Diagonal Shine Effect) - Kích hoạt khi Hover */}
+        <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-black/3 to-transparent transition-transform duration-[1600ms] ease-in-out group-hover:translate-x-full" />
 
         {/* 📦 CONTENT WRAPPER */}
         <div className="relative z-10 h-full w-full" id="glassCard">{children}</div>

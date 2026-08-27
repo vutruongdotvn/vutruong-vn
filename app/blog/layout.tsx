@@ -19,7 +19,7 @@ export default function BlogLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main id="blog" className="pt-14 md:pb-6 pb-23">
+    <main id="blog" className="pt-14 md:pb-4 pb-23">
       <div className="mx-auto w-full space-y-0 md:space-y-3">
         <CoverSection />
 

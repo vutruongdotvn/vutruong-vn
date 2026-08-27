@@ -20,22 +20,20 @@ export default function PostCardSkeleton({
       aria-label="Đang tải bài viết"
     >
       {Array.from({ length: skeletonCount }, (_, index) => (
-        <article key={index} className="post relative" aria-hidden="true">
-          <div className="overflow-hidden rounded-none bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] sm:rounded-2xl">
+        <article key={index} className="post relative border-b border-slate-200 last:border-b-0" aria-hidden="true">
+          <div className="overflow-hidden rounded-none bg-white sm:rounded-2xl">
             {/* PostHeader */}
             <div className="flex select-none items-center justify-between px-3 pt-3 sm:px-4 sm:pt-4">
               <div className="flex min-w-0 items-center gap-2">
                 <div
-                  className={`size-10 shrink-0 rounded-full border border-neutral-200 ${skeletonClass}`}
+                  className={`w-[30px] h-[30px] shrink-0 rounded-full border border-neutral-200 ${skeletonClass}`}
                 />
 
-                <div className="flex min-w-0 flex-col gap-1.5">
-                  <div className={`h-4 w-24 rounded-xl ${skeletonClass}`} />
-                  <div className={`h-3 w-18 rounded-xl ${skeletonClass}`} />
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <div className={`h-4 w-33 rounded-xl ${skeletonClass}`} />
                 </div>
               </div>
 
-              <div className={`size-8 rounded-full ${skeletonClass}`} />
             </div>
 
             {/* PostSnippet: luôn cố định 3 hàng */}
@@ -46,12 +44,8 @@ export default function PostCardSkeleton({
             </div>
 
             {/* PostImages: một khung cố định, không phụ thuộc dữ liệu bài viết */}
-            <div className="mt-3 h-48 w-full animate-pulse rounded-lg bg-transparent sm:h-56 sm:rounded-none" />
+            <div className="mt-3 h-40 w-full animate-pulse rounded-lg bg-transparent sm:h-56 sm:rounded-none" />
 
-            {/* PostActions */}
-            <div className="flex items-center gap-3 px-4 py-3">
-              <div className={`size-[22px] rounded-full ${skeletonClass}`} />
-            </div>
           </div>
         </article>
       ))}

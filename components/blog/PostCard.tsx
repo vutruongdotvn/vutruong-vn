@@ -23,11 +23,11 @@ export default function PostCard({
   const { role } = useUser();
 
   return (
-    <article className="post relative">
+    <article className="post relative border-b border-slate-200 last:border-b-0">
 
       {/* POST CONTENT */}
       <div
-        className={`rounded-0 sm:rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.075)]
+        className={`postCard
         ${post.is_pinned ? "pinnedPost" : ""}
         `}>
         <PostHeader
