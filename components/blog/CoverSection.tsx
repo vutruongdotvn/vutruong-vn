@@ -70,12 +70,6 @@ export default function CoverSection() {
           aria-hidden="true"
         >
           <div className="absolute inset-y-0 left-1/2 w-full max-w-6xl -translate-x-1/2 animate-pulse bg-gray-200" />
-
-          {isAdmin && (
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-[6] mx-auto flex w-full max-w-6xl justify-end p-3 sm:p-4">
-              <div className="h-9 w-9 animate-pulse rounded-full border border-white/30 bg-black/10 sm:w-28" />
-            </div>
-          )}
         </div>
 
         <div className="w-full max-w-6xl mx-auto py-6 relative pb-18 mt-[-100px] relative z-3">
@@ -83,9 +77,6 @@ export default function CoverSection() {
             <div className="flex flex-col items-center text-white sm:flex-row sm:items-end sm:justify-between">
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-5">
                 <div className="relative size-40 shrink-0 rounded-full border-4 border-white bg-gray-200 sm:size-48">
-                  {isAdmin && (
-                    <div className="absolute bottom-3 right-3 size-9 rounded-full border border-black/10 bg-gray-300 shadow-lg sm:size-10" />
-                  )}
                 </div>
 
                 <div className="mt-0 flex flex-col items-center gap-0 sm:mt-18 sm:items-start sm:gap-1">
