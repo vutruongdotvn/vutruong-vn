@@ -170,7 +170,7 @@ export default function IntroWidget() {
             <div className="h-[1rem] bg-gray-100 rounded-full w-1/3"></div>
           </div>
         ) : (
-          <div className="text-[14px]/6 sm:text-[.9375rem]/6 text-gray-800 space-y-3">
+          <div className="text-[.9375rem]/6 text-gray-800 space-y-3">
             {isCollapsed ? (
               // BẢN RÚT GỌN (CSS TỰ ĐỘNG CẮT Ở DÒNG 3)
               <div
@@ -210,7 +210,7 @@ export default function IntroWidget() {
                 */}
               </div>
             )}
-            <div className="border-t border-slate-200 pt-3 space-y-1 lg:space-y-2 text-[14px]/6 sm:text-[.9375rem]/6 text-gray-800">
+            <div className="border-t border-slate-200 pt-3 space-y-1 lg:space-y-2 text-[.9375rem]/6 text-gray-800">
               <div className="flex items-center gap-2">
                 <span className="flex items-center justify-center xt-sm sm:text-lg bg-slate-100 text-center rounded-full size-8"><i className="far fa-blog" /></span> <b>Trang</b> <span>•</span> <span>Blog cá nhân</span>
               </div>

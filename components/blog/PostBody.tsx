@@ -274,7 +274,7 @@ export default function PostBody({
         <div className="postBody pt-3">
           {isCollapsed ? (
             <>
-              <div className="postShortPreview break-words px-3 text-[14px]/6 sm:text-[.9375rem]/6 sm:px-4 cursor-pointer text-slate-700 hover:text-slate-600"
+              <div className="postShortPreview break-words px-3 text-[.9375rem]/6 sm:px-4 cursor-pointer text-slate-800 hover:text-black"
                 onClick={() => setExpandedContentKey(contentKey)}
                 title="Xem toàn bộ bài viết"
               >
@@ -318,7 +318,7 @@ export default function PostBody({
                   return block.value.trim() ? (
                     <p
                       key={`text-${blockIndex}`}
-                      className="whitespace-pre-line break-words px-3 text-[14px]/6 sm:text-[.9375rem]/6 sm:px-4 text-slate-700"
+                      className="whitespace-pre-line break-words px-3 text-[.9375rem]/6 sm:px-4 text-slate-800"
                     >
                       {renderInlineParts(block.value)}
                     </p>

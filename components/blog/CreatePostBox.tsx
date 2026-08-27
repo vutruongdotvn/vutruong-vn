@@ -104,9 +104,9 @@ export default function CreatePostBox({
             type="button"
             onClick={() => setModalOpen(true)}
             title="Đăng bài viết mới"
-            className="h-[30px] min-w-0 flex-1 cursor-pointer truncate rounded-full text-left text-[14px]/6 sm:text-[.9375rem]/6 font-normal text-slate-600 hover:text-slate-800"
+            className="h-[30px] min-w-0 flex-1 cursor-pointer truncate rounded-full text-left text-[.9375rem]/6 font-normal text-slate-600 hover:text-slate-800"
           >
-            <span className="font-medium">{callName}</span> ơi, hôm nay có gì vui hong?
+            <span className="font-medium">{callName}</span> ơi, hôm nay có gì vui không?
           </button>
 
 

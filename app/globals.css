@@ -248,3 +248,13 @@ img {
   display: none;
 }
 
+/* Fancybox */
+@media (min-width: 768px) {
+  .f-panzoom__viewport {
+    padding: 1rem;
+  }
+
+  .f-panzoom__viewport > .f-panzoom__content {
+    border-radius: 1.5rem;
+  }
+}

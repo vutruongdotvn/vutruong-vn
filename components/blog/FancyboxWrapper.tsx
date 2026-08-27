@@ -71,7 +71,7 @@ const FANCYBOX_OPTIONS: Partial<FancyboxOptions> = {
   modal: true,
 
   // Trả focus về ảnh/nút đã mở Fancybox sau khi đóng.
-  placeFocusBack: true,
+  placeFocusBack: false,
 
   // Thời gian không tương tác trước khi giao diện điều khiển tự ẩn.
   // Đơn vị: mili giây | false = không bao giờ tự ẩn.
@@ -83,7 +83,7 @@ const FANCYBOX_OPTIONS: Partial<FancyboxOptions> = {
 
   // true: ảnh phóng từ thumbnail lên khi mở và thu về thumbnail khi đóng.
   // false: Fancybox sẽ sử dụng showClass / hideClass cho ảnh.
-  zoomEffect: true,
+  zoomEffect: false,
 
   // true: backdrop, toolbar và các thành phần giao diện fade khi mở/đóng.
   fadeEffect: true,
@@ -146,7 +146,7 @@ const FANCYBOX_OPTIONS: Partial<FancyboxOptions> = {
 
     // Hiệu ứng chuyển giữa các ảnh:
     // "fade" | "crossfade" | "slide".
-    transition: "crossfade",
+    transition: "fade",
 
     // false: slide chạy ngang | true: slide chạy dọc.
     vertical: false,
@@ -174,22 +174,22 @@ const FANCYBOX_OPTIONS: Partial<FancyboxOptions> = {
     // Đổi SHOW_TOOLBAR phía trên thành false để ẩn hoàn toàn toolbar.
     Toolbar: SHOW_TOOLBAR
       ? {
-          // true: toolbar nổi trên nội dung | false: toolbar chiếm một hàng.
-          absolute: true,
+        // true: toolbar nổi trên nội dung | false: toolbar chiếm một hàng.
+        absolute: true,
 
-          // true = luôn bật | false = tắt | "auto" = chỉ bật khi có ảnh zoom.
-          enabled: true,
+        // true = luôn bật | false = tắt | "auto" = chỉ bật khi có ảnh zoom.
+        enabled: true,
 
-          display: {
-            // Các item có thể dùng:
-            // counter, zoomIn, zoomOut, toggle1to1, rotateCCW, rotateCW,
-            // flipX, flipY, reset, autoplay, thumbs, fullscreen,
-            // download, close.
-            left: ["counter"],
-            middle: [],
-            right: ["thumbs"],
-          },
-        }
+        display: {
+          // Các item có thể dùng:
+          // counter, zoomIn, zoomOut, toggle1to1, rotateCCW, rotateCW,
+          // flipX, flipY, reset, autoplay, thumbs, fullscreen,
+          // download, close.
+          left: ["counter"],
+          middle: [],
+          right: ["close"],
+        },
+      }
       : false,
 
     /* THUMBNAIL ------------------------------------------------------------ */
@@ -197,18 +197,18 @@ const FANCYBOX_OPTIONS: Partial<FancyboxOptions> = {
     // Đổi SHOW_THUMBNAILS phía trên thành false để tắt hoàn toàn.
     Thumbs: SHOW_THUMBNAILS
       ? {
-          // Kiểu thumbnail:
-          // "modern" = giống Apple Photos
-          // "classic" = carousel thumbnail truyền thống
-          // "scrollable" = danh sách thumbnail cuộn tự do.
-          type: "classic",
+        // Kiểu thumbnail:
+        // "modern" = giống Apple Photos
+        // "classic" = carousel thumbnail truyền thống
+        // "scrollable" = danh sách thumbnail cuộn tự do.
+        type: "scrollable",
 
-          // Thumbnail chỉ được tạo khi gallery có ít nhất số ảnh này.
-          minCount: 2,
+        // Thumbnail chỉ được tạo khi gallery có ít nhất số ảnh này.
+        minCount: 2,
 
-          // Mở/ẩn thumbnail lúc Fancybox vừa xuất hiện.
-          showOnStart: SHOW_THUMBNAILS_ON_START,
-        }
+        // Mở/ẩn thumbnail lúc Fancybox vừa xuất hiện.
+        showOnStart: SHOW_THUMBNAILS_ON_START,
+      }
       : false,
 
     /* AUTOPLAY / SLIDESHOW ------------------------------------------------- */
@@ -216,18 +216,18 @@ const FANCYBOX_OPTIONS: Partial<FancyboxOptions> = {
     // Đổi ENABLE_AUTOPLAY phía trên thành false để tắt plugin.
     Autoplay: ENABLE_AUTOPLAY
       ? {
-          // Có tự chạy ngay sau khi mở Fancybox hay không.
-          autoStart: AUTOPLAY_ON_START,
+        // Có tự chạy ngay sau khi mở Fancybox hay không.
+        autoStart: AUTOPLAY_ON_START,
 
-          // Thời gian hiển thị mỗi slide, đơn vị mili giây.
-          timeout: 5_000,
+        // Thời gian hiển thị mỗi slide, đơn vị mili giây.
+        timeout: 5_000,
 
-          // Tạm dừng khi rê chuột lên nội dung.
-          pauseOnHover: true,
+        // Tạm dừng khi rê chuột lên nội dung.
+        pauseOnHover: true,
 
-          // Hiện thanh tiến trình của slideshow.
-          showProgressbar: true,
-        }
+        // Hiện thanh tiến trình của slideshow.
+        showProgressbar: true,
+      }
       : false,
 
     /* FULLSCREEN ----------------------------------------------------------- */
@@ -235,9 +235,9 @@ const FANCYBOX_OPTIONS: Partial<FancyboxOptions> = {
     // Đổi ENABLE_FULLSCREEN phía trên thành false để tắt plugin.
     Fullscreen: ENABLE_FULLSCREEN
       ? {
-          // true: tự chuyển toàn màn hình khi mở Fancybox.
-          autoStart: false,
-        }
+        // true: tự chuyển toàn màn hình khi mở Fancybox.
+        autoStart: false,
+      }
       : false,
 
     /* LAZY LOAD ------------------------------------------------------------ */

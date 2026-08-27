@@ -351,7 +351,7 @@ export default function PostImages({
                 src,
                 index,
                 // bg-* chỉnh nền; ring-1/ring-2 và ring-* chỉnh viền.
-                "h-full w-full rounded-lg",
+                "h-full w-full rounded-xl",
                 // Gợi ý kích thước tải; không thay đổi chiều cao/chiều rộng CSS.
                 "(max-width:640px) 90vw, (max-width:1024px) 70vw, 720px"
               )}
