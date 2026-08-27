@@ -178,57 +178,62 @@ export default function PostHeader({
             className="w-[30px] h-[30px] rounded-full object-cover"
           />
 
-          <div className="flex items-center gap-1">
-            <Link href="/about"
-              className="flex items-center gap-0.75 cursor-pointer text-[.9375rem] font-medium text-slate-800 hover:text-sky-800 transition-colors"
+          <div className="flex min-w-0 items-center gap-1 leading-none">
+            <Link
+              href="/about"
+              className="inline-flex h-5 items-center gap-1 cursor-pointer text-[.9375rem] font-medium leading-none text-slate-800 transition-colors hover:text-sky-800"
             >
               {name}
-              <i className="fas fa-badge-check text-xs text-blue-500" />
+              <i className="fad fa-badge-check inline-flex items-center text-xs leading-none text-blue-600" />
             </Link>
 
-            <div className="flex items-center gap-1">
+            <div className="flex h-5 items-center gap-1 leading-none">
               {isPinned && (
                 <span
-                  title={`${name} đã ghim bài viết này`}
-                  className="text-xs text-gray-600 hover:text-black"
+                  className="inline-flex h-5 items-center text-[.9375rem] leading-none text-slate-600"
                 >
                   đã ghim
                 </span>
               )}
 
-              {isPinned && <span className="opacity-50 text-xs">•</span>}
+              {isPinned && (
+                <span className="inline-flex h-5 items-center leading-none opacity-50 mx-0.5">
+                  •
+                </span>
+              )}
 
               <Link
                 href={publishHref ?? ""}
                 title={fullTime}
                 aria-disabled={!publishHref}
                 tabIndex={publishHref ? undefined : -1}
-                onClick={publishHref ? undefined : (event) => event.preventDefault()}
-                className="postPublish inline-flex items-center text-xs font-normal text-gray-600 hover:text-black active:scale-98"
+                onClick={
+                  publishHref ? undefined : (event) => event.preventDefault()
+                }
+                className="postPublish inline-flex h-5 items-center text-[.8375rem] font-normal leading-none text-slate-500 hover:text-black active:scale-98"
               >
                 {time}
               </Link>
 
-              {/* ✅ BẬT LOGIC */}
               {visibility === "public" ? (
                 <i
                   onClick={() => {
-                    if (!isAdmin) return; // 🔒 CHECK QUYỀN
+                    if (!isAdmin) return;
                     setOpenPrivacyModal(true);
                     setOpen(false);
                   }}
-                  className={`fadt fa-earth-asia text-[10px] active:scale-98 cursor-pointer opacity-0 ${isAdmin ? "" : "publicPost"
+                  className={`fadt fa-earth-asia inline-flex h-5 items-center text-[10px] leading-none active:scale-98 cursor-pointer opacity-0 ${isAdmin ? "" : "publicPost"
                     }`}
                   title="Công khai"
                 />
               ) : (
                 <i
                   onClick={() => {
-                    if (!isAdmin) return; // 🔒 CHECK QUYỀN
+                    if (!isAdmin) return;
                     setOpenPrivacyModal(true);
                     setOpen(false);
                   }}
-                  className={`fadt fa-lock text-[10px] active:scale-98 cursor-pointer ${isAdmin ? "" : "privacyPost"
+                  className={`fadt fa-lock inline-flex h-5 items-center text-[10px] leading-none active:scale-98 cursor-pointer ${isAdmin ? "" : "privacyPost"
                     }`}
                   title="Riêng tư"
                 />

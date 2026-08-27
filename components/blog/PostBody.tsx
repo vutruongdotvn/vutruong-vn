@@ -274,7 +274,7 @@ export default function PostBody({
         <div className="postBody pt-3 text-left text-gray-800">
           {isCollapsed ? (
             <>
-              <div className="postShortPreview break-words px-3 text-[.9375rem]/6 sm:px-4 sm:text-[.9375rem]/6 cursor-pointer hover:text-black text-justify"
+              <div className="postShortPreview break-words px-3 text-[.9375rem]/6 sm:px-4 sm:text-[.9375rem]/6 cursor-pointer hover:text-black text-start sm:text-justify"
                 onClick={() => setExpandedContentKey(contentKey)}
                 title="Xem toàn bộ bài viết"
               >

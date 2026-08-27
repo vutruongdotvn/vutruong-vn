@@ -78,52 +78,38 @@ export default function CreatePostBox({
           aria-label="Đang tải hộp đăng bài viết"
           aria-busy="true"
         >
-          <div className="h-[40px] w-[40px] shrink-0 animate-pulse rounded-full bg-gray-200" />
+          <div className="h-[30px] w-[30px] shrink-0 animate-pulse rounded-full bg-gray-200" />
 
-          <div className="h-[40px] min-w-0 flex-1 animate-pulse rounded-full bg-gray-100" />
+          <div className="h-[30px] max-w-64 flex-1 animate-pulse rounded-full bg-gray-100" />
 
-          <div className="flex shrink-0 items-center gap-0 sm:gap-1">
-            <div className="h-10 w-8 animate-pulse rounded-xl bg-gray-100 sm:w-10" />
-          </div>
         </div>
       ) : (
-        <div className="flex items-center gap-2 transition-shadow duration-300 sm:gap-3 p-3 sm:p-4 border-b border-slate-200">
+        <div className="flex items-center gap-2 transition-shadow duration-300 sm:gap-2 p-3 sm:p-4 border-b border-slate-200">
           <button
             type="button"
-            onClick={() => setModalOpen(true)}
-            className="shrink-0 cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 pointer-events-none"
+            className="shrink-0 rounded-full"
             aria-label="Mở hộp đăng bài viết"
           >
             <Image
               src={avatar}
               alt={displayName}
-              width={40}
-              height={40}
+              width={30}
+              height={30}
               unoptimized
-              className="h-[40px] w-[40px] rounded-full object-cover"
+              className="h-[30px] w-[30px] rounded-full object-cover"
             />
           </button>
 
           <button
             type="button"
             onClick={() => setModalOpen(true)}
-            className="h-[40px] min-w-0 flex-1 cursor-pointer truncate rounded-full bg-gray-100 px-4 text-left text-[15px] font-normal text-gray-500 transition-colors hover:bg-gray-200/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 sm:text-base"
+            title="Đăng bài viết mới"
+            className="h-[30px] min-w-0 flex-1 cursor-pointer truncate rounded-full text-left text-[.9375rem] font-normal text-slate-600"
           >
-            {callName} ơi, có điều gì muốn chia sẻ không?
+            <span className="font-medium">{callName}</span> ơi, hôm nay có gì vui hong?
           </button>
 
-          <div className="flex shrink-0 items-center gap-0 sm:gap-1">
 
-            <button
-              type="button"
-              onClick={() => setModalOpen(true)}
-              className="flex h-10 w-8 cursor-pointer items-center justify-center rounded-xl text-emerald-500 transition-colors hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-emerald-500 sm:w-10"
-              aria-label="Thêm ảnh"
-            >
-              <i className="fa-duotone fa-images text-xl" />
-            </button>
-
-          </div>
         </div>
       )}
 

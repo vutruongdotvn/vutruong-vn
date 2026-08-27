@@ -302,7 +302,7 @@ export default function PostImages({
           }
         }}
         slidesPerView="auto"
-        spaceBetween={4}
+        spaceBetween={3}
         grabCursor
         simulateTouch
         watchOverflow={false}
@@ -319,13 +319,13 @@ export default function PostImages({
           // Bật hiệu ứng nảy trở lại khi trượt quá điểm đầu/cuối.
           momentumBounce: true,
           // Độ nảy: càng lớn càng nảy mạnh. Có thể thử khoảng 0.3–0.8.
-          momentumBounceRatio: 1,
+          momentumBounceRatio: 0.5,
           // Quãng đường trượt theo quán tính: thấp hơn = dừng sớm hơn.
           momentumRatio: 1,
           // Tốc độ quán tính: thấp hơn = chuyển động chậm và kiểm soát hơn.
-          momentumVelocityRatio: 1,
+          momentumVelocityRatio: 0,
           // Vận tốc tối thiểu để tạo quán tính; tăng lên nếu slider quá nhạy.
-          minimumVelocity: 0,
+          minimumVelocity: 0.5,
           // false = dừng tự do; true = tự hút về vị trí đầu của slide gần nhất.
           sticky: false,
         }}
@@ -350,9 +350,8 @@ export default function PostImages({
               {renderImage(
                 src,
                 index,
-                // Giao diện khung: rounded-lg/xl/2xl chỉnh bo góc;
                 // bg-* chỉnh nền; ring-1/ring-2 và ring-* chỉnh viền.
-                "h-full w-full rounded-lg bg-slate-100",
+                "h-full w-full rounded-lg",
                 // Gợi ý kích thước tải; không thay đổi chiều cao/chiều rộng CSS.
                 "(max-width:640px) 90vw, (max-width:1024px) 70vw, 720px"
               )}
