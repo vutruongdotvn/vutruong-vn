@@ -93,7 +93,7 @@ function renderInlineParts(text: string) {
 
     if (part.type === "bold") {
       return (
-        <strong key={key} className="font-semibold">
+        <strong key={key} className="font-medium">
           {part.value}
         </strong>
       );
@@ -112,7 +112,7 @@ function renderInlineParts(text: string) {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="break-words font-medium text-sky-800 hover:text-black hover:underline"
+          className="break-words font-medium text-slate-800 hover:underline active:opacity-80"
         >
           {part.value}
         </a>
@@ -136,7 +136,7 @@ function renderInlineParts(text: string) {
           title={`Xem hashtag #${tagName}`}
           href={`/blog/tag/${encodeURIComponent(tagName)}`}
           prefetch={false}
-          className="break-words font-medium text-sky-800 hover:underline active:opacity-80"
+          className="break-words font-medium text-slate-800 hover:underline active:opacity-80"
         >
           {part.value}
         </Link>
@@ -271,10 +271,10 @@ export default function PostBody({
   return (
     <>
       {hasBodyContent && (
-        <div className="postBody pt-3 text-left text-gray-800">
+        <div className="postBody pt-3">
           {isCollapsed ? (
             <>
-              <div className="postShortPreview break-words px-3 text-[.9375rem]/6 sm:px-4 sm:text-[.9375rem]/6 cursor-pointer hover:text-black text-start sm:text-justify"
+              <div className="postShortPreview break-words px-3 text-[14px]/6 sm:text-[.9375rem]/6 sm:px-4 cursor-pointer text-slate-700 hover:text-slate-600"
                 onClick={() => setExpandedContentKey(contentKey)}
                 title="Xem toàn bộ bài viết"
               >
@@ -318,7 +318,7 @@ export default function PostBody({
                   return block.value.trim() ? (
                     <p
                       key={`text-${blockIndex}`}
-                      className="whitespace-pre-line break-words px-3 text-[.9375rem]/6 sm:px-4 sm:text-[.9375rem]/6 text-justify"
+                      className="whitespace-pre-line break-words px-3 text-[14px]/6 sm:text-[.9375rem]/6 sm:px-4 text-slate-700"
                     >
                       {renderInlineParts(block.value)}
                     </p>

@@ -346,7 +346,7 @@ const itemIconClassName =
 const itemLabelClassName = "text-xs leading-5 text-slate-400";
 const itemValueClassName = "text-sm font-medium leading-6 lg:text-base";
 
-const panelClassName = "about-tab-panel mb-12 lg:mb-0";
+const panelClassName = "about-tab-panel mb-3 lg:mb-0";
 
 const aboutTabsCss = [
   ".about-tab-input { display: none; }",

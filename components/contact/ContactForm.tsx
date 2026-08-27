@@ -170,7 +170,7 @@ export default function ContactForm() {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="py-6">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2 sm:gap-4 sm:grid-cols-2">
           {/* Name */}
           <div className="group relative">
             <div className="relative">
@@ -185,7 +185,7 @@ export default function ContactForm() {
                 placeholder="Họ và Tên"
                 value={formData.name}
                 onChange={handleChange}
-                className="h-13 w-full rounded-2xl border border-white/50 bg-white/70 pl-12 pr-4 text-sm text-gray-900 shadow-[0_8px_30px_rgba(0,0,0,0.04)] outline-none backdrop-blur-md transition duration-200 placeholder:text-gray-400 focus:border-sky-300 focus:bg-white/80 focus:ring-2 focus:ring-sky-100"
+                className="h-12 w-full rounded-lg pl-12 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 border border-slate-200 focus:border-slate-300"
               />
             </div>
           </div>
@@ -205,7 +205,7 @@ export default function ContactForm() {
                 value={formData.email}
                 onChange={handleChange}
                 pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
-                className="h-13 w-full rounded-2xl border border-white/50 bg-white/70 pl-12 pr-4 text-sm text-gray-900 shadow-[0_8px_30px_rgba(0,0,0,0.04)] outline-none backdrop-blur-md transition duration-200 placeholder:text-gray-400 focus:border-sky-300 focus:bg-white/80 focus:ring-2 focus:ring-sky-100"
+                className="h-12 w-full rounded-lg pl-12 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 border border-slate-200 focus:border-slate-300"
               />
             </div>
           </div>
@@ -225,7 +225,7 @@ export default function ContactForm() {
                 value={formData.phone}
                 onChange={handleChange}
                 pattern="(\+84|0)\d{9,10}"
-                className="h-13 w-full rounded-2xl border border-white/50 bg-white/70 pl-12 pr-4 text-sm text-gray-900 shadow-[0_8px_30px_rgba(0,0,0,0.04)] outline-none backdrop-blur-md transition duration-200 placeholder:text-gray-400 focus:border-sky-300 focus:bg-white/80 focus:ring-2 focus:ring-sky-100"
+                className="h-12 w-full rounded-lg pl-12 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 border border-slate-200 focus:border-slate-300"
               />
             </div>
           </div>
@@ -243,14 +243,14 @@ export default function ContactForm() {
                 placeholder="Facebook"
                 value={formData.facebook}
                 onChange={handleChange}
-                className="h-13 w-full rounded-2xl border border-white/50 bg-white/70 pl-12 pr-4 text-sm text-gray-900 shadow-[0_8px_30px_rgba(0,0,0,0.04)] outline-none backdrop-blur-md transition duration-200 placeholder:text-gray-400 focus:border-sky-300 focus:bg-white/80 focus:ring-2 focus:ring-sky-100"
+                className="h-12 w-full rounded-lg pl-12 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 border border-slate-200 focus:border-slate-300"
               />
             </div>
           </div>
         </div>
 
         {/* Message */}
-        <div className="group relative mt-5">
+        <div className="group relative mt-2 sm:mt-4">
           <div className="relative">
             <div className="pointer-events-none absolute left-4 top-4 text-gray-400 z-1 transition group-focus-within:text-sky-600">
               <i className="fa-duotone fa-comment-alt" />
@@ -263,7 +263,7 @@ export default function ContactForm() {
               rows={7}
               value={formData.message}
               onChange={handleChange}
-              className="w-full rounded-[1.75rem] border border-white/50 bg-white/70 pl-12 pr-4 pt-4 text-sm text-gray-900 shadow-[0_8px_30px_rgba(0,0,0,0.04)] outline-none backdrop-blur-md transition duration-200 placeholder:text-gray-400 focus:border-sky-300 focus:bg-white/80 focus:ring-2 focus:ring-sky-100"
+              className="w-full rounded-lg pl-12 pr-4 pt-4 text-sm text-gray-900 outline-none border border-slate-200 focus:border-slate-300"
             />
           </div>
         </div>
@@ -281,7 +281,7 @@ export default function ContactForm() {
         </div>
 
         {/* Footer */}
-        <div className="mt-6 rounded-[1.75rem] border border-white/45 bg-white/45 p-4 backdrop-blur-xl sm:p-5">
+        <div className="mt-2 sm:mt-4">
           <div className="space-y-4">
             {/* Checkbox + helper */}
             <div className="space-y-3">
@@ -302,10 +302,6 @@ export default function ContactForm() {
                   Xác nhận gửi <span className="text-red-500">*</span>
                 </span>
               </label>
-
-              <p className="text-sm leading-6 text-gray-500">
-                Vui lòng kiểm tra kỹ thông tin trước khi gửi.
-              </p>
             </div>
 
             {/* Buttons */}
@@ -314,7 +310,7 @@ export default function ContactForm() {
                 type="button"
                 onClick={resetFormContact}
                 disabled={isSubmitting}
-                className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-white/50 bg-white/75 px-5 text-sm font-bold uppercase tracking-wide text-gray-800 shadow-[0_10px_30px_rgba(0,0,0,0.05)] backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 rounded-full text-sm font-medium active:scale-98 transition"
               >
                 <i className="fa-duotone fa-rotate-left" />
                 Nhập lại
@@ -323,7 +319,7 @@ export default function ContactForm() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-black px-6 text-sm font-bold uppercase tracking-wide text-white shadow-lg shadow-black/10 transition hover:-translate-y-0.5 hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 bg-black/90 hover:bg-black rounded-full text-sm text-white font-medium active:scale-98 transition"
               >
                 {isSubmitting ? (
                   <>
