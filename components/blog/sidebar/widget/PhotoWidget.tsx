@@ -56,7 +56,7 @@ export default function PhotoWidget() {
           return {
             id: post.id,
             src: post.images[0],
-            href: `/blog/${post.id}`,
+            href: `/blog/post/${post.id}`,
             // Nếu không có title (bài chỉ có ảnh), fallback về ID bài viết
             title: safeTitle || `#${post.id.slice(0, 20)}`,
           };

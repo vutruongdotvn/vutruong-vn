@@ -341,7 +341,7 @@ export default function PhotoSection() {
             {photos.map((photo) => (
               <Link
                 key={photo.id}
-                href={`/blog/${photo.id}`}
+                href={`/blog/post/${photo.id}`}
                 prefetch={false}
                 aria-label={`Mở bài viết: ${photo.title}`}
                 title={photo.title}

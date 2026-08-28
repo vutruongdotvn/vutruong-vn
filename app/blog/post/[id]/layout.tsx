@@ -370,7 +370,7 @@ export async function generateMetadata({
 if (!routeState) {
   return NOT_FOUND_METADATA;
 }
-  const url = `${SITE_URL}/blog/${id}`;
+  const url = `${SITE_URL}/blog/post/${id}`;
 
   // Không truy vấn nội dung bài riêng tư để tạo metadata.
   if (routeState.visibility === "privacy") {

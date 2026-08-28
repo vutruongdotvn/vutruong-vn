@@ -22,7 +22,7 @@ export default function PostActions({
 
     setSharing(true);
 
-    const url = `${window.location.origin}/blog/${postId}`;
+    const url = `${window.location.origin}/blog/post/${postId}`;
 
     const shareData = {
       title: postTitle?.trim() || "VT Zone",

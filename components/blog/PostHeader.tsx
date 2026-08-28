@@ -162,11 +162,11 @@ export default function PostHeader({
     }, 50);
   };
 
-  const publishHref = showLink && postId ? `/blog/${postId}` : null;
+  const publishHref = showLink && postId ? `/blog/post${postId}` : null;
 
   return (
     <>
-      <div className="flex items-center justify-between px-3 pt-3 select-none sm:px-4 sm:pt-4">
+      <div className="flex items-center justify-between px-3 pt-3 select-none sm:px-4 sm:pt-4 mb-3">
         <div className="flex min-w-0 items-center gap-2">
           <Image
             src={avatar || "/images/default.jpg"}
@@ -215,29 +215,21 @@ export default function PostHeader({
                 {time}
               </Link>
 
-              {visibility === "public" ? (
-                <i
-                  onClick={() => {
-                    if (!isAdmin) return;
-                    setOpenPrivacyModal(true);
-                    setOpen(false);
-                  }}
-                  className={`fadt fa-earth-asia inline-flex h-5 items-center text-[10px] leading-none active:scale-98 cursor-pointer opacity-0 ${isAdmin ? "" : "publicPost"
-                    }`}
-                  title="Công khai"
-                />
-              ) : (
-                <i
-                  onClick={() => {
-                    if (!isAdmin) return;
-                    setOpenPrivacyModal(true);
-                    setOpen(false);
-                  }}
-                  className={`fadt fa-lock inline-flex h-5 items-center text-[10px] leading-none active:scale-98 cursor-pointer ${isAdmin ? "" : "privacyPost"
-                    }`}
-                  title="Riêng tư"
-                />
-              )}
+              <div
+                onClick={() => {
+                  if (!isAdmin) return;
+                  setOpenPrivacyModal(true);
+                  setOpen(false);
+                }}
+                className={` ${visibility === "public"
+                    ? "publicPost"
+                    : "privacyPost text-red-700 text-[12px] bg-red-50 border-red-200 border px-2 py-1 rounded-full hover:opacity-80 transition"
+                  } active:scale-98 cursor-pointer ${isAdmin ? "" : visibility === "public" ? "publicPost" : "privacyPost"
+                  }`}
+                title={visibility === "public" ? "Công khai" : "Riêng tư"}
+              >
+                {visibility !== "public" && "Bài viết riêng tư"}
+              </div>
             </div>
           </div>
         </div>
