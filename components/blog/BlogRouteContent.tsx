@@ -1,7 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { usePathname } from "next/navigation";
+import {
+  usePathname,
+  useSelectedLayoutSegment,
+} from "next/navigation";
 import CreatePostBox from "@/components/blog/CreatePostBox";
 import { useUser } from "@/hooks/useUser";
 
@@ -22,9 +25,15 @@ export default function BlogRouteContent({
 }: BlogRouteContentProps) {
   const { user, loading: userLoading } = useUser();
   const pathname = usePathname().replace(/\/+$/, "") || "/";
+  const selectedChildSegment = useSelectedLayoutSegment();
   const adminUser =
     user?.email?.trim().toLowerCase() === "admin@vutruong.vn" ? user : null;
-  const isBlogFeedRoute = pathname === "/blog";
+
+  // Khi mở Intercepting Route, URL đổi thành /blog/post/[id] nhưng slot
+  // children vẫn giữ page /blog làm nền. Dựa vào segment của children giúp
+  // CreatePostBox tiếp tục hiển thị trong modal route, đồng thời vẫn ẩn ở
+  // trang chi tiết canonical khi người dùng tải trực tiếp URL bài viết.
+  const isBlogFeedRoute = selectedChildSegment === null;
   const isFullWidthRoute = FULL_WIDTH_ROUTES.some((route) =>
     matchesRoute(pathname, route),
   );
