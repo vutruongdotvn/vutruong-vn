@@ -271,7 +271,7 @@ export default function PostBody({
   return (
     <>
       {hasBodyContent && (
-        <div className="postBody pt-3">
+        <div className="postBody">
           {isCollapsed ? (
             <>
               <div className="postShortPreview break-words px-3 text-[.9375rem]/6 sm:px-4 cursor-pointer text-slate-800 hover:text-black"
