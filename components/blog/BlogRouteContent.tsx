@@ -1,10 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import {
-  usePathname,
-  useSelectedLayoutSegment,
-} from "next/navigation";
+import { useSelectedLayoutSegment } from "next/navigation";
 import CreatePostBox from "@/components/blog/CreatePostBox";
 import { useUser } from "@/hooks/useUser";
 
@@ -13,18 +10,13 @@ type BlogRouteContentProps = {
   sidebar: ReactNode;
 };
 
-const FULL_WIDTH_ROUTES = ["/blog/about", "/blog/photos", "/blog/videos"];
-
-function matchesRoute(pathname: string, href: string) {
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
+const FULL_WIDTH_SEGMENTS = new Set(["about", "photos", "videos"]);
 
 export default function BlogRouteContent({
   children,
   sidebar,
 }: BlogRouteContentProps) {
   const { user, loading: userLoading } = useUser();
-  const pathname = usePathname().replace(/\/+$/, "") || "/";
   const selectedChildSegment = useSelectedLayoutSegment();
   const adminUser =
     user?.email?.trim().toLowerCase() === "admin@vutruong.vn" ? user : null;
@@ -34,9 +26,13 @@ export default function BlogRouteContent({
   // CreatePostBox tiếp tục hiển thị trong modal route, đồng thời vẫn ẩn ở
   // trang chi tiết canonical khi người dùng tải trực tiếp URL bài viết.
   const isBlogFeedRoute = selectedChildSegment === null;
-  const isFullWidthRoute = FULL_WIDTH_ROUTES.some((route) =>
-    matchesRoute(pathname, route),
-  );
+
+  // Layout cũng phải bám theo slot children đang hiển thị, không theo URL tổng.
+  // Ví dụ: mở modal từ /blog/photos làm URL thành /blog/post/[id], nhưng
+  // children vẫn là "photos" nên trang nền phải tiếp tục giữ full-width.
+  const isFullWidthRoute =
+    selectedChildSegment !== null &&
+    FULL_WIDTH_SEGMENTS.has(selectedChildSegment);
 
   return (
     <div
