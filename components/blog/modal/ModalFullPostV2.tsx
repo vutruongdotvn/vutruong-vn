@@ -135,14 +135,14 @@ export default function ModalFullPostV2({
   }, [closeModal]);
 
   const modalSizeClass = hasMedia
-    ? "grid h-[min(92svh,900px)] w-[calc(100vw-1rem)] grid-rows-[minmax(0,45%)_minmax(0,55%)] sm:h-[min(88svh,900px)] sm:w-[calc(100vw-2rem)] lg:h-[80vh] lg:w-[80vw] lg:max-w-[1440px] lg:grid-cols-[minmax(0,3fr)_minmax(20rem,2fr)] lg:grid-rows-1"
+    ? "grid h-[min(92svh,900px)] w-[calc(100vw-1rem)] grid-rows-[minmax(0,45%)_minmax(0,55%)] sm:h-[min(88svh,900px)] sm:w-[calc(100vw-2rem)] lg:h-[80vh] lg:w-[80vw] lg:grid-cols-[minmax(0,7fr)_minmax(15rem,3fr)] lg:grid-rows-1"
     : "flex h-[min(80vh,760px)] w-[calc(100vw-1rem)] max-w-2xl sm:w-[min(80vw,44rem)]";
 
   return (
     <div className="fixed inset-0 z-[9998] flex items-center justify-center p-2 sm:p-4">
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-black/35 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-black/35 backdrop-blur-sm"
         onClick={closeModal}
       />
 
@@ -151,7 +151,7 @@ export default function ModalFullPostV2({
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-full-post-v2-title"
-        className={`relative z-10 min-h-0 overflow-hidden rounded-2xl bg-white shadow-[0_24px_70px_rgba(0,0,0,0.24)] ${modalSizeClass}`}
+        className={`animate-fadeIn relative z-10 min-h-0 overflow-hidden rounded-2xl bg-white shadow-[0_24px_70px_rgba(0,0,0,0.24)] ${modalSizeClass}`}
       >
         <h1 id="modal-full-post-v2-title" className="sr-only">
           {documentTitle}
@@ -162,7 +162,7 @@ export default function ModalFullPostV2({
           type="button"
           onClick={closeModal}
           aria-label="Đóng bài viết"
-          className="absolute right-3 top-3 z-30 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/90 text-slate-500 shadow-sm backdrop-blur-sm hover:bg-white hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 active:scale-95"
+          className="absolute right-3 top-3 z-30 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/90 text-slate-500 shadow-sm backdrop-blur-sm hover:bg-slate-100 hover:text-slate-950 hover:shadow-md focus-visible:outline-none active:scale-95"
         >
           <i className="fa-duotone fa-xmark" aria-hidden="true" />
         </button>
@@ -171,6 +171,7 @@ export default function ModalFullPostV2({
           <>
             {hasMedia && (
               <ModalPostMedia
+                key={post.id}
                 images={post.images}
                 postTitle={documentTitle}
               />
@@ -214,7 +215,7 @@ export default function ModalFullPostV2({
               </p>
               <a
                 href={`/blog/post/${postId}`}
-                className="mt-5 inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 active:scale-98"
+                className="mt-5 inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 focus-visible:outline-none active:scale-98"
               >
                 Mở trang bài viết
               </a>
