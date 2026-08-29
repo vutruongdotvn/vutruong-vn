@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 
 type ModalFullPostV2Props = {
   postId: string;
+  documentTitle: string;
 };
 
 export default function ModalFullPostV2({
   postId,
+  documentTitle,
 }: ModalFullPostV2Props) {
   const router = useRouter();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -20,6 +22,21 @@ export default function ModalFullPostV2({
     isClosingRef.current = true;
     router.back();
   }, [router]);
+
+  useEffect(() => {
+    // Fallback cho trường hợp Next.js không áp dụng metadata của Parallel Route
+    // sau soft navigation. Canonical metadata vẫn được tạo hoàn toàn ở server.
+    const previousTitle = document.title;
+    const nextTitle = documentTitle.trim();
+
+    if (nextTitle) {
+      document.title = nextTitle;
+    }
+
+    return () => {
+      document.title = previousTitle;
+    };
+  }, [documentTitle]);
 
   useEffect(() => {
     const previousHtmlOverflow = document.documentElement.style.overflow;
