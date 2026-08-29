@@ -76,8 +76,6 @@ export default function PhotoWidget() {
     <div className="
       hidden lg:block
       sm:rounded-2xl bg-white
-      shadow-[0_8px_30px_rgba(0,0,0,0.04)]
-      transition-shadow duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.075)]
       p-3 sm:p-4 px-0 pb-0 sm:pb-4 sm:px-4
     ">
       {/* Header */}

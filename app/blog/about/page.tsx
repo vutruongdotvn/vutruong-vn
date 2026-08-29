@@ -56,7 +56,7 @@ const socialLinks = [
     username: "Liên kết đã xác thực",
     visible: true,
     href: "/locket",
-    icon: "fad fa-heart",
+    icon: "fas fa-heart",
   },
   {
     name: "TikTok",
@@ -85,43 +85,43 @@ const personalInfo: AboutInfoItem[] = [
   {
     label: "Họ và tên",
     value: "Vũ Trường",
-    icon: "fad fa-signature",
+    icon: "fal fa-signature",
     visible: false,
   },
   {
     label: "Tên gọi khác",
     value: "Anh Bar",
-    icon: "fad fa-user-tag",
+    icon: "fal fa-user-tag",
     visible: true,
   },
   {
     label: "Sinh nhật",
     value: "20 tháng 8",
-    icon: "fad fa-cake-candles",
+    icon: "fal fa-cake-candles",
     visible: true,
   },
   {
     label: "Giới tính",
     value: "Nam",
-    icon: "fad fa-mars",
+    icon: "fal fa-mars",
     visible: true,
   },
   {
     label: "Quê quán",
     value: "An Giang",
-    icon: "fad fa-location-dot",
+    icon: "fal fa-location-dot",
     visible: true,
   },
   {
     label: "Tình trạng",
     value: "Độc thân",
-    icon: "fad fa-heart",
+    icon: "fal fa-heart",
     visible: true,
   },
   {
     label: "Ngôn ngữ",
     value: "Tiếng Việt",
-    icon: "fad fa-language",
+    icon: "fal fa-language",
     visible: true,
   },
 ];
@@ -130,25 +130,25 @@ const workInfo: AboutInfoItem[] = [
   {
     label: "Công việc hiện tại",
     value: "Kinh doanh",
-    icon: "fad fa-fork-knife",
+    icon: "fal fa-fork-knife",
     visible: true,
   },
   {
     label: "Nơi làm việc",
     value: "An Giang",
-    icon: "fad fa-building",
+    icon: "fal fa-building",
     visible: true,
   },
   {
     label: "Vai trò",
     value: "Quản lý",
-    icon: "fad fa-id-badge",
+    icon: "fal fa-id-badge",
     visible: true,
   },
   {
     label: "Lĩnh vực hoạt động",
     value: "Dịch vụ Ăn uống, Dịch vụ Du lịch",
-    icon: "fad fa-layer-group",
+    icon: "fal fa-layer-group",
     visible: true,
   },
 ];
@@ -156,13 +156,13 @@ const workInfo: AboutInfoItem[] = [
 const hobbyGroups: AboutMultiValueItem[] = [
   {
     label: "Sở thích",
-    icon: "fad fa-hearts",
+    icon: "fal fa-hearts",
     visible: true,
     items: ["Đi dạo", "Nghe nhạc", "Ca hát"],
   },
   {
     label: "Ăn & Uống",
-    icon: "fad fa-utensils",
+    icon: "fal fa-utensils",
     visible: true,
     items: [
       "Cà phê sữa đá",
@@ -173,19 +173,19 @@ const hobbyGroups: AboutMultiValueItem[] = [
   },
   {
     label: "Vận động",
-    icon: "fad fa-person-running",
+    icon: "fal fa-person-running",
     visible: true,
     items: ["Chạy bộ", "Chạy xe đạp", "Leo núi"],
   },
   {
     label: "Nhạc cụ",
-    icon: "fad fa-guitars",
+    icon: "fal fa-guitars",
     visible: true,
     items: ["Guitar", "Piano"],
   },
   {
     label: "Sở thích khác",
-    icon: "fad fa-wand-magic-sparkles",
+    icon: "fal fa-wand-magic-sparkles",
     visible: true,
     items: ["Chụp ảnh", "Quay video", "Viết Blog", "Code"],
   },
@@ -195,37 +195,37 @@ const entertainmentInfo: AboutMultiValueItem[] = [
   {
     label: "Trò chơi",
     items: ["PUBG Battlegrounds", "Cities Skylines"],
-    icon: "fad fa-gamepad",
+    icon: "fal fa-gamepad",
     visible: true,
   },
   {
     label: "Tên / ID trong game",
     items: [],
-    icon: "fad fa-user-ninja",
+    icon: "fal fa-user-ninja",
     visible: true,
   },
   {
     label: "Phim & chương trình",
     items: [],
-    icon: "fad fa-clapperboard-play",
+    icon: "fal fa-clapperboard-play",
     visible: true,
   },
   {
     label: "Phim",
     items: ["Tình cảm", "Gia đình", "Linh dị"],
-    icon: "fad fa-film",
+    icon: "fal fa-film",
     visible: true,
   },
   {
     label: "Âm nhạc",
     items: ["Ballad", "Rap", "Bolero"],
-    icon: "fad fa-music",
+    icon: "fal fa-music",
     visible: true,
   },
   {
     label: "Nghệ sĩ",
     items: ["Sơn Tùng M-TP", "Quốc Thiên"],
-    icon: "fad fa-microphone-stand",
+    icon: "fal fa-microphone-stand",
     visible: true,
   },
 ];
@@ -235,26 +235,26 @@ const contactInfo: AboutInfoItem[] = [
     label: "Số điện thoại",
     value: "",
     href: "",
-    icon: "fad fa-phone",
+    icon: "fal fa-phone",
     visible: true,
   },
   {
     label: "Email",
     value: "contact@vutruong.vn",
     href: "",
-    icon: "fad fa-envelope",
+    icon: "fal fa-envelope",
     visible: true,
   },
   {
     label: "Thời gian phản hồi",
     value: "Cả ngày",
-    icon: "fad fa-clock",
+    icon: "fal fa-clock",
     visible: true,
   },
   {
     label: "Kênh liên hệ ưu tiên",
     value: "Email",
-    icon: "fad fa-comment-dots",
+    icon: "fal fa-comment-dots",
     visible: true,
   },
 ];
@@ -263,43 +263,43 @@ const tabItems = [
   {
     id: "intro",
     label: "Tiểu sử",
-    icon: "fad fa-sparkles",
+    icon: "fal fa-sparkles",
     visible: true,
   },
   {
     id: "social",
     label: "Mạng xã hội",
-    icon: "fad fa-users",
+    icon: "fal fa-users",
     visible: true,
   },
   {
     id: "personal",
     label: "Cá nhân",
-    icon: "fad fa-address-book",
+    icon: "fal fa-address-book",
     visible: true,
   },
   {
     id: "contact",
     label: "Liên hệ",
-    icon: "fad fa-phone",
+    icon: "fal fa-phone",
     visible: true,
   },
   {
     id: "work",
     label: "Công việc",
-    icon: "fad fa-briefcase",
+    icon: "fal fa-briefcase",
     visible: false,
   },
   {
     id: "hobbies",
     label: "Sở thích",
-    icon: "fad fa-hearts",
+    icon: "fal fa-hearts",
     visible: true,
   },
   {
     id: "entertainment",
     label: "Giải trí",
-    icon: "fad fa-gamepad",
+    icon: "fal fa-gamepad",
     visible: true,
   },
 ];
@@ -484,7 +484,7 @@ export default function BlogAboutPage() {
                   >
                     {item.values[0]}
                     <i
-                      className="fad fa-arrow-up-right-from-square shrink-0 text-[10px]"
+                      className="fal fa-arrow-up-right-from-square shrink-0 text-[10px]"
                       aria-hidden="true"
                     />
                   </a>
