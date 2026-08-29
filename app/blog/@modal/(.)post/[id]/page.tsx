@@ -11,6 +11,7 @@ import {
   getPostDocumentTitle,
   getPostMetadata,
 } from "@/lib/getPostMetadata";
+import { isValidPostId } from "@/lib/getPostRouteState";
 
 type InterceptedPostPageProps = {
   params: Promise<{ id: string }>;
@@ -76,9 +77,24 @@ export default async function InterceptedPostPage({
   params,
 }: InterceptedPostPageProps) {
   const { id } = await params;
+
+  // URL sai định dạng vẫn là một route 404 thật. Trường hợp bài hợp lệ vừa bị
+  // xóa hoặc đổi visibility sẽ được xử lý bằng fallback bên trong modal để
+  // không thay thế trang nền của Parallel Route bằng giao diện 404.
+  if (!isValidPostId(id)) notFound();
+
   const detailData = await getPostDetailData(id);
 
-  if (!detailData) notFound();
+  if (!detailData) {
+    return (
+      <ModalFullPostV2
+        postId={id}
+        routeVisibility="public"
+        post={null}
+        documentTitle="Không tìm thấy bài viết"
+      />
+    );
+  }
 
   return (
     <ModalFullPostV2
