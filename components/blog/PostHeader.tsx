@@ -162,7 +162,7 @@ export default function PostHeader({
     }, 50);
   };
 
-  const publishHref = showLink && postId ? `/blog/post${postId}` : null;
+  const publishHref = showLink && postId ? `/blog/post/${postId}` : null;
 
   return (
     <>

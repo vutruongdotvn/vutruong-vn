@@ -87,7 +87,7 @@ function parseParagraphBlocks(paragraph: string): PostBlock[] {
   });
 }
 
-function renderInlineParts(text: string) {
+function renderInlineParts(text: string, enableLinks = true) {
   return parsePostInline(text).map((part, partIndex) => {
     const key = `${part.type}-${partIndex}`;
 
@@ -100,6 +100,10 @@ function renderInlineParts(text: string) {
     }
 
     if (part.type === "link") {
+      if (!enableLinks) {
+        return <span key={key}>{part.value}</span>;
+      }
+
       const href = getSafeExternalHref(part.value);
 
       if (!href) {
@@ -120,6 +124,10 @@ function renderInlineParts(text: string) {
     }
 
     if (part.type === "hashtag") {
+      if (!enableLinks) {
+        return <span key={key}>{part.value}</span>;
+      }
+
       const tagName = part.value
         .replace(/^#/, "")
         .trim()
@@ -156,9 +164,6 @@ export default function PostBody({
   priority = false,
 }: Props) {
   const [isMobile, setIsMobile] = useState(false);
-  const [expandedContentKey, setExpandedContentKey] = useState<string | null>(
-    null
-  );
   const fixedMaxLength =
     typeof maxLength === "number" &&
       Number.isFinite(maxLength) &&
@@ -264,9 +269,7 @@ export default function PostBody({
     )
   );
   const hasHiddenText = previewText !== previewSource;
-  const contentKey = `${postId}\u0000${normalizedContent}`;
-  const isExpanded = expandedContentKey === contentKey;
-  const isCollapsed = truncate && hasHiddenText && !isExpanded;
+  const isCollapsed = truncate && hasHiddenText;
 
   return (
     <>
@@ -274,21 +277,21 @@ export default function PostBody({
         <div className="postBody">
           {isCollapsed ? (
             <>
-              <div className="postShortPreview break-words px-3 text-[.9375rem]/6 sm:px-4 cursor-pointer text-slate-800 hover:text-black"
-                onClick={() => setExpandedContentKey(contentKey)}
+              <Link
+                href={`/blog/post/${postId}`}
                 title="Xem toàn bộ bài viết"
+                aria-label="Mở toàn bộ bài viết"
+                className="postShortPreview block cursor-pointer break-words px-3 text-[.9375rem]/6 text-slate-800 hover:text-black sm:px-4"
               >
-                {renderInlineParts(previewText)}
+                {renderInlineParts(previewText, false)}
 
-                <button
-                  type="button"
-                  title="Xem toàn bộ bài viết"
-                  aria-label="Xem toàn bộ bài viết"
+                <span
+                  aria-hidden="true"
                   className="ml-1 inline-flex cursor-pointer items-center whitespace-nowrap align-baseline font-medium text-gray-800 hover:underline"
                 >
                   Xem thêm
-                </button>
-              </div>
+                </span>
+              </Link>
 
               {collapsedVideoBlocks.map((block) => (
                 <PostEmbed
@@ -335,6 +338,7 @@ export default function PostBody({
           images={validImages}
           postId={postId}
           priority={priority}
+          openPostOnClick={truncate}
         />
       )}
     </>
