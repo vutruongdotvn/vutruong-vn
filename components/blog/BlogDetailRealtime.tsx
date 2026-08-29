@@ -14,7 +14,8 @@ import { getAvatarImage } from "@/lib/cloudinary";
 import { extractPostTitle, extractPostDescription } from "@/lib/postMeta";
 import { useUser } from "@/hooks/useUser";
 import { useToastContext } from "@/components/ui/ToastProvider";
-import { pinPost, deletePost } from "@/services/postService";
+import { deletePost, pinPost } from "@/services/postService";
+import { resolvePrivatePostForAdmin } from "@/services/privatePostService";
 
 type Props = {
   postId: string;
@@ -25,9 +26,6 @@ type Props = {
     avatar?: string | null;
   } | null;
 };
-
-const ADMIN_EMAIL = "admin@vutruong.vn";
-const ADMIN_USER_ID = "785f79e8-223a-41ea-a52d-dead8e2bf383";
 
 export default function BlogDetailRealtime({
   postId,
@@ -73,61 +71,23 @@ export default function BlogDetailRealtime({
       setIsUnavailable(false);
 
       try {
-        // getUser() xác minh access token với Supabase Auth, đồng thời chờ
-        // session trong localStorage được khôi phục trước khi query RLS.
-        const {
-          data: { user: authenticatedUser },
-          error: authError,
-        } = await supabase.auth.getUser();
+        const result = await resolvePrivatePostForAdmin(postId);
 
-        const isAdminAccount =
-          authenticatedUser?.id === ADMIN_USER_ID &&
-          authenticatedUser?.email?.trim().toLowerCase() === ADMIN_EMAIL;
+        if (cancelled) return;
 
-        if (authError || !isAdminAccount) {
+        if (result.status !== "granted") {
           if (!cancelled) setIsUnavailable(true);
           return;
         }
 
-        const { data: privatePost, error: postError } = await supabase
-          .from("posts")
-          .select("*")
-          .eq("id", postId)
-          .eq("visibility", "privacy")
-          .maybeSingle();
-
-        if (postError) throw postError;
-
-        if (!privatePost) {
-          if (!cancelled) setIsUnavailable(true);
-          return;
-        }
-
-        const { data: privateProfile, error: profileError } = await supabase
-          .from("profiles")
-          .select("name, avatar")
-          .eq("id", privatePost.user_id)
-          .maybeSingle();
-
-        if (profileError) {
-          console.error("[BlogDetail] profile query failed:", {
-            code: profileError.code,
-            message: profileError.message,
-          });
-        }
-
-        if (!cancelled) {
-          setPost(privatePost);
-          setProfile(privateProfile ?? null);
-          setIsUnavailable(false);
-        }
-      } catch (error: any) {
-        console.error("[BlogDetail] private post query failed:", {
-          code: error?.code,
-          message: error?.message || "Unknown error",
-          details: error?.details,
-          hint: error?.hint,
-        });
+        setPost(result.post);
+        setProfile(result.profile);
+        setIsUnavailable(false);
+      } catch (error: unknown) {
+        console.error(
+          "[BlogDetail] private post resolution failed:",
+          error instanceof Error ? error.message : "Unknown error"
+        );
 
         if (!cancelled) setIsUnavailable(true);
       } finally {
