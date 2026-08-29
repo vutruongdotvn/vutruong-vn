@@ -49,25 +49,25 @@ export default function PostActions({
   };
 
   return (
-    <div className="postAction flex items-center gap-4 px-4 py-3">
+    <div className="postAction flex items-center gap-5 px-4 py-3">
       {/* Buttons */}
       <button
         type="button"
         onClick={() => showToast("Đăng nhập để Thích bài viết này.", "warning")}
         aria-label="Thích bài viết"
         title="Thích bài viết"
-        className="likeBtn cursor-pointer text-[.9375rem] text-gray-500 transition hover:text-black focus-visible:outline-none active:scale-80 sm:text-base"
+        className="likeBtn cursor-pointer text-base text-gray-500 transition hover:text-black focus-visible:outline-none active:scale-80 sm:text-base"
       >
-        <i className="fadt fa-heart" aria-hidden="true" />
+        <i className="fal fa-heart" aria-hidden="true" />
       </button>
       <button
         type="button"
         onClick={() => showToast("Bình luận đã bị tắt cho bài viết này.", "error")}
         aria-label="Bình luận đã bị tắt"
         title="Bình luận đã bị tắt"
-        className="commentBtn cursor-pointer text-[.9375rem] text-gray-500 transition hover:text-black focus-visible:outline-none active:scale-80 sm:text-base"
+        className="commentBtn cursor-pointer text-base text-gray-500 transition hover:text-black focus-visible:outline-none active:scale-80 sm:text-base"
       >
-        <i className="fadt fa-comment-slash" aria-hidden="true" />
+        <i className="fal fa-comment-slash" aria-hidden="true" />
       </button>
 
       <button
@@ -76,14 +76,14 @@ export default function PostActions({
         disabled={sharing}
         aria-label={sharing ? "Đang chia sẻ" : "Chia sẻ bài viết"}
         aria-busy={sharing}
-        className="shareBtn cursor-pointer text-[.9375rem] text-gray-500 transition hover:text-black focus-visible:outline-none active:scale-80 disabled:cursor-wait disabled:opacity-50 sm:text-base"
+        className="shareBtn cursor-pointer text-base text-gray-500 transition hover:text-black focus-visible:outline-none active:scale-80 disabled:cursor-wait disabled:opacity-50 sm:text-base"
         title="Chia sẻ"
       >
         <i
           className={
             sharing
-              ? "fadt fa-spinner-third fa-spin"
-              : "fadt fa-share"
+              ? "fal fa-spinner-third fa-spin"
+              : "fal fa-share"
           }
           aria-hidden="true"
         />

@@ -13,11 +13,10 @@ import {
   useState,
 } from "react";
 import type { Swiper as SwiperInstance } from "swiper";
-import { EffectFade, Zoom } from "swiper/modules";
+import { Zoom } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/zoom";
-import "swiper/css/effect-fade";
 
 import {
   getBlogPostFeedLightboxImage,
@@ -30,7 +29,7 @@ type ModalPostMediaProps = {
   postTitle: string;
 };
 
-const MAX_ZOOM_RATIO = 3;
+const MAX_ZOOM_RATIO = 2;
 const MIN_USEFUL_ZOOM_RATIO = 1.05;
 
 export default function ModalPostMedia({
@@ -214,12 +213,10 @@ export default function ModalPostMedia({
       {/* Giữ touch events cả khi chỉ có một ảnh để pinch/pan của Zoom hoạt
           động; Swiper tự khóa chuyển slide khi không có slide kế tiếp. */}
       <Swiper
-        modules={[Zoom, EffectFade]}
-        effect="fade"
-        fadeEffect={{ crossFade: true }}
+        modules={[Zoom]}
         slidesPerView={1}
         spaceBetween={0}
-        speed={500}
+        speed={600}
         grabCursor={hasMultipleImages && zoomScale <= 1}
         simulateTouch
         allowTouchMove
@@ -230,7 +227,7 @@ export default function ModalPostMedia({
           maxRatio: MAX_ZOOM_RATIO,
           minRatio: 1,
           limitToOriginalSize: true,
-          toggle: false,
+          toggle: true,
         }}
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
