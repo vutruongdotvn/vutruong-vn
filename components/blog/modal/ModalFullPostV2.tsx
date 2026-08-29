@@ -143,7 +143,7 @@ export default function ModalFullPostV2({
   }, [closeModal]);
 
   const modalSizeClass = hasMedia
-    ? "grid h-full w-full grid-rows-[minmax(0,50%)_minmax(0,50%)] lg:grid-cols-[minmax(0,7.5fr)_minmax(15rem,2.5fr)] lg:grid-rows-1"
+    ? "grid h-full w-full grid-rows-[minmax(0,50%)_minmax(0,50%)] lg:grid-cols-[minmax(0,8fr)_minmax(15rem,2fr)] lg:grid-rows-1"
     : "flex max-h-[100dvh] w-full max-w-2xl sm:w-[min(80vw,44rem)] sm:rounded-2xl lg:max-h-[80dvh]";
 
   return (

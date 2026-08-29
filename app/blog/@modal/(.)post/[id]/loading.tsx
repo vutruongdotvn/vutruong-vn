@@ -158,7 +158,7 @@ export default function InterceptedPostLoading() {
         aria-label="Đang mở bài viết có hình ảnh"
         aria-busy="true"
         aria-live="polite"
-        className="modal-loading-media relative z-10 grid h-full w-full min-h-0 grid-rows-[minmax(0,50%)_minmax(0,50%)] overflow-hidden bg-white lg:grid-cols-[minmax(0,7.5fr)_minmax(15rem,2.5fr)] lg:grid-rows-1"
+        className="modal-loading-media relative z-10 grid h-full w-full min-h-0 grid-rows-[minmax(0,50%)_minmax(0,50%)] overflow-hidden bg-white lg:grid-cols-[minmax(0,8fr)_minmax(15rem,2fr)] lg:grid-rows-1"
       >
         <CloseButton
           buttonRef={mediaCloseButtonRef}
@@ -167,7 +167,7 @@ export default function InterceptedPostLoading() {
 
         <div className="relative min-h-0 overflow-hidden bg-black/90 flex items-center justify-center">
           {/* <div className="absolute inset-[12%] animate-pulse rounded-xl bg-white/[0.07]" /> */}
-          <i className="fad fa-spin fa-spinner-third flex fa-2x text-slate-600" />
+          <i className="fad fa-spin fa-spinner-third flex fa-2x text-gray-700" />
         </div>
 
         <div className="flex min-h-0 min-w-0 flex-col bg-white">

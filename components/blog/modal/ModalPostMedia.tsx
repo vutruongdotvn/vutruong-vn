@@ -277,7 +277,7 @@ export default function ModalPostMedia({
                     sizes="(max-width: 1023px) 100vw, 75vw"
                     draggable={false}
                     unoptimized
-                    className="pointer-events-none z-0 scale-110 select-none object-cover opacity-75 blur-2xl brightness-75 saturate-75"
+                    className="pointer-events-none z-0 scale-110 select-none object-cover opacity-75 blur-xl"
                   />
                   <div
                     aria-hidden="true"
