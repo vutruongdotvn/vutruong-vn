@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 type ProgressPhase = "idle" | "loading" | "finishing";
@@ -66,7 +66,7 @@ function getInternalDestination(event: MouseEvent) {
     destination.search === current.search;
 
   // Same-route refreshes and hash-only jumps are handled by their own UI.
-  return isSameRoute ? null : destination;
+  return isSameRoute ? null : { anchor, destination };
 }
 
 export default function RouteChangeIndicator() {
@@ -137,16 +137,42 @@ export default function RouteChangeIndicator() {
 
   useEffect(() => {
     const handleDocumentClick = (event: MouseEvent) => {
-      if (getInternalDestination(event)) {
-        startProgress();
+      const navigation = getInternalDestination(event);
+
+      if (!navigation) return;
+
+      const destinationPathname = normalizePathname(
+        navigation.destination.pathname
+      );
+
+      if (/^\/blog\/post\/[^/]+$/.test(destinationPathname)) {
+        const postRoot = navigation.anchor.closest<HTMLElement>(
+          ".postCard, article.post"
+        );
+        const hasMedia = Boolean(
+          postRoot?.querySelector(".postImages") ??
+            navigation.anchor.closest(".postImages")
+        );
+
+        // loading.tsx đọc hint này trước lần paint kế tiếp để chọn đúng shell
+        // media/text. Không thêm query param nên URL canonical không bị đổi.
+        document.documentElement.dataset.modalLoadingKind = hasMedia
+          ? "media"
+          : "text";
+      } else {
+        delete document.documentElement.dataset.modalLoadingKind;
       }
+
+      startProgress();
     };
 
-    // Capture phase runs before Next handles the Link navigation.
-    document.addEventListener("click", handleDocumentClick, true);
+    // Dùng bubble phase để component tương tác xử lý gesture trước. Khi người
+    // dùng kéo Swiper, PostImages gọi stopPropagation() nên click giả không tới
+    // đây; click Link thật của Next vẫn bubble và bắt đầu progress bình thường.
+    document.addEventListener("click", handleDocumentClick);
 
     return () => {
-      document.removeEventListener("click", handleDocumentClick, true);
+      document.removeEventListener("click", handleDocumentClick);
     };
   }, [startProgress]);
 

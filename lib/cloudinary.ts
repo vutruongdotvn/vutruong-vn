@@ -255,6 +255,12 @@ function normalizeQuality(quality: CloudinaryQuality) {
   return Math.min(Math.max(Math.round(quality), 1), 100);
 }
 
+export function isCloudinaryImageUrl(url?: string) {
+  return Boolean(
+    url?.includes("res.cloudinary.com") && url.includes("/upload/"),
+  );
+}
+
 /**
  * Tạo URL delivery của Cloudinary từ URL gốc.
  *
@@ -271,7 +277,7 @@ export function buildCloudinaryImage(
   options?: CloudinaryOptions,
 ) {
   if (!url) return "/images/default.jpg";
-  if (!url.includes("res.cloudinary.com") || !url.includes("/upload/")) {
+  if (!isCloudinaryImageUrl(url)) {
     return url;
   }
 
@@ -311,39 +317,23 @@ export function buildCloudinaryImage(
  * BlogPostFeed - ảnh nằm trong nội dung bài viết.
  * - width 800: đủ cho chiều rộng card feed, không tải ảnh master ngay từ đầu.
  * - c_limit: giữ nguyên tỷ lệ và tuyệt đối không phóng lớn ảnh nhỏ.
- * - q_auto:good: cân bằng độ nét với dung lượng khi đọc feed.
+ * - q_auto:eco: ưu tiên dung lượng nhẹ khi đọc feed.
  * - f_webp: cố định đầu ra WebP.
  */
 export function getBlogPostFeedImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 400,
+    width: 800,
     crop: "limit",
-    quality: "auto:good",
+    quality: "auto:eco",
     format: "webp",
   });
 }
 
 /**
- * ModalFullPost v2 - ảnh nội dung hiển thị trong modal hoặc trang chi tiết.
- * - width 1200: đủ nét cho vùng nội dung lớn nhưng nhẹ hơn bản Fancybox 2560.
- * - c_limit: giữ nguyên tỷ lệ và không phóng lớn ảnh nguồn nhỏ.
- * - q_auto:good: cân bằng độ nét và dung lượng khi ảnh nằm trực tiếp trong UI.
- * - Đây là preset hiển thị, không phải URL ảnh phóng lớn bằng Fancybox.
- */
-export function getModalFullPostImage(url?: string) {
-  return buildCloudinaryImage(url, {
-    width: 1200,
-    crop: "limit",
-    quality: "auto:good",
-    format: "webp",
-  });
-}
-
-/**
- * BlogPostFeed - ảnh chỉ tải khi người dùng mở Fancybox.
- * - width 4096: giới hạn cạnh ngang tối đa 4K.
- * - c_limit: không upscale ảnh nguồn nhỏ hơn 4K.
- * - q_auto:best: ưu tiên chi tiết vì ảnh chỉ tải theo thao tác người dùng.
+ * Ảnh lớn dùng chung cho ModalFullPost và Fancybox.
+ * - width 2560: đủ nét cho modal toàn màn hình và chế độ phóng lớn.
+ * - c_limit: không upscale ảnh nguồn nhỏ hơn 2560 px.
+ * - q_auto:best: ưu tiên chi tiết vì chỉ tải sau thao tác mở bài/ảnh.
  */
 export function getBlogPostFeedLightboxImage(url?: string) {
   return buildCloudinaryImage(url, {
@@ -355,7 +345,21 @@ export function getBlogPostFeedLightboxImage(url?: string) {
 }
 
 /**
- * BlogPostFeed/PostHeader - avatar tác giả hiển thị 80 x 80 px.
+ * Nền trang trí của ModalFullPost.
+ * Chỉ gọi helper này cho URL Cloudinary; ảnh ngoài Cloudinary dùng nền tối.
+ */
+export function getModalPostBackgroundImage(url?: string) {
+  return buildCloudinaryImage(url, {
+    width: 160,
+    crop: "limit",
+    quality: "auto:eco",
+    format: "webp",
+    blur: 2000,
+  });
+}
+
+/**
+ * BlogPostFeed/PostHeader - avatar tác giả, output tối đa 50 x 50 px.
  * - c_fill: luôn lấp đầy khung vuông.
  * - g_face: ưu tiên giữ khuôn mặt ở trung tâm khi cần crop.
  * - Không có Fancybox và không dùng URL ảnh lớn.
@@ -388,11 +392,13 @@ export function extractCloudinaryMeta(url?: string) {
     const width = widthMatch ? Number(widthMatch[1]) : undefined;
     const height = heightMatch ? Number(heightMatch[1]) : undefined;
 
-    if (!width && !height) return null;
+    // Chỉ một chiều không đủ để suy ra tỷ lệ thật. Khi đó PostImages sẽ đọc
+    // naturalWidth/naturalHeight của bản hiển thị thay vì dựng sai khung ảnh.
+    if (!width || !height) return null;
 
     return {
-      width: width ?? 1200,
-      height: height ?? 900,
+      width,
+      height,
     };
   } catch {
     return null;

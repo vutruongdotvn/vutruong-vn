@@ -12,7 +12,6 @@ type PostActionsProps = {
 export default function PostActions({
   postId,
   postTitle,
-  postDescription,
 }: PostActionsProps) {
   const { showToast } = useToast();
   const [sharing, setSharing] = useState(false);
@@ -39,8 +38,8 @@ export default function PostActions({
 
       await navigator.clipboard.writeText(url);
       showToast("Đã sao chép liên kết", "success");
-    } catch (error: any) {
-      if (error?.name === "AbortError") return;
+    } catch (error: unknown) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
 
       console.error("Share failed:", error);
       showToast("Không thể chia sẻ liên kết", "error");
@@ -53,22 +52,31 @@ export default function PostActions({
     <div className="postAction flex items-center gap-4 px-4 py-3">
       {/* Buttons */}
       <button
+        type="button"
         onClick={() => showToast("Đăng nhập để Thích bài viết này.", "warning")}
-        className="likeBtn cursor-pointer text-[.9375rem] sm:text-base text-gray-500 transition hover:text-black active:scale-80"
+        aria-label="Thích bài viết"
+        title="Thích bài viết"
+        className="likeBtn cursor-pointer text-[.9375rem] text-gray-500 transition hover:text-black focus-visible:outline-none active:scale-80 sm:text-base"
       >
-        <i className="fadt fa-heart" />
+        <i className="fadt fa-heart" aria-hidden="true" />
       </button>
       <button
+        type="button"
         onClick={() => showToast("Bình luận đã bị tắt cho bài viết này.", "error")}
-        className="commentBtn cursor-pointer text-[.9375rem] sm:text-base text-gray-500 transition hover:text-black active:scale-80"
+        aria-label="Bình luận đã bị tắt"
+        title="Bình luận đã bị tắt"
+        className="commentBtn cursor-pointer text-[.9375rem] text-gray-500 transition hover:text-black focus-visible:outline-none active:scale-80 sm:text-base"
       >
-        <i className="fadt fa-comment-slash" />
+        <i className="fadt fa-comment-slash" aria-hidden="true" />
       </button>
 
       <button
+        type="button"
         onClick={handleShare}
         disabled={sharing}
-        className="shareBtn cursor-pointer text-[.9375rem] sm:text-base text-gray-500 transition hover:text-black active:scale-80 disabled:opacity-50"
+        aria-label={sharing ? "Đang chia sẻ" : "Chia sẻ bài viết"}
+        aria-busy={sharing}
+        className="shareBtn cursor-pointer text-[.9375rem] text-gray-500 transition hover:text-black focus-visible:outline-none active:scale-80 disabled:cursor-wait disabled:opacity-50 sm:text-base"
         title="Chia sẻ"
       >
         <i
@@ -77,6 +85,7 @@ export default function PostActions({
               ? "fadt fa-spinner-third fa-spin"
               : "fadt fa-share"
           }
+          aria-hidden="true"
         />
       </button>
     </div>

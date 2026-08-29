@@ -318,14 +318,19 @@ export default function PostBody({
                     ) : null;
                   }
 
-                  return block.value.trim() ? (
+                  if (!block.value.trim()) return null;
+
+                  const textClassName =
+                    "block whitespace-pre-line break-words px-3 text-[.9375rem]/6 text-slate-800 sm:px-4";
+
+                  return (
                     <p
                       key={`text-${blockIndex}`}
-                      className="whitespace-pre-line break-words px-3 text-[.9375rem]/6 sm:px-4 text-slate-800"
+                      className={textClassName}
                     >
                       {renderInlineParts(block.value)}
                     </p>
-                  ) : null;
+                  );
                 })}
               </div>
             ))

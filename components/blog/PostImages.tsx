@@ -21,7 +21,6 @@ import {
   extractCloudinaryMeta,
   getBlogPostFeedImage,
   getBlogPostFeedLightboxImage,
-  getModalFullPostImage,
 } from "@/lib/cloudinary";
 
 type Props = {
@@ -74,9 +73,6 @@ export default function PostImages({
   );
 
   const count = safeImages.length;
-  const getDisplayImage = openPostOnClick
-    ? getBlogPostFeedImage
-    : getModalFullPostImage;
   const [imageMeta, setImageMeta] = useState<Record<string, ImageMeta>>({});
   const imageMetaCacheRef = useRef<Record<string, ImageMeta>>({});
   const swiperRef = useRef<SwiperInstance | null>(null);
@@ -118,7 +114,7 @@ export default function PostImages({
 
               const image = new window.Image();
               image.decoding = "async";
-              image.src = getDisplayImage(src);
+              image.src = getBlogPostFeedImage(src);
 
               image.onload = () => {
                 const meta = {
@@ -164,7 +160,7 @@ export default function PostImages({
     return () => {
       isMounted = false;
     };
-  }, [count, getDisplayImage, safeImages]);
+  }, [count, safeImages]);
 
   useEffect(() => {
     swiperRef.current?.update();
@@ -184,15 +180,15 @@ export default function PostImages({
 
     /*
      * TÙY CHỈNH CHUNG CHO MỌI ẢNH TRONG SLIDER:
-     * - Feed dùng getBlogPostFeedImage để giữ URL nhẹ.
-     * - Modal/trang chi tiết dùng getModalFullPostImage để hiển thị trực tiếp.
-     * - Ở trang chi tiết, URL Fancybox lớn chỉ được tải sau thao tác click.
+     * - Feed và carousel trang chi tiết dùng bản 800 px để giữ URL nhẹ.
+     * - ModalFullPost có renderer riêng và dùng bản 2560 px.
+     * - Ở trang chi tiết, bản Fancybox 2560 px chỉ tải sau thao tác click.
      * - className được truyền từ SwiperSlide để chỉnh bo góc/màu nền/viền.
      * - draggable={false} tránh trình duyệt kéo ảnh/link thay vì kéo slider.
      */
     const imageElement = (
       <Image
-        src={getDisplayImage(src)}
+        src={getBlogPostFeedImage(src)}
         alt={`Ảnh ${index + 1} trong bài viết`}
         fill
         sizes={sizes}

@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import PostBody from "@/components/blog/PostBody";
+import PostActions from "@/components/blog/PostActions";
 import ModalPostHeader from "@/components/blog/modal/ModalPostHeader";
 import ModalPostMedia from "@/components/blog/modal/ModalPostMedia";
+import { extractPostDescription, extractPostTitle } from "@/lib/postMeta";
 
 export type ModalFullPostData = {
   id: string;
@@ -42,6 +44,12 @@ export default function ModalFullPostV2({
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const isClosingRef = useRef(false);
   const hasMedia = !!post?.images.length;
+  const postTitle = post
+    ? extractPostTitle(post.content) || documentTitle
+    : documentTitle;
+  const postDescription = post
+    ? extractPostDescription(post.content)
+    : undefined;
 
   const closeModal = useCallback(() => {
     if (isClosingRef.current) return;
@@ -135,14 +143,14 @@ export default function ModalFullPostV2({
   }, [closeModal]);
 
   const modalSizeClass = hasMedia
-    ? "grid h-[min(92svh,900px)] w-[calc(100vw-1rem)] grid-rows-[minmax(0,45%)_minmax(0,55%)] sm:h-[min(88svh,900px)] sm:w-[calc(100vw-2rem)] lg:h-[80vh] lg:w-[80vw] lg:grid-cols-[minmax(0,7fr)_minmax(15rem,3fr)] lg:grid-rows-1"
-    : "flex h-[min(80vh,760px)] w-[calc(100vw-1rem)] max-w-2xl sm:w-[min(80vw,44rem)]";
+    ? "grid h-full w-full grid-rows-[minmax(0,50%)_minmax(0,50%)] lg:grid-cols-[minmax(0,7.5fr)_minmax(15rem,2.5fr)] lg:grid-rows-1"
+    : "flex max-h-[100dvh] w-full max-w-2xl sm:w-[min(80vw,44rem)] sm:rounded-2xl lg:max-h-[80dvh]";
 
   return (
-    <div className="fixed inset-0 z-[9998] flex items-center justify-center p-2 sm:p-4">
+    <div className="fixed inset-0 z-[9998] flex items-center justify-center">
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-black/35 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/35 backdrop-blur-xs"
         onClick={closeModal}
       />
 
@@ -151,7 +159,7 @@ export default function ModalFullPostV2({
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-full-post-v2-title"
-        className={`animate-fadeIn relative z-10 min-h-0 overflow-hidden rounded-2xl bg-white shadow-[0_24px_70px_rgba(0,0,0,0.24)] ${modalSizeClass}`}
+        className={`relative z-10 min-h-0 overflow-hidden bg-white ${modalSizeClass}`}
       >
         <h1 id="modal-full-post-v2-title" className="sr-only">
           {documentTitle}
@@ -183,6 +191,7 @@ export default function ModalFullPostV2({
                   name={post.author.name}
                   avatar={post.author.avatar}
                   createdAt={post.createdAt}
+                  visibility={routeVisibility}
                 />
               </div>
 
@@ -192,6 +201,21 @@ export default function ModalFullPostV2({
                   images={[]}
                   postId={post.id}
                   truncate={false}
+                />
+                {/* <div className="mt-3 flex select-none items-center gap-3 border-t border-slate-100 p-3 text-[.9375rem] text-slate-400 sm:mt-4 sm:p-4">
+                  <i
+                    className="fadt fa-comment-slash"
+                    aria-hidden="true"
+                  />
+                  <span>Không cho phép đăng bình luận mới.</span>
+                </div> */}
+              </div>
+
+              <div className="shrink-0 border-t border-slate-100 bg-white">
+                <PostActions
+                  postId={post.id}
+                  postTitle={postTitle}
+                  postDescription={postDescription}
                 />
               </div>
             </div>

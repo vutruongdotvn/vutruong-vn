@@ -128,7 +128,7 @@ export default function PhotoWidget() {
             <Link
               key={photo.id}
               href={photo.href}
-              className="relative aspect-square rounded-0 sm:rounded-md overflow-hidden group"
+              className="postImages relative aspect-square rounded-0 sm:rounded-md overflow-hidden group"
             >
               <Image
                 src={getPhotoWidgetImage(photo.src)}

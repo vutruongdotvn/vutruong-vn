@@ -345,7 +345,7 @@ export default function PhotoSection() {
                 prefetch={false}
                 aria-label={`Mở bài viết: ${photo.title}`}
                 title={photo.title}
-                className="group relative aspect-square overflow-hidden bg-slate-100 outline-none sm:rounded-lg focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                className="group postImages relative aspect-square overflow-hidden bg-slate-100 outline-none sm:rounded-lg focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
                 <Image
                   src={photo.src}

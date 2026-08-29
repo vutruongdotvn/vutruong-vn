@@ -9,12 +9,14 @@ type ModalPostHeaderProps = {
   name: string;
   avatar: string | null;
   createdAt: string;
+  visibility?: "public" | "privacy";
 };
 
 export default function ModalPostHeader({
   name,
   avatar,
   createdAt,
+  visibility = "public",
 }: ModalPostHeaderProps) {
   const createdDate = new Date(createdAt);
   const hasValidDate = !Number.isNaN(createdDate.getTime());
@@ -32,7 +34,7 @@ export default function ModalPostHeader({
     : undefined;
 
   return (
-    <header className="flex min-w-0 items-center gap-2 px-4 py-4 pr-14">
+    <header className="flex min-w-0 items-center gap-2 p-3 pr-14 sm:p-4 sm:pr-16">
       <Image
         src={
           getPostHeaderAvatarImage(avatar || undefined) ||
@@ -49,7 +51,7 @@ export default function ModalPostHeader({
       <div className="min-w-0 leading-tight">
         <Link
           href="/blog/about"
-          className="inline-flex max-w-full items-center gap-1 rounded-sm text-sm font-medium text-slate-700 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+          className="inline-flex max-w-full items-center gap-1 rounded-sm text-sm font-medium text-slate-700 hover:text-slate-950 focus-visible:outline-none"
         >
           <span className="truncate">{name}</span>
           <i
@@ -68,9 +70,21 @@ export default function ModalPostHeader({
           </time>
           <span aria-hidden="true">•</span>
           <i
-            className="fa-duotone fa-earth-americas text-[11px]"
-            title="Bài viết công khai"
-            aria-label="Bài viết công khai"
+            className={`fa-duotone text-[11px] ${
+              visibility === "privacy"
+                ? "fa-lock-keyhole text-red-500"
+                : "fa-earth-americas"
+            }`}
+            title={
+              visibility === "privacy"
+                ? "Bài viết riêng tư"
+                : "Bài viết công khai"
+            }
+            aria-label={
+              visibility === "privacy"
+                ? "Bài viết riêng tư"
+                : "Bài viết công khai"
+            }
           />
         </div>
       </div>
