@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Swiper as SwiperInstance } from "swiper";
 import { FreeMode } from "swiper/modules";
@@ -18,14 +19,16 @@ import "swiper/css/free-mode";
 
 import {
   extractCloudinaryMeta,
-  getFeedImage,
-  getLightboxImage,
+  getBlogPostFeedImage,
+  getBlogPostFeedLightboxImage,
+  getModalFullPostImage,
 } from "@/lib/cloudinary";
 
 type Props = {
   images?: string[];
   postId: string;
   priority?: boolean;
+  openPostOnClick?: boolean;
 };
 
 type ImageMeta = {
@@ -57,6 +60,7 @@ export default function PostImages({
   images,
   postId,
   priority = false,
+  openPostOnClick = false,
 }: Props) {
   const safeImages = useMemo(
     () =>
@@ -70,12 +74,9 @@ export default function PostImages({
   );
 
   const count = safeImages.length;
-
-  /*
-   * Tên nhóm Fancybox. Có thể đổi tiền tố "post-", nhưng phải luôn giữ postId
-   * để ảnh của các bài viết khác nhau không bị gộp chung vào một lightbox.
-   */
-  const group = `post-${postId}`;
+  const getDisplayImage = openPostOnClick
+    ? getBlogPostFeedImage
+    : getModalFullPostImage;
   const [imageMeta, setImageMeta] = useState<Record<string, ImageMeta>>({});
   const imageMetaCacheRef = useRef<Record<string, ImageMeta>>({});
   const swiperRef = useRef<SwiperInstance | null>(null);
@@ -117,7 +118,7 @@ export default function PostImages({
 
               const image = new window.Image();
               image.decoding = "async";
-              image.src = getFeedImage(src);
+              image.src = getDisplayImage(src);
 
               image.onload = () => {
                 const meta = {
@@ -163,7 +164,7 @@ export default function PostImages({
     return () => {
       isMounted = false;
     };
-  }, [count, safeImages]);
+  }, [count, getDisplayImage, safeImages]);
 
   useEffect(() => {
     swiperRef.current?.update();
@@ -183,44 +184,70 @@ export default function PostImages({
 
     /*
      * TÙY CHỈNH CHUNG CHO MỌI ẢNH TRONG SLIDER:
-     * - getFeedImage(src): URL ảnh nhẹ dùng trên PostCard.
-     * - getLightboxImage(src): URL ảnh lớn mở bằng Fancybox khi bấm.
+     * - Feed dùng getBlogPostFeedImage để giữ URL nhẹ.
+     * - Modal/trang chi tiết dùng getModalFullPostImage để hiển thị trực tiếp.
+     * - Ở trang chi tiết, URL Fancybox lớn chỉ được tải sau thao tác click.
      * - className được truyền từ SwiperSlide để chỉnh bo góc/màu nền/viền.
-     * - "group" + "overflow-hidden" phục vụ hiệu ứng nhấn và giữ ảnh trong bo góc.
      * - draggable={false} tránh trình duyệt kéo ảnh/link thay vì kéo slider.
      */
-    return (
-      <a
-        href={getLightboxImage(src)}
-        data-fancybox={group}
-        aria-label={`Xem ảnh ${index + 1} trong bài viết`}
+    const imageElement = (
+      <Image
+        src={getDisplayImage(src)}
+        alt={`Ảnh ${index + 1} trong bài viết`}
+        fill
+        sizes={sizes}
+        priority={isPriorityImage}
+        loading={isPriorityImage ? "eager" : "lazy"}
         draggable={false}
-        className={`relative block overflow-hidden group ${className}`}
-      >
-        {/*
-          TÙY CHỈNH HIỂN THỊ ẢNH:
-          - object-cover: phủ kín khung; đổi thành object-contain nếu muốn luôn thấy
-            toàn bộ ảnh và chấp nhận khoảng trống theo màu bg của khung.
-          - group-active:scale-101: phóng nhẹ ảnh trong lúc nhấn; có thể bỏ nếu
-            không muốn hiệu ứng phản hồi khi bấm/giữ ảnh.
-          - sizes chỉ mô tả kích thước dự kiến cho trình duyệt, không quyết định
-            kích thước CSS của ảnh. Kích thước hiển thị nằm ở các class bên dưới.
-          - alt, aria-label và title có thể đổi nội dung chữ, không ảnh hưởng layout.
-          - priority/loading nên giữ nguyên để chỉ ảnh đầu tiên được tải ưu tiên.
-        */}
-        <Image
-          src={getFeedImage(src)}
-          alt={`Ảnh ${index + 1} trong bài viết`}
-          fill
-          sizes={sizes}
-          priority={isPriorityImage}
-          loading={isPriorityImage ? "eager" : "lazy"}
+        unoptimized
+        title={
+          openPostOnClick
+            ? "Mở bài viết chi tiết"
+            : "Bấm để xem ảnh kích thước lớn"
+        }
+        className="object-cover group-active:scale-101"
+      />
+    );
+
+    const containerClassName = `relative block overflow-hidden group ${className}`;
+
+    if (!openPostOnClick) {
+      return (
+        <a
+          href={getBlogPostFeedLightboxImage(src)}
+          data-fancybox={`post-${postId}`}
+          aria-label={`Xem ảnh ${index + 1} trong bài viết`}
           draggable={false}
-          unoptimized
-          title="Bấm để xem ảnh kích thước lớn"
-          className="object-cover group-active:scale-101"
-        />
-      </a>
+          onClick={(event) => {
+            if (swiperRef.current && !swiperRef.current.allowClick) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+          }}
+          className={`${containerClassName} cursor-zoom-in`}
+        >
+          {imageElement}
+        </a>
+      );
+    }
+
+    return (
+      <Link
+        href={`/blog/post/${postId}`}
+        aria-label={`Mở bài viết để xem ảnh ${index + 1}`}
+        draggable={false}
+        onClick={(event) => {
+          // Swiper đặt allowClick=false sau một thao tác kéo. Chặn Link trong
+          // trường hợp đó để thả chuột/ngón tay không vô tình mở modal.
+          if (swiperRef.current && !swiperRef.current.allowClick) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }}
+        className={containerClassName}
+      >
+        {imageElement}
+      </Link>
     );
   };
 
@@ -305,6 +332,8 @@ export default function PostImages({
         spaceBetween={3}
         grabCursor
         simulateTouch
+        preventClicks
+        preventClicksPropagation
         watchOverflow={false}
         resistance
         resistanceRatio={

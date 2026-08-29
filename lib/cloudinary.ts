@@ -324,6 +324,22 @@ export function getBlogPostFeedImage(url?: string) {
 }
 
 /**
+ * ModalFullPost v2 - ảnh nội dung hiển thị trong modal hoặc trang chi tiết.
+ * - width 1200: đủ nét cho vùng nội dung lớn nhưng nhẹ hơn bản Fancybox 2560.
+ * - c_limit: giữ nguyên tỷ lệ và không phóng lớn ảnh nguồn nhỏ.
+ * - q_auto:good: cân bằng độ nét và dung lượng khi ảnh nằm trực tiếp trong UI.
+ * - Đây là preset hiển thị, không phải URL ảnh phóng lớn bằng Fancybox.
+ */
+export function getModalFullPostImage(url?: string) {
+  return buildCloudinaryImage(url, {
+    width: 1200,
+    crop: "limit",
+    quality: "auto:good",
+    format: "webp",
+  });
+}
+
+/**
  * BlogPostFeed - ảnh chỉ tải khi người dùng mở Fancybox.
  * - width 4096: giới hạn cạnh ngang tối đa 4K.
  * - c_limit: không upscale ảnh nguồn nhỏ hơn 4K.

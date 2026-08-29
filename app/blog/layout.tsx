@@ -13,26 +13,34 @@ export const metadata: Metadata = {
 // Cache bài viết trong 1 ngày.
 export const revalidate = 86400;
 
+type BlogLayoutProps = {
+  children: React.ReactNode;
+  modal: React.ReactNode;
+};
+
 export default function BlogLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+  modal,
+}: BlogLayoutProps) {
   return (
-    <main id="blog" className="pt-14 md:pb-4 pb-23">
-      <div className="mx-auto w-full space-y-0 md:space-y-3">
-        <CoverSection />
+    <>
+      <main id="blog" className="pt-14 md:pb-4 pb-23">
+        <div className="mx-auto w-full space-y-0 md:space-y-3">
+          <CoverSection />
 
-        <BlogRouteContent
-          sidebar={
-            <BlogSidebarClient>
-              <BlogSidebar />
-            </BlogSidebarClient>
-          }
-        >
-          {children}
-        </BlogRouteContent>
-      </div>
-    </main>
+          <BlogRouteContent
+            sidebar={
+              <BlogSidebarClient>
+                <BlogSidebar />
+              </BlogSidebarClient>
+            }
+          >
+            {children}
+          </BlogRouteContent>
+        </div>
+      </main>
+
+      {modal}
+    </>
   );
 }
