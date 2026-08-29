@@ -165,7 +165,7 @@ export default function ModalFullPostSkeleton({
 
         <div className="relative flex min-h-0 items-center justify-center overflow-hidden bg-black/90">
           <i
-            className="fad fa-spinner-third fa-spin fa-2x text-gray-700"
+            className="fad fa-spinner-third fa-spin text-gray-700 text-lg"
             aria-hidden="true"
           />
         </div>

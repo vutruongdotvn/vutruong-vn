@@ -148,7 +148,7 @@ export default function IntroWidget() {
   };
 
   return (
-    <div className="rounded-0 sm:rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-shadow duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.075)] p-3 sm:p-4">
+    <div className="rounded-0 sm:rounded-2xl bg-white p-3 sm:p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-[.9375rem] sm:text-base font-semibold">Giới thiệu</h3>
         {isAdmin && !editing && (

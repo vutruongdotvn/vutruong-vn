@@ -13,10 +13,11 @@ import {
   useState,
 } from "react";
 import type { Swiper as SwiperInstance } from "swiper";
-import { Zoom } from "swiper/modules";
+import { Zoom, EffectFade } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/zoom";
+import "swiper/css/effect-fade";
 
 import {
   getBlogPostFeedLightboxImage,
@@ -29,8 +30,17 @@ type ModalPostMediaProps = {
   postTitle: string;
 };
 
+// Trần zoom chung. Tăng lên 3 nếu muốn zoom tối đa 3x; ảnh nhỏ vẫn được
+// limitToOriginalSize và data-swiper-zoom bảo vệ khỏi phóng quá độ phân giải.
 const MAX_ZOOM_RATIO = 2;
+
+// Chỉ bật cursor/click zoom khi ảnh còn ít nhất 5% độ phân giải dư so với
+// kích thước đang hiển thị, tránh một thao tác zoom gần như không có tác dụng.
 const MIN_USEFUL_ZOOM_RATIO = 1.05;
+
+// Số ảnh tải trước ở mỗi phía của slide hiện tại. 1 là mức phù hợp với ảnh
+// 2560px; tăng số này sẽ mượt hơn nhưng tải thêm nhiều dữ liệu và tốn bộ nhớ.
+const LAZY_PRELOAD_ADJACENT_SLIDES = 1;
 
 export default function ModalPostMedia({
   images,
@@ -43,6 +53,9 @@ export default function ModalPostMedia({
   const [activeIndex, setActiveIndex] = useState(0);
   const [zoomScale, setZoomScale] = useState(1);
   const [zoomRatios, setZoomRatios] = useState<Record<number, number>>({});
+  const [loadedImageIndexes, setLoadedImageIndexes] = useState<Set<number>>(
+    () => new Set()
+  );
   const [failedImageIndexes, setFailedImageIndexes] = useState<Set<number>>(
     () => new Set()
   );
@@ -112,9 +125,31 @@ export default function ModalPostMedia({
   ) => {
     const image = event.currentTarget;
 
-    // Đợi trình duyệt hoàn tất bước contain để so kích thước nguồn với đúng
-    // kích thước ảnh đang hiển thị, tránh cho zoom ảnh nhỏ vượt quá ảnh gốc.
-    window.requestAnimationFrame(() => updateZoomRatio(index, image));
+    const revealImage = () => {
+      // Request decode có thể hoàn tất sau khi người dùng đã đóng modal.
+      if (!image.isConnected) return;
+
+      // Theo dõi độc lập từng ảnh. Ảnh đã tải chỉ fade-in đúng một lần, không
+      // chạy lại animation mỗi khi chuyển slide hoặc thay đổi mức zoom.
+      setLoadedImageIndexes((currentIndexes) => {
+        if (currentIndexes.has(index)) return currentIndexes;
+
+        const nextIndexes = new Set(currentIndexes);
+        nextIndexes.add(index);
+        return nextIndexes;
+      });
+
+      // Đợi trình duyệt hoàn tất bước contain để so kích thước nguồn với đúng
+      // kích thước ảnh đang hiển thị, tránh cho zoom ảnh nhỏ vượt quá ảnh gốc.
+      window.requestAnimationFrame(() => updateZoomRatio(index, image));
+    };
+
+    // onLoad xác nhận file đã tải; decode() xác nhận pixel đã sẵn sàng để vẽ.
+    // Nếu browser từ chối decode, vẫn reveal vì sự kiện load đã thành công.
+    void image
+      .decode()
+      .catch(() => undefined)
+      .then(revealImage);
   };
 
   useEffect(() => {
@@ -213,29 +248,85 @@ export default function ModalPostMedia({
       {/* Giữ touch events cả khi chỉ có một ảnh để pinch/pan của Zoom hoạt
           động; Swiper tự khóa chuyển slide khi không có slide kế tiếp. */}
       <Swiper
-        modules={[Zoom]}
+        // Chỉ đăng ký module thực sự dùng để giữ bundle gọn. Navigation không
+        // cần thiết vì hai nút Prev/Next bên dưới đang được điều khiển thủ công.
+        modules={[Zoom, EffectFade]}
+
+        // Hiệu ứng chuyển slide: fade
+        effect="fade"
+        fadeEffect={{ crossFade: true }}
+
+        // Mỗi lần chỉ hiển thị đúng một ảnh và không chừa khe giữa hai slide.
         slidesPerView={1}
         spaceBetween={0}
-        speed={600}
+
+        // Thời gian hoàn tất chuyển slide sau khi thả tay hoặc bấm Prev/Next.
+        // Không ảnh hưởng tốc độ ảnh fade-in sau khi tải xong.
+        speed={500}
+
+        // Swiper 14.1 dùng native loading="lazy". Tải trước đúng một ảnh ở
+        // mỗi phía để slide kế tiếp mượt mà mà không tải đồng thời cả gallery.
+        lazyPreloadPrevNext={LAZY_PRELOAD_ADJACENT_SLIDES}
+
+        // Chỉ hiện cursor grab khi có thể đổi slide và ảnh chưa được zoom.
         grabCursor={hasMultipleImages && zoomScale <= 1}
+
+        // Cho phép kéo bằng chuột trên PC và vuốt/pinch trên thiết bị cảm ứng.
         simulateTouch
         allowTouchMove
+
+        // Ngăn một dịch chuyển rất nhỏ bị hiểu nhầm là thao tác kéo slide.
+        threshold={5}
+
+        // Giữ hiệu ứng đàn hồi ở ảnh đầu/cuối nhưng giảm khoảng kéo vượt biên
+        // so với mặc định của Swiper để gallery có cảm giác chắc hơn.
         resistance
         resistanceRatio={0.45}
+
+        // Hai prop này ngăn lần thả chuột sau khi kéo bị hiểu thành click zoom
+        // hoặc click khoảng trống để đóng modal.
+        preventClicks
+        preventClicksPropagation
+
+        // Không cho ảnh cuối quay về ảnh đầu và ngược lại.
+        loop={false}
+        rewind={false}
+
+        // Khi chỉ có một ảnh, Swiper tự khóa chức năng đổi slide; Zoom vẫn hoạt
+        // động bình thường nhờ module Zoom và swiper-zoom-container.
         watchOverflow
+
         zoom={{
+          // Trần zoom chung. data-swiper-zoom bên dưới tiếp tục giới hạn riêng
+          // từng ảnh dựa trên kích thước nguồn và kích thước đang hiển thị.
           maxRatio: MAX_ZOOM_RATIO,
           minRatio: 1,
+
+          // Không phóng vượt quá độ phân giải thật của ảnh nguồn.
           limitToOriginalSize: true,
-          toggle: true,
+
+          // Component đã xử lý single-click trong handleImageClick. Tắt cơ chế
+          // double-tap mặc định để hai luồng zoom không chạy chồng lên nhau.
+          toggle: false,
+
+          // Ảnh chỉ pan khi kéo; không tự chạy theo vị trí con trỏ trên PC.
+          panOnMouseMove: false,
         }}
+
+        // Lưu instance để nút điều hướng, click zoom và gap click dùng chung.
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
         }}
+
+        // realIndex vẫn đại diện đúng index ảnh gốc nếu sau này cấu hình slide
+        // thay đổi. Đồng thời reset cursor zoom khi chuyển sang ảnh mới.
         onSlideChange={(swiper) => {
           setActiveIndex(swiper.realIndex);
           setZoomScale(1);
         }}
+
+        // Đồng bộ cursor với tỷ lệ zoom; khi trở về 1x thì tính lại giới hạn
+        // zoom vì viewport có thể đã đổi kích thước hoặc xoay màn hình.
         onZoomChange={(_, scale) => {
           setZoomScale(scale);
 
@@ -249,15 +340,26 @@ export default function ModalPostMedia({
             }
           }
         }}
+
+        // Swiper chiếm toàn bộ vùng media do modal cấp phát.
         className="h-full w-full"
       >
         {images.map((src, index) => {
+          const isLoaded = loadedImageIndexes.has(index);
           const hasFailed = failedImageIndexes.has(index);
           const showBlurredBackground =
             !hasFailed && isCloudinaryImageUrl(src);
           const maxZoomRatio = zoomRatios[index] ?? 1;
           const isActiveImage = index === activeIndex;
           const canZoom = maxZoomRatio > MIN_USEFUL_ZOOM_RATIO;
+          const imageLoadClassName = isLoaded
+            ? "modal-post-main-image--loaded"
+            : "opacity-0";
+          const zoomCursorClassName = canZoom
+            ? isActiveImage && zoomScale > 1
+              ? "cursor-zoom-out"
+              : "cursor-zoom-in"
+            : "cursor-default";
 
           return (
             <SwiperSlide
@@ -298,8 +400,21 @@ export default function ModalPostMedia({
                 <div
                   className="swiper-zoom-container relative z-10 flex h-full w-full items-center justify-center"
                   data-swiper-zoom={maxZoomRatio}
+                  aria-busy={!isLoaded}
                   onClick={handleMediaGapClick}
                 >
+                  {!isLoaded && (
+                    <div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
+                    >
+                      <i className="modal-post-image-spinner fad fa-spinner-third fa-spin text-xl text-white/30" />
+                    </div>
+                  )}
+
+                  {/* Ảnh đầu tải ngay; các ảnh còn lại dùng native lazy load.
+                      Fade chỉ bắt đầu sau onLoad + decode để không lộ frame
+                      trắng giữa placeholder blur và ảnh chính. */}
                   <img
                     ref={(image) => {
                       imageElementsRef.current[index] = image;
@@ -312,12 +427,7 @@ export default function ModalPostMedia({
                     onLoad={(event) => handleImageLoad(index, event)}
                     onError={() => handleImageError(index)}
                     onClick={(event) => handleImageClick(event, index)}
-                    className={`block h-auto w-auto max-h-full max-w-full select-none object-contain ${canZoom
-                      ? isActiveImage && zoomScale > 1
-                        ? "cursor-zoom-out"
-                        : "cursor-zoom-in"
-                      : "cursor-default"
-                      }`}
+                    className={`modal-post-main-image block h-auto w-auto max-h-full max-w-full select-none object-contain ${imageLoadClassName} ${zoomCursorClassName}`}
                   />
                 </div>
               )}
@@ -358,6 +468,36 @@ export default function ModalPostMedia({
           </button>
         </>
       )}
+
+      <style jsx global>{`
+        /* Chỉ animate opacity để không can thiệp transform do Swiper Zoom
+           điều khiển trực tiếp trên ảnh. */
+        @keyframes modal-post-image-reveal {
+          from {
+            opacity: 0;
+          }
+
+          to {
+            opacity: 1;
+          }
+        }
+
+        .modal-post-main-image--loaded {
+          animation: modal-post-image-reveal 300ms ease-out both;
+        }
+
+        /* Tôn trọng thiết lập giảm chuyển động của hệ điều hành. */
+        @media (prefers-reduced-motion: reduce) {
+          .modal-post-main-image--loaded {
+            animation: none;
+            opacity: 1;
+          }
+
+          .modal-post-image-spinner {
+            animation: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
