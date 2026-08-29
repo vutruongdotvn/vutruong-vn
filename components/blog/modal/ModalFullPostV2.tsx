@@ -2,19 +2,46 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import PostBody from "@/components/blog/PostBody";
+import ModalPostHeader from "@/components/blog/modal/ModalPostHeader";
+import ModalPostMedia from "@/components/blog/modal/ModalPostMedia";
+
+export type ModalFullPostData = {
+  id: string;
+  content: string;
+  images: string[];
+  createdAt: string;
+  author: {
+    name: string;
+    avatar: string | null;
+  };
+};
 
 type ModalFullPostV2Props = {
   postId: string;
+  routeVisibility: "public" | "privacy";
+  post: ModalFullPostData | null;
   documentTitle: string;
 };
 
+const FOCUSABLE_SELECTOR = [
+  "a[href]",
+  "button:not([disabled])",
+  "iframe",
+  "[tabindex]:not([tabindex='-1'])",
+].join(",");
+
 export default function ModalFullPostV2({
   postId,
+  routeVisibility,
+  post,
   documentTitle,
 }: ModalFullPostV2Props) {
   const router = useRouter();
+  const dialogRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const isClosingRef = useRef(false);
+  const hasMedia = !!post?.images.length;
 
   const closeModal = useCallback(() => {
     if (isClosingRef.current) return;
@@ -39,18 +66,57 @@ export default function ModalFullPostV2({
   }, [documentTitle]);
 
   useEffect(() => {
+    const previousActiveElement =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     const previousHtmlOverflow = document.documentElement.style.overflow;
     const previousBodyOverflow = document.body.style.overflow;
+    const blogRoot = document.getElementById("blog");
+    const blogWasInert = blogRoot?.hasAttribute("inert") ?? false;
 
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
+    blogRoot?.setAttribute("inert", "");
     closeButtonRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeModal();
+        return;
+      }
 
-      event.preventDefault();
-      closeModal();
+      if (event.key !== "Tab") return;
+
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+
+      const focusableElements = Array.from(
+        dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
+      ).filter(
+        (element) =>
+          !element.hasAttribute("disabled") &&
+          element.getAttribute("aria-hidden") !== "true"
+      );
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        closeButtonRef.current?.focus();
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      const activeElement = document.activeElement;
+
+      if (event.shiftKey && activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
     };
 
     document.addEventListener("keydown", handleKeyDown);
@@ -59,57 +125,102 @@ export default function ModalFullPostV2({
       document.removeEventListener("keydown", handleKeyDown);
       document.documentElement.style.overflow = previousHtmlOverflow;
       document.body.style.overflow = previousBodyOverflow;
+
+      if (blogRoot && !blogWasInert) {
+        blogRoot.removeAttribute("inert");
+      }
+
+      previousActiveElement?.focus();
     };
   }, [closeModal]);
 
+  const modalSizeClass = hasMedia
+    ? "grid h-[min(92svh,900px)] w-[calc(100vw-1rem)] grid-rows-[minmax(0,45%)_minmax(0,55%)] sm:h-[min(88svh,900px)] sm:w-[calc(100vw-2rem)] lg:h-[80vh] lg:w-[80vw] lg:max-w-[1440px] lg:grid-cols-[minmax(0,3fr)_minmax(20rem,2fr)] lg:grid-rows-1"
+    : "flex h-[min(80vh,760px)] w-[calc(100vw-1rem)] max-w-2xl sm:w-[min(80vw,44rem)]";
+
   return (
-    <div className="fixed inset-0 z-[9998] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9998] flex items-center justify-center p-2 sm:p-4">
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-black/45"
+        className="absolute inset-0 bg-black/35 backdrop-blur-[2px]"
         onClick={closeModal}
       />
 
       <section
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-full-post-v2-title"
-        aria-describedby="modal-full-post-v2-description"
-        className="relative z-10 w-full max-w-lg rounded-2xl bg-white p-5 shadow-2xl"
+        className={`relative z-10 min-h-0 overflow-hidden rounded-2xl bg-white shadow-[0_24px_70px_rgba(0,0,0,0.24)] ${modalSizeClass}`}
       >
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <h1
-              id="modal-full-post-v2-title"
-              className="text-base font-semibold text-slate-900"
-            >
-              ModalFullPost v2
-            </h1>
-            <p
-              id="modal-full-post-v2-description"
-              className="mt-1 text-sm text-slate-500"
-            >
-              Intercepting Route đã hoạt động.
-            </p>
-          </div>
+        <h1 id="modal-full-post-v2-title" className="sr-only">
+          {documentTitle}
+        </h1>
 
-          <button
-            ref={closeButtonRef}
-            type="button"
-            onClick={closeModal}
-            aria-label="Đóng bài viết"
-            className="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-          >
-            <i className="fa-duotone fa-xmark" aria-hidden="true" />
-          </button>
-        </div>
+        <button
+          ref={closeButtonRef}
+          type="button"
+          onClick={closeModal}
+          aria-label="Đóng bài viết"
+          className="absolute right-3 top-3 z-30 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/90 text-slate-500 shadow-sm backdrop-blur-sm hover:bg-white hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 active:scale-95"
+        >
+          <i className="fa-duotone fa-xmark" aria-hidden="true" />
+        </button>
 
-        <dl className="mt-5 rounded-xl bg-slate-50 p-4 text-sm">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <dt className="font-medium text-slate-700">Post ID:</dt>
-            <dd className="break-all text-slate-600">{postId}</dd>
+        {post ? (
+          <>
+            {hasMedia && (
+              <ModalPostMedia
+                images={post.images}
+                postTitle={documentTitle}
+              />
+            )}
+
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
+              <div className="shrink-0 border-b border-slate-100">
+                <ModalPostHeader
+                  name={post.author.name}
+                  avatar={post.author.avatar}
+                  createdAt={post.createdAt}
+                />
+              </div>
+
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-4">
+                <PostBody
+                  content={post.content}
+                  images={[]}
+                  postId={post.id}
+                  truncate={false}
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex min-h-0 flex-1 items-center justify-center px-6 py-16 text-center">
+            <div className="max-w-sm">
+              <i
+                className="fa-duotone fa-lock-keyhole text-2xl text-slate-400"
+                aria-hidden="true"
+              />
+              <h2 className="mt-3 text-base font-semibold text-slate-800">
+                {routeVisibility === "privacy"
+                  ? "Bài viết riêng tư"
+                  : "Không thể tải bài viết"}
+              </h2>
+              <p className="mt-1 text-sm leading-6 text-slate-500">
+                {routeVisibility === "privacy"
+                  ? "Nội dung cần được xác thực trên trang bài viết đầy đủ."
+                  : "Dữ liệu bài viết hiện không khả dụng."}
+              </p>
+              <a
+                href={`/blog/post/${postId}`}
+                className="mt-5 inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 active:scale-98"
+              >
+                Mở trang bài viết
+              </a>
+            </div>
           </div>
-        </dl>
+        )}
       </section>
     </div>
   );
