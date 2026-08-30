@@ -159,15 +159,15 @@ export default function ModalFullPostSkeleton({
         aria-label="Đang mở bài viết có hình ảnh"
         aria-busy="true"
         aria-live="polite"
-        className="modal-loading-media relative z-10 grid h-full w-full min-h-0 grid-rows-[minmax(0,50%)_minmax(0,50%)] overflow-hidden bg-white lg:grid-cols-[minmax(0,8fr)_minmax(15rem,2fr)] lg:grid-rows-1"
+        className="modal-loading-media relative z-10 grid h-full w-full min-h-0 grid-rows-[minmax(0,35%)_minmax(0,65%)] overflow-hidden bg-white lg:grid-cols-[minmax(0,8fr)_minmax(15rem,2fr)] lg:grid-rows-1"
       >
         <CloseButton buttonRef={mediaCloseButtonRef} onClose={close} />
 
-        <div className="relative flex min-h-0 items-center justify-center overflow-hidden bg-black/90">
-          <i
+        <div className="relative flex min-h-0 items-center justify-center overflow-hidden bg-black">
+          {/* <i
             className="fad fa-spinner-third fa-spin text-gray-700 text-lg"
             aria-hidden="true"
-          />
+          /> */}
         </div>
 
         <div className="flex min-h-0 min-w-0 flex-col bg-white">

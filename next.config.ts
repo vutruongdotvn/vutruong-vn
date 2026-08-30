@@ -70,6 +70,11 @@ const nextConfig: NextConfig = {
         destination: "https://www.x.com/vutruong.vn",
         permanent: false,
       },
+      {
+        source: "/blog/post",
+        destination: "/blog",
+        permanent: false,
+      },
     ];
   },
 

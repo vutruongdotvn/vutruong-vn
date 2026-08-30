@@ -72,7 +72,7 @@ export default function ModalPostHeader({
           <i
             className={`fa-duotone text-[11px] ${
               visibility === "privacy"
-                ? "fa-lock-keyhole text-red-500"
+                ? "fa-lock-keyhole text-red-600"
                 : "fa-earth-americas"
             }`}
             title={

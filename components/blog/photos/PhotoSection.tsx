@@ -7,7 +7,7 @@ import { getBlogPhotosGridImage } from "@/lib/cloudinary";
 import { extractPostTitle } from "@/lib/postMeta";
 import { supabase } from "@/lib/supabase";
 
-const BLOG_PHOTOS_PAGE_SIZE = 15;
+const BLOG_PHOTOS_PAGE_SIZE = 20;
 
 type BlogPhoto = {
   id: string;
