@@ -6,9 +6,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   type MouseEvent as ReactMouseEvent,
-  type SyntheticEvent,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -28,6 +28,7 @@ import {
 type ModalPostMediaProps = {
   images: string[];
   postTitle: string;
+  onClose?: () => void;
 };
 
 // Trần zoom chung. Tăng lên 3 nếu muốn zoom tối đa 3x; ảnh nhỏ vẫn được
@@ -42,23 +43,33 @@ const MIN_USEFUL_ZOOM_RATIO = 1.05;
 // 2560px; tăng số này sẽ mượt hơn nhưng tải thêm nhiều dữ liệu và tốn bộ nhớ.
 const LAZY_PRELOAD_ADJACENT_SLIDES = 1;
 
+// Chỉ trì hoãn indicator, KHÔNG trì hoãn request hay ảnh đã sẵn sàng.
+const IMAGE_SPINNER_DELAY_MS = 150;
+
 export default function ModalPostMedia({
   images,
   postTitle,
+  onClose,
 }: ModalPostMediaProps) {
   const router = useRouter();
   const swiperRef = useRef<SwiperInstance | null>(null);
   const imageElementsRef = useRef<Record<number, HTMLImageElement | null>>({});
   const isClosingRef = useRef(false);
+  const decodingImagesRef = useRef(new WeakSet<HTMLImageElement>());
   const [activeIndex, setActiveIndex] = useState(0);
   // UI chỉ cần biết đang zoom hay chưa; không render lại từng frame pinch.
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomRatios, setZoomRatios] = useState<Record<number, number>>({});
-  const [loadedImageIndexes, setLoadedImageIndexes] = useState<Set<number>>(
-    () => new Set()
-  );
+  // Map chỉ chứa ảnh đã decode; true = fade lần tải mới, false = hiện ảnh cache.
+  const [loadedImageIndexes, setLoadedImageIndexes] = useState<
+    Map<number, boolean>
+  >(() => new Map());
+  const [loadedBackgroundIndexes, setLoadedBackgroundIndexes] = useState<
+    Set<number>
+  >(() => new Set());
+  const [spinnerIndex, setSpinnerIndex] = useState<number | null>(null);
   const [failedImageIndexes, setFailedImageIndexes] = useState<Set<number>>(
-    () => new Set()
+    () => new Set(),
   );
   const hasMultipleImages = images.length > 1;
   const showNavigationButtons = images.length > 1;
@@ -67,8 +78,9 @@ export default function ModalPostMedia({
     if (isClosingRef.current) return;
 
     isClosingRef.current = true;
-    router.back();
-  }, [router]);
+    if (onClose) onClose();
+    else router.back();
+  }, [onClose, router]);
 
   const handleImageError = (index: number) => {
     setFailedImageIndexes((currentIndexes) => {
@@ -103,8 +115,8 @@ export default function ModalPostMedia({
           Math.min(
             image.naturalWidth / width,
             image.naturalHeight / height,
-            MAX_ZOOM_RATIO
-          ) * 1000
+            MAX_ZOOM_RATIO,
+          ) * 1000,
         ) / 1000;
       const nextRatio =
         originalSizeRatio > MIN_USEFUL_ZOOM_RATIO ? originalSizeRatio : 1;
@@ -112,46 +124,74 @@ export default function ModalPostMedia({
       setZoomRatios((currentRatios) =>
         currentRatios[index] === nextRatio
           ? currentRatios
-          : { ...currentRatios, [index]: nextRatio }
+          : { ...currentRatios, [index]: nextRatio },
       );
 
       return nextRatio;
     },
-    []
+    [],
   );
 
-  const handleImageLoad = (
-    index: number,
-    event: SyntheticEvent<HTMLImageElement>
-  ) => {
-    const image = event.currentTarget;
+  const revealLoadedImage = useCallback(
+    (index: number, image: HTMLImageElement, fadeIn: boolean) => {
+      // Ref kiểm tra ảnh cache và onLoad có thể gặp cùng một ảnh: decode một lần.
+      if (decodingImagesRef.current.has(image)) return;
+      decodingImagesRef.current.add(image);
+      const source = image.currentSrc || image.src;
 
-    const revealImage = () => {
-      // Request decode có thể hoàn tất sau khi người dùng đã đóng modal.
-      if (!image.isConnected) return;
+      const revealImage = () => {
+        if (
+          !image.isConnected ||
+          imageElementsRef.current[index] !== image ||
+          (image.currentSrc || image.src) !== source ||
+          image.naturalWidth <= 0
+        ) {
+          return;
+        }
 
-      // Theo dõi độc lập từng ảnh. Ảnh đã tải chỉ fade-in đúng một lần, không
-      // chạy lại animation mỗi khi chuyển slide hoặc thay đổi mức zoom.
-      setLoadedImageIndexes((currentIndexes) => {
-        if (currentIndexes.has(index)) return currentIndexes;
+        setLoadedImageIndexes((currentIndexes) => {
+          if (currentIndexes.has(index)) return currentIndexes;
+          const nextIndexes = new Map(currentIndexes);
+          nextIndexes.set(index, fadeIn);
+          return nextIndexes;
+        });
+        window.requestAnimationFrame(() => updateZoomRatio(index, image));
+      };
 
-        const nextIndexes = new Set(currentIndexes);
-        nextIndexes.add(index);
-        return nextIndexes;
-      });
+      // Vẫn chờ pixel sẵn sàng kể cả khi ảnh nằm trong HTTP cache.
+      if (typeof image.decode === "function") {
+        void image
+          .decode()
+          .catch(() => undefined)
+          .then(revealImage);
+      } else {
+        revealImage();
+      }
+    },
+    [updateZoomRatio],
+  );
 
-      // Đợi trình duyệt hoàn tất bước contain để so kích thước nguồn với đúng
-      // kích thước ảnh đang hiển thị, tránh cho zoom ảnh nhỏ vượt quá ảnh gốc.
-      window.requestAnimationFrame(() => updateZoomRatio(index, image));
-    };
+  useLayoutEffect(() => {
+    Object.entries(imageElementsRef.current).forEach(([index, image]) => {
+      if (image?.complete && image.naturalWidth > 0) {
+        // Ảnh đã tải trước khi commit: không chạy lại fade từ opacity 0.
+        revealLoadedImage(Number(index), image, false);
+      }
+    });
+  }, [images, revealLoadedImage]);
 
-    // onLoad xác nhận file đã tải; decode() xác nhận pixel đã sẵn sàng để vẽ.
-    // Nếu browser từ chối decode, vẫn reveal vì sự kiện load đã thành công.
-    void image
-      .decode()
-      .catch(() => undefined)
-      .then(revealImage);
-  };
+  const isActiveImageLoading =
+    !loadedImageIndexes.has(activeIndex) &&
+    !failedImageIndexes.has(activeIndex);
+
+  useEffect(() => {
+    if (!isActiveImageLoading) return;
+    const timeout = window.setTimeout(
+      () => setSpinnerIndex(activeIndex),
+      IMAGE_SPINNER_DELAY_MS,
+    );
+    return () => window.clearTimeout(timeout);
+  }, [activeIndex, isActiveImageLoading]);
 
   useEffect(() => {
     const recalculateZoomRatios = () => {
@@ -178,7 +218,7 @@ export default function ModalPostMedia({
 
   const handleImageClick = (
     event: ReactMouseEvent<HTMLImageElement>,
-    index: number
+    index: number,
   ) => {
     event.stopPropagation();
 
@@ -258,7 +298,7 @@ export default function ModalPostMedia({
     <div
       role="group"
       aria-label={`Hình ảnh của bài viết: ${postTitle}`}
-      className="relative h-full min-h-0 w-full overflow-hidden bg-slate-950"
+      className="relative h-full min-h-0 w-full overflow-hidden bg-black/50"
     >
       {/* Giữ touch events cả khi chỉ có một ảnh để pinch/pan của Zoom hoạt
           động; Swiper tự khóa chuyển slide khi không có slide kế tiếp. */}
@@ -277,7 +317,7 @@ export default function ModalPostMedia({
 
         // Thời gian hoàn tất chuyển slide sau khi thả tay hoặc bấm Prev/Next.
         // Không ảnh hưởng tốc độ ảnh fade-in sau khi tải xong.
-        speed={500}
+        speed={300}
 
         // Mỗi lần bấm đều đổi ảnh ngay, kể cả khi fade trước chưa kết thúc.
         // Không khóa nút bằng swiper.animating hoặc xếp hàng các lần bấm.
@@ -365,13 +405,14 @@ export default function ModalPostMedia({
         {images.map((src, index) => {
           const isLoaded = loadedImageIndexes.has(index);
           const hasFailed = failedImageIndexes.has(index);
-          const showBlurredBackground =
-            !hasFailed && isCloudinaryImageUrl(src);
+          const showBlurredBackground = !hasFailed && isCloudinaryImageUrl(src);
           const maxZoomRatio = zoomRatios[index] ?? 1;
           const isActiveImage = index === activeIndex;
           const canZoom = maxZoomRatio > MIN_USEFUL_ZOOM_RATIO;
           const imageLoadClassName = isLoaded
-            ? "modal-post-main-image--loaded"
+            ? loadedImageIndexes.get(index)
+              ? "modal-post-main-image--loaded"
+              : "opacity-100"
             : "opacity-0";
           const zoomCursorClassName =
             isActiveImage && isZoomed
@@ -383,7 +424,7 @@ export default function ModalPostMedia({
           return (
             <SwiperSlide
               key={`${src}-${index}`}
-              className="relative !h-full !w-full overflow-hidden bg-slate-950"
+              className="relative !h-full !w-full overflow-hidden bg-black/50"
             >
               {showBlurredBackground && (
                 <>
@@ -395,11 +436,17 @@ export default function ModalPostMedia({
                     sizes="(max-width: 1023px) 100vw, 75vw"
                     draggable={false}
                     unoptimized
-                    className="pointer-events-none z-0 scale-110 select-none object-cover opacity-75 blur-xl"
+                    onLoad={() => {
+                      setLoadedBackgroundIndexes((current) => {
+                        if (current.has(index)) return current;
+                        return new Set(current).add(index);
+                      });
+                    }}
+                    className={`pointer-events-none z-0 scale-110 select-none object-cover blur-xl transition-opacity duration-300 motion-reduce:transition-none ${loadedBackgroundIndexes.has(index) ? "opacity-75" : "opacity-0"}`}
                   />
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 z-[1] bg-black/20"
+                    className="pointer-events-none absolute inset-0 z-[1] bg-black/5"
                   />
                 </>
               )}
@@ -422,15 +469,6 @@ export default function ModalPostMedia({
                   aria-busy={!isLoaded}
                   onClick={handleMediaGapClick}
                 >
-                  {!isLoaded && (
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
-                    >
-                      <i className="modal-post-image-spinner fad fa-spinner-third fa-spin text-xl text-white/30" />
-                    </div>
-                  )}
-
                   {/* Ảnh đầu tải ngay; các ảnh còn lại dùng native lazy load.
                       Fade chỉ bắt đầu sau onLoad + decode để không lộ frame
                       trắng giữa placeholder blur và ảnh chính. */}
@@ -443,7 +481,9 @@ export default function ModalPostMedia({
                     loading={index === 0 ? "eager" : "lazy"}
                     decoding="async"
                     draggable={false}
-                    onLoad={(event) => handleImageLoad(index, event)}
+                    onLoad={(event) =>
+                      revealLoadedImage(index, event.currentTarget, true)
+                    }
                     onError={() => handleImageError(index)}
                     onClick={(event) => handleImageClick(event, index)}
                     className={`modal-post-main-image block h-auto w-auto max-h-full max-w-full select-none object-contain ${imageLoadClassName} ${zoomCursorClassName}`}
@@ -454,6 +494,21 @@ export default function ModalPostMedia({
           );
         })}
       </Swiper>
+
+      {/* Một indicator cho ảnh đang xem, không gắn vào từng SwiperSlide.
+          Ảnh cache/tải nhanh kết thúc trước ngưỡng nên không lóe spinner. */}
+      {isActiveImageLoading && spinnerIndex === activeIndex && (
+        <div
+          role="status"
+          className="modal-post-image-indicator pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
+        >
+          <span className="sr-only">Đang tải hình ảnh</span>
+          <i
+            className="modal-post-image-spinner fad fa-spinner-third fa-spin block h-5 w-5 text-xl leading-none text-white/30"
+            aria-hidden="true"
+          />
+        </div>
+      )}
 
       {hasMultipleImages && (
         <span
@@ -505,6 +560,11 @@ export default function ModalPostMedia({
           animation: modal-post-image-reveal 300ms ease-out both;
         }
 
+        /* Ảnh xong sát ngưỡng 150ms: indicator chỉ mới mờ nhẹ, không lóe sáng. */
+        .modal-post-image-indicator {
+          animation: modal-post-image-reveal 120ms ease-out both;
+        }
+
         /* Tôn trọng thiết lập giảm chuyển động của hệ điều hành. */
         @media (prefers-reduced-motion: reduce) {
           .modal-post-main-image--loaded {
@@ -512,7 +572,8 @@ export default function ModalPostMedia({
             opacity: 1;
           }
 
-          .modal-post-image-spinner {
+          .modal-post-image-spinner,
+          .modal-post-image-indicator {
             animation: none !important;
           }
         }

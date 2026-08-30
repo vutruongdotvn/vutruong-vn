@@ -56,7 +56,7 @@ export default function PostActions({
         onClick={() => showToast("Đăng nhập để Thích bài viết này.", "warning")}
         aria-label="Thích bài viết"
         title="Thích bài viết"
-        className="likeBtn cursor-pointer text-base text-gray-500 transition hover:text-black focus-visible:outline-none active:scale-80 sm:text-base"
+        className="likeBtn cursor-pointer text-base text-gray-500 transition hover:text-black focus-visible:outline-none active:scale-80 sm:text-base lg:text-lg"
       >
         <i className="fal fa-heart" aria-hidden="true" />
       </button>
@@ -65,7 +65,7 @@ export default function PostActions({
         onClick={() => showToast("Bình luận đã bị tắt cho bài viết này.", "error")}
         aria-label="Bình luận đã bị tắt"
         title="Bình luận đã bị tắt"
-        className="commentBtn cursor-pointer text-base text-gray-500 transition hover:text-black focus-visible:outline-none active:scale-80 sm:text-base"
+        className="commentBtn cursor-pointer text-base text-gray-500 transition hover:text-black focus-visible:outline-none active:scale-80 sm:text-base lg:text-lg"
       >
         <i className="fal fa-comment-slash" aria-hidden="true" />
       </button>
@@ -76,7 +76,7 @@ export default function PostActions({
         disabled={sharing}
         aria-label={sharing ? "Đang chia sẻ" : "Chia sẻ bài viết"}
         aria-busy={sharing}
-        className="shareBtn cursor-pointer text-base text-gray-500 transition hover:text-black focus-visible:outline-none active:scale-80 disabled:cursor-wait disabled:opacity-50 sm:text-base"
+        className="shareBtn cursor-pointer text-base text-gray-500 transition hover:text-black focus-visible:outline-none active:scale-80 disabled:cursor-wait disabled:opacity-50 sm:text-base lg:text-lg"
         title="Chia sẻ"
       >
         <i
