@@ -1,17 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import ModalFullPostV2, {
-  type ModalFullPostData,
-} from "@/components/blog/modal/ModalFullPostV2";
-import {
-  getPostDetailData,
-  type PostDetailData,
-} from "@/lib/getPostDetailData";
-import {
-  getPostDocumentTitle,
-  getPostMetadata,
-} from "@/lib/getPostMetadata";
-import { isValidPostId } from "@/lib/getPostRouteState";
+import ModalFullPostV2 from "@/components/blog/modal/ModalFullPostV2";
+import { getPostMetadata } from "@/lib/getPostMetadata";
+import { getPostRouteState, isValidPostId } from "@/lib/getPostRouteState";
 
 type InterceptedPostPageProps = {
   params: Promise<{ id: string }>;
@@ -24,52 +15,20 @@ export async function generateMetadata({
   params,
 }: InterceptedPostPageProps): Promise<Metadata> {
   const { id } = await params;
-  return getPostMetadata(id);
-}
+  const routeState = await getPostRouteState(id);
 
-function getOptionalString(value: unknown): string | null {
-  return typeof value === "string" && value.trim() ? value.trim() : null;
-}
+  // Giữ nguyên metadata privacy/not-found. Metadata đầy đủ của URL canonical
+  // /blog/post/[id] vẫn ở route chi tiết, không thay đổi SEO của trang đó.
+  if (routeState?.visibility !== "public") return getPostMetadata(id);
 
-function getPostImages(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-
-  return value
-    .filter(
-      (image): image is string =>
-        typeof image === "string" && image.trim().length > 0
-    )
-    .map((image) => image.trim());
-}
-
-function createModalPostData(
-  detailData: PostDetailData
-): ModalFullPostData | null {
-  const post = detailData.initialPost;
-  if (!post) return null;
-
-  const createdAt = getOptionalString(post.created_at);
-
-  if (!createdAt) {
-    throw new Error(
-      `[InterceptedPostPage] Missing created_at for post ${detailData.postId}`
-    );
-  }
-
+  // Không gọi getPostMetadata/getPostDetailData cho public ở intercepted route:
+  // chúng sẽ fetch lại toàn bộ post + profile ngay cả khi browser đã có cache.
+  // Modal đặt document.title thật khi nội dung public đã được kiểm tra và tải.
   return {
-    id: post.id,
-    content: typeof post.content === "string" ? post.content : "",
-    images: getPostImages(post.images),
-    createdAt,
-    author: {
-      name:
-        getOptionalString(detailData.initialProfile?.name) ||
-        getOptionalString(post.author_name) ||
-        "Người dùng",
-      avatar:
-        getOptionalString(detailData.initialProfile?.avatar) ||
-        getOptionalString(post.author_avatar),
-    },
+    title: "Bài viết",
+    description: "Xem bài viết này trên VT Zone",
+    alternates: { canonical: `https://www.vutruong.vn/blog/post/${id}` },
+    robots: { index: true, follow: true },
   };
 }
 
@@ -77,31 +36,27 @@ export default async function InterceptedPostPage({
   params,
 }: InterceptedPostPageProps) {
   const { id } = await params;
-
-  // URL sai định dạng vẫn là một route 404 thật. Trường hợp bài hợp lệ vừa bị
-  // xóa hoặc đổi visibility sẽ được xử lý bằng fallback bên trong modal để
-  // không thay thế trang nền của Parallel Route bằng giao diện 404.
   if (!isValidPostId(id)) notFound();
 
-  const detailData = await getPostDetailData(id);
-
-  if (!detailData) {
-    return (
-      <ModalFullPostV2
-        postId={id}
-        routeVisibility="public"
-        post={null}
-        documentTitle="Không tìm thấy bài viết"
-      />
-    );
-  }
+  // Chỉ chờ lookup id/visibility. Không gửi nội dung bài vào Router Cache.
+  // getPostRouteState dùng React cache để khử lookup trùng với metadata.
+  const routeState = await getPostRouteState(id);
+  const routeVisibility = routeState?.visibility ?? "public";
 
   return (
     <ModalFullPostV2
-      postId={detailData.postId}
-      routeVisibility={detailData.routeVisibility}
-      post={createModalPostData(detailData)}
-      documentTitle={getPostDocumentTitle(detailData)}
+      key={`${id}:${routeVisibility}`}
+      postId={id}
+      routeVisibility={routeVisibility}
+      post={null}
+      loadPublicPost={routeState?.visibility === "public"}
+      documentTitle={
+        !routeState
+          ? "Không tìm thấy bài viết"
+          : routeVisibility === "privacy"
+            ? "Bài viết riêng tư"
+            : ""
+      }
     />
   );
 }

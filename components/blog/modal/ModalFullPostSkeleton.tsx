@@ -163,11 +163,11 @@ export default function ModalFullPostSkeleton({
       >
         <CloseButton buttonRef={mediaCloseButtonRef} onClose={close} />
 
-        <div className="relative flex min-h-0 items-center justify-center overflow-hidden bg-black">
-          {/* <i
-            className="fad fa-spinner-third fa-spin text-gray-700 text-lg"
+        <div className="relative flex min-h-0 items-center justify-center overflow-hidden bg-black/75">
+          <i
+            className="fad fa-spinner-third fa-spin text-xl text-white/30"
             aria-hidden="true"
-          /> */}
+          />
         </div>
 
         <div className="flex min-h-0 min-w-0 flex-col bg-white">

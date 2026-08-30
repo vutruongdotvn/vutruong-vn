@@ -51,7 +51,8 @@ export default function ModalPostMedia({
   const imageElementsRef = useRef<Record<number, HTMLImageElement | null>>({});
   const isClosingRef = useRef(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [zoomScale, setZoomScale] = useState(1);
+  // UI chỉ cần biết đang zoom hay chưa; không render lại từng frame pinch.
+  const [isZoomed, setIsZoomed] = useState(false);
   const [zoomRatios, setZoomRatios] = useState<Record<number, number>>({});
   const [loadedImageIndexes, setLoadedImageIndexes] = useState<Set<number>>(
     () => new Set()
@@ -81,29 +82,27 @@ export default function ModalPostMedia({
 
   const updateZoomRatio = useCallback(
     (index: number, image: HTMLImageElement) => {
-      if (
-        !image.isConnected ||
-        !image.complete ||
-        (swiperRef.current?.zoom.scale ?? 1) > 1
-      ) {
-        return;
-      }
+      if (!image.isConnected || !image.complete) return null;
 
-      const bounds = image.getBoundingClientRect();
+      // clientWidth/Height là kích thước layout TRƯỚC transform của Swiper.
+      // getBoundingClientRect() đo cả scale đang animate và có thể làm trần
+      // zoom tụt về 1 ngay sau zoom-out, khiến những lần zoom sau bị khóa.
+      const width = image.clientWidth;
+      const height = image.clientHeight;
       if (
-        bounds.width <= 0 ||
-        bounds.height <= 0 ||
+        width <= 0 ||
+        height <= 0 ||
         image.naturalWidth <= 0 ||
         image.naturalHeight <= 0
       ) {
-        return;
+        return null;
       }
 
       const originalSizeRatio =
         Math.round(
           Math.min(
-            image.naturalWidth / bounds.width,
-            image.naturalHeight / bounds.height,
+            image.naturalWidth / width,
+            image.naturalHeight / height,
             MAX_ZOOM_RATIO
           ) * 1000
         ) / 1000;
@@ -115,6 +114,8 @@ export default function ModalPostMedia({
           ? currentRatios
           : { ...currentRatios, [index]: nextRatio }
       );
+
+      return nextRatio;
     },
     []
   );
@@ -182,25 +183,36 @@ export default function ModalPostMedia({
     event.stopPropagation();
 
     const swiper = swiperRef.current;
-    const maxRatio = zoomRatios[index] ?? 1;
 
-    // Swiper đặt allowClick=false sau thao tác kéo. Không biến lần thả chuột
-    // hoặc ngón tay đó thành thao tác zoom ngoài ý muốn.
+    // Dùng realIndex trực tiếp, không phụ thuộc state React của frame trước.
+    // allowClick chặn click phát sinh sau khi kéo/pan; kiểm tra index để
+    // không thao tác nhầm ảnh cũ trong lúc hai slide đang cross-fade.
     if (
       !swiper ||
+      swiper.destroyed ||
       !swiper.allowClick ||
-      index !== activeIndex ||
-      maxRatio <= MIN_USEFUL_ZOOM_RATIO
+      index !== swiper.realIndex
     ) {
       return;
     }
 
+    // Luôn cho thu nhỏ ảnh đang zoom, kể cả khi viewport vừa thay đổi làm
+    // trần zoom của ảnh giảm xuống 1.
     if (swiper.zoom.scale > 1) {
       swiper.zoom.out();
       return;
     }
 
-    swiper.zoom.in(maxRatio);
+    const maxRatio = updateZoomRatio(index, event.currentTarget);
+    if (maxRatio === null || maxRatio <= MIN_USEFUL_ZOOM_RATIO) return;
+
+    // Swiper đọc attribute ngay; không chờ state React commit sau click.
+    event.currentTarget
+      .closest(".swiper-zoom-container")
+      ?.setAttribute("data-swiper-zoom", String(maxRatio));
+    // Đọc giới hạn từ data-swiper-zoom và zoom từ tâm ảnh. Không truyền ratio
+    // để tránh nhánh forced-zoom của Swiper 14.1 dùng lại tọa độ pan cũ.
+    swiper.zoom.in();
   };
 
   const handleMediaGapClick = (event: ReactMouseEvent<HTMLDivElement>) => {
@@ -210,7 +222,10 @@ export default function ModalPostMedia({
     // nút điều hướng và lúc đang pan/zoom đều không kích hoạt thao tác này.
     if (
       event.target !== event.currentTarget ||
-      !swiper?.allowClick ||
+      !swiper ||
+      swiper.destroyed ||
+      swiper.animating ||
+      !swiper.allowClick ||
       swiper.zoom.scale > 1
     ) {
       return;
@@ -223,9 +238,9 @@ export default function ModalPostMedia({
     event.stopPropagation();
 
     const swiper = swiperRef.current;
-    if (!swiper || swiper.isBeginning) return;
+    if (!swiper || swiper.destroyed || swiper.isBeginning) return;
 
-    swiper.zoom.out();
+    if (swiper.zoom.scale > 1) swiper.zoom.out();
     swiper.slidePrev();
   };
 
@@ -233,9 +248,9 @@ export default function ModalPostMedia({
     event.stopPropagation();
 
     const swiper = swiperRef.current;
-    if (!swiper || swiper.isEnd) return;
+    if (!swiper || swiper.destroyed || swiper.isEnd) return;
 
-    swiper.zoom.out();
+    if (swiper.zoom.scale > 1) swiper.zoom.out();
     swiper.slideNext();
   };
 
@@ -264,12 +279,16 @@ export default function ModalPostMedia({
         // Không ảnh hưởng tốc độ ảnh fade-in sau khi tải xong.
         speed={500}
 
+        // Mỗi lần bấm đều đổi ảnh ngay, kể cả khi fade trước chưa kết thúc.
+        // Không khóa nút bằng swiper.animating hoặc xếp hàng các lần bấm.
+        preventInteractionOnTransition={false}
+
         // Swiper 14.1 dùng native loading="lazy". Tải trước đúng một ảnh ở
         // mỗi phía để slide kế tiếp mượt mà mà không tải đồng thời cả gallery.
         lazyPreloadPrevNext={LAZY_PRELOAD_ADJACENT_SLIDES}
 
         // Chỉ hiện cursor grab khi có thể đổi slide và ảnh chưa được zoom.
-        grabCursor={hasMultipleImages && zoomScale <= 1}
+        grabCursor={hasMultipleImages && !isZoomed}
 
         // Cho phép kéo bằng chuột trên PC và vuốt/pinch trên thiết bị cảm ứng.
         simulateTouch
@@ -317,28 +336,27 @@ export default function ModalPostMedia({
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
         }}
+        onBeforeDestroy={(swiper) => {
+          if (swiperRef.current === swiper) swiperRef.current = null;
+        }}
+
+        // Đổi kích thước/xoay màn hình: trở về fit trước khi Swiper tính layout.
+        onBeforeResize={(swiper) => {
+          if (swiper.zoom.scale > 1) swiper.zoom.out();
+        }}
 
         // realIndex vẫn đại diện đúng index ảnh gốc nếu sau này cấu hình slide
         // thay đổi. Đồng thời reset cursor zoom khi chuyển sang ảnh mới.
         onSlideChange={(swiper) => {
+          if (swiper.zoom.scale > 1) swiper.zoom.out();
           setActiveIndex(swiper.realIndex);
-          setZoomScale(1);
+          setIsZoomed(false);
         }}
 
-        // Đồng bộ cursor với tỷ lệ zoom; khi trở về 1x thì tính lại giới hạn
-        // zoom vì viewport có thể đã đổi kích thước hoặc xoay màn hình.
+        // zoomChange báo scale mục tiêu, không phải lúc CSS transition kết
+        // thúc. Chỉ đồng bộ UI; ResizeObserver/onLoad/click lo việc đo layout.
         onZoomChange={(_, scale) => {
-          setZoomScale(scale);
-
-          if (scale <= 1) {
-            const image = imageElementsRef.current[activeIndex];
-
-            if (image) {
-              window.requestAnimationFrame(() =>
-                updateZoomRatio(activeIndex, image)
-              );
-            }
-          }
+          setIsZoomed(scale > 1);
         }}
 
         // Swiper chiếm toàn bộ vùng media do modal cấp phát.
@@ -355,11 +373,12 @@ export default function ModalPostMedia({
           const imageLoadClassName = isLoaded
             ? "modal-post-main-image--loaded"
             : "opacity-0";
-          const zoomCursorClassName = canZoom
-            ? isActiveImage && zoomScale > 1
+          const zoomCursorClassName =
+            isActiveImage && isZoomed
               ? "cursor-zoom-out"
-              : "cursor-zoom-in"
-            : "cursor-default";
+              : canZoom
+                ? "cursor-zoom-in"
+                : "cursor-default";
 
           return (
             <SwiperSlide

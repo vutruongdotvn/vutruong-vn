@@ -8,6 +8,7 @@ import ModalPostHeader from "@/components/blog/modal/ModalPostHeader";
 import ModalPostMedia from "@/components/blog/modal/ModalPostMedia";
 import ModalFullPostSkeleton from "@/components/blog/modal/ModalFullPostSkeleton";
 import { extractPostDescription, extractPostTitle } from "@/lib/postMeta";
+import { loadPublicModalPost } from "@/services/publicModalPostService";
 import {
   resolvePrivatePostForAdmin,
   type PrivatePostProfile,
@@ -37,11 +38,18 @@ type PrivateResolution = {
   post: ModalFullPostData | null;
 };
 
+type PublicResolution = {
+  postId: string;
+  status: "checking" | "granted" | "unavailable";
+  post: ModalFullPostData | null;
+};
+
 type ModalFullPostV2Props = {
   postId: string;
   routeVisibility: "public" | "privacy";
   post: ModalFullPostData | null;
   documentTitle: string;
+  loadPublicPost?: boolean;
 };
 
 const FOCUSABLE_SELECTOR = [
@@ -96,11 +104,17 @@ export default function ModalFullPostV2({
   routeVisibility,
   post,
   documentTitle,
+  loadPublicPost = false,
 }: ModalFullPostV2Props) {
   const router = useRouter();
   const dialogRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const isClosingRef = useRef(false);
+  const [publicResolution, setPublicResolution] = useState<PublicResolution>({
+    postId,
+    status: "checking",
+    post: null,
+  });
   const [privateResolution, setPrivateResolution] =
     useState<PrivateResolution>(() => ({
       postId,
@@ -126,7 +140,18 @@ export default function ModalFullPostV2({
     privateResolution.status === "granted"
       ? privateResolution.post
       : null;
-  const activePost = post ?? resolvedPrivatePost;
+  const needsPublicLoad = loadPublicPost && routeVisibility === "public" && !post;
+  const publicStatus =
+    publicResolution.postId === postId ? publicResolution.status : "checking";
+  const resolvedPublicPost =
+    needsPublicLoad &&
+    publicResolution.postId === postId &&
+    publicStatus === "granted"
+      ? publicResolution.post
+      : null;
+  const resolutionStatus = needsPublicLoad ? publicStatus : privateStatus;
+  const activePost =
+    post ?? (routeVisibility === "privacy" ? resolvedPrivatePost : resolvedPublicPost);
   const hasMedia = !!activePost?.images.length;
   const postTitle = activePost
     ? extractPostTitle(activePost.content) || documentTitle
@@ -134,6 +159,8 @@ export default function ModalFullPostV2({
   const postDescription = activePost
     ? extractPostDescription(activePost.content)
     : undefined;
+  const resolvedDocumentTitle =
+    routeVisibility === "public" ? postTitle : documentTitle;
 
   const closeModal = useCallback(() => {
     if (isClosingRef.current) return;
@@ -143,8 +170,29 @@ export default function ModalFullPostV2({
   }, [router]);
 
   useEffect(() => {
-    // Public post tiếp tục dùng dữ liệu server. Chỉ privacy post chưa có dữ
-    // liệu mới cần xác minh session và query lại bằng JWT ở browser.
+    if (!needsPublicLoad) return;
+    let cancelled = false;
+
+    setPublicResolution({ postId, status: "checking", post: null });
+    void loadPublicModalPost(postId).then((publicPost) => {
+      if (cancelled) return;
+      setPublicResolution({
+        postId,
+        status: publicPost ? "granted" : "unavailable",
+        post: publicPost,
+      });
+    });
+
+    // Không hủy request dùng chung: đóng rồi mở lại sẽ dùng đúng Promise đó.
+    // Component đã đóng/đổi bài không được nhận kết quả của request cũ.
+    return () => {
+      cancelled = true;
+    };
+  }, [needsPublicLoad, postId]);
+
+  useEffect(() => {
+    // Giữ nguyên luồng privacy: xác minh session và query bằng JWT ở browser.
+    // Service cache public phía trên không tham gia bước này.
     if (post || routeVisibility !== "privacy") return;
 
     let cancelled = false;
@@ -191,7 +239,7 @@ export default function ModalFullPostV2({
     // Fallback cho trường hợp Next.js không áp dụng metadata của Parallel Route
     // sau soft navigation. Canonical metadata vẫn được tạo hoàn toàn ở server.
     const previousTitle = document.title;
-    const nextTitle = documentTitle.trim();
+    const nextTitle = resolvedDocumentTitle.trim();
 
     if (nextTitle) {
       document.title = nextTitle;
@@ -200,12 +248,12 @@ export default function ModalFullPostV2({
     return () => {
       document.title = previousTitle;
     };
-  }, [documentTitle]);
+  }, [resolvedDocumentTitle]);
 
   useEffect(() => {
-    // Trong lúc kiểm tra bài riêng tư, skeleton dùng chung tự quản lý focus,
+    // Trong lúc tải public/kiểm tra privacy, skeleton tự quản lý focus,
     // Escape và scroll lock. Tránh hai dialog cùng gắn listener gây nháy UI.
-    if (privateStatus === "checking") return;
+    if (resolutionStatus === "checking") return;
 
     const previousActiveElement =
       document.activeElement instanceof HTMLElement
@@ -273,11 +321,11 @@ export default function ModalFullPostV2({
 
       previousActiveElement?.focus();
     };
-  }, [closeModal, privateStatus]);
+  }, [closeModal, resolutionStatus]);
 
   // Giữ nguyên đúng một giao diện từ loading boundary đến hết bước xác thực.
   // Chỉ thay skeleton một lần khi bài viết thật hoặc kết quả từ chối đã có.
-  if (privateStatus === "checking" && !activePost) {
+  if (resolutionStatus === "checking" && !activePost) {
     return <ModalFullPostSkeleton onClose={closeModal} />;
   }
 
@@ -301,7 +349,7 @@ export default function ModalFullPostV2({
         className={`relative z-10 min-h-0 overflow-hidden bg-white ${modalSizeClass}`}
       >
         <h1 id="modal-full-post-v2-title" className="sr-only">
-          {documentTitle}
+          {resolvedDocumentTitle}
         </h1>
 
         <button
@@ -370,12 +418,12 @@ export default function ModalFullPostV2({
                 aria-hidden="true"
               />
               <h2 className="mt-3 text-base font-semibold text-slate-800">
-                {privateStatus === "denied"
+                {resolutionStatus === "denied"
                   ? "Truy cập bị từ chối"
                   : "Không thể tải bài viết"}
               </h2>
               <p className="mt-1 text-sm leading-6 text-slate-500">
-                {privateStatus === "denied"
+                {resolutionStatus === "denied"
                   ? "Bạn không có quyền xem nội dung này."
                   : "Dữ liệu bài viết hiện không khả dụng."}
               </p>
