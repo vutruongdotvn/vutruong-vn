@@ -344,11 +344,11 @@ export default function PostImages({
           // Bật hiệu ứng nảy trở lại khi trượt quá điểm đầu/cuối.
           momentumBounce: true,
           // Độ nảy: càng lớn càng nảy mạnh. Có thể thử khoảng 0.3–0.8.
-          momentumBounceRatio: 0.5,
+          momentumBounceRatio: 0.2,
           // Quãng đường trượt theo quán tính: thấp hơn = dừng sớm hơn.
-          momentumRatio: 1,
+          momentumRatio: 0.5,
           // Tốc độ quán tính: thấp hơn = chuyển động chậm và kiểm soát hơn.
-          momentumVelocityRatio: 0,
+          momentumVelocityRatio: 0.5,
           // Vận tốc tối thiểu để tạo quán tính; tăng lên nếu slider quá nhạy.
           minimumVelocity: 0.5,
           // false = dừng tự do; true = tự hút về vị trí đầu của slide gần nhất.

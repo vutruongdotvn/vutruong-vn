@@ -34,7 +34,7 @@ export default function ModalPostHeader({
     : undefined;
 
   return (
-    <header className="flex min-w-0 items-center gap-2 p-3 pr-14 sm:p-4 sm:pr-16">
+    <header className="flex min-w-0 items-center gap-2 p-3 pr-14 sm:p-4 sm:pr-16 select-none">
       <Image
         src={
           getPostHeaderAvatarImage(avatar || undefined) ||

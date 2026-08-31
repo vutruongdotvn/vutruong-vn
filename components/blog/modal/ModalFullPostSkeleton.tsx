@@ -217,7 +217,7 @@ export function ModalPostFrame({
           display: grid;
           width: 100%;
           height: 100%;
-          grid-template-rows: minmax(0, 35%) minmax(0, 65%);
+          grid-template-rows: minmax(0, 55%) minmax(0, 45%);
         }
 
         .modal-post-frame .animate-pulse {
@@ -309,9 +309,10 @@ export function ModalPostSkeletonContent() {
             <div className="h-3.5 w-full animate-pulse rounded-full bg-slate-200" />
             <div className="h-3.5 w-11/12 animate-pulse rounded-full bg-slate-200" />
             <div className="h-3.5 w-4/5 animate-pulse rounded-full bg-slate-200" />
-            <div className="modal-post-skeleton-extra space-y-3 pt-3">
+            <div className="modal-post-skeleton-extra space-y-3 py-3">
               <div className="h-3.5 w-full animate-pulse rounded-full bg-slate-100" />
-              <div className="h-3.5 w-10/12 animate-pulse rounded-full bg-slate-100" />
+              <div className="h-3.5 w-8/12 animate-pulse rounded-full bg-slate-100" />
+              <div className="h-3.5 w-6/12 animate-pulse rounded-full bg-slate-100" />
             </div>
           </div>
 

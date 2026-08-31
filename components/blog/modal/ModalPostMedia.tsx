@@ -340,7 +340,7 @@ export default function ModalPostMedia({
         // Giữ hiệu ứng đàn hồi ở ảnh đầu/cuối nhưng giảm khoảng kéo vượt biên
         // so với mặc định của Swiper để gallery có cảm giác chắc hơn.
         resistance
-        resistanceRatio={0.45}
+        resistanceRatio={0.1}
 
         // Hai prop này ngăn lần thả chuột sau khi kéo bị hiểu thành click zoom
         // hoặc click khoảng trống để đóng modal.

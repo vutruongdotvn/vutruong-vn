@@ -272,6 +272,8 @@ export default function ModalFullPostV2({
           )}
 
           <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
+
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
             <div className="shrink-0">
               <ModalPostHeader
                 name={activePost.author.name}
@@ -280,8 +282,6 @@ export default function ModalFullPostV2({
                 visibility={routeVisibility}
               />
             </div>
-
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
               <PostBody
                 content={activePost.content}
                 images={[]}
