@@ -9,6 +9,7 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -24,9 +25,15 @@ import {
   getModalPostBackgroundImage,
   isCloudinaryImageUrl,
 } from "@/lib/cloudinary";
+import {
+  findPostImageIndex,
+  getPostImagePath,
+} from "@/lib/postImageRoute";
 
 type ModalPostMediaProps = {
+  postId: string;
   images: string[];
+  initialImageId?: string | null;
   postTitle: string;
   onClose?: () => void;
 };
@@ -47,7 +54,9 @@ const LAZY_PRELOAD_ADJACENT_SLIDES = 1;
 const IMAGE_SPINNER_DELAY_MS = 150;
 
 export default function ModalPostMedia({
+  postId,
   images,
+  initialImageId = null,
   postTitle,
   onClose,
 }: ModalPostMediaProps) {
@@ -56,7 +65,12 @@ export default function ModalPostMedia({
   const imageElementsRef = useRef<Record<number, HTMLImageElement | null>>({});
   const isClosingRef = useRef(false);
   const decodingImagesRef = useRef(new WeakSet<HTMLImageElement>());
-  const [activeIndex, setActiveIndex] = useState(0);
+  const requestedImageIndex = useMemo(
+    () => findPostImageIndex(images, initialImageId),
+    [images, initialImageId],
+  );
+  const initialIndex = requestedImageIndex >= 0 ? requestedImageIndex : 0;
+  const [activeIndex, setActiveIndex] = useState(initialIndex);
   // UI chỉ cần biết đang zoom hay chưa; không render lại từng frame pinch.
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomRatios, setZoomRatios] = useState<Record<number, number>>({});
@@ -73,6 +87,26 @@ export default function ModalPostMedia({
   );
   const hasMultipleImages = images.length > 1;
   const showNavigationButtons = images.length > 1;
+
+  const replaceImageUrl = useCallback(
+    (index: number) => {
+      const imageUrl = images[index];
+      if (!imageUrl) return;
+
+      const nextPath = getPostImagePath(postId, imageUrl);
+      if (
+        nextPath === `/blog/post/${postId}` ||
+        window.location.pathname === nextPath
+      ) {
+        return;
+      }
+
+      // Thay URL của history entry đang mở modal, không thêm entry mới và
+      // không tạo navigation/refetch. Vì vậy Back vẫn đóng modal trong 1 lần.
+      window.history.replaceState(null, "", nextPath);
+    },
+    [images, postId],
+  );
 
   const closeModal = useCallback(() => {
     if (isClosingRef.current) return;
@@ -314,6 +348,7 @@ export default function ModalPostMedia({
         // Mỗi lần chỉ hiển thị đúng một ảnh và không chừa khe giữa hai slide.
         slidesPerView={1}
         spaceBetween={0}
+        initialSlide={initialIndex}
 
         // Thời gian hoàn tất chuyển slide sau khi thả tay hoặc bấm Prev/Next.
         // Không ảnh hưởng tốc độ ảnh fade-in sau khi tải xong.
@@ -375,6 +410,7 @@ export default function ModalPostMedia({
         // Lưu instance để nút điều hướng, click zoom và gap click dùng chung.
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
+          setActiveIndex(swiper.realIndex);
         }}
         onBeforeDestroy={(swiper) => {
           if (swiperRef.current === swiper) swiperRef.current = null;
@@ -391,6 +427,7 @@ export default function ModalPostMedia({
           if (swiper.zoom.scale > 1) swiper.zoom.out();
           setActiveIndex(swiper.realIndex);
           setIsZoomed(false);
+          replaceImageUrl(swiper.realIndex);
         }}
 
         // zoomChange báo scale mục tiêu, không phải lúc CSS transition kết
@@ -478,7 +515,7 @@ export default function ModalPostMedia({
                     }}
                     src={getBlogPostFeedLightboxImage(src)}
                     alt={`Ảnh ${index + 1} trong bài viết`}
-                    loading={index === 0 ? "eager" : "lazy"}
+                    loading={index === initialIndex ? "eager" : "lazy"}
                     decoding="async"
                     draggable={false}
                     onLoad={(event) =>

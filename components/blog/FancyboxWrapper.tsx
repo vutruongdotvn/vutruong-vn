@@ -1,9 +1,28 @@
 "use client";
 
-import { useEffect } from "react";
-import type { FancyboxOptions } from "@fancyapps/ui/dist/fancybox/";
+import { useEffect, useRef } from "react";
+import type {
+  CarouselInstance,
+  FancyboxInstance,
+  FancyboxOptions,
+} from "@fancyapps/ui/dist/fancybox/";
+import {
+  findPostImageIndex,
+  getPostImagePath,
+} from "@/lib/postImageRoute";
 
 const FANCYBOX_SELECTOR = "[data-fancybox]";
+const EMPTY_IMAGES: readonly string[] = [];
+
+type FancyboxWrapperProps = {
+  /**
+   * Ba props này chỉ bật đồng bộ URL cho gallery ảnh của trang bài viết.
+   * Khi không truyền, Fancybox giữ nguyên hành vi dùng chung ở Blog/Tag.
+   */
+  postId?: string;
+  images?: readonly string[];
+  initialImageId?: string | null;
+};
 
 /* ========================================================================== */
 /*  CÔNG TẮC BẬT / TẮT NHANH                                                  */
@@ -316,10 +335,131 @@ const FANCYBOX_OPTIONS: Partial<FancyboxOptions> = {
   },
 };
 
-export default function FancyboxWrapper() {
+export default function FancyboxWrapper({
+  postId,
+  images = EMPTY_IMAGES,
+  initialImageId = null,
+}: FancyboxWrapperProps) {
+  const autoOpenedRouteRef = useRef<string | null>(null);
+
   useEffect(() => {
     let disposed = false;
     let unbind: (() => void) | undefined;
+    let retryFrame: number | undefined;
+    let trackedInstance: FancyboxInstance | undefined;
+
+    const normalizedPostId = postId?.trim() || null;
+    const basePath = normalizedPostId
+      ? `/blog/post/${normalizedPostId}`
+      : null;
+    const galleryName = normalizedPostId
+      ? `post-${normalizedPostId}`
+      : null;
+    const requestedImageIndex = findPostImageIndex(images, initialImageId);
+    const autoOpenRouteKey =
+      basePath && requestedImageIndex >= 0
+        ? `${basePath}:${initialImageId}`
+        : null;
+    const requestedImagePath =
+      normalizedPostId && requestedImageIndex >= 0
+        ? getPostImagePath(
+            normalizedPostId,
+            images[requestedImageIndex] ?? "",
+          )
+        : null;
+
+    if (!initialImageId) {
+      // Cho phép cùng một ảnh được tự mở lại nếu component được tái sử dụng
+      // qua một lượt điều hướng route gốc -> route ảnh mới.
+      autoOpenedRouteRef.current = null;
+    }
+
+    const isCurrentPostPath = () =>
+      !!basePath &&
+      (window.location.pathname === basePath ||
+        window.location.pathname.startsWith(`${basePath}/`));
+
+    const isCanonicalDetailContext = () =>
+      document.querySelector('[data-blog-route-context="detail"]') !== null &&
+      document.querySelector(".modal-post-frame") === null;
+
+    const isHardLoadedRequestedImage = () => {
+      if (
+        !requestedImagePath ||
+        window.location.pathname !== requestedImagePath
+      ) {
+        return false;
+      }
+
+      const navigationEntry = window.performance.getEntriesByType(
+        "navigation",
+      )[0];
+
+      if (!navigationEntry?.name) return false;
+
+      try {
+        // Soft navigation từ PostFeed giữ document entry là /blog (hoặc Tag),
+        // còn paste URL/reload tạo document entry đúng route ảnh canonical.
+        return new URL(navigationEntry.name).pathname === requestedImagePath;
+      } catch {
+        return false;
+      }
+    };
+
+    const isPostGalleryInstance = (instance: FancyboxInstance) =>
+      !!galleryName &&
+      instance.getSlide()?.triggerEl?.getAttribute("data-fancybox") ===
+        galleryName;
+
+    const replacePath = (nextPath: string) => {
+      if (
+        disposed ||
+        !isCurrentPostPath() ||
+        window.location.pathname === nextPath
+      ) {
+        return;
+      }
+
+      // Next.js 16 tích hợp native History API với App Router. replaceState
+      // không refetch và không tạo thêm entry khi người dùng chuyển ảnh.
+      window.history.replaceState(null, "", nextPath);
+    };
+
+    const syncImagePath = (instance: FancyboxInstance, index: number) => {
+      const imageUrl = images[index];
+
+      if (
+        !normalizedPostId ||
+        !imageUrl ||
+        !isCanonicalDetailContext() ||
+        !isPostGalleryInstance(instance)
+      ) {
+        return;
+      }
+
+      trackedInstance = instance;
+      replacePath(getPostImagePath(normalizedPostId, imageUrl));
+    };
+
+    const handleReady = (instance: FancyboxInstance) => {
+      const currentIndex = instance.getCarousel()?.getPageIndex() ?? 0;
+      syncImagePath(instance, currentIndex);
+    };
+
+    const handleCarouselChange = (
+      instance: FancyboxInstance,
+      _carousel: CarouselInstance,
+      currentIndex: number,
+    ) => {
+      syncImagePath(instance, currentIndex);
+    };
+
+    const handleDestroy = (instance: FancyboxInstance) => {
+      if (disposed || trackedInstance !== instance || !basePath) return;
+
+      trackedInstance = undefined;
+      replacePath(basePath);
+    };
 
     void (async () => {
       // Import đúng entry point được Fancybox v6 khuyến nghị.
@@ -333,19 +473,82 @@ export default function FancyboxWrapper() {
       // Ngăn bind muộn nếu component đã unmount trong React Strict Mode.
       if (disposed) return;
 
-      Fancybox.bind(FANCYBOX_SELECTOR, {
+      const fancyboxOptions: Partial<FancyboxOptions> = {
         ...FANCYBOX_OPTIONS,
+        on: normalizedPostId
+          ? {
+              ...FANCYBOX_OPTIONS.on,
+              ready: handleReady,
+              "Carousel.change": handleCarouselChange,
+              destroy: handleDestroy,
+            }
+          : FANCYBOX_OPTIONS.on,
         // Bỏ Compactmode khỏi plugins nếu không muốn giao diện mobile đặc biệt.
         plugins: ENABLE_COMPACT_MODE ? { Compactmode } : undefined,
-      });
+      };
+
+      Fancybox.bind(FANCYBOX_SELECTOR, fancyboxOptions);
       unbind = () => Fancybox.unbind(FANCYBOX_SELECTOR);
+
+      const openRequestedImage = () => {
+        if (
+          disposed ||
+          !galleryName ||
+          !autoOpenRouteKey ||
+          !isCanonicalDetailContext() ||
+          !isHardLoadedRequestedImage() ||
+          autoOpenedRouteRef.current === autoOpenRouteKey
+        ) {
+          return true;
+        }
+
+        // Lọc theo đúng giá trị data-fancybox thay vì ghép selector từ dữ
+        // liệu động; nhờ vậy không ảnh hưởng gallery cover/avatar/sidebar.
+        const galleryNodes = Array.from(
+          document.querySelectorAll<HTMLElement>(FANCYBOX_SELECTOR),
+        ).filter(
+          (node) => node.getAttribute("data-fancybox") === galleryName,
+        );
+
+        if (!galleryNodes[requestedImageIndex]) return false;
+
+        autoOpenedRouteRef.current = autoOpenRouteKey;
+        const instance = Fancybox.fromNodes(galleryNodes, {
+          ...fancyboxOptions,
+          startIndex: requestedImageIndex,
+        });
+
+        if (!instance) {
+          autoOpenedRouteRef.current = null;
+          return false;
+        }
+
+        trackedInstance = instance;
+        return true;
+      };
+
+      // Thông thường anchors đã có sẵn khi effect chạy. Retry đúng một frame
+      // bảo vệ trường hợp Swiper vừa hoàn tất mount trong cùng chu kỳ hydrate.
+      if (!openRequestedImage()) {
+        retryFrame = window.requestAnimationFrame(openRequestedImage);
+      }
     })();
 
     return () => {
       disposed = true;
+      if (retryFrame !== undefined) {
+        window.cancelAnimationFrame(retryFrame);
+      }
+      // Nếu người dùng điều hướng khỏi trang khi lightbox bài viết còn mở,
+      // dọn instance đã theo dõi để overlay không tồn tại trên route kế tiếp.
+      if (trackedInstance) {
+        autoOpenedRouteRef.current = null;
+      }
+      trackedInstance?.destroy();
+      trackedInstance = undefined;
       unbind?.();
     };
-  }, []);
+  }, [images, initialImageId, postId]);
 
   return null;
 }

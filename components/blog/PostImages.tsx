@@ -22,6 +22,7 @@ import {
   getBlogPostFeedImage,
   getBlogPostFeedLightboxImage,
 } from "@/lib/cloudinary";
+import { getPostImagePath } from "@/lib/postImageRoute";
 
 type Props = {
   images?: string[];
@@ -229,7 +230,9 @@ export default function PostImages({
 
     return (
       <Link
-        href={`/blog/post/${postId}`}
+        href={getPostImagePath(postId, src)}
+        prefetch={false}
+        scroll={false}
         aria-label={`Mở bài viết để xem ảnh ${index + 1}`}
         draggable={false}
         onClick={(event) => {

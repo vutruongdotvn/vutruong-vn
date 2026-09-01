@@ -322,9 +322,9 @@ export function buildCloudinaryImage(
  */
 export function getBlogPostFeedImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 800,
+    height: 300,
     crop: "limit",
-    quality: "auto:eco",
+    quality: "auto",
     format: "webp",
   });
 }
@@ -350,7 +350,7 @@ export function getBlogPostFeedLightboxImage(url?: string) {
  */
 export function getModalPostBackgroundImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 160,
+    width: 80,
     crop: "limit",
     quality: "auto:eco",
     format: "webp",
@@ -366,8 +366,8 @@ export function getModalPostBackgroundImage(url?: string) {
  */
 export function getPostHeaderAvatarImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
     crop: "fill",
     gravity: "face",
     quality: "auto",
@@ -416,7 +416,7 @@ export function getCoverSectionAvatarImage(url?: string) {
     height: 200,
     crop: "fill",
     gravity: "face",
-    quality: "auto:good",
+    quality: "auto",
     format: "webp",
   });
 }
@@ -428,10 +428,10 @@ export function getCoverSectionAvatarImage(url?: string) {
  */
 export function getCoverSectionAvatarLightboxImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 900,
-    height: 900,
+    width: 1200,
+    height: 1200,
     crop: "limit",
-    quality: "auto:best",
+    quality: "auto",
     format: "webp",
   });
 }
@@ -458,7 +458,7 @@ export function getCoverSectionCoverImage(url?: string, width = 1200) {
  */
 export function getCoverSectionCoverLightboxImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 4096,
+    width: 2560,
     crop: "limit",
     quality: "auto:best",
     format: "webp",
@@ -489,11 +489,11 @@ export function getCoverSectionCropSourceImage(url?: string, width = 4096) {
  */
 export function getCoverSectionBackgroundImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 160,
+    width: 200,
     crop: "limit",
     quality: "auto:low",
     format: "webp",
-    blur: 1000,
+    blur: 3000,
   });
 }
 
@@ -537,11 +537,11 @@ export function getCoverSectionCoverLibraryImage(url?: string) {
  */
 export function getPhotoWidgetImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 180,
-    height: 180,
+    width: 150,
+    height: 150,
     crop: "fill",
     gravity: "auto",
-    quality: "auto:best",
+    quality: "auto",
     format: "webp",
   });
 }
@@ -553,8 +553,8 @@ export function getPhotoWidgetImage(url?: string) {
  */
 export function getFeaturedWidgetImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 180,
-    crop: "fill",
+    width: 150,
+    crop: "limit",
     gravity: "auto",
     quality: "auto",
     format: "webp",
@@ -570,7 +570,7 @@ export function getFeaturedWidgetLightboxImage(url?: string) {
   return buildCloudinaryImage(url, {
     width: 1440,
     crop: "limit",
-    quality: "auto:best",
+    quality: "auto",
     format: "webp",
   });
 }
@@ -583,11 +583,11 @@ export function getFeaturedWidgetLightboxImage(url?: string) {
  */
 export function getBlogPhotosGridImage(url?: string) {
   return buildCloudinaryImage(url, {
-    width: 300,
-    height: 300,
+    width: 250,
+    height: 250,
     crop: "fill",
     gravity: "auto",
-    quality: "auto:eco",
+    quality: "auto",
     format: "webp",
   });
 }
@@ -604,7 +604,7 @@ export function getProfileManagerAvatarImage(url?: string) {
     height: 250,
     crop: "fill",
     gravity: "face",
-    quality: "auto:good",
+    quality: "auto",
     format: "webp",
   });
 }
@@ -621,7 +621,7 @@ export function getNavbarUserAvatarImage(url?: string) {
     height: 100,
     crop: "fill",
     gravity: "face",
-    quality: "auto:good",
+    quality: "auto",
     format: "webp",
   });
 }

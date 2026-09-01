@@ -12,6 +12,10 @@ import PostActions from "@/components/blog/PostActions";
 import CreatePostModal from "@/components/blog/CreatePostModal";
 import { getAvatarImage } from "@/lib/cloudinary";
 import { extractPostTitle, extractPostDescription } from "@/lib/postMeta";
+import {
+  findPostImageIndex,
+  normalizePostImageUrls,
+} from "@/lib/postImageRoute";
 import { useUser } from "@/hooks/useUser";
 import { useToastContext } from "@/components/ui/ToastProvider";
 import { deletePost, pinPost } from "@/services/postService";
@@ -19,6 +23,7 @@ import { resolvePrivatePostForAdmin } from "@/services/privatePostService";
 
 type Props = {
   postId: string;
+  initialImageId?: string | null;
   routeVisibility: "public" | "privacy";
   initialPost: any | null;
   initialProfile: {
@@ -29,6 +34,7 @@ type Props = {
 
 export default function BlogDetailRealtime({
   postId,
+  initialImageId = null,
   routeVisibility,
   initialPost,
   initialProfile,
@@ -53,6 +59,15 @@ export default function BlogDetailRealtime({
       "/images/default.jpg"
     );
   }, [profile?.avatar, post?.author_avatar]);
+
+  const postImages = useMemo(
+    () => normalizePostImageUrls(post?.images),
+    [post?.images]
+  );
+  const requestedImageIndex = useMemo(
+    () => findPostImageIndex(postImages, initialImageId),
+    [initialImageId, postImages]
+  );
 
   const isAdmin = !!user && role === "admin";
 
@@ -101,6 +116,18 @@ export default function BlogDetailRealtime({
       cancelled = true;
     };
   }, [initialPost, postId, routeVisibility]);
+
+  useEffect(() => {
+    if (!initialImageId || !post || requestedImageIndex >= 0) return;
+
+    const basePath = `/blog/post/${postId}`;
+
+    // ID đúng định dạng nhưng không thuộc bài (kể cả bài không có ảnh): giữ
+    // nguyên trang chi tiết và chỉ chuẩn hóa URL, không refetch hoặc reload.
+    if (window.location.pathname.startsWith(`${basePath}/`)) {
+      window.history.replaceState(null, "", basePath);
+    }
+  }, [initialImageId, post, postId, requestedImageIndex]);
 
   const handlePin = async () => {
     if (!post) return;
@@ -254,7 +281,11 @@ export default function BlogDetailRealtime({
 
   return (
     <>
-      <FancyboxWrapper />
+      <FancyboxWrapper
+        postId={post.id}
+        images={postImages}
+        initialImageId={requestedImageIndex >= 0 ? initialImageId : null}
+      />
 
       <article
         className="fullPost"
@@ -284,7 +315,7 @@ export default function BlogDetailRealtime({
           onDelete={handleDelete}
         />
 
-        <PostBody content={post.content} images={post.images} postId={post.id} />
+        <PostBody content={post.content} images={postImages} postId={post.id} />
 
         <PostActions
           postId={post.id}

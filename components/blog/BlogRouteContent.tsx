@@ -26,6 +26,7 @@ export default function BlogRouteContent({
   // CreatePostBox tiếp tục hiển thị trong modal route, đồng thời vẫn ẩn ở
   // trang chi tiết canonical khi người dùng tải trực tiếp URL bài viết.
   const isBlogFeedRoute = selectedChildSegment === null;
+  const isCanonicalPostRoute = selectedChildSegment === "post";
 
   // Layout cũng phải bám theo slot children đang hiển thị, không theo URL tổng.
   // Ví dụ: mở modal từ /blog/photos làm URL thành /blog/post/[id], nhưng
@@ -36,6 +37,12 @@ export default function BlogRouteContent({
 
   return (
     <div
+      // URL của Intercepted Modal cũng là /blog/post/..., nên pathname không
+      // đủ để phân biệt hai luồng. Thuộc tính này phản ánh đúng slot children:
+      // chỉ canonical detail là "detail", Feed/Tag nền modal là "background".
+      data-blog-route-context={
+        isCanonicalPostRoute ? "detail" : "background"
+      }
       className={
         isFullWidthRoute
           ? "mx-auto w-full max-w-6xl"

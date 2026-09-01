@@ -11,6 +11,10 @@ import {
   ModalPostSkeletonContent,
 } from "@/components/blog/modal/ModalFullPostSkeleton";
 import { extractPostDescription, extractPostTitle } from "@/lib/postMeta";
+import {
+  findPostImageIndex,
+  normalizePostImageUrls,
+} from "@/lib/postImageRoute";
 import { loadPublicModalPost } from "@/services/publicModalPostService";
 import {
   resolvePrivatePostForAdmin,
@@ -46,6 +50,7 @@ type PublicResolution = {
 
 type ModalFullPostV2Props = {
   postId: string;
+  initialImageId?: string | null;
   routeVisibility: "public" | "privacy";
   post: ModalFullPostData | null;
   documentTitle: string;
@@ -54,17 +59,6 @@ type ModalFullPostV2Props = {
 
 function getOptionalString(value: unknown): string | null {
   return typeof value === "string" && value.trim() ? value.trim() : null;
-}
-
-function getPostImages(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-
-  return value
-    .filter(
-      (image): image is string =>
-        typeof image === "string" && image.trim().length > 0,
-    )
-    .map((image) => image.trim());
 }
 
 function createPrivateModalPostData(
@@ -78,7 +72,7 @@ function createPrivateModalPostData(
   return {
     id: post.id,
     content: typeof post.content === "string" ? post.content : "",
-    images: getPostImages(post.images),
+    images: normalizePostImageUrls(post.images),
     createdAt,
     author: {
       name:
@@ -94,6 +88,7 @@ function createPrivateModalPostData(
 
 export default function ModalFullPostV2({
   postId,
+  initialImageId = null,
   routeVisibility,
   post,
   documentTitle,
@@ -241,6 +236,24 @@ export default function ModalFullPostV2({
     };
   }, [resolvedDocumentTitle]);
 
+  useEffect(() => {
+    if (
+      !initialImageId ||
+      !activePost ||
+      findPostImageIndex(activePost.images, initialImageId) >= 0
+    ) {
+      return;
+    }
+
+    const basePath = `/blog/post/${postId}`;
+
+    // Đặt validation ở cấp modal để cả bài không có media cũng được xử lý;
+    // ModalPostMedia không tồn tại trong trường hợp đó.
+    if (window.location.pathname.startsWith(`${basePath}/`)) {
+      window.history.replaceState(null, "", basePath);
+    }
+  }, [activePost, initialImageId, postId]);
+
   const isChecking = resolutionStatus === "checking" && !activePost;
 
   return (
@@ -264,8 +277,10 @@ export default function ModalFullPostV2({
         <>
           {hasMedia && (
             <ModalPostMedia
-              key={activePost.id}
+              key={`${activePost.id}:${initialImageId ?? "default"}`}
+              postId={activePost.id}
               images={activePost.images}
+              initialImageId={initialImageId}
               postTitle={postTitle}
               onClose={closeModal}
             />
