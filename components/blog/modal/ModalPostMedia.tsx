@@ -40,7 +40,7 @@ type ModalPostMediaProps = {
 
 // Trần zoom chung. Tăng lên 3 nếu muốn zoom tối đa 3x; ảnh nhỏ vẫn được
 // limitToOriginalSize và data-swiper-zoom bảo vệ khỏi phóng quá độ phân giải.
-const MAX_ZOOM_RATIO = 2;
+const MAX_ZOOM_RATIO = 1.5;
 
 // Chỉ bật cursor/click zoom khi ảnh còn ít nhất 5% độ phân giải dư so với
 // kích thước đang hiển thị, tránh một thao tác zoom gần như không có tác dụng.
