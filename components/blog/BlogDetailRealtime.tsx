@@ -267,14 +267,18 @@ export default function BlogDetailRealtime({
 
   if (!post || isUnavailable) {
     return (
-      <article className="rounded-0 sm:rounded-2xl bg-white/80 p-6 py-18 text-center shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur-md">
-        <i className="fa-duotone fa-lock-keyhole mb-3 text-2xl text-red-400" />
-        <h1 className="text-lg font-semibold text-red-400">
+      <article className="rounded-0 sm:rounded-2xl p-4 py-24 text-center">
+        <i className="fa-duotone fa-lock-keyhole mb-3 text-2xl text-red-600" />
+        <h1 className="text-lg font-semibold text-red-600">
           Truy cập bị từ chối
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Bạn không có quyền xem nội dung này
+        <p className="mt-1 text-sm text-slate-400">
+          Đây là bài viết riêng tư, bạn không có quyền xem nội dung này!
         </p>
+
+        <Link className="flex items-center gap-3 justify-center mt-6 px-6 py-3 mx-auto bg-slate-900 text-white text-sm font-medium rounded-full hover:bg-slate-800 transition shadow-lg shadow-slate-900/20 active:scale-95 w-sm max-w-full" href="/blog">
+          <i className="fad fa-arrow-left" /> Quay lại Blog
+        </Link>
       </article>
     );
   }
