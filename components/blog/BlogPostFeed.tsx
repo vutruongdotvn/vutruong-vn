@@ -44,8 +44,8 @@ export default function BlogPostFeed() {
   const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ⚙️ Cấu hình số lượng bài viết
-  const INITIAL_LIMIT = 5;
-  const LOAD_MORE_LIMIT = 5;
+  const INITIAL_LIMIT = 6;
+  const LOAD_MORE_LIMIT = 6;
 
   /**
    * ⚙️ Độ trễ (ms) áp dụng cho chế độ infinity scroll.
@@ -433,7 +433,7 @@ export default function BlogPostFeed() {
       },
       {
         // Kích hoạt trước 200px so với cạnh dưới viewport
-        rootMargin: "0px 0px 50px 0px",
+        rootMargin: "0px 0px 200px 0px",
         threshold: 0,
       }
     );

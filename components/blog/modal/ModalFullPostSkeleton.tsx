@@ -205,7 +205,7 @@ export function ModalPostFrame({
           type="button"
           onClick={close}
           aria-label="Đóng bài viết"
-          className="absolute right-3 top-3 z-30 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/90 text-slate-500 shadow-sm backdrop-blur-sm hover:bg-slate-100 hover:text-slate-950 hover:shadow-md focus-visible:outline-none active:scale-95"
+          className="absolute left-3 top-3 z-30 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/90 text-slate-500 shadow-sm backdrop-blur-sm hover:bg-slate-100 hover:text-slate-950 hover:shadow-md focus-visible:outline-none active:scale-95"
         >
           <i className="fa-duotone fa-xmark" aria-hidden="true" />
         </button>
@@ -295,10 +295,9 @@ export function ModalPostSkeletonContent() {
       />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
         <div className="flex shrink-0 items-center gap-2 p-3 pr-14 sm:p-4 sm:pr-16">
-          <div className="h-9 w-9 shrink-0 animate-pulse rounded-full bg-slate-200" />
+          <div className="h-[30px] w-[30px] shrink-0 animate-pulse rounded-full bg-slate-200" />
           <div className="min-w-0 flex-1 space-y-2">
-            <div className="h-3.5 w-24 animate-pulse rounded-full bg-slate-200" />
-            <div className="h-2.5 w-16 animate-pulse rounded-full bg-slate-100" />
+            <div className="h-3.5 w-33 animate-pulse rounded-full bg-slate-200" />
           </div>
         </div>
         <div className="min-h-0 flex-1 overflow-hidden px-4 py-1">

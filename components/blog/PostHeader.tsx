@@ -168,23 +168,24 @@ export default function PostHeader({
     <>
       <div className="flex items-center justify-between px-3 pt-3 select-none sm:px-4 sm:pt-4 mb-3">
         <div className="flex min-w-0 items-center gap-2">
-          <Image
-            src={avatar || "/images/default.jpg"}
-            alt="Ảnh đại diện"
-            width={30}
-            height={30}
-            sizes="30px"
-            unoptimized
-            className="w-[30px] h-[30px] rounded-full object-cover"
-          />
-
-          <div className="flex min-w-0 items-center gap-1 leading-none">
+          <Link href="/about">
+            <Image
+              src={avatar || "/images/default.jpg"}
+              alt="Ảnh đại diện"
+              width={30}
+              height={30}
+              sizes="30px"
+              unoptimized
+              className="w-[30px] h-[30px] rounded-full object-cover"
+            />
+          </Link>
+          <div className="flex min-w-0 items-center gap-1.5 leading-none">
             <Link
               href="/about"
-              className="flex h-5 items-center gap-1 cursor-pointer text-[14px] font-medium leading-none text-slate-600 hover:text-slate-800 transition"
+              className="flex h-5 items-center gap-1 cursor-pointer text-[14px] font-medium leading-none text-slate-800 hover:text-black transition"
             >
               {name}
-              <i className="fad fa-badge-check inline-flex items-center text-[12px] leading-none text-blue-600" />
+              <i className="fas fa-badge-check inline-flex items-center text-[12px] leading-none text-blue-500" />
             </Link>
 
             <div className="flex h-5 items-center gap-1 leading-none">
@@ -215,20 +216,30 @@ export default function PostHeader({
                 {time}
               </Link>
 
-              <div
+              <div className="flex items-center gap-1"
                 onClick={() => {
                   if (!isAdmin) return;
                   setOpenPrivacyModal(true);
                   setOpen(false);
-                }}
-                className={` ${visibility === "public"
-                    ? "publicPost"
-                    : "privacyPost text-red-700 text-[12px] bg-red-50 border-red-200 border px-2 py-1 rounded-full hover:opacity-80 transition"
-                  } active:scale-98 cursor-pointer ${isAdmin ? "" : visibility === "public" ? "publicPost" : "privacyPost"
-                  }`}
-                title={visibility === "public" ? "Công khai" : "Riêng tư"}
-              >
-                {visibility !== "public" && "Bài viết riêng tư"}
+                }}>
+                <span className="text-slate-400 mx-0.25" aria-hidden="true">•</span>
+                <i
+                  className={`fadt text-xs cursor-pointer active:scale-98 
+                    ${visibility === "privacy"
+                      ? "fa-lock-keyhole text-red-600"
+                      : "fa-earth-asia text-slate-800"
+                    }`}
+                  title={
+                    visibility === "privacy"
+                      ? "Bài viết riêng tư"
+                      : "Bài viết công khai"
+                  }
+                  aria-label={
+                    visibility === "privacy"
+                      ? "Bài viết riêng tư"
+                      : "Bài viết công khai"
+                  }
+                />
               </div>
             </div>
           </div>

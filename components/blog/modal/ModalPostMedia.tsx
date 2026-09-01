@@ -563,9 +563,9 @@ export default function ModalPostMedia({
             onClick={moveToPreviousImage}
             disabled={activeIndex === 0}
             aria-label="Xem ảnh trước"
-            className="absolute left-3 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white/90 backdrop-blur-sm transition-colors hover:bg-black/70 hover:text-white focus-visible:outline-none disabled:opacity-25 md:inline-flex cursor-pointer"
+            className="absolute left-3 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/20 text-white/90 backdrop-blur-sm transition-colors hover:bg-black/70 hover:text-white focus-visible:outline-none disabled:opacity-25 md:inline-flex cursor-pointer"
           >
-            <i className="fad fa-arrow-left" aria-hidden="true" />
+            <i className="fad fa-chevron-left" aria-hidden="true" />
           </button>
 
           <button
@@ -573,9 +573,9 @@ export default function ModalPostMedia({
             onClick={moveToNextImage}
             disabled={activeIndex === images.length - 1}
             aria-label="Xem ảnh tiếp theo"
-            className="absolute right-3 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white/90 backdrop-blur-sm transition-colors hover:bg-black/70 hover:text-white focus-visible:outline-none disabled:opacity-25 md:inline-flex cursor-pointer"
+            className="absolute right-3 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/20 text-white/90 backdrop-blur-sm transition-colors hover:bg-black/70 hover:text-white focus-visible:outline-none disabled:opacity-25 md:inline-flex cursor-pointer"
           >
-            <i className="fad fa-arrow-right" aria-hidden="true" />
+            <i className="fad fa-chevron-right" aria-hidden="true" />
           </button>
         </>
       )}

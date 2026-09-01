@@ -220,7 +220,7 @@ export default function CoverSection() {
                 <div className="flex items-center gap-1 text-xl font-bold md:text-2xl lg:text-3xl text-slate-800">
                   {profile.name || "User Name"}
                   <i
-                    className="fad fa-badge-check cursor-pointer text-sm text-blue-600 active:scale-95 sm:text-lg"
+                    className="fas fa-badge-check cursor-pointer text-sm text-blue-500 active:scale-95 sm:text-lg"
                   />
                 </div>
                 <div className="text-[.8375rem] text-slate-800 sm:text-sm/6">

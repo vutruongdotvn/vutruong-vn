@@ -41,21 +41,21 @@ export default function ModalPostHeader({
           "/images/default.jpg"
         }
         alt={`Ảnh đại diện của ${name}`}
-        width={36}
-        height={36}
-        sizes="36px"
+        width={30}
+        height={30}
+        sizes="30px"
         unoptimized
-        className="h-9 w-9 shrink-0 rounded-full object-cover"
+        className="h-[30px] w-[30px] shrink-0 rounded-full object-cover"
       />
 
-      <div className="min-w-0 leading-tight">
+      <div className="flex items-center gap-1.5 min-w-0 leading-tight">
         <Link
           href="/blog/about"
           className="inline-flex max-w-full items-center gap-1 rounded-sm text-sm font-medium text-slate-700 hover:text-slate-950 focus-visible:outline-none"
         >
           <span className="truncate">{name}</span>
           <i
-            className="fa-duotone fa-badge-check shrink-0 text-xs text-blue-600"
+            className="fas fa-badge-check shrink-0 text-xs text-blue-500"
             aria-hidden="true"
           />
         </Link>
@@ -68,12 +68,12 @@ export default function ModalPostHeader({
           >
             {hasValidDate ? formatTimeAgo(createdAt) : "Không rõ thời gian"}
           </time>
-          <span aria-hidden="true">•</span>
+          <span className="text-slate-400 mx-0.25" aria-hidden="true">•</span>
           <i
-            className={`fa-duotone text-[11px] ${
+            className={`fadt text-[12px] ${
               visibility === "privacy"
                 ? "fa-lock-keyhole text-red-600"
-                : "fa-earth-americas"
+                : "fa-earth-asia"
             }`}
             title={
               visibility === "privacy"
