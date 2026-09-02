@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function BlogVideosPage() {
   return (
-    <section className="flex min-h-96 items-center justify-center bg-card px-4 py-16 text-center shadow-[0_8px_30px_rgba(0,0,0,0.04)] sm:rounded-2xl">
+    <section className="flex min-h-96 items-center justify-center bg-card border border-border px-4 py-16 text-center shadow-[0_8px_30px_rgba(0,0,0,0.04)] sm:rounded-2xl">
       <div className="flex flex-col gap-2 items-center text-muted-foreground">
         <i
           className="fal fa-video-slash mb-3 text-3xl text-muted-foreground"

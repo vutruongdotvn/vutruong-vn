@@ -148,7 +148,7 @@ export default function IntroWidget() {
   };
 
   return (
-    <div className="rounded-0 sm:rounded-2xl bg-card p-3 sm:p-4">
+    <div className="rounded-0 sm:rounded-2xl bg-card p-3 sm:p-4 border border-border">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-[.9375rem] sm:text-base font-semibold">Giới thiệu</h3>
         {isAdmin && !editing && (

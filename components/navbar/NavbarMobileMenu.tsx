@@ -75,15 +75,27 @@ export default function NavbarMobileMenu({
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2 min-w-0">
-                <Image
-                  src="/logo.png"
-                  alt="logo"
-                  width={40}
-                  height={40}
-                  className="pointer-events-none shrink-0"
-                  priority
-                  unoptimized
-                />
+                <span className="relative size-10 shrink-0" aria-hidden="true">
+                  <Image
+                    src="/logo.png"
+                    alt=""
+                    fill
+                    sizes="40px"
+                    className="pointer-events-none object-contain dark:hidden"
+                    priority
+                    unoptimized
+                  />
+
+                  <Image
+                    src="/logo-white.png"
+                    alt=""
+                    fill
+                    sizes="40px"
+                    className="pointer-events-none hidden object-contain dark:block"
+                    priority
+                    unoptimized
+                  />
+                </span>
                 <div className="min-w-0">
                   <Link
                     href={currentPageHref}

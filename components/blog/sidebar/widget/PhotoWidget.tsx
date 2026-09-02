@@ -75,7 +75,7 @@ export default function PhotoWidget() {
   return (
     <div className="
       hidden lg:block
-      sm:rounded-2xl bg-card
+      sm:rounded-2xl bg-card border border-border
       p-3 sm:p-4 px-0 pb-0 sm:pb-4 sm:px-4
     ">
       {/* Header */}

@@ -104,7 +104,7 @@ export default function FeaturedWidget() {
 
   return (
     <>
-      <section className="rounded-none bg-card p-3 px-0 sm:rounded-2xl sm:p-4">
+      <section className="rounded-none bg-card p-3 px-0 sm:rounded-2xl sm:p-4 border border-border">
         <div className="mb-3 flex items-center justify-between px-4 sm:px-0">
           <h3 className="text-[.9375rem] font-semibold sm:text-base">
             Khoảnh khắc

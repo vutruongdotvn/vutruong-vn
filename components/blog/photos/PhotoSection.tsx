@@ -303,7 +303,7 @@ export default function PhotoSection() {
   return (
     <section
       aria-labelledby="blog-photos-title"
-      className="bg-card px-0 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)] sm:rounded-2xl sm:p-4"
+      className="bg-card border border-border px-0 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)] sm:rounded-2xl sm:p-4"
     >
       <header className="mb-3 flex flex-col items-start justify-center gap-1 px-3 sm:px-0">
         <h1

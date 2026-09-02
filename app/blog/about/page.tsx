@@ -340,7 +340,7 @@ const getVisibleContentItems = (
     .filter((item) => item.values.length > 0);
 
 const itemRowClassName =
-  "flex min-w-0 items-start gap-3 border-b border-border py-2 last:border-b-0 sm:gap-4 sm:py-3";
+  "flex min-w-0 items-start gap-3 py-2 sm:gap-4 sm:py-3";
 const itemIconClassName =
   "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-foreground/5 text-lg text-muted-foreground lg:h-12 lg:w-12 lg:text-2xl";
 const itemLabelClassName = "text-xs leading-5 text-muted-foreground";
@@ -616,7 +616,7 @@ export default function BlogAboutPage() {
                   {visibleSocialLinks.map((link) => (
                     <li
                       key={link.name}
-                      className="group/social border-b border-border last:border-b-0"
+                      className="group/social"
                     >
                       <a
                         href={link.href}

@@ -53,7 +53,7 @@ export default function BlogRouteContent({
         className={
           isFullWidthRoute
             ? "blogFullWidthContent mx-auto w-full max-w-6xl"
-            : "postFeeds order-2 self-start overflow-hidden rounded-0 sm:rounded-2xl lg:order-1 lg:col-span-6 bg-card shadow-[0_8px_30px_rgba(0,0,0,0.04)]"
+            : "postFeeds order-2 self-start overflow-hidden rounded-0 sm:rounded-2xl lg:order-1 lg:col-span-6 bg-card shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-border"
         }
       >
         {/*
