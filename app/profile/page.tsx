@@ -390,9 +390,6 @@ export default function ProfilePage() {
                 onZoomChange={setZoom}
                 onCropComplete={onCropComplete}
               />
-              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                <div className="h-[200px] w-[200px] rounded-full border-2 border-white/70 shadow-[0_0_0_9999px_rgba(0,0,0,0.4)]" />
-              </div>
 
             </div>
 
@@ -449,9 +446,6 @@ export default function ProfilePage() {
 
           <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
             <section className="relative overflow-hidden rounded-[34px] border border-border bg-card/60 p-6 shadow-[0_16px_60px_rgba(0,0,0,0.05)] backdrop-blur-xl sm:p-8">
-              <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-sky-100/35 to-transparent pointer-events-none" />
-              <div className="absolute -bottom-10 left-1/2 h-32 w-32 -translate-x-1/2 rounded-full bg-sky-100/25 blur-3xl pointer-events-none" />
-
               <div className="relative mb-8 text-center">
                 <label className="relative mx-auto block h-36 w-36 cursor-pointer group/avatar-main">
                   <div className="absolute -inset-3 rounded-full bg-gradient-to-br from-sky-200/50 via-card/0 to-purple-200/40 blur-2xl opacity-90 dark:from-sky-400/20 dark:to-purple-400/15" />
@@ -530,7 +524,6 @@ export default function ProfilePage() {
             </section>
 
             <section className="relative overflow-hidden rounded-[34px] border border-border bg-card/60 p-6 shadow-[0_16px_60px_rgba(0,0,0,0.05)] backdrop-blur-xl sm:p-8">
-              <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-purple-100/25 to-transparent pointer-events-none" />
 
               <div className="relative mb-6">
                 <div className="mb-2 flex items-center gap-2">

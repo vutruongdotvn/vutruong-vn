@@ -164,6 +164,7 @@ export default function PostBody({
   priority = false,
 }: Props) {
   const [isMobile, setIsMobile] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const fixedMaxLength =
     typeof maxLength === "number" &&
       Number.isFinite(maxLength) &&
@@ -269,7 +270,7 @@ export default function PostBody({
     )
   );
   const hasHiddenText = previewText !== previewSource;
-  const isCollapsed = truncate && hasHiddenText;
+  const isCollapsed = truncate && hasHiddenText && !isExpanded;
 
   return (
     <>
@@ -277,11 +278,12 @@ export default function PostBody({
         <div className="postBody">
           {isCollapsed ? (
             <>
-              <Link
-                href={`/blog/post/${postId}`}
+              <button
+                type="button"
+                onClick={() => setIsExpanded(true)}
                 title="Xem toàn bộ bài viết"
-                aria-label="Mở toàn bộ bài viết"
-                className="postShortPreview block cursor-pointer break-words px-3 text-[.9375rem]/6 text-foreground hover:text-foreground sm:px-4"
+                aria-label="Mở rộng toàn bộ nội dung bài viết"
+                className="postShortPreview block w-full cursor-pointer break-words px-3 text-left text-[.9375rem]/6 text-foreground hover:text-foreground sm:px-4"
               >
                 {renderInlineParts(previewText, false)}
 
@@ -291,7 +293,7 @@ export default function PostBody({
                 >
                   Xem thêm
                 </span>
-              </Link>
+              </button>
 
               {collapsedVideoBlocks.map((block) => (
                 <PostEmbed

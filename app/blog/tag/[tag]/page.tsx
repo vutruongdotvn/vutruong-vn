@@ -397,9 +397,9 @@ export default function BlogTagPage() {
         <>
 
           <div className="space-y-6">
-            <div className="flex items-center justify-between rounded-2xl bg-card/80 backdrop-blur-md px-4 py-5 animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-              <div className="w-40 h-5 bg-secondary rounded-xl" />
-              <div className="w-25 h-5 bg-secondary rounded-xl" />
+            <div className="flex items-center justify-between rounded-2xl px-4 py-5 animate-pulse">
+              <div className="w-48 h-5 bg-secondary rounded-full" />
+              <div className="w-25 h-5 bg-secondary/50 rounded-full" />
             </div>
 
             <PostCardSkeleton count={LIMIT} />
