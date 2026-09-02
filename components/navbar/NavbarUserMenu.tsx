@@ -69,7 +69,7 @@ export default function NavbarUserMenu({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 1 }}
             transition={{ duration: 0.3 , ease: "easeOut" }}
-            className="absolute right-0 top-[calc(100%+7px)] w-72 rounded-xl bg-white shadow-[0_20px_60px_rgba(0,0,0,0.14)] p-3"
+            className="absolute right-0 top-[calc(100%+7px)] w-72 rounded-xl bg-card shadow-[0_20px_60px_rgba(0,0,0,0.14)] p-3"
           >
             <div className="flex items-center gap-3 rounded-2xl px-3 py-3">
               <Image
@@ -82,7 +82,7 @@ export default function NavbarUserMenu({
               />
 
               <div className="min-w-0 flex-1">
-                <p className="font-semibold text-base text-gray-900 flex items-center gap-1 truncate">
+                <p className="font-semibold text-base text-foreground flex items-center gap-1 truncate">
                   <span className="truncate">{fullName}</span>
 
                   {user && role === "admin" && (
@@ -93,7 +93,7 @@ export default function NavbarUserMenu({
                   )}
                 </p>
 
-                <p className="text-sm text-gray-600 truncate">
+                <p className="text-sm text-foreground/75 truncate">
                   {user ? email : "Bạn chưa đăng nhập"}
                 </p>
               </div>
@@ -107,13 +107,13 @@ export default function NavbarUserMenu({
                     setUserOpen(false);
                     setMoreOpen(false);
                   }}
-                  className="flex items-center justify-between rounded-2xl px-4 py-3 text-gray-700 hover:bg-gray-100 active:bg-gray-200 active:scale-97"
+                  className="flex items-center justify-between rounded-2xl px-4 py-3 text-foreground/75 hover:bg-muted active:bg-secondary active:scale-97"
                 >
                   <div className="flex items-center gap-3">
                     <i className="fa-duotone fa-user text-base" />
                     <span className="text-sm font-medium">Chỉnh sửa Profile</span>
                   </div>
-                  <i className="fa-duotone fa-arrow-up-right text-xs text-gray-400" />
+                  <i className="fa-duotone fa-arrow-up-right text-xs text-muted-foreground" />
                 </Link>
               )}
 
@@ -124,13 +124,13 @@ export default function NavbarUserMenu({
                     setUserOpen(false);
                     setShowCreatePost(true);
                   }}
-                  className="flex items-center justify-between rounded-2xl px-4 py-3 text-gray-700 hover:bg-gray-100 active:bg-gray-200 active:scale-97 cursor-pointer"
+                  className="flex items-center justify-between rounded-2xl px-4 py-3 text-foreground/75 hover:bg-muted active:bg-secondary active:scale-97 cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <i className="fa-duotone fa-pen-to-square text-base" />
                     <span className="text-sm font-medium">Đăng bài viết</span>
                   </div>
-                  <i className="fa-duotone fa-plus text-xs text-gray-400" />
+                  <i className="fa-duotone fa-plus text-xs text-muted-foreground" />
                 </button>
               )}
               */}
@@ -141,18 +141,18 @@ export default function NavbarUserMenu({
                     setUserOpen(false);
                     setShowLogin(true);
                   }}
-                  className="flex items-center justify-between rounded-2xl px-4 py-3 text-gray-700 hover:bg-gray-100 active:bg-gray-200 active:scale-97 cursor-pointer"
+                  className="flex items-center justify-between rounded-2xl px-4 py-3 text-foreground/75 hover:bg-muted active:bg-secondary active:scale-97 cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <i className="fa-duotone fa-user-gear text-base" />
                     <span className="text-sm font-medium">Đăng nhập</span>
                   </div>
-                  <i className="fa-duotone fa-arrow-right text-xs text-gray-400" />
+                  <i className="fa-duotone fa-arrow-right text-xs text-muted-foreground" />
                 </button>
               ) : (
                 <button
                   onClick={onLogout}
-                  className="flex items-center justify-between rounded-2xl px-4 py-3 text-red-600 hover:bg-red-50 active:bg-red-100 active:scale-97 cursor-pointer"
+                  className="flex items-center justify-between rounded-2xl px-4 py-3 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-400/20 active:bg-red-100 dark:active:bg-red-400/25 active:scale-97 cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <i className="fa-duotone fa-arrow-right-from-bracket text-base" />

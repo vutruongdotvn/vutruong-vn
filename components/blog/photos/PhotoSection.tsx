@@ -121,7 +121,7 @@ function PhotoGridSkeleton({ count }: { count: number }) {
 function PhotoSkeletonItem() {
   return (
     <div
-      className="aspect-square animate-pulse bg-slate-200 sm:rounded-lg"
+      className="aspect-square animate-pulse bg-secondary sm:rounded-lg"
       aria-hidden="true"
     />
   );
@@ -303,12 +303,12 @@ export default function PhotoSection() {
   return (
     <section
       aria-labelledby="blog-photos-title"
-      className="bg-white px-0 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)] sm:rounded-2xl sm:p-4"
+      className="bg-card px-0 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)] sm:rounded-2xl sm:p-4"
     >
       <header className="mb-3 flex flex-col items-start justify-center gap-1 px-3 sm:px-0">
         <h1
           id="blog-photos-title"
-          className="text-lg font-bold text-slate-900 sm:text-xl"
+          className="text-lg font-bold text-foreground sm:text-xl"
         >
           Ảnh
         </h1>
@@ -317,19 +317,19 @@ export default function PhotoSection() {
       {initialLoading ? (
         <PhotoGridSkeleton count={BLOG_PHOTOS_PAGE_SIZE} />
       ) : photos.length === 0 ? (
-        <div className="flex min-h-52 flex-col items-center justify-center px-4 text-center text-slate-500">
+        <div className="flex min-h-52 flex-col items-center justify-center px-4 text-center text-muted-foreground">
           <i
-            className="fal fa-images mb-3 text-3xl text-slate-300"
+            className="fal fa-images mb-3 text-3xl text-muted-foreground"
             aria-hidden="true"
           />
-          <p className="text-sm font-medium text-slate-600">
+          <p className="text-sm font-medium text-foreground/75">
             {error ? "Chưa thể tải ảnh" : "Chưa có bài viết nào chứa ảnh"}
           </p>
           {error && (
             <button
               type="button"
               onClick={() => void loadFirstPage()}
-              className="mt-3 cursor-pointer rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-200 active:scale-95"
+              className="mt-3 cursor-pointer rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground/75 transition hover:bg-secondary active:scale-95"
             >
               Thử lại
             </button>
@@ -345,7 +345,7 @@ export default function PhotoSection() {
                 prefetch={false}
                 aria-label={`Mở bài viết: ${photo.title}`}
                 title={photo.title}
-                className="group postImages relative aspect-square overflow-hidden bg-slate-100 outline-none sm:rounded-lg focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                className="group postImages relative aspect-square overflow-hidden bg-muted outline-none sm:rounded-lg focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
                 <Image
                   src={photo.src}
@@ -381,7 +381,7 @@ export default function PhotoSection() {
                   <button
                     type="button"
                     onClick={() => void loadMore()}
-                    className="cursor-pointer rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-200 active:scale-95"
+                    className="cursor-pointer rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground/75 transition hover:bg-secondary active:scale-95"
                   >
                     Thử lại
                   </button>

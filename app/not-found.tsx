@@ -18,19 +18,19 @@ export default function NotFound() {
         >
           {/* Main Icon */}
           <div className="mb-6 flex justify-center">
-            <div className="size-16 flex items-center mx-auto justify-center rounded-full bg-red-50 border border-red-200">
+            <div className="size-16 flex items-center mx-auto justify-center rounded-full bg-red-50 dark:bg-red-400/15 border border-red-200 dark:border-red-400/25">
               <i className="fa-duotone fa-file-circle-question text-3xl text-red-500" />
             </div>
           </div>
 
           {/* Heading */}
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
             Lỗi rồi! <i className="far fa-face-pensive" />
           </h1>
 
           {/* Description */}
           <div className="mt-4 mb-6 space-y-1.5">
-            <p className="mx-auto max-w-2xl text-sm leading-7 text-neutral-500 md:text-base">
+            <p className="mx-auto max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
               Trang này không tồn tại, có thể đã bị xóa hoặc đã chuyển sang địa chỉ khác.
             </p>
           </div>
@@ -39,7 +39,7 @@ export default function NotFound() {
           <div className="flex items-center justify-center gap-2">
             <Link
               href="/"
-              className="flex items-center gap-3 justify-center px-6 py-3 mx-auto bg-slate-900 text-white text-sm font-medium rounded-full hover:bg-slate-800 transition shadow-lg shadow-slate-900/20 active:scale-95 w-sm max-w-full"
+              className="flex items-center gap-3 justify-center px-6 py-3 mx-auto bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition shadow-lg shadow-primary/20 active:scale-95 w-sm max-w-full"
             >
               <i className="fad fa-arrow-left" />
               Về trang chủ

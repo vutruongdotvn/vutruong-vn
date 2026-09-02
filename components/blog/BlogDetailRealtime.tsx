@@ -257,7 +257,7 @@ export default function BlogDetailRealtime({
       <article
         aria-busy="true"
         aria-live="polite"
-        className="rounded-0 sm:rounded-2xl bg-white/80 p-6 text-center text-sm text-gray-500 shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur-md"
+        className="rounded-0 sm:rounded-2xl bg-card/80 p-6 text-center text-sm text-muted-foreground shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur-md"
       >
         <i className="fad fa-spinner-third fa-spin mr-2" />
         Đang xác minh tài khoản
@@ -268,15 +268,15 @@ export default function BlogDetailRealtime({
   if (!post || isUnavailable) {
     return (
       <article className="rounded-0 sm:rounded-2xl p-4 py-24 text-center">
-        <i className="fa-duotone fa-lock-keyhole mb-3 text-2xl text-red-600" />
-        <h1 className="text-lg font-semibold text-red-600">
+        <i className="fa-duotone fa-lock-keyhole mb-3 text-2xl text-red-600 dark:text-red-300" />
+        <h1 className="text-lg font-semibold text-red-600 dark:text-red-300">
           Truy cập bị từ chối
         </h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-sm text-muted-foreground">
           Đây là bài viết riêng tư, bạn không có quyền xem nội dung này!
         </p>
 
-        <Link className="flex items-center gap-3 justify-center mt-6 px-6 py-3 mx-auto bg-slate-900 text-white text-sm font-medium rounded-full hover:bg-slate-800 transition shadow-lg shadow-slate-900/20 active:scale-95 w-sm max-w-full" href="/blog">
+        <Link className="flex items-center gap-3 justify-center mt-6 px-6 py-3 mx-auto bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition shadow-lg shadow-primary/20 active:scale-95 w-sm max-w-full" href="/blog">
           <i className="fad fa-arrow-left" /> Quay lại Blog
         </Link>
       </article>
@@ -297,7 +297,7 @@ export default function BlogDetailRealtime({
         <div className="actionFooter md:px-4 px-3 md:pt-4 pt-3">
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-black active:scale-97"
+            className="inline-flex items-center gap-2 text-sm text-foreground/75 hover:text-foreground active:scale-97"
           >
             <i className="fa-duotone fa-arrow-left text-xs" />
             Quay lại

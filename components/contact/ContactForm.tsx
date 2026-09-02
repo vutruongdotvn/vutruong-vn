@@ -158,11 +158,11 @@ export default function ContactForm() {
       {/* Header */}
       <div>
 
-        <h2 className="text-lg sm:text-xl font-bold text-slate-900">
+        <h2 className="text-lg sm:text-xl font-bold text-foreground">
           Liên hệ
         </h2>
 
-        <p className="text-slate-500 text-sm mt-1">
+        <p className="text-muted-foreground text-sm mt-1">
           Mọi vấn đề cần liên hệ, trao đổi, cộng tác,
           hãy gửi thông tin qua biểu mẫu liên hệ. 
         </p>
@@ -174,7 +174,7 @@ export default function ContactForm() {
           {/* Name */}
           <div className="group relative">
             <div className="relative">
-              <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-1 transition group-focus-within:text-sky-600">
+              <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-1 transition group-focus-within:text-sky-600">
                 <i className="fa-duotone fa-user" />
               </div>
               <input
@@ -185,7 +185,7 @@ export default function ContactForm() {
                 placeholder="Họ và Tên"
                 value={formData.name}
                 onChange={handleChange}
-                className="h-12 w-full rounded-lg pl-12 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 border border-slate-200 focus:border-slate-300"
+                className="h-12 w-full rounded-lg pl-12 pr-4 text-sm text-foreground outline-none placeholder:text-muted-foreground border border-border focus:border-border"
               />
             </div>
           </div>
@@ -193,7 +193,7 @@ export default function ContactForm() {
           {/* Email */}
           <div className="group relative">
             <div className="relative">
-              <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-1 transition group-focus-within:text-sky-600">
+              <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-1 transition group-focus-within:text-sky-600">
                 <i className="fa-duotone fa-envelope" />
               </div>
               <input
@@ -205,7 +205,7 @@ export default function ContactForm() {
                 value={formData.email}
                 onChange={handleChange}
                 pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
-                className="h-12 w-full rounded-lg pl-12 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 border border-slate-200 focus:border-slate-300"
+                className="h-12 w-full rounded-lg pl-12 pr-4 text-sm text-foreground outline-none placeholder:text-muted-foreground border border-border focus:border-border"
               />
             </div>
           </div>
@@ -213,7 +213,7 @@ export default function ContactForm() {
           {/* Phone */}
           <div className="group relative">
             <div className="relative">
-              <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-1 transition group-focus-within:text-sky-600">
+              <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-1 transition group-focus-within:text-sky-600">
                 <i className="fa-duotone fa-phone" />
               </div>
               <input
@@ -225,7 +225,7 @@ export default function ContactForm() {
                 value={formData.phone}
                 onChange={handleChange}
                 pattern="(\+84|0)\d{9,10}"
-                className="h-12 w-full rounded-lg pl-12 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 border border-slate-200 focus:border-slate-300"
+                className="h-12 w-full rounded-lg pl-12 pr-4 text-sm text-foreground outline-none placeholder:text-muted-foreground border border-border focus:border-border"
               />
             </div>
           </div>
@@ -233,7 +233,7 @@ export default function ContactForm() {
           {/* Facebook */}
           <div className="group relative">
             <div className="relative">
-              <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-1 transition group-focus-within:text-sky-600">
+              <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-1 transition group-focus-within:text-sky-600">
                 <i className="fa-brands fa-facebook" />
               </div>
               <input
@@ -243,7 +243,7 @@ export default function ContactForm() {
                 placeholder="Facebook"
                 value={formData.facebook}
                 onChange={handleChange}
-                className="h-12 w-full rounded-lg pl-12 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 border border-slate-200 focus:border-slate-300"
+                className="h-12 w-full rounded-lg pl-12 pr-4 text-sm text-foreground outline-none placeholder:text-muted-foreground border border-border focus:border-border"
               />
             </div>
           </div>
@@ -252,7 +252,7 @@ export default function ContactForm() {
         {/* Message */}
         <div className="group relative mt-2 sm:mt-4">
           <div className="relative">
-            <div className="pointer-events-none absolute left-4 top-4 text-gray-400 z-1 transition group-focus-within:text-sky-600">
+            <div className="pointer-events-none absolute left-4 top-4 text-muted-foreground z-1 transition group-focus-within:text-sky-600">
               <i className="fa-duotone fa-comment-alt" />
             </div>
             <textarea
@@ -263,7 +263,7 @@ export default function ContactForm() {
               rows={7}
               value={formData.message}
               onChange={handleChange}
-              className="w-full rounded-lg pl-12 pr-4 pt-4 text-sm text-gray-900 outline-none border border-slate-200 focus:border-slate-300"
+              className="w-full rounded-lg pl-12 pr-4 pt-4 text-sm text-foreground outline-none border border-border focus:border-border"
             />
           </div>
         </div>
@@ -296,9 +296,9 @@ export default function ContactForm() {
                   required
                   checked={formData.humanCheck}
                   onChange={handleChange}
-                  className="h-4 w-4 cursor-pointer rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                  className="h-4 w-4 cursor-pointer rounded border-border text-sky-600 dark:text-sky-300 focus:ring-sky-500"
                 />
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-foreground/75">
                   Xác nhận gửi <span className="text-red-500">*</span>
                 </span>
               </label>
@@ -310,7 +310,7 @@ export default function ContactForm() {
                 type="button"
                 onClick={resetFormContact}
                 disabled={isSubmitting}
-                className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 rounded-full text-sm font-medium active:scale-98 transition"
+                className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 bg-muted hover:bg-secondary rounded-full text-sm font-medium active:scale-98 transition"
               >
                 <i className="fa-duotone fa-rotate-left" />
                 Nhập lại
@@ -319,7 +319,7 @@ export default function ContactForm() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 bg-black/90 hover:bg-black rounded-full text-sm text-white font-medium active:scale-98 transition"
+                className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 bg-primary hover:bg-primary/90 rounded-full text-sm text-primary-foreground font-medium active:scale-98 transition"
               >
                 {isSubmitting ? (
                   <>

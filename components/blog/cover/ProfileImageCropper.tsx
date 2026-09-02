@@ -57,8 +57,8 @@ export default function ProfileImageCropper({
         />
       </div>
 
-      <div className="rounded-2xl border border-black/5 bg-neutral-50 p-3 sm:p-4">
-        <div className="mb-2 flex items-center justify-between text-xs text-neutral-500">
+      <div className="rounded-2xl border border-border bg-muted/50 p-3 sm:p-4">
+        <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <i className="fad fa-magnifying-glass-plus" aria-hidden="true" />
             Thu phóng
@@ -79,7 +79,7 @@ export default function ProfileImageCropper({
         />
       </div>
 
-      <p className="text-center text-xs leading-5 text-neutral-500">
+      <p className="text-center text-xs leading-5 text-muted-foreground">
         Kéo ảnh để thay đổi vị trí, dùng thanh trượt để thu phóng.
         {isAvatar
           ? " Ảnh master tối đa 2048 × 2048px."

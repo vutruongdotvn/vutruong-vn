@@ -3,7 +3,7 @@ type PostCardSkeletonProps = {
   className?: string;
 };
 
-const skeletonClass = "bg-gray-200 animate-pulse";
+const skeletonClass = "bg-secondary animate-pulse";
 
 export default function PostCardSkeleton({
   count = 1,
@@ -20,13 +20,13 @@ export default function PostCardSkeleton({
       aria-label="Đang tải bài viết"
     >
       {Array.from({ length: skeletonCount }, (_, index) => (
-        <article key={index} className="post relative border-b border-slate-200 last:border-b-0" aria-hidden="true">
-          <div className="overflow-hidden rounded-none bg-white sm:rounded-2xl">
+        <article key={index} className="post relative border-b border-border last:border-b-0" aria-hidden="true">
+          <div className="overflow-hidden rounded-none bg-card sm:rounded-2xl">
             {/* PostHeader */}
             <div className="flex select-none items-center justify-between px-3 pt-3 sm:px-4 sm:pt-4">
               <div className="flex min-w-0 items-center gap-2">
                 <div
-                  className={`w-[30px] h-[30px] shrink-0 rounded-full border border-neutral-200 ${skeletonClass}`}
+                  className={`w-[30px] h-[30px] shrink-0 rounded-full border border-border ${skeletonClass}`}
                 />
 
                 <div className="flex min-w-0 items-center gap-1.5">

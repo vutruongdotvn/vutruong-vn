@@ -49,7 +49,7 @@ export default function Page() {
         >
           {/* Badge 
           <div className="flex justify-center">
-            <span className="inline-flex items-center gap-2 rounded-full border border-teal-300 bg-teal-100 px-4 py-1.5 text-xs font-medium text-teal-600">
+            <span className="inline-flex items-center gap-2 rounded-full border border-teal-300 dark:border-teal-400/25 bg-teal-100 dark:bg-teal-400/15 px-4 py-1.5 text-xs font-medium text-teal-600 dark:text-teal-300">
               <span className="relative flex size-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-500 opacity-75"></span>
                 <span className="relative inline-flex size-2 rounded-full bg-teal-500" />
@@ -67,11 +67,11 @@ export default function Page() {
           {/* Tagline 
           <div className="space-y-1">
             <div className="overflow-hidden">
-              <p className="text-sm text-gray-600 sm:text-base">
+              <p className="text-sm text-foreground/75 sm:text-base">
                 Cuộc sống chỉ xoay quanh {" "}
                 <span
                   key={activeWord}
-                  className="animate-fade-word font-medium text-gray-800"
+                  className="animate-fade-word font-medium text-foreground"
                 >
                   {activeWord}
                 </span>

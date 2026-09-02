@@ -139,7 +139,7 @@ const SortableImageCard = memo(function SortableImageCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm select-none touch-none ${isDragging ? "z-20 opacity-90" : "hover:shadow-md"
+      className={`group relative overflow-hidden rounded-xl border border-border bg-muted shadow-sm select-none touch-none ${isDragging ? "z-20 opacity-90" : "hover:shadow-md"
         }`}
     >
       <img
@@ -617,7 +617,7 @@ export default function CreatePostModal({
       {/* Modal */}
       <div
         className="relative z-10 flex w-full max-w-4xl max-h-screen md:max-h-[94vh] flex-col overflow-hidden
-        rounded-0 md:rounded-3xl border border-white/60 bg-white shadow-[0_25px_80px_rgba(0,0,0,0.18)] animate-fadeIn"
+        rounded-0 md:rounded-3xl border border-border bg-card shadow-[0_25px_80px_rgba(0,0,0,0.18)] animate-fadeIn"
         onDragEnter={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -640,14 +640,14 @@ export default function CreatePostModal({
         {/* Drag overlay */}
         {isDragging && (
           <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/25 backdrop-blur-sm">
-            <div className="rounded-xl border border-white/40 bg-white/90 px-8 py-7 text-center shadow-xl">
-              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-gray-100 text-gray-700">
+            <div className="rounded-xl border border-border bg-card/90 px-8 py-7 text-center shadow-xl">
+              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-muted text-foreground/75">
                 <i className="fa-duotone fa-cloud-arrow-up text-2xl" />
               </div>
-              <p className="text-base font-semibold text-gray-900">
+              <p className="text-base font-semibold text-foreground">
                 Thả ảnh vào đây
               </p>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Ảnh sẽ được thêm ngay vào bài viết
               </p>
             </div>
@@ -655,10 +655,10 @@ export default function CreatePostModal({
         )}
 
         {/* Header */}
-        <div className="sticky top-0 z-20 border-b border-gray-100/80 bg-white/90 px-5 py-4 backdrop-blur-xl sm:px-6">
+        <div className="sticky top-0 z-20 border-b border-border/80 bg-card/90 px-5 py-4 backdrop-blur-xl sm:px-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 shadow-sm">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-muted to-secondary text-foreground shadow-sm">
                 <i
                   className={`fa-duotone ${isEditMode ? "fa-pen-to-square" : "fa-feather-pointed"
                     } text-lg`}
@@ -667,11 +667,11 @@ export default function CreatePostModal({
 
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-[18px] sm:text-[20px] font-semibold text-gray-900 leading-tight">
+                  <h2 className="text-[18px] sm:text-[20px] font-semibold text-foreground leading-tight">
                     {isEditMode ? "Chỉnh sửa bài viết" : "Đăng bài viết"}
                   </h2>
                 </div>
-                <p className="mt-0.5 text-sm text-gray-500 hidden">
+                <p className="mt-0.5 text-sm text-muted-foreground hidden">
                   {isEditMode
                     ? "Sửa nội dung, thêm/xóa ảnh"
                     : "Đăng bài viết hoặc hình ảnh"}
@@ -682,7 +682,7 @@ export default function CreatePostModal({
             <button
               type="button"
               onClick={handleSafeClose}
-              className="flex h-11 w-11 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
+              className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground cursor-pointer"
               aria-label="Đóng"
             >
               <i className="fa-duotone fa-xmark text-2xl" />
@@ -691,17 +691,17 @@ export default function CreatePostModal({
         </div>
 
         {/* Scroll body */}
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-6 bg-white">
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-6 bg-card">
           <div className="space-y-6">
             {/* Editor */}
-            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
-              <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/70 px-4 py-3">
-                <div className="inline-flex items-center gap-2 text-sm font-medium text-gray-600">
+            <div className="overflow-hidden rounded-xl border border-border bg-card shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
+              <div className="flex items-center justify-between border-b border-border bg-muted/70 px-4 py-3">
+                <div className="inline-flex items-center gap-2 text-sm font-medium text-foreground/75">
                   <i className="fa-duotone fa-file-lines" />
                   <span>Nội dung bài viết</span>
                 </div>
 
-                <div className="text-xs font-medium text-gray-400">
+                <div className="text-xs font-medium text-muted-foreground">
                   {content.length} ký tự
                 </div>
               </div>
@@ -726,7 +726,7 @@ export default function CreatePostModal({
                       ? "Chỉnh sửa nội dung bài viết..."
                       : "Bạn đang nghĩ gì?"
                   }
-                  className="w-full bg-transparent text-base/6 text-gray-900 placeholder:text-gray-400 outline-none resize-none overflow-hidden min-h-[1rem] align-top"
+                  className="w-full bg-transparent text-base/6 text-foreground placeholder:text-muted-foreground outline-none resize-none overflow-hidden min-h-[1rem] align-top"
                 />
 
                 {/* Nút Bold floating right
@@ -735,7 +735,7 @@ export default function CreatePostModal({
                     type="button"
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={handleWrapBold}
-                    className="absolute z-20 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/95 px-3 py-2 text-xs font-medium text-gray-700 shadow-md backdrop-blur-sm transition hover:bg-gray-50"
+                    className="absolute z-20 inline-flex items-center gap-2 rounded-full border border-border bg-card/95 px-3 py-2 text-xs font-medium text-foreground/75 shadow-md backdrop-blur-sm transition hover:bg-muted/50"
                     style={{
                       top: selectionHint.top,
                       left: selectionHint.left,
@@ -748,12 +748,12 @@ export default function CreatePostModal({
                 */}
 
 
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     <button
                       type="button"
                       onClick={handleWrapBold}
-                      className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 transition hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
+                      className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 transition hover:bg-secondary active:bg-border cursor-pointer"
                     >
                       <i className="fa-duotone fa-bold" />
                       In đậm
@@ -762,7 +762,7 @@ export default function CreatePostModal({
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 transition hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
+                      className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 transition hover:bg-secondary active:bg-border cursor-pointer"
                     >
                       <i className="fa-duotone fa-image" />
                       Ảnh
@@ -777,12 +777,12 @@ export default function CreatePostModal({
             <div className="space-y-3">
               <div className="flex flex-wrap items-end justify-between gap-3">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-foreground">
                     Hình ảnh
                   </h3>
                 </div>
 
-                <div className="text-sm font-medium text-gray-400">
+                <div className="text-sm font-medium text-muted-foreground">
                   {imageItems.length > 0
                     ? `${imageItems.length} ảnh hiện có`
                     : "Chưa có ảnh"}
@@ -813,7 +813,7 @@ export default function CreatePostModal({
                   </SortableContext>
                   <DragOverlay>
                     {activeDragItem ? (
-                      <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-lg opacity-95 w-full max-w-[260px]">
+                      <div className="overflow-hidden rounded-xl border border-border bg-muted shadow-lg opacity-95 w-full max-w-[260px]">
                         <img
                           src={getOptimizedPreviewUrl(activeDragItem.url, 240, 180)}
                           alt=""
@@ -827,15 +827,15 @@ export default function CreatePostModal({
               ) : (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex min-h-[180px] cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50/70 px-6 py-10 text-center transition hover:border-gray-400 hover:bg-gray-50"
+                  className="flex min-h-[180px] cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/70 px-6 py-10 text-center transition hover:border-ring hover:bg-muted/50"
                 >
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-muted text-foreground/75">
                     <i className="fa-duotone fa-image text-2xl" />
                   </div>
-                  <p className="text-base font-semibold text-gray-900">
+                  <p className="text-base font-semibold text-foreground">
                     Chưa có ảnh nào
                   </p>
-                  <p className="mt-1 max-w-md text-sm text-gray-500">
+                  <p className="mt-1 max-w-md text-sm text-muted-foreground">
                     Nhấn để chọn ảnh, kéo thả hoặc dán ảnh trực tiếp
                   </p>
                 </div>
@@ -845,21 +845,21 @@ export default function CreatePostModal({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 z-20 border-t border-gray-100/80 bg-white/90 px-5 py-4 backdrop-blur-xl sm:px-6">
+        <div className="sticky bottom-0 z-20 border-t border-border/80 bg-card/90 px-5 py-4 backdrop-blur-xl sm:px-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
-              <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-gray-700">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-foreground/75">
                 <i className="fa-duotone fa-pen" />
                 {content.length} ký tự
               </span>
 
-              <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-gray-700">
+              <span className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-foreground/75">
                 <i className="fa-duotone fa-image" />
                 {imageItems.length} ảnh
               </span>
 
               {isEditMode && removedExistingPublicIds.length > 0 && (
-                <span className="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1.5 text-red-600">
+                <span className="inline-flex items-center gap-2 rounded-full bg-red-50 dark:bg-red-400/15 px-3 py-1.5 text-red-600 dark:text-red-300">
                   <i className="fa-duotone fa-trash" />
                   {removedExistingPublicIds.length} ảnh sẽ bị xóa
                 </span>
@@ -870,7 +870,7 @@ export default function CreatePostModal({
               <button
                 type="button"
                 onClick={handleSafeClose}
-                className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50 cursor-pointer"
+                className="inline-flex items-center justify-center rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium text-foreground/75 transition hover:bg-muted/50 cursor-pointer"
               >
                 Hủy
               </button>
@@ -878,7 +878,7 @@ export default function CreatePostModal({
               <button
                 onClick={handleSubmit}
                 disabled={loading || (isEditMode ? !canSubmitEdit : !canSubmitCreate)}
-                className="inline-flex min-w-[170px] items-center justify-center gap-2 rounded-xl bg-gray-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer shadow-lg shadow-gray-900/10"
+                className="inline-flex min-w-[170px] items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer shadow-lg shadow-primary/10"
               >
                 {loading ? (
                   <>

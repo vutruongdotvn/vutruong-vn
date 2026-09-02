@@ -298,29 +298,29 @@ export default function ProfilePage() {
           className="max-w-6xl px-0 sm:px-4" contentClassName="p-4"
         >
           <div className="animate-pulse">
-            <div className="mx-auto mb-8 h-10 w-40 rounded-full bg-black/10" />
-            <div className="mx-auto mb-4 h-10 w-56 rounded-xl bg-black/10" />
-            <div className="mx-auto mb-10 h-5 w-80 rounded-xl bg-black/10" />
+            <div className="mx-auto mb-8 h-10 w-40 rounded-full bg-foreground/10" />
+            <div className="mx-auto mb-4 h-10 w-56 rounded-xl bg-foreground/10" />
+            <div className="mx-auto mb-10 h-5 w-80 rounded-xl bg-foreground/10" />
 
             <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
-              <div className="rounded-[32px] border border-black/5 bg-white/55 p-6">
-                <div className="mx-auto mb-6 h-32 w-32 rounded-full bg-black/10" />
+              <div className="rounded-[32px] border border-border bg-card/55 p-6">
+                <div className="mx-auto mb-6 h-32 w-32 rounded-full bg-foreground/10" />
                 <div className="space-y-4">
-                  <div className="h-5 w-24 rounded bg-black/10" />
-                  <div className="h-12 rounded-xl bg-black/10" />
-                  <div className="h-5 w-28 rounded bg-black/10" />
-                  <div className="h-12 rounded-xl bg-black/10" />
-                  <div className="h-12 rounded-full bg-black/10" />
+                  <div className="h-5 w-24 rounded bg-foreground/10" />
+                  <div className="h-12 rounded-xl bg-foreground/10" />
+                  <div className="h-5 w-28 rounded bg-foreground/10" />
+                  <div className="h-12 rounded-xl bg-foreground/10" />
+                  <div className="h-12 rounded-full bg-foreground/10" />
                 </div>
               </div>
 
-              <div className="rounded-[32px] border border-black/5 bg-white/55 p-6">
-                <div className="mb-4 h-5 w-28 rounded bg-black/10" />
+              <div className="rounded-[32px] border border-border bg-card/55 p-6">
+                <div className="mb-4 h-5 w-28 rounded bg-foreground/10" />
                 <div className="grid grid-cols-2 gap-4">
                   {[...Array(4)].map((_, i) => (
                     <div
                       key={i}
-                      className="aspect-square rounded-3xl bg-black/10"
+                      className="aspect-square rounded-3xl bg-foreground/10"
                     />
                   ))}
                 </div>
@@ -346,16 +346,16 @@ export default function ProfilePage() {
                 alt="avatar"
                 width={72}
                 height={72}
-                className="rounded-full object-cover border border-white/60 shadow-sm"
+                className="rounded-full object-cover border border-border shadow-sm"
                 onError={() => setAvatar(DEFAULT_AVATAR)}
               />
             </div>
 
             <div>
-              <p className="text-lg sm:text-xl font-semibold text-neutral-900">
+              <p className="text-lg sm:text-xl font-semibold text-foreground">
                 Hello 👋
               </p>
-              <p className="mt-2 text-sm sm:text-base text-neutral-500">
+              <p className="mt-2 text-sm sm:text-base text-muted-foreground">
                 Bạn chưa đăng nhập.
               </p>
             </div>
@@ -377,8 +377,8 @@ export default function ProfilePage() {
             }
           }}
         >
-          <div className="w-full max-w-sm rounded-3xl border border-white/20 bg-white/95 p-5 shadow-2xl backdrop-blur-xl space-y-4">
-            <div className="relative h-[280px] w-full overflow-hidden rounded-xl bg-black/5">
+          <div className="w-full max-w-sm rounded-3xl border border-border bg-card/95 p-5 shadow-2xl backdrop-blur-xl space-y-4">
+            <div className="relative h-[280px] w-full overflow-hidden rounded-xl bg-foreground/5">
               <Cropper
                 cropShape="round"
                 showGrid={false}
@@ -404,21 +404,21 @@ export default function ProfilePage() {
               step={0.1}
               value={zoom}
               onChange={(e) => setZoom(Number(e.target.value))}
-              className="w-full accent-neutral-900"
+              className="w-full accent-primary"
             />
 
             <div className="flex gap-3">
               <button
                 onClick={() => !isCropping && setCropImage(null)}
                 disabled={isCropping}
-                className="flex-1 rounded-full border border-black/10 bg-black/5 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-black/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 rounded-full border border-border bg-foreground/5 py-2.5 text-sm font-medium text-foreground/75 transition hover:bg-foreground/10 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Huỷ
               </button>
               <button
                 onClick={handleCropSave}
                 disabled={isCropping}
-                className="flex-1 rounded-full bg-neutral-900 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
+                className="flex-1 rounded-full bg-primary py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90"
               >
                 {isCropping ? "Đang lưu" : "Xác nhận"}
               </button>
@@ -433,34 +433,34 @@ export default function ProfilePage() {
         <div className="space-y-10">
           <div className="text-center">
             <div className="mb-5 flex justify-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-sky-300 bg-sky-100 px-4 py-1.5 text-xs font-medium text-neutral-600 backdrop-blur">
+              <span className="inline-flex items-center gap-2 rounded-full border border-sky-300 dark:border-sky-400/25 bg-sky-100 dark:bg-sky-400/15 px-4 py-1.5 text-xs font-medium text-foreground/75 backdrop-blur">
                 <i className="fa-duotone fa-user-gear text-sky-500" />
                 Hồ sơ cá nhân
               </span>
             </div>
 
-            <h1 className="text-4xl font-semibold tracking-tight text-neutral-900 sm:text-5xl">
+            <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
               Profile
             </h1>
-            <p className="mt-3 text-sm leading-7 text-neutral-500 md:text-base">
+            <p className="mt-3 text-sm leading-7 text-muted-foreground md:text-base">
               Cập nhật tên, ảnh đại diện và mật khẩu.
             </p>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
-            <section className="relative overflow-hidden rounded-[34px] border border-black/5 bg-white/60 p-6 shadow-[0_16px_60px_rgba(0,0,0,0.05)] backdrop-blur-xl sm:p-8">
+            <section className="relative overflow-hidden rounded-[34px] border border-border bg-card/60 p-6 shadow-[0_16px_60px_rgba(0,0,0,0.05)] backdrop-blur-xl sm:p-8">
               <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-sky-100/35 to-transparent pointer-events-none" />
               <div className="absolute -bottom-10 left-1/2 h-32 w-32 -translate-x-1/2 rounded-full bg-sky-100/25 blur-3xl pointer-events-none" />
 
               <div className="relative mb-8 text-center">
                 <label className="relative mx-auto block h-36 w-36 cursor-pointer group/avatar-main">
-                  <div className="absolute -inset-3 rounded-full bg-gradient-to-br from-sky-200/50 via-white/0 to-purple-200/40 blur-2xl opacity-90" />
+                  <div className="absolute -inset-3 rounded-full bg-gradient-to-br from-sky-200/50 via-card/0 to-purple-200/40 blur-2xl opacity-90 dark:from-sky-400/20 dark:to-purple-400/15" />
 
                   <img
                     src={optimizedAvatar}
                     alt="avatar"
                     sizes="144px"
-                    className="relative rounded-full object-cover border border-white/80 shadow-[0_14px_50px_rgba(0,0,0,0.18)]"
+                    className="relative rounded-full object-cover border border-border shadow-[0_14px_50px_rgba(0,0,0,0.18)]"
                     onError={() => setAvatar(DEFAULT_AVATAR)}
                   />
 
@@ -478,7 +478,7 @@ export default function ProfilePage() {
                   />
                 </label>
 
-                <p className="mt-5 text-sm text-neutral-500">
+                <p className="mt-5 text-sm text-muted-foreground">
                   Nhấn vào ảnh để tải avatar mới
                 </p>
               </div>
@@ -486,22 +486,22 @@ export default function ProfilePage() {
               <div className="relative space-y-5">
                 <div>
                   <div className="mb-2 flex items-center gap-2">
-                    <i className="fa-duotone fa-signature text-neutral-400 text-sm" />
-                    <label className="text-sm font-medium text-neutral-700">
+                    <i className="fa-duotone fa-signature text-muted-foreground text-sm" />
+                    <label className="text-sm font-medium text-foreground/75">
                       Tên hiển thị
                     </label>
                   </div>
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full rounded-xl border border-black/10 bg-white/80 px-4 py-3.5 text-sm text-neutral-900 outline-none backdrop-blur transition focus:border-black/20 focus:bg-white focus:shadow-[0_0_0_4px_rgba(0,0,0,0.03)]"
+                    className="w-full rounded-xl border border-border bg-card/80 px-4 py-3.5 text-sm text-foreground outline-none backdrop-blur transition focus:border-border focus:bg-card focus:shadow-[0_0_0_4px_rgba(0,0,0,0.03)]"
                   />
                 </div>
 
                 <div>
                   <div className="mb-2 flex items-center gap-2">
-                    <i className="fa-duotone fa-lock-keyhole text-neutral-400 text-sm" />
-                    <label className="text-sm font-medium text-neutral-700">
+                    <i className="fa-duotone fa-lock-keyhole text-muted-foreground text-sm" />
+                    <label className="text-sm font-medium text-foreground/75">
                       Mật khẩu mới
                     </label>
                   </div>
@@ -510,7 +510,7 @@ export default function ProfilePage() {
                     placeholder="Nhập mật khẩu mới"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full rounded-xl border border-black/10 bg-white/80 px-4 py-3.5 text-sm text-neutral-900 outline-none backdrop-blur transition focus:border-black/20 focus:bg-white focus:shadow-[0_0_0_4px_rgba(0,0,0,0.03)]"
+                    className="w-full rounded-xl border border-border bg-card/80 px-4 py-3.5 text-sm text-foreground outline-none backdrop-blur transition focus:border-border focus:bg-card focus:shadow-[0_0_0_4px_rgba(0,0,0,0.03)]"
                   />
                 </div>
 
@@ -519,8 +519,8 @@ export default function ProfilePage() {
                     onClick={handleSave}
                     disabled={!isChanged || saving}
                     className={`w-full rounded-full py-3.5 text-sm font-medium text-white shadow-sm transition ${!isChanged || saving
-                      ? "cursor-not-allowed bg-neutral-300"
-                      : "bg-neutral-900 hover:opacity-90 hover:shadow-md cursor-pointer"
+                      ? "cursor-not-allowed bg-border"
+                      : "bg-primary hover:opacity-90 hover:shadow-md cursor-pointer"
                       }`}
                   >
                     {saving ? "Đang lưu" : "Lưu thay đổi"}
@@ -529,17 +529,17 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            <section className="relative overflow-hidden rounded-[34px] border border-black/5 bg-white/60 p-6 shadow-[0_16px_60px_rgba(0,0,0,0.05)] backdrop-blur-xl sm:p-8">
+            <section className="relative overflow-hidden rounded-[34px] border border-border bg-card/60 p-6 shadow-[0_16px_60px_rgba(0,0,0,0.05)] backdrop-blur-xl sm:p-8">
               <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-purple-100/25 to-transparent pointer-events-none" />
 
               <div className="relative mb-6">
                 <div className="mb-2 flex items-center gap-2">
-                  <i className="fa-duotone fa-images text-neutral-400 text-sm" />
-                  <h2 className="text-lg font-semibold text-neutral-900">
+                  <i className="fa-duotone fa-images text-muted-foreground text-sm" />
+                  <h2 className="text-lg font-semibold text-foreground">
                     Avatar cũ
                   </h2>
                 </div>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-muted-foreground">
                   Chọn lại avatar đã từng sử dụng.
                 </p>
               </div>
@@ -549,15 +549,15 @@ export default function ProfilePage() {
                   {[...Array(4)].map((_, i) => (
                     <div
                       key={i}
-                      className="aspect-square rounded-3xl bg-black/10 animate-pulse"
+                      className="aspect-square rounded-3xl bg-foreground/10 animate-pulse"
                     />
                   ))}
                 </div>
               ) : avatars.length === 0 ? (
-                <div className="flex aspect-[1.1/1] items-center justify-center rounded-2xl border border-dashed border-black/10 bg-black/[0.02] text-center">
+                <div className="flex aspect-[1.1/1] items-center justify-center rounded-2xl border border-dashed border-border bg-black/[0.02] text-center">
                   <div>
-                    <i className="fa-duotone fa-image-slash text-2xl text-neutral-300" />
-                    <p className="mt-3 text-sm text-neutral-400">
+                    <i className="fa-duotone fa-image-slash text-2xl text-muted-foreground" />
+                    <p className="mt-3 text-sm text-muted-foreground">
                       Chưa có avatar nào
                     </p>
                   </div>
@@ -567,7 +567,7 @@ export default function ProfilePage() {
                   {avatars.map((item) => (
                     <div
                       key={item.id}
-                      className="group/avatar relative overflow-hidden rounded-3xl border border-white/70 bg-white/40 shadow-sm"
+                      className="group/avatar relative overflow-hidden rounded-3xl border border-border bg-card/40 shadow-sm"
                     >
                       <img
                         src={getProfileManagerAvatarImage(
@@ -585,14 +585,14 @@ export default function ProfilePage() {
                       />
 
                       {item.url === avatar && (
-                        <div className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-medium text-neutral-700 shadow-sm backdrop-blur">
+                        <div className="absolute left-3 top-3 rounded-full bg-card/90 px-2.5 py-1 text-[11px] font-medium text-foreground/75 shadow-sm backdrop-blur">
                           Hiện tại
                         </div>
                       )}
 
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/55 opacity-0 transition group-hover/avatar:opacity-100">
                         <button
-                          className="rounded-full bg-white/95 px-5 py-2 text-sm font-medium shadow-sm transition hover:scale-[1.02] cursor-pointer"
+                          className="rounded-full bg-card/95 px-5 py-2 text-sm font-medium shadow-sm transition hover:scale-[1.02] cursor-pointer"
                           onClick={() => handleReuse(item.url)}
                         >
                           Sử dụng

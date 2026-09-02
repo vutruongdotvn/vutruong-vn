@@ -51,7 +51,7 @@ export default function ModalPostHeader({
       <div className="flex items-center gap-1.5 min-w-0 leading-tight">
         <Link
           href="/blog/about"
-          className="inline-flex max-w-full items-center gap-1 rounded-sm text-sm font-medium text-slate-700 hover:text-slate-950 focus-visible:outline-none"
+          className="inline-flex max-w-full items-center gap-1 rounded-sm text-sm font-medium text-foreground/75 hover:text-foreground focus-visible:outline-none"
         >
           <span className="truncate">{name}</span>
           <i
@@ -60,7 +60,7 @@ export default function ModalPostHeader({
           />
         </Link>
 
-        <div className="mt-0.5 flex items-center gap-1 text-xs text-slate-500">
+        <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
           <time
             dateTime={createdAt}
             title={fullTime}
@@ -68,11 +68,11 @@ export default function ModalPostHeader({
           >
             {hasValidDate ? formatTimeAgo(createdAt) : "Không rõ thời gian"}
           </time>
-          <span className="text-slate-400 mx-0.25" aria-hidden="true">•</span>
+          <span className="text-muted-foreground mx-0.25" aria-hidden="true">•</span>
           <i
             className={`fadt text-[12px] ${
               visibility === "privacy"
-                ? "fa-lock-keyhole text-red-600"
+                ? "fa-lock-keyhole text-red-600 dark:text-red-300"
                 : "fa-earth-asia"
             }`}
             title={

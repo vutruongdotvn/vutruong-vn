@@ -9,6 +9,7 @@ import { ToastProvider } from "@/components/ui/ToastProvider";
 import ConditionalPageTransition from "@/components/ConditionalPageTransition";
 import LiquidMenu from "@/components/LiquidMenu";
 import RouteChangeIndicator from "@/components/RouteChangeIndicator";
+import ThemeProvider from "@/components/theme/ThemeProvider";
 
 // Cache trong 1 giờ, hoặc thậm chí 1 ngày (86400)
 export const revalidate = 86400;
@@ -101,7 +102,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" id="vt-zone" className={`${roboto.variable}`}>
+    <html
+      lang="vi"
+      id="vt-zone"
+      className={roboto.variable}
+      suppressHydrationWarning
+    >
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -110,10 +116,11 @@ export default function RootLayout({
         <link href="//kit-pro.fontawesome.com/releases/v7.3.1/css/pro.min.css" rel="stylesheet" />
       </head>
 
-      <body className="antialiased bg-[#f2f3f5]">
-        <Suspense fallback={null}>
-          <RouteChangeIndicator />
-        </Suspense>
+      <body className="bg-background antialiased text-foreground">
+        <ThemeProvider>
+          <Suspense fallback={null}>
+            <RouteChangeIndicator />
+          </Suspense>
 
         {/* Background ô vuông 
         <div
@@ -129,19 +136,18 @@ export default function RootLayout({
         */}
 
 
-        <ToastProvider>
-          <AuthProvider>
-            <LayoutShell>
-              <ConditionalPageTransition>
-                {children}
-              </ConditionalPageTransition>
-            </LayoutShell>
-          </AuthProvider>
-        </ToastProvider>
+          <ToastProvider>
+            <AuthProvider>
+              <LayoutShell>
+                <ConditionalPageTransition>
+                  {children}
+                </ConditionalPageTransition>
+              </LayoutShell>
+            </AuthProvider>
+          </ToastProvider>
 
-
-        <LiquidMenu />
-
+          <LiquidMenu />
+        </ThemeProvider>
       </body>
     </html>
   );

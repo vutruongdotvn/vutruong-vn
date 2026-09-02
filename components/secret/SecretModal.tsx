@@ -105,18 +105,18 @@ export default function SecretModal({ isOpen, onClose, onSuccess, editingItem }:
     <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-6">
       {/* 🚀 Thay onClose thành handleClose ở Backdrop */}
       <div className="absolute inset-0 bg-black/20 backdrop-blur-xs transition-opacity" onClick={handleClose} />
-      <div className="relative w-full max-w-3xl bg-white sm:rounded-2xl shadow-2xl flex flex-col max-h-full animate-fadeIn">
+      <div className="relative w-full max-w-3xl bg-card sm:rounded-2xl shadow-2xl flex flex-col max-h-full animate-fadeIn">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50 rounded-t-2xl">
-          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2.5 text-sky-600">
-            <div className="w-8 h-8 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-muted/50 rounded-t-2xl">
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2.5 text-sky-600 dark:text-sky-300">
+            <div className="w-8 h-8 rounded-lg bg-sky-100 dark:bg-sky-400/15 text-sky-600 dark:text-sky-300 flex items-center justify-center">
               <i className={`fa-duotone ${editingItem ? 'fa-pen-to-square' : 'fa-shield-plus'} text-lg`} />
             </div>
             {editingItem ? "Chỉnh sửa tài khoản" : "Thêm tài khoản mới"}
           </h2>
           {/* 🚀 Thay onClose thành handleClose ở nút X */}
-          <button onClick={handleClose} className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-200 transition cursor-pointer active:scale-95">
+          <button onClick={handleClose} className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground/75 hover:bg-secondary transition cursor-pointer active:scale-95">
             <i className="fa-duotone fa-xmark text-xl" />
           </button>
         </div>
@@ -126,44 +126,44 @@ export default function SecretModal({ isOpen, onClose, onSuccess, editingItem }:
 
           {/* Brand */}
           <div className="relative">
-            <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-white flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider">
+            <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-card flex items-center gap-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider">
               Tên Brand / Dịch vụ *
             </label>
             <input autoComplete="off" name="title" value={formData.title} onChange={handleChange} placeholder="VD: Google, Facebook, VNeID..."
-              className="w-full p-4 border border-2 border-gray-200 rounded-md outline-sky-500 transition-colors" />
+              className="w-full p-4 border border-2 border-border rounded-md outline-sky-500 transition-colors" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Cột 1 */}
             <div className="space-y-4">
               <div className="relative">
-                <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-white flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider">Tài khoản (Username)</label>
+                <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-card flex items-center gap-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider">Tài khoản (Username)</label>
                 <input autoComplete="off" name="account" value={formData.account || ""} onChange={handleChange} placeholder="Tên đăng nhập"
-                  className="w-full p-4 border border-2 border-gray-200 rounded-md outline-sky-500 transition-colors" />
+                  className="w-full p-4 border border-2 border-border rounded-md outline-sky-500 transition-colors" />
               </div>
               <div className="relative">
-                <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-white flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider">Email đăng nhập</label>
-                <input autoComplete="off" name="email" value={formData.email || ""} onChange={handleChange} placeholder="Địa chỉ Email" className="w-full p-4 border border-2 border-gray-200 rounded-md outline-sky-500 transition-colors" />
+                <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-card flex items-center gap-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider">Email đăng nhập</label>
+                <input autoComplete="off" name="email" value={formData.email || ""} onChange={handleChange} placeholder="Địa chỉ Email" className="w-full p-4 border border-2 border-border rounded-md outline-sky-500 transition-colors" />
               </div>
               <div className="relative">
-                <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-white flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider">Số điện thoại</label>
-                <input autoComplete="off" name="phone" value={formData.phone || ""} onChange={handleChange} placeholder="Số điện thoại" className="w-full p-4 border border-2 border-gray-200 rounded-md outline-sky-500 transition-colors" />
+                <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-card flex items-center gap-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider">Số điện thoại</label>
+                <input autoComplete="off" name="phone" value={formData.phone || ""} onChange={handleChange} placeholder="Số điện thoại" className="w-full p-4 border border-2 border-border rounded-md outline-sky-500 transition-colors" />
               </div>
             </div>
 
             {/* Cột 2 */}
             <div className="space-y-4">
               <div className="relative">
-                <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-white flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider">Mật khẩu</label>
-                <input autoComplete="off" name="password" type="text" value={formData.password || ""} onChange={handleChange} placeholder="Nhập mật khẩu..." className="w-full p-4 border border-2 border-gray-200 rounded-md outline-sky-500 transition-colors" />
+                <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-card flex items-center gap-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider">Mật khẩu</label>
+                <input autoComplete="off" name="password" type="text" value={formData.password || ""} onChange={handleChange} placeholder="Nhập mật khẩu..." className="w-full p-4 border border-2 border-border rounded-md outline-sky-500 transition-colors" />
               </div>
               <div className="relative">
-                <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-white flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider">Email khôi phục</label>
-                <input autoComplete="off" name="recovery_email" value={formData.recovery_email || ""} onChange={handleChange} placeholder="Email backup..." className="w-full p-4 border border-2 border-gray-200 rounded-md outline-sky-500 transition-colors" />
+                <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-card flex items-center gap-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider">Email khôi phục</label>
+                <input autoComplete="off" name="recovery_email" value={formData.recovery_email || ""} onChange={handleChange} placeholder="Email backup..." className="w-full p-4 border border-2 border-border rounded-md outline-sky-500 transition-colors" />
               </div>
               <div className="relative">
-                <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-white flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider">SĐT khôi phục</label>
-                <input autoComplete="off" name="recovery_phone" value={formData.recovery_phone || ""} onChange={handleChange} placeholder="SĐT backup..." className="w-full p-4 border border-2 border-gray-200 rounded-md outline-sky-500 transition-colors" />
+                <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-card flex items-center gap-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider">SĐT khôi phục</label>
+                <input autoComplete="off" name="recovery_phone" value={formData.recovery_phone || ""} onChange={handleChange} placeholder="SĐT backup..." className="w-full p-4 border border-2 border-border rounded-md outline-sky-500 transition-colors" />
               </div>
             </div>
           </div>
@@ -171,15 +171,15 @@ export default function SecretModal({ isOpen, onClose, onSuccess, editingItem }:
           {/* Mật mã & Tags */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="relative">
-              <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-white flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider">Mã bí mật / PIN / 2FA</label>
-              <input autoComplete="off" name="secret_code" value={formData.secret_code || ""} onChange={handleChange} placeholder="Mã PIN, mã bảo mật..." className="w-full p-4 border border-2 border-gray-200 rounded-md outline-sky-500 transition-colors" />
+              <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-card flex items-center gap-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider">Mã bí mật / PIN / 2FA</label>
+              <input autoComplete="off" name="secret_code" value={formData.secret_code || ""} onChange={handleChange} placeholder="Mã PIN, mã bảo mật..." className="w-full p-4 border border-2 border-border rounded-md outline-sky-500 transition-colors" />
             </div>
             <div className="relative">
-              <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-white flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider">Phân loại (Tags)</label>
-              <div className="w-full p-4 border border-2 border-gray-200 rounded-md focus-within:border-sky-500 transition-colors">
+              <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-card flex items-center gap-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider">Phân loại (Tags)</label>
+              <div className="w-full p-4 border border-2 border-border rounded-md focus-within:border-sky-500 transition-colors">
                 {formData.tags?.map(tag => (
                   <span onClick={() => removeTag(tag)} key={tag}
-                    className="text-sky-600 hover:opacity-80 active:scale-95
+                    className="text-sky-600 dark:text-sky-300 hover:opacity-80 active:scale-95
                     inline-flex items-center gap-0 cursor-pointer select-none mr-1" title="Click để xóa tag">
                     <span>#</span><span>{tag}</span>
                   </span>
@@ -191,29 +191,29 @@ export default function SecretModal({ isOpen, onClose, onSuccess, editingItem }:
 
           {/* Ghi chú */}
           <div className="relative">
-            <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-white flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider">Ghi chú khác</label>
-            <textarea name="notes" value={formData.notes || ""} onChange={handleChange} rows={3} placeholder="Ghi chú cho tài khoản" className="w-full border border-2 border-gray-200 outline-sky-500 transition-colors rounded-md p-4" />
+            <label className="absolute -top-1.5 left-0 mx-2 px-2 bg-card flex items-center gap-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider">Ghi chú khác</label>
+            <textarea name="notes" value={formData.notes || ""} onChange={handleChange} rows={3} placeholder="Ghi chú cho tài khoản" className="w-full border border-2 border-border outline-sky-500 transition-colors rounded-md p-4" />
           </div>
 
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 bg-gray-50/50 rounded-b-2xl">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-muted/50 rounded-b-2xl">
           {editingItem ? (
-            <button onClick={handleDelete} disabled={loading} className="text-red-500 hover:bg-red-100 px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-2 cursor-pointer active:scale-95">
+            <button onClick={handleDelete} disabled={loading} className="text-red-500 hover:bg-red-100 dark:hover:bg-red-400/20 px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-2 cursor-pointer active:scale-95">
               <i className="fa-duotone fa-trash-can" /> Xóa
             </button>
           ) : <div />}
 
           <div className="flex items-center gap-2.5">
             {/* 🚀 Thay onClose thành handleClose ở nút Hủy */}
-            <button onClick={handleClose} className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-200 rounded-xl transition cursor-pointer active:scale-95">Hủy</button>
+            <button onClick={handleClose} className="px-5 py-2.5 text-sm font-medium text-foreground/75 hover:bg-secondary rounded-xl transition cursor-pointer active:scale-95">Hủy</button>
             
             {/* 🚀 Disable nếu đang load HOẶC chưa có chỉnh sửa gì */}
             <button 
               onClick={handleSubmit} 
               disabled={loading || !hasChanges} 
-              className="px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium rounded-xl shadow-[0_4px_12px_rgba(2,132,199,0.2)] transition cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none flex items-center gap-2"
+              className="px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium rounded-xl shadow-[0_4px_12px_rgba(2,132,199,0.2)] transition cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-border disabled:shadow-none flex items-center gap-2"
             >
               {loading ? <i className="fa-duotone fa-spinner-third fa-spin" /> : <i className="fa-duotone fa-floppy-disk" />}
               {loading ? "Đang lưu" : "Lưu"}

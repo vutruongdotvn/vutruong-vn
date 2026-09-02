@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { MenuItem } from "./types";
+import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
 
 type NavbarMoreMenuProps = {
   moreRef: React.RefObject<HTMLDivElement | null>;
@@ -43,8 +44,8 @@ export default function NavbarMoreMenu({
           text-sm font-medium active:scale-95 transition-all duration-300
           ${
             moreMenu.some((item) => isActive(item.href))
-              ? "bg-gray-900 text-white shadow-lg"
-              : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
+              ? "bg-nav-active text-nav-active-foreground shadow-lg"
+              : "text-foreground/75 hover:text-foreground hover:bg-secondary"
           }
         `}
         aria-label="Open more menu"
@@ -66,7 +67,7 @@ export default function NavbarMoreMenu({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 1 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="absolute right-0 top-[calc(100%+9px)] w-72 rounded-xl bg-white shadow-[0_10px_40px_rgba(0,0,0,0.14)] p-3"
+            className="absolute right-0 top-[calc(100%+9px)] w-72 rounded-xl bg-card shadow-[0_10px_40px_rgba(0,0,0,0.14)] p-3"
           >
 
             <div className="flex flex-col gap-1.5">
@@ -82,8 +83,8 @@ export default function NavbarMoreMenu({
                       flex items-center justify-between rounded-2xl px-4 py-3
                       ${
                         active
-                          ? "bg-gray-900 text-white shadow-sm"
-                          : "text-gray-700 hover:bg-gray-100 active:bg-gray-200 active:scale-97"
+                          ? "bg-nav-active text-nav-active-foreground shadow-sm"
+                          : "text-foreground/75 hover:bg-muted active:bg-secondary active:scale-97"
                       }
                     `}
                   >
@@ -93,26 +94,33 @@ export default function NavbarMoreMenu({
                     </div>
 
                     {active ? (
-                      <span className="w-2 h-2 rounded-full bg-white/90" />
+                      <span className="w-2 h-2 rounded-full bg-nav-active-foreground/75" />
                     ) : (
-                      <i className="fa-duotone fa-arrow-up-right text-xs text-gray-400" />
+                      <i className="fa-duotone fa-arrow-up-right text-xs text-muted-foreground" />
                     )}
                   </Link>
                 );
               })}
             </div>
+
+            <div className="mt-3 border-t border-border pt-3">
+              <p className="mb-2 px-1 text-xs font-medium text-muted-foreground">
+                Giao diện
+              </p>
+              <ThemeSwitcher />
+            </div>
             
             {/*
-            <div className="mt-3 border-t border-gray-200/70 pt-3 px-1 flex items-center gap-2">
+            <div className="mt-3 border-t border-border/70 pt-3 px-1 flex items-center gap-2">
               <button
                 onClick={onScrollTop}
-                className="flex-1 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-3 transition-all cursor-pointer"
+                className="flex-1 rounded-2xl bg-muted hover:bg-secondary text-foreground/75 text-sm font-medium px-4 py-3 transition-all cursor-pointer"
               >
                 <i className="fa-duotone fa-arrow-up" />
               </button>
               <button
                 onClick={onRefreshCurrent}
-                className="flex-1 rounded-2xl bg-black text-white hover:opacity-90 text-sm font-medium px-4 py-3 transition-all cursor-pointer"
+                className="flex-1 rounded-2xl bg-primary text-primary-foreground hover:opacity-90 text-sm font-medium px-4 py-3 transition-all cursor-pointer"
               >
                 <i className="fa-duotone fa-arrows-rotate" />
               </button>

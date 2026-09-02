@@ -397,9 +397,9 @@ export default function BlogTagPage() {
         <>
 
           <div className="space-y-6">
-            <div className="flex items-center justify-between rounded-2xl bg-white/80 backdrop-blur-md px-4 py-5 animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-              <div className="w-40 h-5 bg-gray-200 rounded-xl" />
-              <div className="w-25 h-5 bg-gray-200 rounded-xl" />
+            <div className="flex items-center justify-between rounded-2xl bg-card/80 backdrop-blur-md px-4 py-5 animate-pulse shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+              <div className="w-40 h-5 bg-secondary rounded-xl" />
+              <div className="w-25 h-5 bg-secondary rounded-xl" />
             </div>
 
             <PostCardSkeleton count={LIMIT} />
@@ -410,17 +410,17 @@ export default function BlogTagPage() {
       {isReady && (
         <>
 
-          <div className="p-3 sm:p-4 border-b border-slate-200">
+          <div className="p-3 sm:p-4 border-b border-border">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div>
-                <h1 className="text-base text-gray-800">
+                <h1 className="text-base text-foreground">
                   <span>
                     <i className="fa-duotone fa-tags me-2"/>
                     {totalPosts > 0
                       ? `${totalPosts} bài viết có `
                       : `Hông có bài viết nào có `}
                   </span>
-                  <span className="text-gray-800 font-semibold hover:text-black">
+                  <span className="text-foreground font-semibold hover:text-foreground">
                     {displayTag}
                   </span>
                 </h1>
@@ -428,7 +428,7 @@ export default function BlogTagPage() {
 
               <Link
                 href="/blog"
-                className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-black active:scale-97 transition"
+                className="inline-flex items-center gap-2 text-sm font-medium text-foreground/75 hover:text-foreground active:scale-97 transition"
               >
                 <i className="fa-duotone fa-arrow-left" />
                 Quay lại
@@ -437,13 +437,13 @@ export default function BlogTagPage() {
           </div>
 
           {/*user && role !== "admin" && (
-            <p className="text-center text-gray-500 text-sm">
+            <p className="text-center text-muted-foreground text-sm">
               Bạn chỉ có quyền xem bài viết 👀
             </p>
           )*/}
 
           {!loading && posts.length === 0 && (
-            <div className="text-center text-gray-500 py-8">
+            <div className="text-center text-muted-foreground py-8">
               Chưa có bài viết nào có hashtag{" "}
               <span className="font-medium">{displayTag}</span> cả 🧐
             </div>
@@ -466,7 +466,7 @@ export default function BlogTagPage() {
           <div ref={loadMoreRef}></div>
 
           {/* {!loading && posts.length > 0 && !hasMore && (
-            <div className="text-center text-sm text-slate-400 py-6">Không còn kết quả nào khác</div>
+            <div className="text-center text-sm text-muted-foreground py-6">Không còn kết quả nào khác</div>
           )} */}
 
           {user && role === "admin" && (

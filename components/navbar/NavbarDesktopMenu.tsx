@@ -77,7 +77,7 @@ export default function NavbarDesktopMenu({
             stiffness: 350,
             damping: 20,
           }}
-          className="pointer-events-none absolute left-0 top-0 h-full rounded-full bg-black shadow-lg"
+          className="pointer-events-none absolute left-0 top-0 h-full rounded-full bg-nav-active shadow-lg"
         />
       )}
 
@@ -98,8 +98,8 @@ export default function NavbarDesktopMenu({
               text-sm font-medium active:scale-95 transition-colors duration-300
               ${
                 active
-                  ? "text-white"
-                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
+                  ? "text-nav-active-foreground"
+                  : "text-foreground/75 hover:text-foreground hover:bg-secondary"
               }
             `}
           >
@@ -114,7 +114,7 @@ export default function NavbarDesktopMenu({
             </span>
 
             {active && (
-              <span className="relative z-10 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/90" />
+              <span className="relative z-10 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-nav-active-foreground/75" />
             )}
           </Link>
         );

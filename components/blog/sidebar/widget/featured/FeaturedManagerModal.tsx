@@ -473,10 +473,10 @@ export default function FeaturedManagerModal({
         if (event.target === event.currentTarget && !busy) onClose();
       }}
     >
-      <div className="flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl animate-fadeIn">
-        <header className="flex shrink-0 items-center justify-between border-b border-black/5 px-4 py-3 sm:px-6">
+      <div className="flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-card shadow-2xl animate-fadeIn">
+        <header className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3 sm:px-6">
           <div>
-            <h2 className="font-medium text-base sm:text-lg text-neutral-900">
+            <h2 className="font-medium text-base sm:text-lg text-foreground">
               Quản lý Tin nổi bật
             </h2>
           </div>
@@ -486,7 +486,7 @@ export default function FeaturedManagerModal({
             onClick={onClose}
             disabled={busy}
             aria-label="Đóng"
-            className="flex size-9 cursor-pointer items-center justify-center rounded-full bg-neutral-100 text-neutral-600 transition hover:bg-neutral-200 hover:text-neutral-900 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex size-9 cursor-pointer items-center justify-center rounded-full bg-muted text-foreground/75 transition hover:bg-secondary hover:text-foreground active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <i className="fad fa-xmark" aria-hidden="true" />
           </button>
@@ -495,14 +495,14 @@ export default function FeaturedManagerModal({
         <div className="overscroll-contain overflow-y-auto p-4 sm:p-6">
           <section>
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-neutral-800">
+              <h3 className="text-sm font-semibold text-foreground">
                 Danh sách story
               </h3>
               <button
                 type="button"
                 onClick={handleCreateStory}
                 disabled={busy}
-                className="cursor-pointer rounded-lg bg-neutral-900 px-3 py-2 text-xs font-medium text-white transition hover:bg-black active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                className="cursor-pointer rounded-lg bg-primary px-3 py-2 text-xs font-medium text-primary-foreground transition hover:bg-primary/90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <i className="fad fa-plus mr-1.5" aria-hidden="true" />
                 Tạo story
@@ -522,7 +522,7 @@ export default function FeaturedManagerModal({
                     className={`group relative aspect-[3/4] cursor-pointer overflow-hidden rounded-xl border-2 transition active:scale-[.98] ${
                       selected
                         ? "border-sky-500 ring-2 ring-sky-100"
-                        : "border-transparent bg-neutral-100 hover:border-neutral-300"
+                        : "border-transparent bg-muted hover:border-border"
                     }`}
                   >
                     {cover ? (
@@ -535,7 +535,7 @@ export default function FeaturedManagerModal({
                         className="object-cover"
                       />
                     ) : (
-                      <span className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-neutral-400">
+                      <span className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-muted-foreground">
                         <i className="fad fa-image" aria-hidden="true" />
                         <span className="text-[10px]">Chưa có ảnh</span>
                       </span>
@@ -553,7 +553,7 @@ export default function FeaturedManagerModal({
                   type="button"
                   onClick={handleCreateStory}
                   disabled={busy}
-                  className="flex aspect-[3/4] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-neutral-300 text-xs text-neutral-500 transition hover:bg-neutral-50 hover:text-neutral-800 disabled:opacity-50"
+                  className="flex aspect-[3/4] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border text-xs text-muted-foreground transition hover:bg-muted/50 hover:text-foreground disabled:opacity-50"
                 >
                   <i className="fad fa-plus text-lg" aria-hidden="true" />
                   Tạo story
@@ -562,14 +562,14 @@ export default function FeaturedManagerModal({
             </div>
           </section>
 
-          <section className="mt-6 border-t border-black/5 pt-5">
+          <section className="mt-6 border-t border-border pt-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h3 className="text-sm font-semibold text-neutral-800">
+                <h3 className="text-sm font-semibold text-foreground">
                   {activeStory ? "Ảnh trong story" : "Chọn hoặc tạo một story"}
                 </h3>
                 {activeStory && (
-                  <p className="mt-0.5 text-xs text-neutral-500">
+                  <p className="mt-0.5 text-xs text-muted-foreground">
                     Ảnh đầu tiên có nhãn “Bìa” sẽ đại diện cho story.
                   </p>
                 )}
@@ -583,7 +583,7 @@ export default function FeaturedManagerModal({
                       onClick={() => handleMoveStory(-1)}
                       disabled={busy || activeStoryIndex <= 0}
                       title="Đưa story về trước"
-                      className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-neutral-100 text-neutral-600 transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-35"
+                      className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-muted text-foreground/75 transition hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-35"
                     >
                       <i className="fad fa-arrow-left" aria-hidden="true" />
                     </button>
@@ -592,7 +592,7 @@ export default function FeaturedManagerModal({
                       onClick={() => handleMoveStory(1)}
                       disabled={busy || activeStoryIndex >= stories.length - 1}
                       title="Đưa story về sau"
-                      className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-neutral-100 text-neutral-600 transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-35"
+                      className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-muted text-foreground/75 transition hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-35"
                     >
                       <i className="fad fa-arrow-right" aria-hidden="true" />
                     </button>
@@ -622,7 +622,7 @@ export default function FeaturedManagerModal({
                   type="button"
                   onClick={() => setPickerOpen((current) => !current)}
                   disabled={busy}
-                  className="cursor-pointer rounded-lg bg-neutral-100 px-3 py-2 text-xs font-medium text-neutral-700 transition hover:bg-neutral-200 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="cursor-pointer rounded-lg bg-muted px-3 py-2 text-xs font-medium text-foreground/75 transition hover:bg-secondary active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <i className="fad fa-folder-open mr-1.5" aria-hidden="true" />
                   Chọn ảnh có sẵn
@@ -635,7 +635,7 @@ export default function FeaturedManagerModal({
                 {activeStory.images.map((image, index) => (
                   <div
                     key={image.id}
-                    className="group relative aspect-[3/4] overflow-hidden rounded-xl bg-neutral-100"
+                    className="group relative aspect-[3/4] overflow-hidden rounded-xl bg-muted"
                   >
                     <Image
                       src={getFeaturedWidgetImage(image.secure_url)}
@@ -662,7 +662,7 @@ export default function FeaturedManagerModal({
                           onClick={() => handleMoveImage(index, -1)}
                           disabled={busy || index === 0}
                           title="Đưa ảnh về trước"
-                          className="flex size-6 cursor-pointer items-center justify-center rounded-full bg-white/90 text-neutral-700 backdrop-blur transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-35"
+                          className="flex size-6 cursor-pointer items-center justify-center rounded-full bg-card/90 text-foreground/75 backdrop-blur transition hover:bg-card disabled:cursor-not-allowed disabled:opacity-35"
                         >
                           <i className="fad fa-chevron-left" aria-hidden="true" />
                         </button>
@@ -671,7 +671,7 @@ export default function FeaturedManagerModal({
                           onClick={() => handleMoveImage(index, 1)}
                           disabled={busy || index === activeStory.images.length - 1}
                           title="Đưa ảnh về sau"
-                          className="flex size-6 cursor-pointer items-center justify-center rounded-full bg-white/90 text-neutral-700 backdrop-blur transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-35"
+                          className="flex size-6 cursor-pointer items-center justify-center rounded-full bg-card/90 text-foreground/75 backdrop-blur transition hover:bg-card disabled:cursor-not-allowed disabled:opacity-35"
                         >
                           <i className="fad fa-chevron-right" aria-hidden="true" />
                         </button>
@@ -684,7 +684,7 @@ export default function FeaturedManagerModal({
                             onClick={() => handleSetCover(index)}
                             disabled={busy}
                             title="Đặt làm ảnh bìa"
-                            className="flex size-6 cursor-pointer items-center justify-center rounded-lg bg-white/90 text-amber-500 backdrop-blur transition hover:bg-white disabled:opacity-50"
+                            className="flex size-6 cursor-pointer items-center justify-center rounded-lg bg-card/90 text-amber-500 backdrop-blur transition hover:bg-card disabled:opacity-50"
                           >
                             <i className="fad fa-star" aria-hidden="true" />
                           </button>
@@ -704,7 +704,7 @@ export default function FeaturedManagerModal({
                 ))}
               </div>
             ) : (
-              <div className="mt-4 rounded-xl border border-dashed border-neutral-200 py-10 text-center text-sm text-neutral-500">
+              <div className="mt-4 rounded-xl border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
                 {activeStory
                   ? "Story này chưa có ảnh. Hãy upload hoặc chọn ảnh có sẵn."
                   : "Tạo story mới, sau đó thêm một hoặc nhiều ảnh."}
@@ -717,7 +717,7 @@ export default function FeaturedManagerModal({
                   type="button"
                   onClick={handleDeleteStory}
                   disabled={busy}
-                  className="cursor-pointer rounded-lg px-3 py-2 text-xs font-medium text-red-600 transition hover:bg-red-50 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="cursor-pointer rounded-lg px-3 py-2 text-xs font-medium text-red-600 dark:text-red-300 transition hover:bg-red-50 dark:hover:bg-red-400/20 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <i className="fad fa-trash-can mr-1.5" aria-hidden="true" />
                   Xóa toàn bộ story
@@ -727,13 +727,13 @@ export default function FeaturedManagerModal({
           </section>
 
           {pickerOpen && (
-            <section className="mt-6 rounded-2xl border border-black/5 bg-neutral-50 p-3 sm:p-4">
+            <section className="mt-6 rounded-2xl border border-border bg-muted/50 p-3 sm:p-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h3 className="text-sm font-semibold text-neutral-800">
+                  <h3 className="text-sm font-semibold text-foreground">
                     Ảnh trong vutruong_vn/featureds
                   </h3>
-                  <p className="mt-0.5 text-xs text-neutral-500">
+                  <p className="mt-0.5 text-xs text-muted-foreground">
                     Ảnh đã gắn story sẽ bị khóa để tránh trùng lặp.
                   </p>
                 </div>
@@ -747,7 +747,7 @@ export default function FeaturedManagerModal({
                   }}
                   disabled={loadingLibrary || busy}
                   title="Tải lại"
-                  className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-white text-neutral-600 shadow-sm transition hover:text-neutral-900 disabled:opacity-50"
+                  className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-card text-foreground/75 shadow-sm transition hover:text-foreground disabled:opacity-50"
                 >
                   <i
                     className={`fad fa-rotate ${loadingLibrary ? "animate-spin" : ""}`}
@@ -770,7 +770,7 @@ export default function FeaturedManagerModal({
                             ? "border-sky-500 ring-2 ring-sky-100"
                             : used
                               ? "border-transparent opacity-55"
-                              : "border-transparent hover:border-neutral-300"
+                              : "border-transparent hover:border-border"
                         }`}
                       >
                         <button
@@ -799,7 +799,7 @@ export default function FeaturedManagerModal({
                         {(used || selected) && (
                           <span
                             className={`absolute right-1.5 top-1.5 z-20 flex size-6 items-center justify-center rounded-full text-xs text-white shadow ${
-                              used ? "bg-neutral-600" : "bg-sky-500"
+                              used ? "bg-muted-foreground" : "bg-sky-500"
                             }`}
                           >
                             <i
@@ -828,7 +828,7 @@ export default function FeaturedManagerModal({
                   })}
                 </div>
               ) : (
-                <div className="mt-4 py-10 text-center text-sm text-neutral-500">
+                <div className="mt-4 py-10 text-center text-sm text-muted-foreground">
                   {loadingLibrary
                     ? "Đang tải thư viện ảnh..."
                     : "Thư mục featureds chưa có ảnh."}
@@ -842,7 +842,7 @@ export default function FeaturedManagerModal({
                       type="button"
                       onClick={() => loadLibrary(false)}
                       disabled={loadingLibrary || busy}
-                      className="cursor-pointer rounded-lg bg-white px-3 py-2 text-xs text-neutral-700 shadow-sm transition hover:bg-neutral-100 disabled:opacity-50"
+                      className="cursor-pointer rounded-lg bg-card px-3 py-2 text-xs text-foreground/75 shadow-sm transition hover:bg-muted disabled:opacity-50"
                     >
                       {loadingLibrary ? "Đang tải..." : "Tải thêm ảnh"}
                     </button>
@@ -863,7 +863,7 @@ export default function FeaturedManagerModal({
         </div>
 
         {busy && (
-          <div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-[1px]">
+          <div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center bg-card/30 backdrop-blur-[1px]">
             <span className="flex items-center gap-2 rounded-full bg-black/80 px-4 py-2 text-xs text-white shadow-lg">
               <i className="fad fa-spinner-third animate-spin" aria-hidden="true" />
               Đang xử lý...

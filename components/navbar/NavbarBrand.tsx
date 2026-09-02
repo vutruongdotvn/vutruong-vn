@@ -27,21 +27,32 @@ export default function NavbarBrand({
       onClick={(e) => onNavClick(e, currentPageHref)}
       className="relative z-10 flex items-center gap-2 pl-1 min-w-0"
     >
-      <Image
-        src="/logo.png"
-        alt="logo"
-        width={40}
-        height={40}
-        className={`
-          pointer-events-none shrink-0 transition-all duration-300
-        `}
-        priority unoptimized
-      />
+      <span className="relative size-10 shrink-0" aria-hidden="true">
+        <Image
+          src="/logo.png"
+          alt=""
+          fill
+          sizes="40px"
+          className="pointer-events-none object-contain dark:hidden"
+          priority
+          unoptimized
+        />
+
+        <Image
+          src="/logo-white.png"
+          alt=""
+          fill
+          sizes="40px"
+          className="pointer-events-none hidden object-contain dark:block"
+          priority
+          unoptimized
+        />
+      </span>
 
       <div className="min-w-0">
         <div
           className={`
-            font-bold text-gray-800 transition-all duration-300 truncate text-lg
+            font-bold text-foreground transition-all duration-300 truncate text-lg
           `}
         >
           {title}
@@ -50,7 +61,7 @@ export default function NavbarBrand({
         {/*
         <div
           className={` metaTitlePage_removeHiddenClasstoShow
-            text-xs text-gray-500 transition-all duration-300 truncate
+            text-xs text-muted-foreground transition-all duration-300 truncate
             ${scrolled ? "opacity-80" : "opacity-100"}
           `}
         >

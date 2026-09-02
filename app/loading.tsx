@@ -5,9 +5,9 @@ export default function Loading() {
       aria-busy="true"
       aria-live="polite"
     >
-      <div className="rounded-full border border-white/60 bg-white/70 p-4 shadow-[0_12px_36px_rgba(0,0,0,0.06)] backdrop-blur-xl">
+      <div className="rounded-full border border-border bg-card/70 p-4 shadow-[0_12px_36px_rgba(0,0,0,0.06)] backdrop-blur-xl">
         <span className="relative block size-7" aria-hidden="true">
-          <span className="absolute inset-0 rounded-full border-2 border-slate-900/10" />
+          <span className="absolute inset-0 rounded-full border-2 border-foreground/10" />
           <span className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-primary" />
         </span>
 

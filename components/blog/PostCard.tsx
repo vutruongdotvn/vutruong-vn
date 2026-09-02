@@ -23,7 +23,7 @@ export default function PostCard({
   const { role } = useUser();
 
   return (
-    <article className="post relative border-b border-slate-200 last:border-b-0">
+    <article className="post relative border-b border-border last:border-b-0">
 
       {/* POST CONTENT */}
       <div

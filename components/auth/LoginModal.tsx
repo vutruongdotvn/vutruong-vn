@@ -203,23 +203,23 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-md bg-white/95 backdrop-blur-2xl border border-white rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] p-6 sm:p-8 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-500 overflow-hidden">
+      <div className="relative w-full max-w-md bg-card/95 backdrop-blur-2xl border border-border rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] p-6 sm:p-8 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-500 overflow-hidden">
 
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 size-8 flex items-center justify-center rounded-full bg-slate-100/50 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+          className="absolute top-5 right-5 size-8 flex items-center justify-center rounded-full bg-muted/50 hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
         >
           <i className="fa-duotone fa-times text-lg" />
         </button>
 
         <div className="mb-8 pr-8">
-          <div className="size-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 border border-blue-100 shadow-sm">
+          <div className="size-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 border border-blue-100 shadow-sm dark:border-blue-400/20 dark:bg-blue-400/15 dark:text-blue-300">
             <i className={`fa-duotone ${isRegister ? "fa-user-plus" : "fa-shield-keyhole"} text-2xl`} />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
             {isRegister ? "Tạo tài khoản" : "Đăng nhập"}
           </h2>
-          <p className="text-sm text-slate-500 mt-1.5 font-medium">
+          <p className="text-sm text-muted-foreground mt-1.5 font-medium">
             {isRegister ? "Tham gia hệ sinh thái VT Zone ngay hôm nay." : "Để sử dụng hệ sinh thái VT Zone."}
           </p>
         </div>
@@ -229,7 +229,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
           <div className={`grid transition-all duration-300 ease-in-out ${isRegister ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
             <div className="overflow-hidden">
               <div className="relative group pb-1">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-blue-500 transition-colors">
                   <i className="fa-duotone fa-user" />
                 </div>
                 <input
@@ -238,14 +238,14 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="w-full bg-slate-50/50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3.5 text-slate-800 placeholder-slate-400 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
+                  className="w-full bg-muted/50 border border-border rounded-2xl pl-11 pr-4 py-3.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
                 />
               </div>
             </div>
           </div>
 
           <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-blue-500 transition-colors">
               <i className="fa-duotone fa-envelope" />
             </div>
             <input
@@ -254,12 +254,12 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full bg-slate-50/50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3.5 text-slate-800 placeholder-slate-400 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
+              className="w-full bg-muted/50 border border-border rounded-2xl pl-11 pr-4 py-3.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
             />
           </div>
 
           <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-blue-500 transition-colors">
               <i className="fa-duotone fa-lock-keyhole" />
             </div>
             <input
@@ -277,14 +277,14 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
                 }
               }}
               onKeyDown={handleKeyDown}
-              className="w-full bg-slate-50/50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3.5 text-slate-800 placeholder-slate-400 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
+              className="w-full bg-muted/50 border border-border rounded-2xl pl-11 pr-4 py-3.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
             />
           </div>
 
           <div className={`grid transition-all duration-300 ease-in-out ${isRegister ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
             <div className="overflow-hidden">
               <div className="relative group pt-1">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors pt-1">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-blue-500 transition-colors pt-1">
                   <i className="fa-duotone fa-shield-check" />
                 </div>
                 <input
@@ -293,7 +293,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="w-full bg-slate-50/50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3.5 text-slate-800 placeholder-slate-400 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
+                  className="w-full bg-muted/50 border border-border rounded-2xl pl-11 pr-4 py-3.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
                 />
               </div>
             </div>
@@ -304,9 +304,9 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
           <button
             onClick={handleAction}
             disabled={loading}
-            className="relative w-full overflow-hidden rounded-2xl bg-slate-900 text-white py-4 font-bold tracking-wide shadow-[0_8px_20px_rgba(0,0,0,0.15)] hover:bg-black active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed group cursor-pointer"
+            className="relative w-full overflow-hidden rounded-2xl bg-primary text-primary-foreground py-4 font-bold tracking-wide shadow-[0_8px_20px_rgba(0,0,0,0.15)] hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed group cursor-pointer"
           >
-            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
+            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-primary-foreground/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
             <span className="flex items-center justify-center gap-2">
               {loading ? (
                 <i className="fa-duotone fa-spinner-third animate-spin text-xl" />
@@ -321,7 +321,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
 
           {/*
           <div className="mt-6 text-center">
-            <span className="text-sm text-slate-500">
+            <span className="text-sm text-muted-foreground">
               {isRegister ? "Đã có tài khoản? " : "Chưa có tài khoản? "}
             </span>
             <button
@@ -331,7 +331,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
                 setPassword("");
                 setConfirmPassword("");
               }}
-              className="text-sm font-bold text-blue-600 hover:text-blue-700 hover:underline underline-offset-4 transition-all cursor-pointer"
+              className="text-sm font-bold text-blue-600 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-300 hover:underline underline-offset-4 transition-all cursor-pointer"
             >
               {isRegister ? "Đăng nhập" : "Đăng ký ngay"}
             </button>

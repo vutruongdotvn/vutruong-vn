@@ -75,14 +75,14 @@ export default function PhotoWidget() {
   return (
     <div className="
       hidden lg:block
-      sm:rounded-2xl bg-white
+      sm:rounded-2xl bg-card
       p-3 sm:p-4 px-0 pb-0 sm:pb-4 sm:px-4
     ">
       {/* Header */}
       <div className="mb-3 px-4 sm:px-0">
         <h3 className="flex items-center justify-between text-[.9375rem] sm:text-base w-full">
           <div className="font-semibold">Ảnh</div>
-          <Link className="text-sm text-gray-500 hover:text-gray-800 active:scale-95 cursor-pointer" href="/blog/photos">Xem thêm</Link>
+          <Link className="text-sm text-muted-foreground hover:text-foreground active:scale-95 cursor-pointer" href="/blog/photos">Xem thêm</Link>
         </h3>
 
         {isMobile && visibleCount < photos.length && (
@@ -90,7 +90,7 @@ export default function PhotoWidget() {
             onClick={() =>
               setVisibleCount((prev) => Math.min(prev + 3, 9))
             }
-            className="text-sm text-gray-500 hover:text-gray-800 active:scale-95 cursor-pointer"
+            className="text-sm text-muted-foreground hover:text-foreground active:scale-95 cursor-pointer"
           >
             Xem thêm
           </button>
@@ -106,7 +106,7 @@ export default function PhotoWidget() {
               {Array.from({ length: 3 }).map((_, i) => (
                 <div
                   key={`m-${i}`}
-                  className="aspect-square sm:rounded-md bg-gray-200 animate-pulse"
+                  className="aspect-square sm:rounded-md bg-secondary animate-pulse"
                 />
               ))}
             </div>
@@ -116,7 +116,7 @@ export default function PhotoWidget() {
               {Array.from({ length: 9 }).map((_, i) => (
                 <div
                   key={`d-${i}`}
-                  className="aspect-square sm:rounded-md bg-gray-200 animate-pulse"
+                  className="aspect-square sm:rounded-md bg-secondary animate-pulse"
                 />
               ))}
             </div>

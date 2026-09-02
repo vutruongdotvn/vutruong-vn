@@ -326,10 +326,10 @@ export default function Navbar() {
         >
           <div
             className={`
-              relative overflow-visible border transition-all duration-900 ease-in-out hover:bg-white
+              relative overflow-visible border border-border bg-card/90 transition-all duration-900 ease-in-out hover:bg-card
               ${scrolled
-                ? "border-white/30 bg-white backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
-                : "border-white/60 bg-white shadow-[0_12px_24px_rgba(0,0,0,0.01)]"
+                ? "backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
+                : "shadow-[0_12px_24px_rgba(0,0,0,0.01)]"
               }
               ${visible
                 ? "translate-y-0 opacity-100"

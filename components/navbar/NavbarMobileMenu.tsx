@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { MenuItem } from "./types";
+import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
 
 type NavbarMobileMenuProps = {
   open: boolean;
@@ -70,7 +71,7 @@ export default function NavbarMobileMenu({
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 0, opacity: 0, scale: 1 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="absolute left-1/2 sm:top-5 -translate-x-1/2 w-full sm:w-[calc(100%-24px)] sm:max-w-md sm:rounded-4xl border border-white/60 bg-white/80 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,0.18)] p-2.5"
+            className="absolute left-1/2 sm:top-5 -translate-x-1/2 w-full sm:w-[calc(100%-24px)] sm:max-w-md sm:rounded-4xl border border-border bg-card/90 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,0.18)] p-2.5"
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2 min-w-0">
@@ -87,24 +88,24 @@ export default function NavbarMobileMenu({
                   <Link
                     href={currentPageHref}
                     onClick={(e) => onNavClick(e, currentPageHref)}
-                    className="text-lg font-bold text-gray-800 truncate block"
+                    className="text-lg font-bold text-foreground truncate block"
                   >
                     {title}
                   </Link>
-                  <p className="text-xs text-gray-500 truncate hidden">{subtitle}</p>
+                  <p className="text-xs text-muted-foreground truncate hidden">{subtitle}</p>
                 </div>
               </div>
 
               <button
                 onClick={() => setOpen(false)}
-                className="w-10 h-10 rounded-full hover:bg-white flex items-center justify-center text-gray-600 hover:text-black cursor-pointer"
+                className="w-10 h-10 rounded-full hover:bg-card flex items-center justify-center text-foreground/75 hover:text-foreground cursor-pointer"
                 aria-label="Close menu"
               >
                 <i className="fa-duotone fa-xmark" />
               </button>
             </div>
 
-            <div className="mb-4 rounded-3xl bg-white px-4 py-4">
+            <div className="mb-4 rounded-3xl bg-card px-4 py-4">
               <div className="flex items-center gap-3">
                 <Image
                   src={avatar}
@@ -115,7 +116,7 @@ export default function NavbarMobileMenu({
                 />
 
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-base text-gray-900 flex items-center gap-1 truncate">
+                  <p className="font-semibold text-base text-foreground flex items-center gap-1 truncate">
                     <span className="truncate">{fullName}</span>
 
                     {user && role === "admin" && (
@@ -126,7 +127,7 @@ export default function NavbarMobileMenu({
                     )}
                   </p>
 
-                  <p className="text-sm text-gray-600 truncate">
+                  <p className="text-sm text-foreground/75 truncate">
                     {user ? email : "Bạn chưa đăng nhập."}
                   </p>
                 </div>
@@ -137,7 +138,7 @@ export default function NavbarMobileMenu({
                   <Link
                     href="/profile"
                     onClick={() => setOpen(false)}
-                    className="rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-3.5 transition-all text-center"
+                    className="rounded-2xl bg-muted hover:bg-secondary text-foreground/75 text-sm font-medium px-4 py-3.5 transition-all text-center"
                   >
                     <i className="fa-duotone fa-user mr-2" />
                     Cá nhân
@@ -150,7 +151,7 @@ export default function NavbarMobileMenu({
                       setOpen(false);
                       setShowCreatePost(true);
                     }}
-                    className="rounded-2xl bg-black text-white hover:opacity-90 text-sm font-medium px-4 py-3.5 transition-all cursor-pointer"
+                    className="rounded-2xl bg-primary text-primary-foreground hover:opacity-90 text-sm font-medium px-4 py-3.5 transition-all cursor-pointer"
                   >
                     <i className="fa-duotone fa-pen-to-square mr-2" />
                     Đăng
@@ -163,7 +164,7 @@ export default function NavbarMobileMenu({
                       setOpen(false);
                       setShowLogin(true);
                     }}
-                    className="col-span-2 rounded-2xl bg-black text-white hover:opacity-90 text-sm font-medium px-4 py-3.5 transition-all cursor-pointer"
+                    className="col-span-2 rounded-2xl bg-primary text-primary-foreground hover:opacity-90 text-sm font-medium px-4 py-3.5 transition-all cursor-pointer"
                   >
                     <i className="fa-duotone fa-user-gear mr-2" />
                     Đăng nhập
@@ -175,7 +176,7 @@ export default function NavbarMobileMenu({
                     onClick={onLogout}
                     className={`${
                       role === "admin" ? "col-span-2" : "col-span-1"
-                    } rounded-2xl bg-red-50 hover:bg-red-100 text-red-600 text-sm font-medium px-4 py-3.5 transition-all cursor-pointer`}
+                    } rounded-2xl bg-red-50 dark:bg-red-400/15 hover:bg-red-100 dark:hover:bg-red-400/20 text-red-600 dark:text-red-300 text-sm font-medium px-4 py-3.5 transition-all cursor-pointer`}
                   >
                     <i className="fa-duotone fa-arrow-right-from-bracket mr-2" />
                     Đăng xuất
@@ -213,8 +214,8 @@ export default function NavbarMobileMenu({
                         transition-all duration-300
                         ${
                           active
-                            ? "bg-gray-900 text-white shadow-lg"
-                            : "bg-white/72 text-gray-700 hover:bg-white"
+                            ? "bg-nav-active text-nav-active-foreground shadow-lg"
+                            : "bg-card/72 text-foreground/75 hover:bg-card"
                         }
                       `}
                     >
@@ -224,7 +225,7 @@ export default function NavbarMobileMenu({
                         <span className="text-sm font-semibold">{item.name}</span>
 
                         {active ? (
-                          <span className="w-2 h-2 rounded-full bg-white/90 shrink-0" />
+                          <span className="w-2 h-2 rounded-full bg-nav-active-foreground/75 shrink-0" />
                         ) : (
                           <i className="fa-duotone fa-arrow-up-right text-xs opacity-0 shrink-0 hidden" />
                         )}
@@ -235,10 +236,14 @@ export default function NavbarMobileMenu({
               })}
             </div>
 
+            <div className="mt-4">
+              <ThemeSwitcher />
+            </div>
+
             <div className="mt-4 grid grid-cols-2 gap-3">
               <button
                 onClick={onScrollTop}
-                className="rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-3.5 transition-all cursor-pointer"
+                className="rounded-2xl bg-muted hover:bg-secondary text-foreground/75 text-sm font-medium px-4 py-3.5 transition-all cursor-pointer"
               >
                 <i className="fa-duotone fa-arrow-up mr-2" />
                 Top
@@ -246,7 +251,7 @@ export default function NavbarMobileMenu({
 
               <button
                 onClick={onRefreshCurrent}
-                className="rounded-2xl bg-black text-white hover:opacity-90 text-sm font-medium px-4 py-3.5 transition-all cursor-pointer"
+                className="rounded-2xl bg-primary text-primary-foreground hover:opacity-90 text-sm font-medium px-4 py-3.5 transition-all cursor-pointer"
               >
                 <i className="fa-duotone fa-rotate-right mr-2" />
                 Refresh

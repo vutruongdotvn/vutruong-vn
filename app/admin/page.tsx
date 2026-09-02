@@ -95,14 +95,14 @@ export default function AdminUsersPage() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
         <PremiumGlassCard className="max-w-3xl" contentClassName="text-center p-4 sm:p-8 py-8">
-          <div className="size-16 mb-6 flex items-center mx-auto justify-center rounded-full bg-red-50 border border-red-200">
+          <div className="size-16 mb-6 flex items-center mx-auto justify-center rounded-full bg-red-50 dark:bg-red-400/15 border border-red-200 dark:border-red-400/25">
             <i className="fa-duotone fa-lock-keyhole text-3xl text-red-500"></i>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-800 mb-1.5">Truy cập bị từ chối</h1>
-          <p className="text-sm sm:text-base text-gray-500 mb-8">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-1.5">Truy cập bị từ chối</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mb-8">
             Bạn không có quyền truy cập vào trang này.
           </p>
-          <Link href="/" className="flex items-center gap-3 justify-center mt-6 mx-auto px-6 py-3 bg-slate-900 text-white text-sm font-medium rounded-full hover:bg-slate-800 transition shadow-lg shadow-slate-900/20 active:scale-95 w-sm max-w-full">
+          <Link href="/" className="flex items-center gap-3 justify-center mt-6 mx-auto px-6 py-3 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition shadow-lg shadow-primary/20 active:scale-95 w-sm max-w-full">
             <i className="fad fa-arrow-left"/> Về Trang chủ
           </Link>
         </PremiumGlassCard>
@@ -119,31 +119,31 @@ export default function AdminUsersPage() {
 
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4 bg-white/50 p-5 sm:p-6 rounded-3xl backdrop-blur-xl border border-white shadow-sm">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4 bg-card/70 p-5 sm:p-6 rounded-3xl backdrop-blur-xl border border-border shadow-sm">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-3 text-slate-800">
-              <i className="fa-duotone fa-users-gear text-blue-600"></i>
+            <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-3 text-foreground">
+              <i className="fa-duotone fa-users-gear text-blue-600 dark:text-blue-300"></i>
               Quản lý Người dùng
             </h1>
-            <p className="text-slate-500 mt-1.5 text-xs sm:text-sm">
+            <p className="text-muted-foreground mt-1.5 text-xs sm:text-sm">
               Phê duyệt, thu hồi quyền truy cập hệ thống của các thành viên.
             </p>
           </div>
-          <div className="bg-white border border-slate-100 shadow-sm px-4 py-2.5 rounded-2xl flex items-center gap-2 text-slate-600 w-full sm:w-auto justify-center">
+          <div className="bg-card border border-border shadow-sm px-4 py-2.5 rounded-2xl flex items-center gap-2 text-foreground/75 w-full sm:w-auto justify-center">
             <i className="fa-duotone fa-chart-user text-blue-500"></i>
-            <span className="font-bold text-slate-800">{profiles.length}</span> <span className="text-sm">thành viên</span>
+            <span className="font-bold text-foreground">{profiles.length}</span> <span className="text-sm">thành viên</span>
           </div>
         </div>
 
         {/* User Grid Cards (Mobile xịn xò) */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-slate-400 bg-white/50 backdrop-blur-md rounded-3xl border border-white shadow-sm">
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground bg-card/70 backdrop-blur-md rounded-3xl border border-border shadow-sm">
             <i className="fa-duotone fa-spinner-third animate-spin text-4xl mb-3 text-blue-500"></i>
             <p>Đang đồng bộ dữ liệu...</p>
           </div>
         ) : profiles.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-slate-400 bg-white/50 backdrop-blur-md rounded-3xl border border-white shadow-sm">
-            <i className="fa-duotone fa-ghost text-4xl mb-3 text-slate-300"></i>
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground bg-card/70 backdrop-blur-md rounded-3xl border border-border shadow-sm">
+            <i className="fa-duotone fa-ghost text-4xl mb-3 text-muted-foreground"></i>
             <p>Chưa có người dùng nào trong hệ thống.</p>
           </div>
         ) : (
@@ -151,22 +151,22 @@ export default function AdminUsersPage() {
             {profiles.map((p) => (
               <div 
                 key={p.id} 
-                className="group relative bg-white/70 backdrop-blur-2xl border border-white/80 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-3xl p-5 sm:p-6 transition-all duration-300 flex flex-col h-full"
+                className="group relative bg-card/70 backdrop-blur-2xl border border-border shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-3xl p-5 sm:p-6 transition-all duration-300 flex flex-col h-full"
               >
                 {/* Header Card: Email & Role */}
                 <div className="flex justify-between items-start gap-2 mb-4">
                   <div className="flex flex-col min-w-0">
-                    <h3 className="font-bold text-slate-800 text-sm sm:text-base truncate" title={p.email}>
+                    <h3 className="font-bold text-foreground text-sm sm:text-base truncate" title={p.email}>
                       {p.email}
                     </h3>
                     <div className="mt-1">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold uppercase tracking-wider ${
-                        p.role === "admin" ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-600"
+                        p.role === "admin" ? "bg-indigo-100 dark:bg-indigo-400/15 text-indigo-700 dark:text-indigo-300" : "bg-muted text-foreground/75"
                       }`}>
                         {p.role}
                       </span>
                       {p.role === "admin" && (
-                        <span className="ml-1.5 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold uppercase bg-blue-100 text-blue-600 border border-blue-200">
+                        <span className="ml-1.5 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold uppercase bg-blue-100 dark:bg-blue-400/15 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-400/25">
                           Bạn
                         </span>
                       )}
@@ -183,13 +183,13 @@ export default function AdminUsersPage() {
                 <div className="flex-grow"></div>
 
                 {/* Footer Card: Nút Thao Tác (Responsive Action Buttons) */}
-                <div className="mt-4 pt-4 border-t border-slate-100/80">
+                <div className="mt-4 pt-4 border-t border-border/80">
                   {actionLoading === p.email ? (
-                    <div className="w-full flex justify-center py-2 bg-slate-50 rounded-xl">
+                    <div className="w-full flex justify-center py-2 bg-muted/50 rounded-xl">
                       <i className="fa-duotone fa-spinner-third animate-spin text-2xl text-blue-500"></i>
                     </div>
                   ) : p.role === "admin" ? (
-                    <div className="w-full text-center py-2.5 text-xs sm:text-sm text-emerald-500 font-medium bg-slate-50/50 rounded-xl border border-slate-100">
+                    <div className="w-full text-center py-2.5 text-xs sm:text-sm text-emerald-500 font-medium bg-muted/50 rounded-xl border border-border">
                       <i className="fa-duotone fa-shield-check mr-1 text-emerald-500"></i>
                       Tài khoản tối cao
                     </div>
@@ -199,14 +199,14 @@ export default function AdminUsersPage() {
                       {p.status === "approved" ? (
                         <button
                           onClick={() => handleUpdateStatus(p.email, "revoked")}
-                          className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl bg-orange-50 text-orange-600 hover:bg-orange-500 hover:text-white border border-orange-100 transition-all font-semibold text-xs sm:text-sm shadow-sm active:scale-95"
+                          className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl bg-orange-50 dark:bg-orange-400/15 text-orange-600 dark:text-orange-300 hover:bg-orange-500 hover:text-white border border-orange-100 dark:border-orange-400/25 transition-all font-semibold text-xs sm:text-sm shadow-sm active:scale-95"
                         >
                           <i className="fa-duotone fa-shield-slash text-base"></i> <span className="truncate">Thu hồi</span>
                         </button>
                       ) : (
                         <button
                           onClick={() => handleUpdateStatus(p.email, "approved")}
-                          className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white border border-emerald-100 transition-all font-semibold text-xs sm:text-sm shadow-sm active:scale-95"
+                          className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-400/15 text-emerald-600 dark:text-emerald-300 hover:bg-emerald-500 hover:text-white border border-emerald-100 dark:border-emerald-400/25 transition-all font-semibold text-xs sm:text-sm shadow-sm active:scale-95"
                         >
                           <i className="fa-duotone fa-check-circle text-base"></i> <span className="truncate">Phê duyệt</span>
                         </button>
@@ -216,14 +216,14 @@ export default function AdminUsersPage() {
                       {p.status === "banned" ? (
                         <button
                           onClick={() => handleUpdateStatus(p.email, "pending")}
-                          className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-600 hover:text-white border border-slate-200 transition-all font-semibold text-xs sm:text-sm shadow-sm active:scale-95"
+                          className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl bg-muted text-foreground/75 hover:bg-accent hover:text-foreground border border-border transition-all font-semibold text-xs sm:text-sm shadow-sm active:scale-95"
                         >
                           <i className="fa-duotone fa-unlock text-base"></i> <span className="truncate">Bỏ cấm</span>
                         </button>
                       ) : (
                         <button
                           onClick={() => handleUpdateStatus(p.email, "banned")}
-                          className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border border-red-100 transition-all font-semibold text-xs sm:text-sm shadow-sm active:scale-95"
+                          className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl bg-red-50 dark:bg-red-400/15 text-red-600 dark:text-red-300 hover:bg-red-600 hover:text-white border border-red-100 dark:border-red-400/25 transition-all font-semibold text-xs sm:text-sm shadow-sm active:scale-95"
                         >
                           <i className="fa-duotone fa-ban text-base"></i> <span className="truncate">Khóa</span>
                         </button>
@@ -244,12 +244,12 @@ export default function AdminUsersPage() {
 // Badge UI
 function StatusBadge({ status }: { status: UserStatus }) {
   const configs: Record<string, { color: string; text: string; icon: string }> = {
-    pending: { color: "bg-amber-100 text-amber-700 border-amber-200", text: "Chờ duyệt", icon: "fa-hourglass-clock" },
-    approved: { color: "bg-emerald-100 text-emerald-700 border-emerald-200", text: "Đã duyệt", icon: "fa-check-circle" },
-    banned: { color: "bg-red-100 text-red-700 border-red-200", text: "Bị cấm", icon: "fa-ban" },
-    rejected: { color: "bg-slate-200 text-slate-700 border-slate-300", text: "Từ chối", icon: "fa-user-slash" },
-    revoked: { color: "bg-orange-100 text-orange-700 border-orange-200", text: "Thu hồi", icon: "fa-shield-slash" },
-    unknown: { color: "bg-gray-100 text-gray-500 border-gray-200", text: "Không rõ", icon: "fa-question" },
+    pending: { color: "bg-amber-100 dark:bg-amber-400/15 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-400/25", text: "Chờ duyệt", icon: "fa-hourglass-clock" },
+    approved: { color: "bg-emerald-100 dark:bg-emerald-400/15 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-400/25", text: "Đã duyệt", icon: "fa-check-circle" },
+    banned: { color: "bg-red-100 dark:bg-red-400/15 text-red-700 dark:text-red-300 border-red-200 dark:border-red-400/25", text: "Bị cấm", icon: "fa-ban" },
+    rejected: { color: "bg-secondary text-foreground/75 border-border", text: "Từ chối", icon: "fa-user-slash" },
+    revoked: { color: "bg-orange-100 dark:bg-orange-400/15 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-400/25", text: "Thu hồi", icon: "fa-shield-slash" },
+    unknown: { color: "bg-muted text-muted-foreground border-border", text: "Không rõ", icon: "fa-question" },
   };
 
   const config = configs[status || "unknown"] || configs.unknown;

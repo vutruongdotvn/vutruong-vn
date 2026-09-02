@@ -491,7 +491,7 @@ export default function ModalPostMedia({
               {hasFailed ? (
                 <div
                   role="status"
-                  className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-2 px-6 text-center text-slate-300"
+                  className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-2 px-6 text-center text-muted-foreground"
                 >
                   <i
                     className="fa-duotone fa-image-slash text-2xl"

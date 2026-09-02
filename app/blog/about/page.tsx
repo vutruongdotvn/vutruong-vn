@@ -340,10 +340,10 @@ const getVisibleContentItems = (
     .filter((item) => item.values.length > 0);
 
 const itemRowClassName =
-  "flex min-w-0 items-start gap-3 border-b border-slate-100 py-2 last:border-b-0 sm:gap-4 sm:py-3";
+  "flex min-w-0 items-start gap-3 border-b border-border py-2 last:border-b-0 sm:gap-4 sm:py-3";
 const itemIconClassName =
-  "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 text-lg text-slate-500 lg:h-12 lg:w-12 lg:text-2xl";
-const itemLabelClassName = "text-xs leading-5 text-slate-400";
+  "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-foreground/5 text-lg text-muted-foreground lg:h-12 lg:w-12 lg:text-2xl";
+const itemLabelClassName = "text-xs leading-5 text-muted-foreground";
 const itemValueClassName = "text-sm font-medium leading-6 lg:text-base";
 
 const panelClassName = "about-tab-panel mb-3 lg:mb-0";
@@ -392,8 +392,8 @@ const aboutTabsCss = [
   "  #about-tab-hobbies:checked ~ .about-tabs-layout [data-about-tab='hobbies'],",
   "  #about-tab-entertainment:checked ~ .about-tabs-layout [data-about-tab='entertainment'],",
   "  #about-tab-contact:checked ~ .about-tabs-layout [data-about-tab='contact'] {",
-  "    background-color: rgb(239 246 255);",
-  "    color: rgb(37 99 235);",
+  "    background-color: var(--accent);",
+  "    color: var(--accent-foreground);",
   "  }",
   "",
   "  #about-tab-intro:focus-visible ~ .about-tabs-layout [data-about-tab='intro'],",
@@ -403,7 +403,7 @@ const aboutTabsCss = [
   "  #about-tab-hobbies:focus-visible ~ .about-tabs-layout [data-about-tab='hobbies'],",
   "  #about-tab-entertainment:focus-visible ~ .about-tabs-layout [data-about-tab='entertainment'],",
   "  #about-tab-contact:focus-visible ~ .about-tabs-layout [data-about-tab='contact'] {",
-  "    outline: 2px solid rgb(59 130 246);",
+  "    outline: 2px solid var(--ring);",
   "    outline-offset: 2px;",
   "  }",
   "}",
@@ -442,8 +442,8 @@ export default function BlogAboutPage() {
     if (!tab) return null;
 
     return (
-      <div className="mb-3 flex items-center gap-3 border-b border-slate-200 pb-3">
-        <h2 className="text-base font-semibold text-slate-900">{tab.label}</h2>
+      <div className="mb-3 flex items-center gap-3 border-b border-border pb-3">
+        <h2 className="text-base font-semibold text-foreground">{tab.label}</h2>
       </div>
     );
   };
@@ -479,7 +479,7 @@ export default function BlogAboutPage() {
                     href={item.href}
                     className={
                       itemValueClassName +
-                      " inline-flex max-w-full items-center gap-1.5 break-all text-blue-600 hover:underline"
+                      " inline-flex max-w-full items-center gap-1.5 break-all text-blue-600 dark:text-blue-300 hover:underline"
                     }
                   >
                     {item.values[0]}
@@ -496,12 +496,12 @@ export default function BlogAboutPage() {
                       // className="inline-flex min-w-0 items-baseline"
                       >
                         {index > 0 && (
-                          <span className="mx-2 text-slate-300 select-none">/</span>
+                          <span className="mx-2 text-muted-foreground select-none">/</span>
                         )}
                         <span
                           className={
                             itemValueClassName +
-                            " break-words text-slate-700 transition-colors hover:text-black"
+                            " break-words text-foreground/75 transition-colors hover:text-foreground"
                           }
                         >
                           {value}
@@ -512,7 +512,7 @@ export default function BlogAboutPage() {
                 ) : (
                   <p
                     className={
-                      itemValueClassName + " break-words text-slate-900"
+                      itemValueClassName + " break-words text-foreground"
                     }
                   >
                     {item.values[0]}
@@ -547,7 +547,7 @@ export default function BlogAboutPage() {
         ))}
 
         <div className="about-tabs-layout lg:grid lg:grid-cols-[18rem_minmax(0,1fr)]">
-          <aside className="hidden min-w-0 border-r border-slate-200 bg-white lg:block">
+          <aside className="hidden min-w-0 border-r border-border bg-card lg:block">
             <nav
               aria-label="Các mục giới thiệu"
               className="max-h-[calc(100vh-7rem)] space-y-1 overflow-y-auto p-4"
@@ -557,7 +557,7 @@ export default function BlogAboutPage() {
                   key={tab.id}
                   htmlFor={"about-tab-" + tab.id}
                   data-about-tab={tab.id}
-                  className="flex w-full cursor-pointer select-none items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900"
+                  className="flex w-full cursor-pointer select-none items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/75 transition-colors hover:bg-muted/50 hover:text-foreground"
                 >
                   <i
                     className={tab.icon + " w-5 shrink-0 text-center text-sm"}
@@ -569,7 +569,7 @@ export default function BlogAboutPage() {
             </nav>
           </aside>
 
-          <div className="min-w-0 bg-white p-4 lg:min-h-[36rem]">
+          <div className="min-w-0 bg-card p-4 lg:min-h-[36rem]">
             {visibleSectionIds.has("intro") && (
               <section
                 id="about-panel-intro"
@@ -579,8 +579,8 @@ export default function BlogAboutPage() {
               >
                 {renderSectionHeader("intro")}
 
-                <div className="space-y-4 text-sm/7 text-slate-800 sm:text-[15px]/7 lg:text-base/8 text-justify">
-                  <p className="text-slate-950">
+                <div className="space-y-4 text-sm/7 text-foreground sm:text-[15px]/7 lg:text-base/8 text-justify">
+                  <p className="text-foreground">
                     <strong>
                       Chào mừng bạn đến với Hệ sinh thái số cá nhân của mình.
                     </strong>
@@ -616,7 +616,7 @@ export default function BlogAboutPage() {
                   {visibleSocialLinks.map((link) => (
                     <li
                       key={link.name}
-                      className="group/social border-b border-slate-100 last:border-b-0"
+                      className="group/social border-b border-border last:border-b-0"
                     >
                       <a
                         href={link.href}
@@ -627,7 +627,7 @@ export default function BlogAboutPage() {
                             ? link.name + ": " + link.username
                             : link.name
                         }
-                        className="flex items-center gap-3 py-2 group-hover/social:text-sky-600 lg:py-3"
+                        className="flex items-center gap-3 py-2 group-hover/social:text-sky-600 dark:group-hover/social:text-sky-300 lg:py-3"
                       >
                         <span className={itemIconClassName}>
                           <i className={link.icon} aria-hidden="true" />

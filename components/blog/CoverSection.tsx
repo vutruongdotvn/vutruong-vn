@@ -58,7 +58,7 @@ export default function CoverSection() {
   if (loading) {
     return (
       <div
-        className="w-full bg-white shadow-[0_10px_30px_rgba(0,0,0,0.015)] border-b border-black/10"
+        className="w-full bg-card shadow-[0_10px_30px_rgba(0,0,0,0.015)] border-b border-border"
         aria-busy="true"
       >
         <span className="sr-only" role="status" aria-live="polite">
@@ -66,28 +66,28 @@ export default function CoverSection() {
         </span>
 
         <div
-          className="relative h-[240px] w-full select-none overflow-hidden bg-neutral-100 sm:h-[360px] md:h-[480px]"
+          className="relative h-[240px] w-full select-none overflow-hidden bg-muted sm:h-[360px] md:h-[480px]"
           aria-hidden="true"
         >
-          <div className="absolute inset-y-0 left-1/2 w-full max-w-6xl -translate-x-1/2 animate-pulse bg-gray-200" />
+          <div className="absolute inset-y-0 left-1/2 w-full max-w-6xl -translate-x-1/2 animate-pulse bg-secondary" />
         </div>
 
         <div className="w-full max-w-6xl mx-auto py-6 relative pb-18 mt-[-100px] relative z-3">
           <div className="noclass" aria-hidden="true">
             <div className="flex flex-col items-center text-white sm:flex-row sm:items-end sm:justify-between">
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-5">
-                <div className="relative size-40 shrink-0 rounded-full border-4 border-white bg-gray-200 sm:size-48">
+                <div className="relative size-40 shrink-0 rounded-full border-4 border-card bg-secondary sm:size-48">
                 </div>
 
                 <div className="mt-0 flex flex-col items-center gap-0 sm:mt-18 sm:items-start sm:gap-1">
                   <div className="flex h-7 items-center gap-1 md:h-8 lg:h-9">
-                    <div className="h-6 w-40 animate-pulse rounded-md bg-gray-200 sm:w-44 md:h-7 md:w-48 lg:h-8" />
+                    <div className="h-6 w-40 animate-pulse rounded-md bg-secondary sm:w-44 md:h-7 md:w-48 lg:h-8" />
                   </div>
 
                   <div className="flex h-4 items-center gap-1 sm:h-6">
-                    <div className="h-3.5 w-14 animate-pulse rounded bg-gray-200 sm:h-4" />
-                    <div className="size-1 rounded-full bg-gray-300" />
-                    <div className="h-3.5 w-12 animate-pulse rounded bg-gray-200 sm:h-4" />
+                    <div className="h-3.5 w-14 animate-pulse rounded bg-secondary sm:h-4" />
+                    <div className="size-1 rounded-full bg-border" />
+                    <div className="h-3.5 w-12 animate-pulse rounded bg-secondary sm:h-4" />
                   </div>
                 </div>
               </div>
@@ -116,8 +116,8 @@ export default function CoverSection() {
   const avatarLightbox = getProfileAvatarLightbox(avatarMaster);
 
   return (
-    <div className="w-full bg-white shadow-[0_10px_30px_rgba(0,0,0,0.015)] border-b border-black/10">
-      <div className="group relative h-[240px] w-full select-none overflow-hidden bg-neutral-100 sm:h-[360px] md:h-[480px]">
+    <div className="w-full bg-card shadow-[0_10px_30px_rgba(0,0,0,0.015)] border-b border-border">
+      <div className="group relative h-[240px] w-full select-none overflow-hidden bg-muted sm:h-[360px] md:h-[480px]">
         {/* Nền blur dùng một biến thể Cloudinary 320px/q_auto:eco/dpr_1. */}
         <Image
           src={coverBackground}
@@ -188,7 +188,7 @@ export default function CoverSection() {
                   href={avatarLightbox}
                   data-fancybox="profile-avatar"
                   aria-label="Mở ảnh đại diện chất lượng cao"
-                  className="relative block size-full cursor-pointer overflow-hidden rounded-full border-4 border-white"
+                  className="relative block size-full cursor-pointer overflow-hidden rounded-full border-4 border-card"
                 >
                   <Image
                     src={avatarDisplay}
@@ -208,7 +208,7 @@ export default function CoverSection() {
                     aria-label="Thay đổi ảnh đại diện"
                     title="Thay đổi ảnh đại diện"
                     className="absolute bottom-3 right-3 flex size-9 cursor-pointer items-center justify-center rounded-full
-                      bg-black/40 hover:bg-black/60 backdrop-blur-xs border border-black/10
+                      bg-black/40 hover:bg-black/60 backdrop-blur-xs border border-border
                       text-base text-white/70 hover:text-white/90 shadow-lg transition duration-300 active:scale-98 sm:size-10"
                   >
                     <i className="fad fa-camera" aria-hidden="true" />
@@ -217,13 +217,13 @@ export default function CoverSection() {
               </div>
 
               <div className="flex flex-col items-center gap-0 sm:items-start sm:gap-1 mt-0 sm:mt-18">
-                <div className="flex items-center gap-1 text-xl font-bold md:text-2xl lg:text-3xl text-slate-800">
+                <div className="flex items-center gap-1 text-xl font-bold md:text-2xl lg:text-3xl text-foreground">
                   {profile.name || "User Name"}
                   <i
                     className="fas fa-badge-check cursor-pointer text-sm text-blue-500 active:scale-95 sm:text-lg"
                   />
                 </div>
-                <div className="text-[.8375rem] text-slate-800 sm:text-sm/6">
+                <div className="text-[.8375rem] text-foreground sm:text-sm/6">
                   <b>{postStats.total}</b> bài viết
                   <span className="mx-0.5 text-sm"> • </span>
                   <b>{postStats.today}</b> bài mới

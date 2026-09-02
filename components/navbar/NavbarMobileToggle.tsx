@@ -14,7 +14,7 @@ export default function NavbarMobileToggle({
       onClick={onToggle}
       className="
         relative z-10 md:hidden w-11 h-11 flex items-center justify-center rounded-full
-        transition-all duration-300 text-gray-700 hover:text-black cursor-pointer
+        transition-all duration-300 text-foreground/75 hover:text-foreground cursor-pointer
       "
       aria-label="Open menu"
       aria-expanded={open}

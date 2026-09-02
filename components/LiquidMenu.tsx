@@ -65,8 +65,8 @@ export default function LiquidMenu() {
       aria-label="Điều hướng mobile"
       className="pointer-events-none fixed inset-x-0 bottom-0 z-[24] flex justify-center px-6 pb-[calc(20px+env(safe-area-inset-bottom))] md:hidden"
     >
-      <div className="pointer-events-auto relative flex h-[56px] w-full max-w-xl items-center justify-around border border-white/25
-      rounded-full bg-white/50 hover:bg-white/75 transition duration-300 px-1 backdrop-blur-xl shadow-[0_12px_36px_rgba(0,0,0,0.05)]">
+      <div className="pointer-events-auto relative flex h-[56px] w-full max-w-xl items-center justify-around border border-border
+      rounded-full bg-card/70 hover:bg-card/90 transition duration-300 px-1 backdrop-blur-xl shadow-[0_12px_36px_rgba(0,0,0,0.05)]">
 
         {/* ACTIVE PILL - CHỈ CHUYỂN ĐỘNG THEO TRỤC X */}
         {activeIndex >= 0 && (
@@ -82,7 +82,7 @@ export default function LiquidMenu() {
                     damping: 20,
                     mass: 0.5,
               }}
-              className="block h-full w-1/5 rounded-full bg-black/[0.1]"
+              className="block h-full w-1/5 rounded-full bg-foreground/10"
             />
           </div>
         )}
@@ -102,8 +102,8 @@ export default function LiquidMenu() {
               }
               className={`relative z-10 flex h-[44px] min-w-0 flex-1 flex-col items-center justify-center gap-0
                 ${active
-                  ? "font-bold text-black"
-                  : "text-black/50"
+                  ? "font-bold text-foreground"
+                  : "text-foreground/50"
                 }`}
             >
               <i
@@ -122,7 +122,7 @@ export default function LiquidMenu() {
           type="button"
           aria-label="Mở menu"
           onClick={toggleNavbarMobileMenu}
-          className="relative z-10 flex h-[54px] min-w-0 flex-1 flex-col items-center justify-center gap-1.5 rounded-[27px] text-black/50 cursor-pointer"
+          className="relative z-10 flex h-[54px] min-w-0 flex-1 flex-col items-center justify-center gap-1.5 rounded-[27px] text-foreground/50 cursor-pointer"
         >
           <i
             className="fal fa-bars relative z-10 text-lg"

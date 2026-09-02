@@ -464,10 +464,10 @@ export default function BlogPostFeed() {
             className={`
               flex items-center justify-center gap-2
               rounded-full
-              bg-white/60 backdrop-blur-2xl
+              bg-card/60 backdrop-blur-2xl
               w-12 h-12 text-center mx-auto
               shadow-[0_10px_35px_rgba(0,0,0,0.3)]
-              text-sm font-normal text-gray-800
+              text-sm font-normal text-foreground
               transition-all duration-800
               animate-in fade-in slide-in-from-top-2 duration-300
             `}
@@ -475,11 +475,11 @@ export default function BlogPostFeed() {
             <div className="flex items-center justify-center text-3xl">
               {refreshing ? (
                 <i
-                  className="fad fa-spinner-third fa-spin text-slate-600"
+                  className="fad fa-spinner-third fa-spin text-foreground/75"
                   style={{ "--fa-animation-duration": ".65s" } as React.CSSProperties}
                 />
               ) : (
-                <i className="fas fa-circle-check text-green-600" />
+                <i className="fas fa-circle-check text-green-600 dark:text-green-300" />
               )}
             </div>
           </div>
@@ -491,7 +491,7 @@ export default function BlogPostFeed() {
       {loading && <PostCardSkeleton count={INITIAL_LIMIT} />}
 
       {!loading && posts.length === 0 && (
-        <p className="text-center text-gray-500">Chưa có bài viết nào 🧐</p>
+        <p className="text-center text-muted-foreground">Chưa có bài viết nào 🧐</p>
       )}
 
       {posts
@@ -533,7 +533,7 @@ export default function BlogPostFeed() {
             <button
               type="button"
               onClick={() => fetchPosts()}
-              className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/80 backdrop-blur-md px-5 py-2.5 text-sm font-medium text-gray-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 hover:bg-white hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)] cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-card/80 backdrop-blur-md px-5 py-2.5 text-sm font-medium text-foreground shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 hover:bg-card hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)] cursor-pointer"
             >
               <i className="fa-duotone fa-arrow-down" />
               Xem thêm
@@ -541,7 +541,7 @@ export default function BlogPostFeed() {
           )}
 
           {!hasMore && posts.length > 0 && (
-            <p className="text-sm text-gray-400">Không còn kết quả nào khác</p>
+            <p className="text-sm text-muted-foreground">Không còn kết quả nào khác</p>
           )}
         </div>
       )}

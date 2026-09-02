@@ -642,13 +642,13 @@ export default function ProfileMediaEditorModal({
         }
       }}
     >
-      <div className="flex max-h-[94vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl sm:rounded-3xl animate-fadeIn">
-        <header className="flex shrink-0 items-center justify-between border-b border-black/5 px-4 py-3 sm:px-6 sm:py-4">
+      <div className="flex max-h-[94vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-card shadow-2xl sm:rounded-3xl animate-fadeIn">
+        <header className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3 sm:px-6 sm:py-4">
           <div className="min-w-0">
-            <h2 className="truncate text-base font-semibold text-neutral-900 sm:text-lg">
+            <h2 className="truncate text-base font-semibold text-foreground sm:text-lg">
               {title}
             </h2>
-            <p className="mt-0.5 truncate text-xs text-neutral-500 sm:text-sm hidden">
+            <p className="mt-0.5 truncate text-xs text-muted-foreground sm:text-sm hidden">
               {source
                 ? source.label
                 : "Upload ảnh mới hoặc chọn lại ảnh đã có trên Cloudinary"}
@@ -660,7 +660,7 @@ export default function ProfileMediaEditorModal({
             onClick={onClose}
             disabled={preparingSource || saving || deletingPublicId !== null}
             aria-label="Đóng"
-            className="ml-4 flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full bg-neutral-100 text-neutral-600 transition hover:bg-neutral-200 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+            className="ml-4 flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full bg-muted text-foreground/75 transition hover:bg-secondary active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <i className="fad fa-xmark" aria-hidden="true" />
           </button>
@@ -674,13 +674,13 @@ export default function ProfileMediaEditorModal({
                   type="button"
                   onClick={clearSource}
                   disabled={saving}
-                  className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-neutral-100 px-3 py-2 text-xs font-medium text-neutral-700 transition hover:bg-neutral-200 active:scale-95 disabled:opacity-50"
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-medium text-foreground/75 transition hover:bg-secondary active:scale-95 disabled:opacity-50"
                 >
                   <i className="fad fa-arrow-left" aria-hidden="true" />
                   Chọn ảnh khác
                 </button>
 
-                <span className="rounded-full bg-sky-50 px-3 py-1.5 text-xs font-medium text-sky-700">
+                <span className="rounded-full bg-sky-50 px-3 py-1.5 text-xs font-medium text-sky-700 dark:bg-sky-400/15 dark:text-sky-300">
                   {isAvatar ? "Tỷ lệ 1:1" : "Tỷ lệ 12:5"}
                 </span>
               </div>
@@ -694,21 +694,21 @@ export default function ProfileMediaEditorModal({
             </div>
           ) : (
             <>
-              <div className="sticky top-0 z-10 flex border-b border-black/5 bg-white/95 px-4 backdrop-blur sm:px-6">
+              <div className="sticky top-0 z-10 flex border-b border-border bg-card/95 px-4 backdrop-blur sm:px-6">
                 <button
                   type="button"
                   onClick={() => setTab("upload")}
                   disabled={preparingSource || saving}
                   className={`relative flex flex-1 cursor-pointer items-center justify-center gap-2 px-3 py-3.5 text-sm font-medium transition sm:flex-none sm:px-5 ${
                     tab === "upload"
-                      ? "text-neutral-950"
-                      : "text-neutral-400 hover:text-neutral-700"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground/75"
                   }`}
                 >
                   <i className="fad fa-cloud-arrow-up" aria-hidden="true" />
                   Tải ảnh mới
                   {tab === "upload" && (
-                    <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-neutral-950" />
+                    <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-primary" />
                   )}
                 </button>
 
@@ -718,14 +718,14 @@ export default function ProfileMediaEditorModal({
                   disabled={preparingSource || saving}
                   className={`relative flex flex-1 cursor-pointer items-center justify-center gap-2 px-3 py-3.5 text-sm font-medium transition sm:flex-none sm:px-5 ${
                     tab === "library"
-                      ? "text-neutral-950"
-                      : "text-neutral-400 hover:text-neutral-700"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground/75"
                   }`}
                 >
                   <i className="fad fa-photo-film" aria-hidden="true" />
                   Thư viện
                   {tab === "library" && (
-                    <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-neutral-950" />
+                    <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-primary" />
                   )}
                 </button>
               </div>
@@ -748,9 +748,9 @@ export default function ProfileMediaEditorModal({
                     onClick={() => fileInputRef.current?.click()}
                     disabled={preparingSource}
                     aria-busy={preparingSource}
-                    className="group flex min-h-[320px] w-full cursor-pointer flex-col items-center justify-center rounded-3xl border border-dashed border-neutral-300 bg-gradient-to-b from-neutral-50 to-white p-8 text-center transition hover:border-sky-300 hover:from-sky-50/60 active:scale-[0.995] disabled:cursor-wait disabled:opacity-70"
+                    className="group flex min-h-[320px] w-full cursor-pointer flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-gradient-to-b from-muted/50 to-card p-8 text-center transition hover:border-sky-300 hover:from-sky-50/60 dark:hover:from-sky-400/10 active:scale-[0.995] disabled:cursor-wait disabled:opacity-70"
                   >
-                    <span className="mb-5 flex size-16 items-center justify-center rounded-2xl bg-neutral-900 text-2xl text-white shadow-lg transition group-hover:-translate-y-0.5 group-hover:shadow-xl">
+                    <span className="mb-5 flex size-16 items-center justify-center rounded-2xl bg-primary text-2xl text-primary-foreground shadow-lg transition group-hover:-translate-y-0.5 group-hover:shadow-xl">
                       <i
                         className={`fad ${
                           preparingSource
@@ -760,12 +760,12 @@ export default function ProfileMediaEditorModal({
                         aria-hidden="true"
                       />
                     </span>
-                    <span className="text-base font-semibold text-neutral-900">
+                    <span className="text-base font-semibold text-foreground">
                       {preparingSource
                         ? "Đang tối ưu ảnh cho thiết bị..."
                         : "Chọn hình ảnh từ thiết bị"}
                     </span>
-                    <span className="mt-2 max-w-md text-sm leading-6 text-neutral-500">
+                    <span className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                       {preparingSource
                         ? "Vui lòng giữ cửa sổ này mở trong giây lát."
                         : "Ảnh chỉ được upload sau khi bạn crop và xác nhận. Hỗ trợ JPG, PNG, WebP, AVIF, HEIC/HEIF và tối đa 20MB."}
@@ -783,8 +783,8 @@ export default function ProfileMediaEditorModal({
                         disabled={saving}
                         className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium transition active:scale-95 ${
                           folder === item.value
-                            ? "bg-neutral-900 text-white"
-                            : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-foreground/75 hover:bg-secondary"
                         }`}
                       >
                         <i className={`fad ${item.icon}`} aria-hidden="true" />
@@ -793,7 +793,7 @@ export default function ProfileMediaEditorModal({
                     ))}
                   </div>
 
-                  <div className="mb-3 flex items-center justify-between gap-3 text-[11px] text-neutral-400">
+                  <div className="mb-3 flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
                     <span>Tải tối đa 10 ảnh mỗi lần</span>
                     {assets.length > 0 && (
                       <span>Đã tải {assets.length} ảnh</span>
@@ -805,14 +805,14 @@ export default function ProfileMediaEditorModal({
                       {Array.from({ length: 8 }).map((_, index) => (
                         <div
                           key={index}
-                          className="aspect-[4/3] animate-pulse rounded-2xl bg-neutral-100"
+                          className="aspect-[4/3] animate-pulse rounded-2xl bg-muted"
                         />
                       ))}
                     </div>
                   ) : libraryError && assets.length === 0 ? (
-                    <div className="flex min-h-[280px] flex-col items-center justify-center rounded-3xl bg-amber-50 px-6 text-center">
+                    <div className="flex min-h-[280px] flex-col items-center justify-center rounded-3xl bg-amber-50 px-6 text-center dark:bg-amber-400/10">
                       <i className="fad fa-triangle-exclamation text-3xl text-amber-500" />
-                      <p className="mt-3 max-w-lg text-sm font-medium leading-6 text-amber-900">
+                      <p className="mt-3 max-w-lg text-sm font-medium leading-6 text-amber-900 dark:text-amber-200">
                         {libraryError}
                       </p>
                       <button
@@ -831,9 +831,9 @@ export default function ProfileMediaEditorModal({
                       </button>
                     </div>
                   ) : assets.length === 0 ? (
-                    <div className="flex min-h-[280px] flex-col items-center justify-center rounded-3xl bg-neutral-50 text-center">
-                      <i className="fad fa-images text-3xl text-neutral-300" />
-                      <p className="mt-3 text-sm font-medium text-neutral-700">
+                    <div className="flex min-h-[280px] flex-col items-center justify-center rounded-3xl bg-muted/50 text-center">
+                      <i className="fad fa-images text-3xl text-muted-foreground" />
+                      <p className="mt-3 text-sm font-medium text-foreground/75">
                         Chưa có ảnh trong “{folderLabel}”
                       </p>
                     </div>
@@ -853,7 +853,7 @@ export default function ProfileMediaEditorModal({
                           <div
                             key={asset.asset_id}
                             title={asset.public_id}
-                            className="group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl bg-neutral-100 text-left ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
+                            className="group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl bg-muted text-left ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
                           >
                             <Image
                               src={getProfileLibraryThumbnail(asset.secure_url)}
@@ -886,7 +886,7 @@ export default function ProfileMediaEditorModal({
                               </span>
                             </span>
                             <span
-                              className={`pointer-events-none absolute right-2 top-2 z-[2] flex size-8 items-center justify-center rounded-full bg-white/90 text-neutral-900 shadow-sm backdrop-blur transition ${
+                              className={`pointer-events-none absolute right-2 top-2 z-[2] flex size-8 items-center justify-center rounded-full bg-card/90 text-foreground shadow-sm backdrop-blur transition ${
                                 isReusing
                                   ? "opacity-100"
                                   : "opacity-0 group-hover:opacity-100"
@@ -948,7 +948,7 @@ export default function ProfileMediaEditorModal({
                           })
                         }
                         disabled={loadingLibrary || saving}
-                        className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-neutral-100 px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-200 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-muted px-5 py-2.5 text-sm font-medium text-foreground/75 transition hover:bg-secondary active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <i
                           className={`fad ${
@@ -969,12 +969,12 @@ export default function ProfileMediaEditorModal({
         </div>
 
         {source && (
-          <footer className="flex shrink-0 items-center justify-end gap-2 border-t border-black/5 bg-white px-4 py-3 sm:px-6 sm:py-4">
+          <footer className="flex shrink-0 items-center justify-end gap-2 border-t border-border bg-card px-4 py-3 sm:px-6 sm:py-4">
             <button
               type="button"
               onClick={onClose}
               disabled={saving}
-              className="cursor-pointer rounded-full bg-neutral-100 px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-200 active:scale-95 disabled:opacity-50"
+              className="cursor-pointer rounded-full bg-muted px-5 py-2.5 text-sm font-medium text-foreground/75 transition hover:bg-secondary active:scale-95 disabled:opacity-50"
             >
               Hủy
             </button>
@@ -982,7 +982,7 @@ export default function ProfileMediaEditorModal({
               type="button"
               onClick={() => void handleSave()}
               disabled={saving || !cropArea}
-              className="inline-flex min-w-32 cursor-pointer items-center justify-center gap-2 rounded-full bg-neutral-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-neutral-800 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-w-32 cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <i
                 className={`fad ${
@@ -1008,17 +1008,17 @@ export default function ProfileMediaEditorModal({
             }
           }}
         >
-          <div className="w-full max-w-sm rounded-3xl bg-white p-5 text-center shadow-2xl sm:p-6">
-            <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-red-50 text-xl text-red-500">
+          <div className="w-full max-w-sm rounded-3xl bg-card p-5 text-center shadow-2xl sm:p-6">
+            <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-red-50 dark:bg-red-400/15 text-xl text-red-500">
               <i className="fad fa-trash-can" aria-hidden="true" />
             </span>
-            <h3 className="mt-4 text-base font-semibold text-neutral-950">
+            <h3 className="mt-4 text-base font-semibold text-foreground">
               Xóa ảnh này?
             </h3>
-            <p className="mt-2 text-sm leading-6 text-neutral-500">
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Ảnh này sẽ bị xóa vĩnh viễn.
             </p>
-            <p className="mt-2 truncate rounded-xl bg-neutral-50 px-3 py-2 text-[11px] text-neutral-400 hidden">
+            <p className="mt-2 truncate rounded-xl bg-muted/50 px-3 py-2 text-[11px] text-muted-foreground hidden">
               {deleteCandidate.public_id}
             </p>
             <div className="mt-5 flex justify-center gap-2">
@@ -1026,7 +1026,7 @@ export default function ProfileMediaEditorModal({
                 type="button"
                 onClick={() => setDeleteCandidate(null)}
                 disabled={Boolean(deletingPublicId)}
-                className="cursor-pointer rounded-full bg-neutral-100 px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-200 active:scale-95 disabled:opacity-50"
+                className="cursor-pointer rounded-full bg-muted px-5 py-2.5 text-sm font-medium text-foreground/75 transition hover:bg-secondary active:scale-95 disabled:opacity-50"
               >
                 Hủy
               </button>

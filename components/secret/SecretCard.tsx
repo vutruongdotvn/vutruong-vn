@@ -35,7 +35,7 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
     const parts = text.split(new RegExp(`(${searchQuery})`, "gi"));
     return parts.map((part, i) =>
       part.toLowerCase() === searchQuery.toLowerCase() ? (
-        <mark key={i} className="bg-yellow-200 text-black font-semibold rounded px-0.5">{part}</mark>
+        <mark key={i} className="bg-yellow-200 dark:bg-yellow-400/15 text-foreground font-semibold rounded px-0.5">{part}</mark>
       ) : part
     );
   };
@@ -57,16 +57,16 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
 
   const getBrandIcon = (title: string) => {
     const t = title.toLowerCase();
-    if (t.includes("facebook") || t.includes("fb")) return "fa-brands fa-facebook text-blue-600";
+    if (t.includes("facebook") || t.includes("fb")) return "fa-brands fa-facebook text-blue-600 dark:text-blue-300";
     if (t.includes("google") || t.includes("gmail") || t.includes("youtube")) return "fa-brands fa-google text-red-500";
-    if (t.includes("apple") || t.includes("icloud") || t.includes("ios") || t.includes("mac")) return "fa-brands fa-apple text-black";
-    if (t.includes("github")) return "fa-brands fa-github text-gray-800";
+    if (t.includes("apple") || t.includes("icloud") || t.includes("ios") || t.includes("mac")) return "fa-brands fa-apple text-foreground";
+    if (t.includes("github")) return "fa-brands fa-github text-foreground";
     if (t.includes("microsoft") || t.includes("windows")) return "fa-brands fa-windows text-blue-500";
-    if (t.includes("tiktok")) return "fa-brands fa-tiktok text-black";
-    if (t.includes("instagram") || t.includes("ig")) return "fa-brands fa-instagram text-pink-600";
+    if (t.includes("tiktok")) return "fa-brands fa-tiktok text-foreground";
+    if (t.includes("instagram") || t.includes("ig")) return "fa-brands fa-instagram text-pink-600 dark:text-pink-300";
     if (t.includes("zalo")) return "fa-solid fa-comment-dots text-blue-500";
     if (t.includes("supabase")) return "fa-solid fa-database text-emerald-500";
-    if (t.includes("vercel")) return "fa-solid fa-triangle text-black";
+    if (t.includes("vercel")) return "fa-solid fa-triangle text-foreground";
     return "fa-duotone fa-shield-keyhole text-sky-500"; 
   };
 
@@ -74,15 +74,15 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
   const InfoRow = ({ label, icon, value, type, maskable, isMasked, setMask }: any) => {
     if (!value) return null;
     return (
-      <div className="flex flex-col items-start group/item p-2 rounded-sm border border-2 border-gray-200 hover:border-gray-300 relative">
-        <div className="text-gray-500 font-bold flex-shrink-0 text-xs uppercase tracking-wider flex items-center gap-1.5 absolute -top-2 left-0 bg-white mx-3 px-1">
+      <div className="flex flex-col items-start group/item p-2 rounded-sm border border-2 border-border hover:border-border relative">
+        <div className="text-muted-foreground font-bold flex-shrink-0 text-xs uppercase tracking-wider flex items-center gap-1.5 absolute -top-2 left-0 bg-card mx-3 px-1">
           {label}
         </div>
         <div className="flex items-center gap-2 min-w-0 flex-1 pt-1 mx-2">
           {/*<i className={`fa-duotone ${icon} absolute text-sm hidden`} />*/}
           <span 
             onClick={() => handleCopy(value, label)}
-            className={`cursor-pointer transition truncate ${maskable ? 'passwordRow' : 'text-gray-800 hover:text-black'}`}
+            className={`cursor-pointer transition truncate ${maskable ? 'passwordRow' : 'text-foreground hover:text-foreground'}`}
             title="Click để Copy"
           >
             {maskable ? maskText(value, isMasked) : highlight(value)}
@@ -90,7 +90,7 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
           {maskable && (
             <button 
               onClick={(e) => { e.stopPropagation(); setMask(!isMasked); }}
-              className="w-6 h-6 cursor-pointer absolute right-2 text-gray-400 hover:text-gray-800 active:scale-95"
+              className="w-6 h-6 cursor-pointer absolute right-2 text-muted-foreground hover:text-foreground active:scale-95"
             >
               <i className={`fa-duotone ${isMasked ? 'fa-eye-slash' : 'fa-eye'} text-xs`} />
             </button>
@@ -103,15 +103,15 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
   return (
     <>
       {/* 💳 THẺ HIỂN THỊ CHÍNH (CARD) */}
-      <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 p-4 transition-all duration-300 hover:shadow-[0_8px_60px_rgba(0,0,0,0.1)] relative flex flex-col h-full">
+      <div className="bg-card rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-border p-4 transition-all duration-300 hover:shadow-[0_8px_60px_rgba(0,0,0,0.1)] relative flex flex-col h-full">
         
         {/* Header */}
         <div className="flex items-center gap-3 mb-5">
-          <div className="size-13 flex flex-shrink-0 items-center justify-center bg-gray-100 rounded-2xl">
+          <div className="size-13 flex flex-shrink-0 items-center justify-center bg-muted rounded-2xl">
             <i className={`${getBrandIcon(secret.title)} text-2xl`} />
           </div>
           <div className="min-w-0 flex gap-0.25 flex-col">
-            <h3 className="font-bold text-gray-800 text-base truncate">{highlight(secret.title)}</h3>
+            <h3 className="font-bold text-foreground text-base truncate">{highlight(secret.title)}</h3>
             {secret.tags && secret.tags.length > 0 && (
               <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
                 {secret.tags.map(tag => (
@@ -134,13 +134,13 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
         <div className="flex items-center justify-center absolute top-0 right-0 m-4 gap-1">
           <button 
             onClick={() => setIsViewModalOpen(true)}
-            className="flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 active:scale-95 text-sm font-medium p-3 rounded-lg cursor-pointer w-full"
+            className="flex items-center justify-center gap-2 bg-muted/50 hover:bg-muted active:scale-95 text-sm font-medium p-3 rounded-lg cursor-pointer w-full"
           >
             <i className="fa-duotone fa-expand" />
           </button>
           <button 
             onClick={() => onEdit(secret)}
-            className="flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 active:scale-95 text-sm font-medium p-3 rounded-lg cursor-pointer w-full"
+            className="flex items-center justify-center gap-2 bg-muted/50 hover:bg-muted active:scale-95 text-sm font-medium p-3 rounded-lg cursor-pointer w-full"
             title="Chỉnh sửa"
           >
             <i className="fa-duotone fa-pen"/>
@@ -152,23 +152,23 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
       {isViewModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
           <div className="absolute inset-0 bg-black/20 backdrop-blur-xs transition-opacity" onClick={() => setIsViewModalOpen(false)} />
-          <div className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-fadeIn">
+          <div className="relative w-full max-w-xl bg-card rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-fadeIn">
             
-            <div className="flex items-center justify-between bg-white px-6 py-4 border-b border-gray-100 bg-gray-50/50 rounded-t-2xl">
+            <div className="flex items-center justify-between bg-card px-6 py-4 border-b border-border bg-muted/50 rounded-t-2xl">
               <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-xl">
+                 <div className="w-10 h-10 flex items-center justify-center bg-muted rounded-xl">
                   <i className={`${getBrandIcon(secret.title)} text-xl`} />
                  </div>
                  <div>
-                   <h2 className="text-lg font-bold text-gray-900 leading-tight">{secret.title}</h2>
+                   <h2 className="text-lg font-bold text-foreground leading-tight">{secret.title}</h2>
                  </div>
               </div>
-              <button onClick={() => setIsViewModalOpen(false)} className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-200 transition cursor-pointer active:scale-95">
+              <button onClick={() => setIsViewModalOpen(false)} className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground/75 hover:bg-secondary transition cursor-pointer active:scale-95">
                 <i className="fa-duotone fa-xmark text-xl" />
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto space-y-5 custom-scrollbar bg-white text-sm sm:text-base">
+            <div className="p-6 overflow-y-auto space-y-5 custom-scrollbar bg-card text-sm sm:text-base">
                {/* Gọi lại InfoRow cho tất cả các trường (nếu có dữ liệu) */}
                <InfoRow label="Tài khoản" icon="fa-user" value={secret.account} />
                <InfoRow label="Mật khẩu" icon="fa-key-skeleton" value={secret.password} maskable isMasked={showPassword} setMask={setShowPassword} />
@@ -176,7 +176,7 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
                <InfoRow label="Số điện thoại" icon="fa-phone" value={secret.phone} />
                
                {/*(secret.recovery_email || secret.recovery_phone || secret.secret_code) && (
-                 <div className="my-4 border-t border-gray-100 pt-4" /> // đường kẻ ngang phân tách giữa các data backup (email, sđt)
+                 <div className="my-4 border-t border-border pt-4" /> // đường kẻ ngang phân tách giữa các data backup (email, sđt)
                )*/}
                
                <InfoRow label="Email khôi phục" icon="fa-envelope-open-text" value={secret.recovery_email} />
@@ -186,9 +186,9 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
                {secret.notes && (
                  <>
                    <div className="notes_info">
-                     <div className="bg-amber-50/50 border border-amber-200 text-amber-900 text-sm p-4 rounded-md whitespace-pre-wrap break-words leading-relaxed mt-4">
+                     <div className="bg-amber-50/50 border border-amber-200 text-amber-900 dark:border-amber-400/25 dark:bg-amber-400/10 dark:text-amber-200 text-sm p-4 rounded-md whitespace-pre-wrap break-words leading-relaxed mt-4">
                      <div className="font-bold">Ghi chú</div>
-                      <div className="my-3 border-t border-amber-200" />
+                      <div className="my-3 border-t border-amber-200 dark:border-amber-400/25" />
                        {secret.notes}
                      </div>
                    </div>
@@ -196,8 +196,8 @@ export default function SecretCard({ secret, searchQuery, onEdit }: Props) {
                )}
             </div>
 
-            <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 rounded-b-2xl flex justify-end bg-white">
-               <button onClick={() => { setIsViewModalOpen(false); onEdit(secret); }} className="px-5 py-2.5 bg-sky-100 text-sky-700 hover:bg-sky-200 text-sm font-semibold rounded-xl transition cursor-pointer flex items-center gap-2">
+            <div className="px-6 py-4 border-t border-border bg-muted/50 rounded-b-2xl flex justify-end bg-card">
+               <button onClick={() => { setIsViewModalOpen(false); onEdit(secret); }} className="px-5 py-2.5 bg-sky-100 dark:bg-sky-400/15 text-sky-700 dark:text-sky-300 hover:bg-sky-200 dark:hover:bg-sky-400/20 text-sm font-semibold rounded-xl transition cursor-pointer flex items-center gap-2">
                  <i className="fa-duotone fa-pen-to-square" /> Chỉnh sửa
                </button>
             </div>

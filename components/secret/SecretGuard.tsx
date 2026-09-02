@@ -40,18 +40,18 @@ export default function SecretGuard({ children }: { children: React.ReactNode })
       <div className="flex h-screen w-full items-center justify-center">
         <PremiumGlassCard className="max-w-3xl" contentClassName="text-center p-4 sm:p-8 py-8">
           {/* Icon Container */}
-          <div className="size-16 mb-6 flex items-center mx-auto justify-center rounded-full bg-red-50 border border-red-200">
+          <div className="size-16 mb-6 flex items-center mx-auto justify-center rounded-full bg-red-50 dark:bg-red-400/15 border border-red-200 dark:border-red-400/25">
             <i className="fa-duotone fa-lock-keyhole text-3xl text-red-500" />
           </div>
 
           {/* Nội dung thông báo */}
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-1.5">Truy cập bị từ chối</h2>
-          <p className="text-sm sm:text-base text-gray-500 mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-1.5">Truy cập bị từ chối</h2>
+          <p className="text-sm sm:text-base text-muted-foreground mb-8">
             Bạn không có quyền truy cập vào trang này.
           </p>
 
           {/* Nút điều hướng lối thoát */}
-          <Link href="/" className="flex items-center gap-3 justify-center mt-6 px-6 py-3 mx-auto bg-slate-900 text-white text-sm font-medium rounded-full hover:bg-slate-800 transition shadow-lg shadow-slate-900/20 active:scale-95 w-sm max-w-full">
+          <Link href="/" className="flex items-center gap-3 justify-center mt-6 px-6 py-3 mx-auto bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition shadow-lg shadow-primary/20 active:scale-95 w-sm max-w-full">
             <i className="fad fa-arrow-left"/> Về Trang chủ
           </Link>
         </PremiumGlassCard>
@@ -62,9 +62,9 @@ export default function SecretGuard({ children }: { children: React.ReactNode })
   // ⏳ Màn hình chờ trong lúc check phiên đăng nhập (Đã sửa điều kiện: Chỉ chặn màn hình ở lần check đầu)
   if ((loading || !isAuthorized) && isInitialCheck) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-gray-50/50">
+      <div className="flex h-screen w-full items-center justify-center bg-muted/50">
         <div className="flex flex-col items-center gap-4">
-          <i className="fa-duotone fa-shield-check fa-beat-fade text-5xl text-sky-600"></i>
+          <i className="fa-duotone fa-shield-check fa-beat-fade text-5xl text-sky-600 dark:text-sky-300"></i>
         </div>
       </div>
     );

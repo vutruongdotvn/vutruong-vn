@@ -104,7 +104,7 @@ export default function FeaturedWidget() {
 
   return (
     <>
-      <section className="rounded-none bg-white p-3 px-0 sm:rounded-2xl sm:p-4">
+      <section className="rounded-none bg-card p-3 px-0 sm:rounded-2xl sm:p-4">
         <div className="mb-3 flex items-center justify-between px-4 sm:px-0">
           <h3 className="text-[.9375rem] font-semibold sm:text-base">
             Khoảnh khắc
@@ -116,7 +116,7 @@ export default function FeaturedWidget() {
               onClick={() => setManagerOpen(true)}
               title="Quản lý Khoảnh khắc"
               aria-label="Quản lý Khoảnh khắc"
-              className="flex cursor-pointer items-center justify-center rounded-full text-neutral-500 hover:text-neutral-900 active:scale-97"
+              className="flex cursor-pointer items-center justify-center rounded-full text-muted-foreground hover:text-foreground active:scale-97"
             >
               <i className="fad fa-sliders" aria-hidden="true" />
             </button>
@@ -128,19 +128,19 @@ export default function FeaturedWidget() {
             {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
-                className="aspect-[2/3] animate-pulse rounded-xl bg-neutral-100"
+                className="aspect-[2/3] animate-pulse rounded-xl bg-muted"
               />
             ))}
           </div>
         ) : loadError ? (
-          <div className="px-4 py-7 text-center text-sm text-neutral-500 sm:px-0">
+          <div className="px-4 py-7 text-center text-sm text-muted-foreground sm:px-0">
             Chưa thể tải Khoảnh khắc.
           </div>
         ) : visibleStories.length === 0 ? (
           <button
             type="button"
             onClick={() => setManagerOpen(true)}
-            className="mx-3 flex w-[calc(100%-1.5rem)] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-neutral-200 py-8 text-sm text-neutral-500 transition hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-800 sm:mx-0 sm:w-full"
+            className="mx-3 flex w-[calc(100%-1.5rem)] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border py-8 text-sm text-muted-foreground transition hover:border-border hover:bg-muted/50 hover:text-foreground sm:mx-0 sm:w-full"
           >
             <i className="fad fa-images text-xl" aria-hidden="true" />
             Thêm Khoảnh khắc đầu tiên
@@ -213,7 +213,7 @@ export default function FeaturedWidget() {
                       href={getFeaturedWidgetLightboxImage(cover.secure_url)}
                       data-fancybox={gallery}
                       draggable={false}
-                      className="group relative block aspect-[2/3] overflow-hidden rounded-xl bg-neutral-100"
+                      className="group relative block aspect-[2/3] overflow-hidden rounded-xl bg-muted"
                     >
                       <Image
                         src={getFeaturedWidgetImage(cover.secure_url)}

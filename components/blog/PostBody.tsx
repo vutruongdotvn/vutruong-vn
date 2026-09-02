@@ -116,7 +116,7 @@ function renderInlineParts(text: string, enableLinks = true) {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="break-words font-medium text-slate-800 hover:underline active:opacity-80"
+          className="break-words font-medium text-foreground hover:underline active:opacity-80"
         >
           {part.value}
         </a>
@@ -144,7 +144,7 @@ function renderInlineParts(text: string, enableLinks = true) {
           title={`Xem hashtag #${tagName}`}
           href={`/blog/tag/${encodeURIComponent(tagName)}`}
           prefetch={false}
-          className="break-words font-medium text-slate-800 hover:underline active:opacity-80"
+          className="break-words font-medium text-foreground hover:underline active:opacity-80"
         >
           {part.value}
         </Link>
@@ -281,13 +281,13 @@ export default function PostBody({
                 href={`/blog/post/${postId}`}
                 title="Xem toàn bộ bài viết"
                 aria-label="Mở toàn bộ bài viết"
-                className="postShortPreview block cursor-pointer break-words px-3 text-[.9375rem]/6 text-slate-800 hover:text-black sm:px-4"
+                className="postShortPreview block cursor-pointer break-words px-3 text-[.9375rem]/6 text-foreground hover:text-foreground sm:px-4"
               >
                 {renderInlineParts(previewText, false)}
 
                 <span
                   aria-hidden="true"
-                  className="ml-1 inline-flex cursor-pointer items-center whitespace-nowrap align-baseline font-medium text-gray-800 hover:underline"
+                  className="ml-1 inline-flex cursor-pointer items-center whitespace-nowrap align-baseline font-medium text-foreground hover:underline"
                 >
                   Xem thêm
                 </span>
@@ -321,7 +321,7 @@ export default function PostBody({
                   if (!block.value.trim()) return null;
 
                   const textClassName =
-                    "block whitespace-pre-line break-words px-3 text-[.9375rem]/6 text-slate-800 sm:px-4";
+                    "block whitespace-pre-line break-words px-3 text-[.9375rem]/6 text-foreground sm:px-4";
 
                   return (
                     <p

@@ -195,7 +195,7 @@ export function ModalPostFrame({
         aria-labelledby={titleId}
         aria-busy={busy || undefined}
         data-layout={layout ?? "auto"}
-        className="modal-post-frame relative z-10 min-h-0 overflow-hidden bg-white"
+        className="modal-post-frame relative z-10 min-h-0 overflow-hidden bg-card"
       >
         <h1 id={titleId} className="sr-only">
           {title || (busy ? "Đang tải bài viết" : "Bài viết")}
@@ -205,7 +205,7 @@ export function ModalPostFrame({
           type="button"
           onClick={close}
           aria-label="Đóng bài viết"
-          className="absolute right-3 top-3 z-30 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/90 text-slate-500 shadow-sm backdrop-blur-sm hover:bg-slate-100 hover:text-slate-950 hover:shadow-md focus-visible:outline-none active:scale-95"
+          className="absolute right-3 top-3 z-30 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-card/90 text-muted-foreground shadow-sm backdrop-blur-sm hover:bg-muted hover:text-foreground hover:shadow-md focus-visible:outline-none active:scale-95"
         >
           <i className="fa-duotone fa-xmark" aria-hidden="true" />
         </button>
@@ -293,11 +293,11 @@ export function ModalPostSkeletonContent() {
         aria-hidden="true"
         className="modal-post-skeleton-media relative min-h-0 overflow-hidden bg-black/50"
       />
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-card">
         <div className="flex shrink-0 items-center gap-2 p-3 pr-14 sm:p-4 sm:pr-16">
-          <div className="h-[30px] w-[30px] shrink-0 animate-pulse rounded-full bg-slate-200" />
+          <div className="h-[30px] w-[30px] shrink-0 animate-pulse rounded-full bg-secondary" />
           <div className="min-w-0 flex-1 space-y-2">
-            <div className="h-3.5 w-33 animate-pulse rounded-full bg-slate-200" />
+            <div className="h-3.5 w-33 animate-pulse rounded-full bg-secondary" />
           </div>
         </div>
         <div className="min-h-0 flex-1 overflow-hidden px-4 py-1">
@@ -305,29 +305,29 @@ export function ModalPostSkeletonContent() {
             Đang tải nội dung bài viết
           </span>
           <div className="space-y-3" aria-hidden="true">
-            <div className="h-3.5 w-full animate-pulse rounded-full bg-slate-200" />
-            <div className="h-3.5 w-11/12 animate-pulse rounded-full bg-slate-200" />
-            <div className="h-3.5 w-4/5 animate-pulse rounded-full bg-slate-200" />
+            <div className="h-3.5 w-full animate-pulse rounded-full bg-secondary" />
+            <div className="h-3.5 w-11/12 animate-pulse rounded-full bg-secondary" />
+            <div className="h-3.5 w-4/5 animate-pulse rounded-full bg-secondary" />
             <div className="modal-post-skeleton-extra space-y-3 py-3">
-              <div className="h-3.5 w-full animate-pulse rounded-full bg-slate-100" />
-              <div className="h-3.5 w-8/12 animate-pulse rounded-full bg-slate-100" />
-              <div className="h-3.5 w-6/12 animate-pulse rounded-full bg-slate-100" />
+              <div className="h-3.5 w-full animate-pulse rounded-full bg-muted" />
+              <div className="h-3.5 w-8/12 animate-pulse rounded-full bg-muted" />
+              <div className="h-3.5 w-6/12 animate-pulse rounded-full bg-muted" />
             </div>
           </div>
 
           {/* <div className="flex items-center justify-start gap-4">
-            <div className="h-5 w-5 animate-pulse rounded-full bg-slate-200" />
-            <div className="h-5 w-5 animate-pulse rounded-full bg-slate-200" />
-            <div className="h-5 w-5 animate-pulse rounded-full bg-slate-200" />
+            <div className="h-5 w-5 animate-pulse rounded-full bg-secondary" />
+            <div className="h-5 w-5 animate-pulse rounded-full bg-secondary" />
+            <div className="h-5 w-5 animate-pulse rounded-full bg-secondary" />
           </div> */}
         </div>
         {/* <div
-          className="flex shrink-0 items-center gap-5 border-t border-slate-100 bg-white px-4 py-3"
+          className="flex shrink-0 items-center gap-5 border-t border-border bg-card px-4 py-3"
           aria-hidden="true"
         >
-          <div className="h-5 w-5 animate-pulse rounded-full bg-slate-200" />
-          <div className="h-5 w-5 animate-pulse rounded-full bg-slate-200" />
-          <div className="h-5 w-5 animate-pulse rounded-full bg-slate-200" />
+          <div className="h-5 w-5 animate-pulse rounded-full bg-secondary" />
+          <div className="h-5 w-5 animate-pulse rounded-full bg-secondary" />
+          <div className="h-5 w-5 animate-pulse rounded-full bg-secondary" />
         </div> */}
       </div>
     </>

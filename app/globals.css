@@ -7,9 +7,10 @@
 :root {
   --font-sans: var(--font-roboto);
 }
-::selection{
-  background: black;
-  color: white;
+
+::selection {
+  background: var(--foreground);
+  color: var(--background);
 }
 
 html,
@@ -63,6 +64,14 @@ img {
   --color-card: var(--card);
   --color-foreground: var(--foreground);
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-hover: var(--surface-hover);
+  --color-skeleton: var(--skeleton);
+  --color-overlay: var(--overlay);
+  --color-nav-active: var(--nav-active);
+  --color-nav-active-foreground: var(--nav-active-foreground);
+  --color-nav-indicator: var(--nav-indicator);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -73,24 +82,32 @@ img {
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(0.97 0.004 250);
+  --foreground: oklch(0.18 0.012 260);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.18 0.012 260);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.18 0.012 260);
+  --primary: oklch(0.2 0.015 260);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.945 0.006 250);
+  --secondary-foreground: oklch(0.22 0.014 260);
+  --muted: oklch(0.94 0.005 250);
+  --muted-foreground: oklch(0.51 0.012 260);
+  --accent: oklch(0.93 0.008 250);
+  --accent-foreground: oklch(0.2 0.015 260);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: oklch(0.89 0.007 250);
+  --input: oklch(0.89 0.007 250);
+  --ring: oklch(0.62 0.03 260);
+  --surface: oklch(0.985 0.003 250);
+  --surface-elevated: oklch(1 0 0);
+  --surface-hover: oklch(0.94 0.006 250);
+  --skeleton: oklch(0.9 0.006 250);
+  --overlay: oklch(0.12 0.01 260 / 55%);
+  --nav-active: oklch(0.2 0.015 260);
+  --nav-active-foreground: oklch(0.985 0 0);
+  --nav-indicator: oklch(0.2 0.015 260);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -108,37 +125,63 @@ img {
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  /* Nền trung tính kiểu Facebook */
+  --background: #18191a;
+  --surface: #1f2021;
+  --card: #242526;
+  --popover: #242526;
+  --surface-elevated: #242526;
+  --surface-hover: #3a3b3c;
+
+  /* Chữ giữ phong cách VT Zone */
+  --foreground: oklch(0.86 0.008 250);
+  --card-foreground: oklch(0.86 0.008 250);
+  --popover-foreground: oklch(0.88 0.008 250);
+
+  /* Primary trung tính của VT Zone */
+  --primary: oklch(0.78 0.012 250);
+  --primary-foreground: #18191a;
+
+  /* Các lớp nền phụ */
+  --secondary: #303031;
+  --secondary-foreground: oklch(0.86 0.008 250);
+  --muted: #2c2d2e;
+  --muted-foreground: oklch(0.67 0.012 250);
+  --accent: #3a3b3c;
+  --accent-foreground: oklch(0.9 0.008 250);
+
+  /* Trạng thái giữ nguyên VT Zone */
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: oklch(0.64 0.04 255);
+
+  /* Chỉ màu border theo tone Facebook */
+  --border: #3e4042;
+  --input: #3e4042;
+
+  --skeleton: #3a3b3c;
+  --overlay: rgb(0 0 0 / 66%);
+
+  /* Navigation giữ nguyên VT Zone */
+  --nav-active: oklch(0.33 0.02 260);
+  --nav-active-foreground: oklch(0.9 0.008 250);
+  --nav-indicator: oklch(0.64 0.025 255);
+
+  /* Chart giữ trung tính */
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+
+  /* Sidebar sử dụng cùng hệ nền */
+  --sidebar: #242526;
+  --sidebar-foreground: oklch(0.86 0.008 250);
+  --sidebar-primary: oklch(0.33 0.02 260);
+  --sidebar-primary-foreground: oklch(0.9 0.008 250);
+  --sidebar-accent: #303031;
+  --sidebar-accent-foreground: oklch(0.9 0.008 250);
+  --sidebar-border: #3e4042;
+  --sidebar-ring: oklch(0.64 0.04 255);
 }
 
 @layer base {

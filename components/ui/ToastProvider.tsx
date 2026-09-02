@@ -100,33 +100,33 @@ function PremiumToast({
     success: {
       icon: "fa-duotone fa-circle-check",
       container:
-        "border-emerald-200/70 bg-white/85 text-emerald-800 shadow-emerald-100/60",
+        "border-emerald-200/70 bg-card/85 text-emerald-800 dark:border-emerald-400/25 dark:text-emerald-300 dark:shadow-none shadow-emerald-100/60",
       progress: "bg-emerald-500",
-      iconWrap: "bg-emerald-100 text-emerald-700",
+      iconWrap: "bg-emerald-100 dark:bg-emerald-400/15 text-emerald-700 dark:text-emerald-300",
       // title: "Thành công",
     },
     error: {
       icon: "fa-duotone fa-circle-xmark",
       container:
-        "border-red-200/70 bg-white/85 text-red-800 shadow-red-100/60",
+        "border-red-200/70 bg-card/85 text-red-800 dark:border-red-400/25 dark:text-red-300 dark:shadow-none shadow-red-100/60",
       progress: "bg-red-500",
-      iconWrap: "bg-red-100 text-red-700",
+      iconWrap: "bg-red-100 dark:bg-red-400/15 text-red-700 dark:text-red-300",
       // title: "Có lỗi xảy ra",
     },
     info: {
       icon: "fa-duotone fa-circle-info",
       container:
-        "border-sky-200/70 bg-white/85 text-sky-800 shadow-sky-100/60",
+        "border-sky-200/70 bg-card/85 text-sky-800 dark:border-sky-400/25 dark:text-sky-300 dark:shadow-none shadow-sky-100/60",
       progress: "bg-sky-500",
-      iconWrap: "bg-sky-100 text-sky-700",
+      iconWrap: "bg-sky-100 dark:bg-sky-400/15 text-sky-700 dark:text-sky-300",
       // title: "Thông báo",
     },
     warning: {
       icon: "fa-duotone fa-exclamation",
       container:
-        "border-amber-200/70 bg-white/85 text-amber-800 shadow-amber-100/60",
+        "border-amber-200/70 bg-card/85 text-amber-800 dark:border-amber-400/25 dark:text-amber-300 dark:shadow-none shadow-amber-100/60",
       progress: "bg-amber-500",
-      iconWrap: "bg-amber-100 text-amber-700",
+      iconWrap: "bg-amber-100 dark:bg-amber-400/15 text-amber-700 dark:text-amber-300",
       // title: "Lưu ý",
     },
   };
@@ -150,14 +150,14 @@ function PremiumToast({
 
         <div className="min-w-0 flex-1">
           {/*<p className="text-sm font-semibold leading-5">{current.title}</p>*/}
-          <p className="break-words text-sm leading-6 text-black/75">
+          <p className="break-words text-sm leading-6 text-foreground/75">
             {toast.message}
           </p>
         </div>
 
         <button
           onClick={onClose}
-          className="cursor-pointer rounded-full p-2 text-black/45 transition hover:bg-black/5 hover:text-black/70"
+          className="cursor-pointer rounded-full p-2 text-foreground/45 transition hover:bg-foreground/5 hover:text-foreground/70"
           aria-label="Đóng thông báo"
         >
           <i className="fa-regular fa-xmark" />

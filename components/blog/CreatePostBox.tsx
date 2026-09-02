@@ -78,13 +78,13 @@ export default function CreatePostBox({
           aria-label="Đang tải hộp đăng bài viết"
           aria-busy="true"
         >
-          <div className="h-[30px] w-[30px] shrink-0 animate-pulse rounded-full bg-gray-200" />
+          <div className="h-[30px] w-[30px] shrink-0 animate-pulse rounded-full bg-secondary" />
 
-          <div className="h-[30px] max-w-64 flex-1 animate-pulse rounded-full bg-gray-100" />
+          <div className="h-[30px] max-w-64 flex-1 animate-pulse rounded-full bg-muted" />
 
         </div>
       ) : (
-        <div className="flex items-center gap-2 transition-shadow duration-300 sm:gap-2 p-3 sm:p-4 border-b border-slate-200">
+        <div className="flex items-center gap-2 transition-shadow duration-300 sm:gap-2 p-3 sm:p-4 border-b border-border">
           <button
             type="button"
             className="shrink-0 rounded-full"
@@ -104,7 +104,7 @@ export default function CreatePostBox({
             type="button"
             onClick={() => setModalOpen(true)}
             title="Đăng bài viết mới"
-            className="h-[30px] min-w-0 flex-1 cursor-pointer truncate rounded-full text-left text-[.9375rem]/6 font-normal text-slate-600 hover:text-slate-800"
+            className="h-[30px] min-w-0 flex-1 cursor-pointer truncate rounded-full text-left text-[.9375rem]/6 font-normal text-foreground/75 hover:text-foreground"
           >
             <span className="font-medium">{callName}</span> ơi, hôm nay có gì vui không?
           </button>

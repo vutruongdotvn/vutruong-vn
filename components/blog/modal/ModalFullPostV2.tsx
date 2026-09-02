@@ -286,7 +286,7 @@ export default function ModalFullPostV2({
             />
           )}
 
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-card">
             <div className="shrink-0">
               <ModalPostHeader
                 name={activePost.author.name}
@@ -308,7 +308,7 @@ export default function ModalFullPostV2({
                 postTitle={postTitle}
                 postDescription={postDescription}
               />
-              <div className="mt-3 flex flex-col select-none items-center gap-3 p-3 text-[.9375rem] text-slate-400 sm:mt-4 sm:p-4 pb-8">
+              <div className="mt-3 flex flex-col select-none items-center gap-3 p-3 text-[.9375rem] text-muted-foreground sm:mt-4 sm:p-4 pb-8">
                 <i
                   className="fal fa-comment-slash fa-2x opacity-50"
                   aria-hidden="true"
@@ -318,7 +318,7 @@ export default function ModalFullPostV2({
 
             </div>
 
-            {/* <div className="shrink-0 border-t border-slate-100 bg-white">
+            {/* <div className="shrink-0 border-t border-border bg-card">
               <PostActions
                 postId={activePost.id}
                 postTitle={postTitle}
@@ -334,15 +334,15 @@ export default function ModalFullPostV2({
         >
           <div className="max-w-sm">
             <i
-              className="fa-duotone fa-lock-keyhole text-2xl text-slate-400"
+              className="fa-duotone fa-lock-keyhole text-2xl text-muted-foreground"
               aria-hidden="true"
             />
-            <h2 className="mt-3 text-base font-semibold text-slate-800">
+            <h2 className="mt-3 text-base font-semibold text-foreground">
               {resolutionStatus === "denied"
                 ? "Truy cập bị từ chối"
                 : "Không thể tải bài viết"}
             </h2>
-            <p className="mt-1 text-sm leading-6 text-slate-500">
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">
               {resolutionStatus === "denied"
                 ? "Bạn không có quyền xem nội dung này."
                 : "Dữ liệu bài viết hiện không khả dụng."}
@@ -350,7 +350,7 @@ export default function ModalFullPostV2({
             {routeVisibility === "public" && (
               <a
                 href={`/blog/post/${postId}`}
-                className="mt-5 inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 focus-visible:outline-none active:scale-98"
+                className="mt-5 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:outline-none active:scale-98"
               >
                 Mở trang bài viết
               </a>

@@ -182,7 +182,7 @@ export default function PostHeader({
           <div className="flex min-w-0 items-center gap-1.5 leading-none">
             <Link
               href="/about"
-              className="flex h-5 items-center gap-1 cursor-pointer text-[14px] font-medium leading-none text-slate-800 hover:text-black transition"
+              className="flex h-5 items-center gap-1 cursor-pointer text-[14px] font-medium leading-none text-foreground hover:text-foreground transition"
             >
               {name}
               <i className="fas fa-badge-check inline-flex items-center text-[12px] leading-none text-blue-500" />
@@ -191,14 +191,14 @@ export default function PostHeader({
             <div className="flex h-5 items-center gap-1 leading-none">
               {isPinned && (
                 <span
-                  className="inline-flex h-5 items-center text-[14px] leading-none text-slate-500"
+                  className="inline-flex h-5 items-center text-[14px] leading-none text-muted-foreground"
                 >
                   đã ghim
                 </span>
               )}
 
               {isPinned && (
-                <span className="inline-flex h-5 items-center leading-none opacity-50 mx-0.25 text-[14px] text-slate-500">
+                <span className="inline-flex h-5 items-center leading-none opacity-50 mx-0.25 text-[14px] text-muted-foreground">
                   •
                 </span>
               )}
@@ -211,7 +211,7 @@ export default function PostHeader({
                 onClick={
                   publishHref ? undefined : (event) => event.preventDefault()
                 }
-                className="postPublish inline-flex h-5 items-center text-[.8375rem] font-normal leading-none text-slate-500 hover:text-black active:scale-98"
+                className="postPublish inline-flex h-5 items-center text-[.8375rem] font-normal leading-none text-muted-foreground hover:text-foreground active:scale-98"
               >
                 {time}
               </Link>
@@ -222,12 +222,12 @@ export default function PostHeader({
                   setOpenPrivacyModal(true);
                   setOpen(false);
                 }}>
-                <span className="text-slate-400 mx-0.25" aria-hidden="true">•</span>
+                <span className="text-muted-foreground mx-0.25" aria-hidden="true">•</span>
                 <i
                   className={`fadt text-xs cursor-pointer active:scale-98 
                     ${visibility === "privacy"
-                      ? "fa-lock-keyhole text-red-600"
-                      : "fa-earth-asia text-slate-800"
+                      ? "fa-lock-keyhole text-red-600 dark:text-red-300"
+                      : "fa-earth-asia text-foreground"
                     }`}
                   title={
                     visibility === "privacy"
@@ -249,19 +249,19 @@ export default function PostHeader({
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setOpen(!open)}
-              className="inline-flex items-center justify-center px-3 text-gray-400 hover:text-gray-700 cursor-pointer"
+              className="inline-flex items-center justify-center px-3 text-muted-foreground hover:text-foreground/75 cursor-pointer"
             >
               <i className="fa-duotone fa-ellipsis" />
             </button>
 
             {open && (
-              <div className="animate-fadeIn absolute z-[3] top-0 right-0 w-55 rounded-xl bg-white p-1 shadow-2xl">
+              <div className="animate-fadeIn absolute z-[3] top-0 right-0 w-55 rounded-xl bg-card p-1 shadow-2xl">
                 <button
                   onClick={() => {
                     onPin?.();
                     setOpen(false);
                   }}
-                  className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
+                  className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-secondary active:bg-border cursor-pointer"
                 >
                   <i className={`fadt ${isPinned ? "fa-thumbtack-slash" : "fa-thumbtack"}`} />
                   <span>{isPinned ? "Bỏ ghim" : "Ghim"}</span>
@@ -272,7 +272,7 @@ export default function PostHeader({
                     onEdit?.();
                     setOpen(false);
                   }}
-                  className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
+                  className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-secondary active:bg-border cursor-pointer"
                 >
                   <i className="fadt fa-pen" />
                   <span>Chỉnh sửa</span>
@@ -289,7 +289,7 @@ export default function PostHeader({
                     setOpenDateModal(true);
                     setOpen(false);
                   }}
-                  className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
+                  className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-secondary active:bg-border cursor-pointer"
                 >
                   <i className="fadt fa-calendar" />
                   <span>Thay đổi ngày đăng</span>
@@ -300,7 +300,7 @@ export default function PostHeader({
                     setOpenPrivacyModal(true);
                     setOpen(false);
                   }}
-                  className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-gray-200 active:bg-gray-300 cursor-pointer"
+                  className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-secondary active:bg-border cursor-pointer"
                 >
                   <i className="fadt fa-earth-asia" />
                   <span>Thay đổi đối tượng</span>
@@ -311,7 +311,7 @@ export default function PostHeader({
                     onDelete?.();
                     setOpen(false);
                   }}
-                  className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-red-100 hover:text-red-600 active:bg-red-200 active:text-red-600 cursor-pointer"
+                  className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm hover:bg-red-100 dark:hover:bg-red-400/20 hover:text-red-600 dark:hover:text-red-300 active:bg-red-200 dark:active:bg-red-400/25 active:text-red-600 cursor-pointer"
                 >
                   <i className="fadt fa-trash" />
                   <span>Xóa</span>
@@ -340,37 +340,37 @@ export default function PostHeader({
             />
 
             {/* Modal */}
-            <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/60 bg-white/95 shadow-[0_25px_80px_rgba(0,0,0,0.18)] animate-fadeIn overflow-hidden">
+            <div className="relative z-10 w-full max-w-md rounded-2xl border border-border bg-card/95 shadow-[0_25px_80px_rgba(0,0,0,0.18)] animate-fadeIn overflow-hidden">
 
               {/* Header */}
-              <div className="border-b border-gray-100/80 bg-white/90 px-5 py-4 backdrop-blur-xl flex items-center justify-between">
-                <div className="flex items-center gap-2 text-gray-800 font-medium text-sm sm:text-base">
+              <div className="border-b border-border/80 bg-card/90 px-5 py-4 backdrop-blur-xl flex items-center justify-between">
+                <div className="flex items-center gap-2 text-foreground font-medium text-sm sm:text-base">
                   <i className="fa-duotone fa-calendar" />
                   Thay đổi ngày đăng
                 </div>
 
                 <button
                   onClick={() => setOpenDateModal(false)}
-                  className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer active:scale-98"
+                  className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-muted cursor-pointer active:scale-98"
                 >
                   <i className="fa-duotone fa-xmark" />
                 </button>
               </div>
 
               {/* Body */}
-              <div className="p-5 space-y-3 bg-white">
+              <div className="p-5 space-y-3 bg-card">
                 <input
                   type="date"
                   max={new Date().toISOString().split("T")[0]}
                   value={selectedDate.slice(0, 10)}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-300"
+                  className="w-full rounded-xl border border-border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
                 />
                 <input
                   type="time"
                   value={selectedTime}
                   onChange={(e) => setSelectedTime(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-300"
+                  className="w-full rounded-xl border border-border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
                 />
                 {isFutureDateTime() && (
                   <p className="text-xs text-red-500 px-1">
@@ -381,10 +381,10 @@ export default function PostHeader({
               </div>
 
               {/* Footer */}
-              <div className="border-t border-gray-100/80 bg-white/90 px-5 py-4 flex justify-end gap-2">
+              <div className="border-t border-border/80 bg-card/90 px-5 py-4 flex justify-end gap-2">
                 <button
                   onClick={() => setOpenDateModal(false)}
-                  className="px-4 py-2 rounded-xl text-sm text-gray-600 hover:bg-gray-100 cursor-pointer active:scale-98"
+                  className="px-4 py-2 rounded-xl text-sm text-foreground/75 hover:bg-muted cursor-pointer active:scale-98"
                 >
                   Hủy
                 </button>
@@ -410,7 +410,7 @@ export default function PostHeader({
                     (selectedDate.slice(0, 10) === createdAt.slice(0, 10) &&
                       selectedTime === new Date(createdAt).toTimeString().slice(0, 5))
                   }
-                  className="px-4 py-2 rounded-xl text-sm bg-gray-900 text-white disabled:opacity-50 cursor-pointer active:scale-98"
+                  className="px-4 py-2 rounded-xl text-sm bg-primary text-primary-foreground disabled:opacity-50 cursor-pointer active:scale-98"
                 >
                   Lưu thay đổi
                 </button>
@@ -435,42 +435,42 @@ export default function PostHeader({
             />
 
             {/* Modal */}
-            <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/60 bg-white/95 shadow-[0_25px_80px_rgba(0,0,0,0.18)] animate-fadeIn overflow-hidden">
+            <div className="relative z-10 w-full max-w-md rounded-2xl border border-border bg-card/95 shadow-[0_25px_80px_rgba(0,0,0,0.18)] animate-fadeIn overflow-hidden">
 
               {/* Header */}
-              <div className="border-b border-gray-100/80 bg-white/90 px-5 py-4 backdrop-blur-xl flex items-center justify-between">
-                <div className="flex items-center gap-2 text-gray-800 font-medium text-sm sm:text-base">
+              <div className="border-b border-border/80 bg-card/90 px-5 py-4 backdrop-blur-xl flex items-center justify-between">
+                <div className="flex items-center gap-2 text-foreground font-medium text-sm sm:text-base">
                   <i className="fa-duotone fa-earth-asia" />
                   Chỉnh sửa đối tượng
                 </div>
 
                 <button
                   onClick={() => setOpenPrivacyModal(false)}
-                  className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer active:scale-98"
+                  className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-muted cursor-pointer active:scale-98"
                 >
                   <i className="fa-duotone fa-xmark" />
                 </button>
               </div>
 
               {/* Body */}
-              <div className="p-5 space-y-2 bg-white">
+              <div className="p-5 space-y-2 bg-card">
 
                 {/* PUBLIC */}
                 <div
                   onClick={() => setSelectedVisibility("public")}
                   className={`flex items-center justify-between px-4 py-3 rounded-xl border cursor-pointer transition ${selectedVisibility === "public"
-                    ? "border-gray-900 bg-gray-50"
-                    : "border-gray-200 hover:bg-gray-50"
+                    ? "border-primary bg-muted/50"
+                    : "border-border hover:bg-muted/50"
                     }`}
                 >
                   <div className="flex items-center gap-3">
-                    <i className="fa-duotone fa-earth-asia text-gray-700" />
-                    <span className="text-sm text-gray-800">Công khai</span>
+                    <i className="fa-duotone fa-earth-asia text-foreground/75" />
+                    <span className="text-sm text-foreground">Công khai</span>
                   </div>
 
                   <div className={`h-4 w-4 rounded-full border ${selectedVisibility === "public"
-                    ? "bg-gray-900 border-gray-900"
-                    : "border-gray-300"
+                    ? "bg-primary border-primary"
+                    : "border-border"
                     }`} />
                 </div>
 
@@ -478,28 +478,28 @@ export default function PostHeader({
                 <div
                   onClick={() => setSelectedVisibility("privacy")}
                   className={`flex items-center justify-between px-4 py-3 rounded-xl border cursor-pointer transition ${selectedVisibility === "privacy"
-                    ? "border-gray-900 bg-gray-50"
-                    : "border-gray-200 hover:bg-gray-50"
+                    ? "border-primary bg-muted/50"
+                    : "border-border hover:bg-muted/50"
                     }`}
                 >
                   <div className="flex items-center gap-3">
-                    <i className="fa-duotone fa-lock text-gray-700" />
-                    <span className="text-sm text-gray-800">Riêng tư</span>
+                    <i className="fa-duotone fa-lock text-foreground/75" />
+                    <span className="text-sm text-foreground">Riêng tư</span>
                   </div>
 
                   <div className={`h-4 w-4 rounded-full border ${selectedVisibility === "privacy"
-                    ? "bg-gray-900 border-gray-900"
-                    : "border-gray-300"
+                    ? "bg-primary border-primary"
+                    : "border-border"
                     }`} />
                 </div>
 
               </div>
 
               {/* Footer */}
-              <div className="border-t border-gray-100/80 bg-white/90 px-5 py-4 flex justify-end gap-2">
+              <div className="border-t border-border/80 bg-card/90 px-5 py-4 flex justify-end gap-2">
                 <button
                   onClick={() => setOpenPrivacyModal(false)}
-                  className="px-4 py-2 rounded-xl text-sm text-gray-600 hover:bg-gray-100 cursor-pointer active:scale-98"
+                  className="px-4 py-2 rounded-xl text-sm text-foreground/75 hover:bg-muted cursor-pointer active:scale-98"
                 >
                   Hủy
                 </button>
@@ -513,7 +513,7 @@ export default function PostHeader({
                     setSavingPrivacy(false);
                   }}
                   disabled={selectedVisibility === visibility || savingPrivacy}
-                  className="px-4 py-2 rounded-xl text-sm bg-gray-900 text-white disabled:opacity-50 cursor-pointer active:scale-98"
+                  className="px-4 py-2 rounded-xl text-sm bg-primary text-primary-foreground disabled:opacity-50 cursor-pointer active:scale-98"
                 >
                   {savingPrivacy ? (
                     <>
