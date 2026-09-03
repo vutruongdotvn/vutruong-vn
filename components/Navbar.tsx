@@ -44,6 +44,8 @@ export default function Navbar() {
   // AUTH / PROFILE STATE
   // =========================
   const { user, role, profile } = useUser();
+  const visibleMoreMenu = role === "admin" ? moreMenu : [];
+  const visibleMobileMenu = role === "admin" ? mobileMenu : mainMenu;
 
   // =========================
   // REFS
@@ -362,7 +364,7 @@ export default function Navbar() {
                   moreOpen={moreOpen}
                   setMoreOpen={setMoreOpen}
                   setUserOpen={setUserOpen}
-                  moreMenu={moreMenu}
+                  moreMenu={visibleMoreMenu}
                   isActive={isActive}
                   onNavClick={handleNavClick}
                   onScrollTop={handleScrollTop}
@@ -395,7 +397,7 @@ export default function Navbar() {
           <NavbarMobileMenu
             open={open}
             menuRef={menuRef}
-            mobileMenu={mobileMenu}
+            mobileMenu={visibleMobileMenu}
             pathname={pathname}
             currentPageHref={currentPageHref}
             title={title}

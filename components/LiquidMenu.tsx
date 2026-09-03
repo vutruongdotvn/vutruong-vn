@@ -4,6 +4,7 @@ import type { MouseEvent } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { useUser } from "@/hooks/useUser";
 
 const menuItems = [
   {
@@ -30,6 +31,11 @@ const menuItems = [
 
 export default function LiquidMenu() {
   const pathname = usePathname();
+  const { role } = useUser();
+  const visibleMenuItems =
+    role === "admin"
+      ? menuItems
+      : menuItems.filter((item) => item.href !== "/secret");
 
   const isActive = (href: string) => {
     return href === "/"
@@ -37,9 +43,10 @@ export default function LiquidMenu() {
       : pathname === href || pathname.startsWith(`${href}/`);
   };
 
-  const activeIndex = menuItems.findIndex((item) =>
+  const activeIndex = visibleMenuItems.findIndex((item) =>
     isActive(item.href)
   );
+  const itemWidth = `${100 / (visibleMenuItems.length + 1)}%`;
 
   const handleNavClick = (
     event: MouseEvent<HTMLAnchorElement>,
@@ -82,12 +89,13 @@ export default function LiquidMenu() {
                     damping: 20,
                     mass: 0.5,
               }}
-              className="block h-full w-1/5 rounded-full bg-foreground/10"
+              style={{ width: itemWidth }}
+              className="block h-full rounded-full bg-foreground/10"
             />
           </div>
         )}
 
-        {menuItems.map((item) => {
+        {visibleMenuItems.map((item) => {
           const active = isActive(item.href);
 
           return (

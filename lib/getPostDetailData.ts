@@ -87,7 +87,16 @@ export const getPostDetailData = cache(
     if (!isValidPostId(id)) return null;
 
     const routeState = await getPostRouteState(id);
-    if (!routeState) return null;
+    if (!routeState) {
+      // RLS cố ý làm cho bài privacy và ID không tồn tại giống nhau ở server.
+      // Client chỉ có thể phân giải tiếp bằng JWT admin hợp lệ.
+      return {
+        postId: id,
+        routeVisibility: "privacy",
+        initialPost: null,
+        initialProfile: null,
+      };
+    }
 
     if (routeState.visibility === "privacy") {
       return {

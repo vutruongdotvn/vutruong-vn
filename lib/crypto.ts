@@ -1,11 +1,22 @@
 import crypto from "crypto";
 
 const ALGORITHM = "aes-256-gcm";
-const RAW_SECRET_KEY = process.env.SECRET_ENCRYPTION_KEY || "vutruong_default_secret_key_2026";
+const MASKED_SECRET = "********";
+const ENCRYPTED_VALUE_PATTERN = /^[0-9a-f]{24}:[0-9a-f]{32}:[0-9a-f]+$/i;
 
-// 🔥 NÂNG CẤP: Tự động băm (hash) chuỗi từ .env thành đúng 32 bytes.
-// Dù bạn nhập mật khẩu gì ở .env.local, hệ thống cũng tự chuyển đổi cho hợp lệ.
-const ENCRYPTION_KEY = crypto.createHash('sha256').update(RAW_SECRET_KEY).digest();
+function getEncryptionKey(): Buffer {
+  const rawSecretKey = process.env.SECRET_ENCRYPTION_KEY;
+
+  // Không bao giờ dùng khóa mặc định. Nếu Vercel/Supabase staging bị cấu hình
+  // thiếu, fail closed thay vì âm thầm mã hóa bằng một khóa có trong source.
+  if (!rawSecretKey) {
+    throw new Error("SECRET_ENCRYPTION_KEY is not configured.");
+  }
+
+  // Giữ nguyên phép dẫn xuất SHA-256 hiện tại để ciphertext đang có tiếp tục
+  // giải mã được; giai đoạn này không xoay khóa và không đổi định dạng dữ liệu.
+  return crypto.createHash("sha256").update(rawSecretKey).digest();
+}
 
 // 🔥 HÀM MÃ HÓA (Dùng khi Thêm/Sửa mật khẩu)
 export function encryptSecret(text: string): string {
@@ -13,7 +24,7 @@ export function encryptSecret(text: string): string {
 
   // Tạo vector khởi tạo (IV) ngẫu nhiên
   const iv = crypto.randomBytes(12);
-  const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+  const cipher = crypto.createCipheriv(ALGORITHM, getEncryptionKey(), iv);
 
   let encrypted = cipher.update(text, "utf8", "hex");
   encrypted += cipher.final("hex");
@@ -28,15 +39,24 @@ export function encryptSecret(text: string): string {
 export function decryptSecret(encryptedData: string): string {
   if (!encryptedData) return "";
 
-  try {
-    const parts = encryptedData.split(":");
-    // Nếu data không đúng format mã hóa (ví dụ data lưu dưới dạng text cũ), trả về nguyên gốc
-    if (parts.length !== 3) return encryptedData;
+  // Không trả ngược dữ liệu legacy/malformed như plaintext. Dữ liệu không đúng
+  // định dạng AES-GCM luôn bị che để tránh một bản ghi lỗi trở thành rò rỉ.
+  if (
+    !ENCRYPTED_VALUE_PATTERN.test(encryptedData) ||
+    encryptedData.split(":")[2].length % 2 !== 0
+  ) {
+    return MASKED_SECRET;
+  }
 
-    const [ivHex, authTagHex, encryptedText] = parts;
+  // Lấy khóa trước khối catch để lỗi cấu hình không bị biến thành dữ liệu
+  // giả "********"; API phải fail closed và báo lỗi cấu hình ở server.
+  const encryptionKey = getEncryptionKey();
+
+  try {
+    const [ivHex, authTagHex, encryptedText] = encryptedData.split(":");
     const decipher = crypto.createDecipheriv(
       ALGORITHM,
-      ENCRYPTION_KEY,
+      encryptionKey,
       Buffer.from(ivHex, "hex")
     );
     decipher.setAuthTag(Buffer.from(authTagHex, "hex"));
@@ -45,8 +65,8 @@ export function decryptSecret(encryptedData: string): string {
     decrypted += decipher.final("utf8");
 
     return decrypted;
-  } catch (error) {
-    console.error("❌ Lỗi giải mã dữ liệu mật:", error);
-    return "********"; // Che giấu nếu giải mã thất bại để an toàn
+  } catch {
+    console.error("Không thể giải mã một trường dữ liệu mật.");
+    return MASKED_SECRET;
   }
 }

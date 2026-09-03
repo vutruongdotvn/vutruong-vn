@@ -21,18 +21,17 @@ export default async function BlogDetailPage({
   // Chặn ngay URL sai định dạng mà không cần gọi database.
   if (!id || !isValidPostId(id)) notFound();
 
-  // Server-only lookup chỉ đọc id + visibility. Nhờ vậy có thể phân biệt
-  // chính xác bài riêng tư với một ID hoàn toàn không tồn tại.
+  // Server chỉ biết chắc bài public. Bài privacy và ID không tồn tại được giữ
+  // cùng một trạng thái để không làm lộ sự tồn tại của nội dung riêng tư.
   const routeState = await getPostRouteState(id);
-
-  if (!routeState) notFound();
+  const routeVisibility = routeState?.visibility ?? "privacy";
 
   let post: any | null = null;
 
   // Chỉ fetch toàn bộ dữ liệu ở server khi đây là bài công khai.
   // Bài riêng tư tiếp tục được BlogDetailRealtime xác thực và fetch ở client
   // bằng JWT admin, nên server-only lookup không làm lộ nội dung riêng tư.
-  if (routeState.visibility === "public") {
+  if (routeVisibility === "public") {
     const { data, error } = await supabase
       .from("posts")
       .select("*")
@@ -67,7 +66,7 @@ export default async function BlogDetailPage({
   return (
     <BlogDetailRealtime
       postId={id}
-      routeVisibility={routeState.visibility}
+      routeVisibility={routeVisibility}
       initialPost={post}
       initialProfile={profile}
     />

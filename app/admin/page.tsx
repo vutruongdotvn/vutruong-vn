@@ -58,13 +58,18 @@ export default function AdminUsersPage() {
     if (role === "admin") fetchProfiles();
   }, [role]);
 
-  const handleUpdateStatus = async (email: string, newStatus: UserStatus) => {
-    setActionLoading(email);
+  const handleUpdateStatus = async (
+    profileId: string,
+    newStatus: UserStatus
+  ) => {
+    if (profileId === user?.id) return;
+
+    setActionLoading(profileId);
     try {
       const { error } = await supabase
         .from("profiles")
         .update({ status: newStatus })
-        .eq("email", email);
+        .eq("id", profileId);
 
       if (error) {
         alert("Lỗi khi cập nhật: " + error.message);
@@ -72,7 +77,9 @@ export default function AdminUsersPage() {
       }
 
       setProfiles((prev) =>
-        prev.map((p) => (p.email === email ? { ...p, status: newStatus } : p))
+        prev.map((p) =>
+          p.id === profileId ? { ...p, status: newStatus } : p
+        )
       );
     } catch (error) {
       console.error("Update failed:", error);
@@ -161,11 +168,11 @@ export default function AdminUsersPage() {
                     </h3>
                     <div className="mt-1">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold uppercase tracking-wider ${
-                        p.role === "admin" ? "bg-indigo-100 dark:bg-indigo-400/15 text-indigo-700 dark:text-indigo-300" : "bg-muted text-foreground/75"
+                        p.id === user?.id ? "bg-indigo-100 dark:bg-indigo-400/15 text-indigo-700 dark:text-indigo-300" : "bg-muted text-foreground/75"
                       }`}>
-                        {p.role}
+                        {p.id === user?.id ? "admin" : p.role}
                       </span>
-                      {p.role === "admin" && (
+                      {p.id === user?.id && (
                         <span className="ml-1.5 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold uppercase bg-blue-100 dark:bg-blue-400/15 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-400/25">
                           Bạn
                         </span>
@@ -184,11 +191,11 @@ export default function AdminUsersPage() {
 
                 {/* Footer Card: Nút Thao Tác (Responsive Action Buttons) */}
                 <div className="mt-4 pt-4 border-t border-border/80">
-                  {actionLoading === p.email ? (
+                  {actionLoading === p.id ? (
                     <div className="w-full flex justify-center py-2 bg-muted/50 rounded-xl">
                       <i className="fa-duotone fa-spinner-third animate-spin text-2xl text-blue-500"></i>
                     </div>
-                  ) : p.role === "admin" ? (
+                  ) : p.id === user?.id ? (
                     <div className="w-full text-center py-2.5 text-xs sm:text-sm text-emerald-500 font-medium bg-muted/50 rounded-xl border border-border">
                       <i className="fa-duotone fa-shield-check mr-1 text-emerald-500"></i>
                       Tài khoản tối cao
@@ -198,14 +205,14 @@ export default function AdminUsersPage() {
                       {/* Cột 1: Phê Duyệt hoặc Thu Hồi */}
                       {p.status === "approved" ? (
                         <button
-                          onClick={() => handleUpdateStatus(p.email, "revoked")}
+                          onClick={() => handleUpdateStatus(p.id, "revoked")}
                           className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl bg-orange-50 dark:bg-orange-400/15 text-orange-600 dark:text-orange-300 hover:bg-orange-500 hover:text-white border border-orange-100 dark:border-orange-400/25 transition-all font-semibold text-xs sm:text-sm shadow-sm active:scale-95"
                         >
                           <i className="fa-duotone fa-shield-slash text-base"></i> <span className="truncate">Thu hồi</span>
                         </button>
                       ) : (
                         <button
-                          onClick={() => handleUpdateStatus(p.email, "approved")}
+                          onClick={() => handleUpdateStatus(p.id, "approved")}
                           className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-400/15 text-emerald-600 dark:text-emerald-300 hover:bg-emerald-500 hover:text-white border border-emerald-100 dark:border-emerald-400/25 transition-all font-semibold text-xs sm:text-sm shadow-sm active:scale-95"
                         >
                           <i className="fa-duotone fa-check-circle text-base"></i> <span className="truncate">Phê duyệt</span>
@@ -215,14 +222,14 @@ export default function AdminUsersPage() {
                       {/* Cột 2: Khóa hoặc Mở Khóa */}
                       {p.status === "banned" ? (
                         <button
-                          onClick={() => handleUpdateStatus(p.email, "pending")}
+                          onClick={() => handleUpdateStatus(p.id, "pending")}
                           className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl bg-muted text-foreground/75 hover:bg-accent hover:text-foreground border border-border transition-all font-semibold text-xs sm:text-sm shadow-sm active:scale-95"
                         >
                           <i className="fa-duotone fa-unlock text-base"></i> <span className="truncate">Bỏ cấm</span>
                         </button>
                       ) : (
                         <button
-                          onClick={() => handleUpdateStatus(p.email, "banned")}
+                          onClick={() => handleUpdateStatus(p.id, "banned")}
                           className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl bg-red-50 dark:bg-red-400/15 text-red-600 dark:text-red-300 hover:bg-red-600 hover:text-white border border-red-100 dark:border-red-400/25 transition-all font-semibold text-xs sm:text-sm shadow-sm active:scale-95"
                         >
                           <i className="fa-duotone fa-ban text-base"></i> <span className="truncate">Khóa</span>

@@ -1,6 +1,6 @@
+import { isAuthSessionMissingError } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
-const ADMIN_USER_ID = "785f79e8-223a-41ea-a52d-dead8e2bf383";
 const POST_ID_PATTERN = /^\d{20}$/;
 
 export type PrivatePostProfile = {
@@ -27,7 +27,7 @@ export type PrivatePostAccessResult =
       profile: PrivatePostProfile | null;
     }
   | {
-      status: "denied" | "unavailable";
+      status: "denied" | "not_found" | "unavailable";
       post: null;
       profile: null;
     };
@@ -71,13 +71,23 @@ export async function resolvePrivatePostForAdmin(
   postId: string
 ): Promise<PrivatePostAccessResult> {
   const normalizedPostId = postId.trim();
+  const denied: PrivatePostAccessResult = {
+    status: "denied",
+    post: null,
+    profile: null,
+  };
+  const notFound: PrivatePostAccessResult = {
+    status: "not_found",
+    post: null,
+    profile: null,
+  };
   const unavailable: PrivatePostAccessResult = {
     status: "unavailable",
     post: null,
     profile: null,
   };
 
-  if (!POST_ID_PATTERN.test(normalizedPostId)) return unavailable;
+  if (!POST_ID_PATTERN.test(normalizedPostId)) return notFound;
 
   try {
     const {
@@ -85,9 +95,39 @@ export async function resolvePrivatePostForAdmin(
       error: authError,
     } = await supabase.auth.getUser();
 
-    // Không tin role/status từ profile cho quyền privacy.
-    if (authError || !user || user.id !== ADMIN_USER_ID) {
-      return { status: "denied", post: null, profile: null };
+    if (authError) {
+      // Không có session là trạng thái khách bình thường. Các lỗi Auth khác
+      // (mạng, cấu hình, dịch vụ) phải được báo là unavailable thay vì giả 404.
+      if (isAuthSessionMissingError(authError)) return denied;
+
+      console.error("[PrivatePost] Auth verification failed:", {
+        name: authError.name,
+        message: authError.message,
+      });
+      return unavailable;
+    }
+
+    if (!user) {
+      return denied;
+    }
+
+    // Không tin email, metadata hoặc role/status từ profile. Registry UID ở
+    // private.app_admins là nguồn quyền duy nhất và hoạt động đúng cho cả
+    // staging lẫn production mà không cần viết cứng UID vào bundle client.
+    const { data: isAdmin, error: authorizationError } = await supabase.rpc(
+      "is_featured_approved_admin"
+    );
+
+    if (authorizationError) {
+      console.error("[PrivatePost] Admin authorization failed:", {
+        code: authorizationError.code,
+        message: authorizationError.message,
+      });
+      return unavailable;
+    }
+
+    if (isAdmin !== true) {
+      return denied;
     }
 
     const { data: postData, error: postError } = await supabase
@@ -105,7 +145,11 @@ export async function resolvePrivatePostForAdmin(
       return unavailable;
     }
 
-    // Rỗng khi RLS từ chối, bài bị xóa hoặc visibility vừa thay đổi.
+    // Sau khi registry đã xác nhận admin, kết quả rỗng nghĩa là route không
+    // còn trỏ tới một bài privacy. Tách trạng thái này khỏi lỗi hạ tầng để UI
+    // có thể gọi notFound() mà không che giấu sự cố Supabase.
+    if (!postData) return notFound;
+
     const post = normalizePrivatePost(postData, normalizedPostId);
     if (!post) return unavailable;
 

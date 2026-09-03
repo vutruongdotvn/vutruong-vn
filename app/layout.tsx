@@ -143,10 +143,9 @@ export default function RootLayout({
                   {children}
                 </ConditionalPageTransition>
               </LayoutShell>
+              <LiquidMenu />
             </AuthProvider>
           </ToastProvider>
-
-          <LiquidMenu />
         </ThemeProvider>
       </body>
     </html>

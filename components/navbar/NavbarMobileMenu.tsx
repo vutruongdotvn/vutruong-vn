@@ -146,7 +146,7 @@ export default function NavbarMobileMenu({
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-3">
-                {user && (
+                {user && role === "admin" && (
                   <Link
                     href="/profile"
                     onClick={() => setOpen(false)}

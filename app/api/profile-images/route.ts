@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
-import { createClient } from "@supabase/supabase-js";
+import { requireAppAdmin } from "@/lib/server/requireAppAdmin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const ADMIN_EMAIL = (
-  process.env.ADMIN_EMAIL || "admin@vutruong.vn"
-).toLowerCase();
 
 const ROOT_PREFIX = "vutruong_vn/";
 const MAX_RESULTS = 20;
@@ -49,47 +45,6 @@ type CloudinaryErrorShape = {
   };
 };
 
-type AdminProfile = {
-  id: string;
-  email: string | null;
-  role: string | null;
-  status: string | null;
-  avatar: string | null;
-  cover_image: string | string[] | null;
-};
-
-function createServerSupabaseClient(
-  supabaseUrl: string,
-  supabaseAnonKey: string,
-  token: string
-) {
-  return createClient(supabaseUrl, supabaseAnonKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false,
-    },
-    global: {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-  });
-}
-
-type ServerSupabaseClient = ReturnType<
-  typeof createServerSupabaseClient
->;
-
-type AdminAuthorization =
-  | {
-    ok: true;
-    userId: string;
-    profile: AdminProfile;
-    supabase: ServerSupabaseClient;
-  }
-  | { ok: false; response: NextResponse };
-
 let adminApiCooldownUntil = 0;
 const resourcesCache = new Map<
   string,
@@ -99,12 +54,6 @@ const resourcesRequests = new Map<
   string,
   Promise<CloudinaryResourcesResult>
 >();
-
-function getBearerToken(req: Request): string | null {
-  const authorization = req.headers.get("authorization");
-  const match = authorization?.match(/^Bearer\s+(.+)$/i);
-  return match?.[1]?.trim() || null;
-}
 
 function hasCloudinaryConfig() {
   return Boolean(
@@ -287,103 +236,6 @@ function getDeletePublicIds(value: unknown) {
   ];
 }
 
-async function requireApprovedAdmin(
-  req: Request
-): Promise<AdminAuthorization> {
-  const token = getBearerToken(req);
-
-  if (!token) {
-    return {
-      ok: false,
-      response: NextResponse.json(
-        { success: false, error: "Unauthorized: Thiếu access token." },
-        { status: 401 }
-      ),
-    };
-  }
-
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.error("Profile images API: Thiếu cấu hình Supabase.");
-    return {
-      ok: false,
-      response: NextResponse.json(
-        { success: false, error: "Server chưa được cấu hình đầy đủ." },
-        { status: 500 }
-      ),
-    };
-  }
-
-  const supabase = createServerSupabaseClient(
-    supabaseUrl,
-    supabaseAnonKey,
-    token
-  );
-
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser(token);
-
-  if (authError || !user) {
-    return {
-      ok: false,
-      response: NextResponse.json(
-        {
-          success: false,
-          error: "Phiên đăng nhập không hợp lệ hoặc đã hết hạn.",
-        },
-        { status: 401 }
-      ),
-    };
-  }
-
-  if (user.email?.toLowerCase() !== ADMIN_EMAIL) {
-    return {
-      ok: false,
-      response: NextResponse.json(
-        { success: false, error: "Chỉ admin mới có quyền xem thư viện ảnh." },
-        { status: 403 }
-      ),
-    };
-  }
-
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("id, email, role, status, avatar, cover_image")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  const isApprovedAdmin =
-    !profileError &&
-    profile !== null &&
-    profile.email?.toLowerCase() === ADMIN_EMAIL &&
-    profile.role?.toLowerCase() === "admin" &&
-    profile.status?.toLowerCase() === "approved";
-
-  if (!isApprovedAdmin) {
-    return {
-      ok: false,
-      response: NextResponse.json(
-        {
-          success: false,
-          error: "Tài khoản không có quyền admin đã được phê duyệt.",
-        },
-        { status: 403 }
-      ),
-    };
-  }
-
-  return {
-    ok: true,
-    userId: user.id,
-    profile: profile as AdminProfile,
-    supabase,
-  };
-}
-
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -393,7 +245,7 @@ cloudinary.config({
 
 export async function GET(req: Request) {
   try {
-    const authorization = await requireApprovedAdmin(req);
+    const authorization = await requireAppAdmin(req);
     if (!authorization.ok) return authorization.response;
 
     if (!hasCloudinaryConfig()) {
@@ -497,7 +349,7 @@ export async function GET(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
-    const authorization = await requireApprovedAdmin(req);
+    const authorization = await requireAppAdmin(req);
     if (!authorization.ok) return authorization.response;
 
     if (!hasCloudinaryConfig()) {
@@ -563,10 +415,29 @@ export async function DELETE(req: Request) {
       );
     }
 
+    const { data: profile, error: profileError } = await authorization.supabase
+      .from("profiles")
+      .select("avatar, cover_image")
+      .eq("id", authorization.user.id)
+      .maybeSingle();
+
+    if (profileError || !profile) {
+      console.error("Profile images API: Không thể kiểm tra ảnh đang sử dụng.", {
+        code: profileError?.code,
+      });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Không thể kiểm tra ảnh đang sử dụng nên chưa có dữ liệu nào bị xóa.",
+        },
+        { status: 409 }
+      );
+    }
+
     const activePublicIds = new Set(
       [
-        getManagedPublicIdFromUrl(authorization.profile.avatar),
-        getManagedPublicIdFromUrl(authorization.profile.cover_image),
+        getManagedPublicIdFromUrl(profile.avatar),
+        getManagedPublicIdFromUrl(profile.cover_image),
       ].filter((value): value is string => Boolean(value))
     );
     const activeRequestedIds = publicIds.filter((publicId) =>
@@ -594,7 +465,7 @@ export async function DELETE(req: Request) {
         await authorization.supabase
           .from("user_avatars")
           .select("id, public_id")
-          .eq("user_id", authorization.userId)
+          .eq("user_id", authorization.user.id)
           .in("public_id", avatarPublicIds);
 
       if (historyReadError) {
