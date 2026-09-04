@@ -1,17 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { getPhotoWidgetImage } from "@/lib/cloudinary";
 import { extractPostTitle } from "@/lib/postMeta"; // ✅ 1. Import hàm chuẩn từ thư viện của bạn
+import { useUser } from "@/hooks/useUser";
+
+type PhotoAccessScope = "public" | "admin";
 
 type Photo = {
   id: string;
   src: string;
   href: string;
   title?: string;
+  visibility: "public" | "privacy";
 };
 
 // Đã xóa hàm extractTitle nội bộ bị lỗi ở đây để code sạch hơn
@@ -20,6 +24,13 @@ export default function PhotoWidget() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [visibleCount, setVisibleCount] = useState(3);
   const [isMobile, setIsMobile] = useState(false);
+  const requestIdRef = useRef(0);
+  const { user, role, loading: authLoading } = useUser();
+  const accessScope: PhotoAccessScope | null = authLoading
+    ? null
+    : user && role === "admin"
+      ? "admin"
+      : "public";
 
   // detect mobile
   useEffect(() => {
@@ -29,17 +40,30 @@ export default function PhotoWidget() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // fetch
+  // Tải lại âm thầm khi quyền xem đổi; không thay widget bằng skeleton.
   useEffect(() => {
+    if (!accessScope) return;
+
+    const requestId = ++requestIdRef.current;
+    let active = true;
+
+    if (accessScope === "public") {
+      setPhotos((current) =>
+        current.filter((photo) => photo.visibility === "public"),
+      );
+    }
+
     const fetchPhotos = async () => {
       const { data, error } = await supabase
         .from("posts")
-        .select("id, images, content, created_at")
+        .select("id, images, content, created_at, visibility")
         .not("images", "eq", "{}")
         .order("created_at", { ascending: false }) // sắp xếp theo mới nhất trước
         .limit(9);
 
-      if (error || !data) return;
+      if (!active || requestId !== requestIdRef.current || error || !data) {
+        return;
+      }
 
       const mapped: Photo[] = data
         .filter((post) => post.images?.length > 0)
@@ -59,18 +83,28 @@ export default function PhotoWidget() {
             href: `/blog/post/${post.id}`,
             // Nếu không có title (bài chỉ có ảnh), fallback về ID bài viết
             title: safeTitle || `#${post.id.slice(0, 20)}`,
+            visibility:
+              post.visibility === "public" ? "public" : "privacy",
           };
         });
 
       setPhotos(mapped);
     };
 
-    fetchPhotos();
-  }, []);
+    void fetchPhotos();
 
+    return () => {
+      active = false;
+    };
+  }, [accessScope]);
+
+  const authorizedPhotos =
+    user && role === "admin"
+      ? photos
+      : photos.filter((photo) => photo.visibility === "public");
   const displayPhotos = isMobile
-    ? photos.slice(0, visibleCount)
-    : photos;
+    ? authorizedPhotos.slice(0, visibleCount)
+    : authorizedPhotos;
 
   return (
     <div className="
@@ -85,7 +119,7 @@ export default function PhotoWidget() {
           <Link className="text-sm text-muted-foreground hover:text-foreground active:scale-95 cursor-pointer" href="/blog/photos">Xem thêm</Link>
         </h3>
 
-        {isMobile && visibleCount < photos.length && (
+        {isMobile && visibleCount < authorizedPhotos.length && (
           <button
             onClick={() =>
               setVisibleCount((prev) => Math.min(prev + 3, 9))

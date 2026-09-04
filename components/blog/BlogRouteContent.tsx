@@ -16,7 +16,7 @@ export default function BlogRouteContent({
   children,
   sidebar,
 }: BlogRouteContentProps) {
-  const { user, role, loading: userLoading } = useUser();
+  const { user, role, profile } = useUser();
   const selectedChildSegment = useSelectedLayoutSegment();
   const adminUser = user && role === "admin" ? user : null;
 
@@ -62,7 +62,7 @@ export default function BlogRouteContent({
         {adminUser && (
           <CreatePostBox
             user={adminUser}
-            authLoading={userLoading}
+            profile={profile}
             visible={isBlogFeedRoute}
           />
         )}

@@ -44,8 +44,11 @@ export default function Navbar() {
   // AUTH / PROFILE STATE
   // =========================
   const { user, role, profile } = useUser();
-  const visibleMoreMenu = role === "admin" ? moreMenu : [];
-  const visibleMobileMenu = role === "admin" ? mobileMenu : mainMenu;
+  // ẩn item nếu không phải là admin
+  // const visibleMoreMenu = role === "admin" ? moreMenu : [];
+  // const visibleMobileMenu = role === "admin" ? mobileMenu : mainMenu;
+  const visibleMoreMenu = moreMenu;
+  const visibleMobileMenu = mobileMenu;
 
   // =========================
   // REFS
@@ -90,9 +93,9 @@ export default function Navbar() {
     pathname === "/blog" || pathname.startsWith("/blog/")
       ? pageMeta["/blog"]
       : pageMeta[pathname as keyof typeof pageMeta] || {
-          title: "VT Zone",
-          subtitle: "Personal ecosystem",
-        };
+        title: "VT Zone",
+        subtitle: "Personal ecosystem",
+      };
 
   const title = currentMeta.title;
   const subtitle = currentMeta.subtitle;

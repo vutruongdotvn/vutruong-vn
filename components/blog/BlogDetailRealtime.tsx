@@ -39,6 +39,8 @@ type PrivateResolutionStatus =
   | "not_found"
   | "unavailable";
 
+type PrivateAccessScope = "admin" | "public" | null;
+
 export default function BlogDetailRealtime({
   postId,
   initialImageId = null,
@@ -47,7 +49,7 @@ export default function BlogDetailRealtime({
   initialProfile,
 }: Props) {
   const router = useRouter();
-  const { user, role } = useUser();
+  const { user, role, loading: authLoading } = useUser();
   const { showToast, removeToast } = useToastContext();
 
   const [post, setPost] = useState(initialPost);
@@ -76,19 +78,35 @@ export default function BlogDetailRealtime({
     [initialImageId, postImages]
   );
 
-  const isAdmin = !!user && role === "admin";
+  // Giữ quyền admin ổn định trong lúc refresh token, nhưng chuyển về trạng
+  // thái chưa xác minh ngay khi danh tính thay đổi. Nội dung privacy vì thế
+  // không thể còn hiển thị cho phiên guest/user cũ trong khi effect dọn state.
+  const privateAccessScope: PrivateAccessScope =
+    user && role === "admin" ? "admin" : authLoading ? null : "public";
+  const isAdmin = privateAccessScope === "admin";
 
   useEffect(() => {
-    // Bài công khai đã được server tải sẵn, không cần fetch lần hai.
-    // Bài privacy và ID không tồn tại cùng đi qua bước xác minh client để
-    // response công khai không trở thành oracle tiết lộ sự tồn tại.
+    // Bài công khai đã được server tải sẵn, không cần fetch lần hai. Bài
+    // privacy chỉ được tải sau khi auth context đã xác minh đúng admin; service
+    // vẫn kiểm tra lại JWT + registry + RLS trước khi trả nội dung.
     if (initialPost || routeVisibility !== "privacy" || !postId) {
       return;
     }
 
     let cancelled = false;
 
+    if (privateAccessScope !== "admin") {
+      setPost(null);
+      setProfile(null);
+      setPrivateResolutionStatus(
+        privateAccessScope === null ? "checking" : "denied"
+      );
+      return;
+    }
+
     const resolvePrivatePost = async () => {
+      setPost(null);
+      setProfile(null);
       setPrivateResolutionStatus("checking");
 
       try {
@@ -119,7 +137,36 @@ export default function BlogDetailRealtime({
     return () => {
       cancelled = true;
     };
-  }, [initialPost, postId, routeVisibility]);
+  }, [initialPost, postId, privateAccessScope, routeVisibility]);
+
+  useEffect(() => {
+    // Metadata server tiếp tục dùng title not-found cho privacy để không tạo
+    // oracle công khai. Chỉ sau khi browser đã xác minh admin và tải đúng row
+    // privacy thành công mới được sửa title hiển thị của tab.
+    const hasVerifiedPrivatePost =
+      routeVisibility === "privacy" &&
+      privateAccessScope === "admin" &&
+      privateResolutionStatus === "granted" &&
+      post?.visibility === "privacy";
+
+    if (!hasVerifiedPrivatePost) return;
+
+    const previousTitle = document.title;
+    const privateTitle = "Bài viết riêng tư";
+    document.title = privateTitle;
+
+    return () => {
+      // Không ghi đè metadata của route kế tiếp nếu Next.js đã cập nhật title.
+      if (document.title === privateTitle) {
+        document.title = previousTitle;
+      }
+    };
+  }, [
+    post?.visibility,
+    privateAccessScope,
+    privateResolutionStatus,
+    routeVisibility,
+  ]);
 
   useEffect(() => {
     if (!initialImageId || !post || requestedImageIndex >= 0) return;
@@ -256,7 +303,12 @@ export default function BlogDetailRealtime({
     };
   }, [post?.id, router, showToast]);
 
-  if (privateResolutionStatus === "checking" && !post) {
+  if (
+    routeVisibility === "privacy" &&
+    (privateAccessScope === null ||
+      (privateAccessScope === "admin" &&
+        privateResolutionStatus === "checking"))
+  ) {
     return (
       <article
         aria-busy="true"
@@ -266,6 +318,13 @@ export default function BlogDetailRealtime({
         <span className="sr-only">Đang tải bài viết</span>
       </article>
     );
+  }
+
+  // Render-level deny: không chờ effect dọn state khi admin vừa đăng xuất hoặc
+  // đổi tài khoản. Guest/user và ID không tồn tại vẫn dùng chung 404 để không
+  // tiết lộ rằng một bài privacy có tồn tại.
+  if (routeVisibility === "privacy" && privateAccessScope === "public") {
+    notFound();
   }
 
   // Guest, user thường và admin truy cập ID không tồn tại đều đi qua cùng

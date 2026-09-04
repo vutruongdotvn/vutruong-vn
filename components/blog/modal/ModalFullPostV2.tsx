@@ -21,6 +21,7 @@ import {
   type PrivatePostProfile,
   type PrivatePostRecord,
 } from "@/services/privatePostService";
+import { useUser } from "@/hooks/useUser";
 
 export type ModalFullPostData = {
   id: string;
@@ -35,6 +36,8 @@ export type ModalFullPostData = {
 
 type PrivateResolutionStatus =
   "checking" | "granted" | "denied" | "not_found" | "unavailable";
+
+type PrivateAccessScope = "admin" | "public" | null;
 
 type PrivateResolution = {
   postId: string;
@@ -95,6 +98,7 @@ export default function ModalFullPostV2({
   loadPublicPost = false,
 }: ModalFullPostV2Props) {
   const router = useRouter();
+  const { user, role, loading: authLoading } = useUser();
   const isClosingRef = useRef(false);
   const [publicResolution, setPublicResolution] = useState<PublicResolution>({
     postId,
@@ -114,14 +118,21 @@ export default function ModalFullPostV2({
     }),
   );
 
+  const privateAccessScope: PrivateAccessScope =
+    user && role === "admin" ? "admin" : authLoading ? null : "public";
+
   const privateStatus: PrivateResolutionStatus =
-    post !== null
-      ? "granted"
-      : routeVisibility !== "privacy"
-        ? "unavailable"
-        : privateResolution.postId === postId
-          ? privateResolution.status
-          : "checking";
+    routeVisibility !== "privacy"
+      ? "unavailable"
+      : privateAccessScope === null
+        ? "checking"
+        : privateAccessScope === "public"
+          ? "denied"
+          : post !== null
+            ? "granted"
+            : privateResolution.postId === postId
+              ? privateResolution.status
+              : "checking";
   const resolvedPrivatePost =
     privateResolution.postId === postId &&
       privateResolution.status === "granted"
@@ -139,8 +150,11 @@ export default function ModalFullPostV2({
       : null;
   const resolutionStatus = needsPublicLoad ? publicStatus : privateStatus;
   const activePost =
-    post ??
-    (routeVisibility === "privacy" ? resolvedPrivatePost : resolvedPublicPost);
+    routeVisibility === "privacy"
+      ? privateAccessScope === "admin"
+        ? post ?? resolvedPrivatePost
+        : null
+      : post ?? resolvedPublicPost;
   const hasMedia = !!activePost?.images.length;
   const postTitle = activePost
     ? extractPostTitle(activePost.content) || documentTitle
@@ -148,8 +162,17 @@ export default function ModalFullPostV2({
   const postDescription = activePost
     ? extractPostDescription(activePost.content)
     : undefined;
+  const hasVerifiedPrivatePost =
+    routeVisibility === "privacy" &&
+    privateAccessScope === "admin" &&
+    resolutionStatus === "granted" &&
+    activePost !== null;
   const resolvedDocumentTitle =
-    routeVisibility === "public" ? postTitle : documentTitle;
+    routeVisibility === "public"
+      ? postTitle
+      : hasVerifiedPrivatePost
+        ? "Bài viết riêng tư"
+        : documentTitle;
 
   const closeModal = useCallback(() => {
     if (isClosingRef.current) return;
@@ -180,9 +203,18 @@ export default function ModalFullPostV2({
   }, [needsPublicLoad, postId]);
 
   useEffect(() => {
-    // Giữ nguyên luồng privacy: xác minh session và query bằng JWT ở browser.
-    // Service cache public phía trên không tham gia bước này.
+    // Giữ nguyên luồng privacy: chỉ bắt đầu sau khi auth context xác minh admin,
+    // rồi service tiếp tục kiểm tra JWT + registry + RLS bằng chính browser.
     if (post || routeVisibility !== "privacy") return;
+
+    if (privateAccessScope !== "admin") {
+      setPrivateResolution({
+        postId,
+        status: privateAccessScope === null ? "checking" : "denied",
+        post: null,
+      });
+      return;
+    }
 
     let cancelled = false;
 
@@ -219,7 +251,7 @@ export default function ModalFullPostV2({
     return () => {
       cancelled = true;
     };
-  }, [post, postId, routeVisibility]);
+  }, [post, postId, privateAccessScope, routeVisibility]);
 
   useEffect(() => {
     // Fallback cho trường hợp Next.js không áp dụng metadata của Parallel Route
