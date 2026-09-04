@@ -41,7 +41,7 @@ export default async function InterceptedPostPage({
   // Chỉ chờ lookup id/visibility. Không gửi nội dung bài vào Router Cache.
   // getPostRouteState dùng React cache để khử lookup trùng với metadata.
   const routeState = await getPostRouteState(id);
-  const routeVisibility = routeState?.visibility ?? "public";
+  const routeVisibility = routeState?.visibility ?? "privacy";
 
   return (
     <ModalFullPostV2
@@ -50,13 +50,7 @@ export default async function InterceptedPostPage({
       routeVisibility={routeVisibility}
       post={null}
       loadPublicPost={routeState?.visibility === "public"}
-      documentTitle={
-        !routeState
-          ? "Không tìm thấy bài viết"
-          : routeVisibility === "privacy"
-            ? "Bài viết riêng tư"
-            : ""
-      }
+      documentTitle={!routeState ? "Bài viết" : ""}
     />
   );
 }

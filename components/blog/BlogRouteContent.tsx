@@ -16,10 +16,9 @@ export default function BlogRouteContent({
   children,
   sidebar,
 }: BlogRouteContentProps) {
-  const { user, loading: userLoading } = useUser();
+  const { user, role, loading: userLoading } = useUser();
   const selectedChildSegment = useSelectedLayoutSegment();
-  const adminUser =
-    user?.email?.trim().toLowerCase() === "admin@vutruong.vn" ? user : null;
+  const adminUser = user && role === "admin" ? user : null;
 
   // Khi mở Intercepting Route, URL đổi thành /blog/post/[id] nhưng slot
   // children vẫn giữ page /blog làm nền. Dựa vào segment của children giúp

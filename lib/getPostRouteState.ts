@@ -17,8 +17,8 @@ export function isValidPostId(id: string): boolean {
   return POST_ID_PATTERN.test(id);
 }
 
-function createPostLookupClient(supabaseUrl: string, apiKey: string) {
-  return createClient(supabaseUrl, apiKey, {
+function createPostLookupClient(supabaseUrl: string, anonKey: string) {
+  return createClient(supabaseUrl, anonKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
@@ -29,10 +29,10 @@ function createPostLookupClient(supabaseUrl: string, apiKey: string) {
 
 async function queryPostRouteState(
   supabaseUrl: string,
-  apiKey: string,
+  anonKey: string,
   id: string
 ) {
-  const client = createPostLookupClient(supabaseUrl, apiKey);
+  const client = createPostLookupClient(supabaseUrl, anonKey);
 
   return client
     .from("posts")
@@ -47,7 +47,11 @@ function normalizeRouteState(
 ): PostRouteState | null {
   if (!data) return null;
 
-  if (data.visibility !== "public" && data.visibility !== "privacy") {
+  // Kể cả khi cấu hình RLS vô tình hồi quy, route công khai cũng không được
+  // truyền trạng thái privacy xuống response.
+  if (data.visibility === "privacy") return null;
+
+  if (data.visibility !== "public") {
     throw new Error(
       `[getPostRouteState] Invalid visibility for post ${id}`
     );
@@ -60,12 +64,12 @@ function normalizeRouteState(
 }
 
 /**
- * Kiểm tra một route bài viết có tồn tại hay không.
+ * Kiểm tra một route bài viết CÔNG KHAI có tồn tại hay không.
  *
- * Lookup này chỉ chạy trên server và chỉ lấy hai trường id, visibility.
- * Nội dung, hình ảnh và metadata riêng tư không được đọc ở đây. Khi có secret
- * key, nó phân biệt được privacy/not-found; nếu thiếu key, anonymous lookup
- * vẫn giữ bài public hoạt động và từ chối bài privacy theo RLS.
+ * Lookup này chỉ dùng anon key và tuân theo RLS. Bài riêng tư và ID không tồn
+ * tại đều trả về null, vì vậy route server không tạo oracle tiết lộ sự tồn tại
+ * của nội dung riêng tư. Việc đọc bài riêng tư diễn ra ở browser bằng JWT đã
+ * xác thực của admin và vẫn phải vượt qua RLS.
  * `cache()` chỉ khử query trùng giữa page và generateMetadata trong cùng
  * một lượt render, không tạo cache dài hạn cho trạng thái bài viết.
  */
@@ -75,36 +79,10 @@ export const getPostRouteState = cache(
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    const supabaseSecretKey =
-      process.env.SUPABASE_SECRET_KEY ||
-      process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !supabaseAnonKey) {
       throw new Error(
         "[getPostRouteState] Missing public Supabase environment variables"
-      );
-    }
-
-    // Ưu tiên lookup đặc quyền để phân biệt chính xác bài riêng tư và ID
-    // không tồn tại. Nếu key thiếu/sai, route sẽ tự hạ xuống anonymous lookup:
-    // bài public vẫn hoạt động, bài privacy bị từ chối (fail closed).
-    if (supabaseSecretKey) {
-      const privilegedResult = await queryPostRouteState(
-        supabaseUrl,
-        supabaseSecretKey,
-        id
-      );
-
-      if (!privilegedResult.error) {
-        return normalizeRouteState(privilegedResult.data, id);
-      }
-
-      console.error(
-        "[getPostRouteState] Privileged lookup failed; using RLS-safe fallback:",
-        {
-          code: privilegedResult.error.code,
-          message: privilegedResult.error.message,
-        }
       );
     }
 

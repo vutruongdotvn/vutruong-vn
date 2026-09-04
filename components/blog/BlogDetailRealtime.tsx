@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 
 import { supabase } from "@/lib/supabase";
 import FancyboxWrapper from "@/components/blog/FancyboxWrapper";
@@ -32,6 +32,13 @@ type Props = {
   } | null;
 };
 
+type PrivateResolutionStatus =
+  | "checking"
+  | "granted"
+  | "denied"
+  | "not_found"
+  | "unavailable";
+
 export default function BlogDetailRealtime({
   postId,
   initialImageId = null,
@@ -47,10 +54,10 @@ export default function BlogDetailRealtime({
   const [profile, setProfile] = useState(initialProfile);
   const [open, setOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<any | null>(null);
-  const [isResolvingPost, setIsResolvingPost] = useState(
-    !initialPost && routeVisibility === "privacy"
-  );
-  const [isUnavailable, setIsUnavailable] = useState(false);
+  const [privateResolutionStatus, setPrivateResolutionStatus] =
+    useState<PrivateResolutionStatus>(
+      !initialPost && routeVisibility === "privacy" ? "checking" : "granted"
+    );
 
   const name = profile?.name || post?.author_name || "Người dùng";
   const avatar = useMemo(() => {
@@ -73,8 +80,8 @@ export default function BlogDetailRealtime({
 
   useEffect(() => {
     // Bài công khai đã được server tải sẵn, không cần fetch lần hai.
-    // Route không tồn tại đã bị page.tsx chặn bằng notFound() trước khi
-    // component này được mount.
+    // Bài privacy và ID không tồn tại cùng đi qua bước xác minh client để
+    // response công khai không trở thành oracle tiết lộ sự tồn tại.
     if (initialPost || routeVisibility !== "privacy" || !postId) {
       return;
     }
@@ -82,8 +89,7 @@ export default function BlogDetailRealtime({
     let cancelled = false;
 
     const resolvePrivatePost = async () => {
-      setIsResolvingPost(true);
-      setIsUnavailable(false);
+      setPrivateResolutionStatus("checking");
 
       try {
         const result = await resolvePrivatePostForAdmin(postId);
@@ -91,22 +97,20 @@ export default function BlogDetailRealtime({
         if (cancelled) return;
 
         if (result.status !== "granted") {
-          if (!cancelled) setIsUnavailable(true);
+          setPrivateResolutionStatus(result.status);
           return;
         }
 
         setPost(result.post);
         setProfile(result.profile);
-        setIsUnavailable(false);
+        setPrivateResolutionStatus("granted");
       } catch (error: unknown) {
         console.error(
           "[BlogDetail] private post resolution failed:",
           error instanceof Error ? error.message : "Unknown error"
         );
 
-        if (!cancelled) setIsUnavailable(true);
-      } finally {
-        if (!cancelled) setIsResolvingPost(false);
+        if (!cancelled) setPrivateResolutionStatus("unavailable");
       }
     };
 
@@ -252,28 +256,38 @@ export default function BlogDetailRealtime({
     };
   }, [post?.id, router, showToast]);
 
-  if (isResolvingPost) {
+  if (privateResolutionStatus === "checking" && !post) {
     return (
       <article
         aria-busy="true"
         aria-live="polite"
-        className="rounded-0 sm:rounded-2xl bg-card/80 p-6 text-center text-sm text-muted-foreground shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur-md"
+        className="flex min-h-[20rem] flex-col items-center justify-center rounded-0 bg-card/80 p-4 text-center shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur-md sm:rounded-2xl"
       >
-        <i className="fad fa-spinner-third fa-spin mr-2" />
-        Đang xác minh tài khoản
+        <span className="sr-only">Đang tải bài viết</span>
       </article>
     );
   }
 
-  if (!post || isUnavailable) {
+  // Guest, user thường và admin truy cập ID không tồn tại đều đi qua cùng
+  // not-found boundary. Không hiển thị thông báo "bài riêng tư" vì thông tin
+  // đó có thể biến route thành oracle dò sự tồn tại của nội dung private.
+  if (
+    !post &&
+    (privateResolutionStatus === "denied" ||
+      privateResolutionStatus === "not_found")
+  ) {
+    notFound();
+  }
+
+  if (!post || privateResolutionStatus === "unavailable") {
     return (
       <article className="rounded-0 sm:rounded-2xl p-4 py-24 text-center">
-        <i className="fa-duotone fa-lock-keyhole mb-3 text-2xl text-red-600 dark:text-red-300" />
+        <i className="fa-duotone fa-cloud-exclamation mb-3 text-2xl text-red-600 dark:text-red-300" />
         <h1 className="text-lg font-semibold text-red-600 dark:text-red-300">
-          Truy cập bị từ chối
+          Không thể tải bài viết
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Đây là bài viết riêng tư, bạn không có quyền xem nội dung này!
+          Dữ liệu bài viết hiện không khả dụng. Vui lòng thử lại sau.
         </p>
 
         <Link className="flex items-center gap-3 justify-center mt-6 px-6 py-3 mx-auto bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition shadow-lg shadow-primary/20 active:scale-95 w-sm max-w-full" href="/blog">

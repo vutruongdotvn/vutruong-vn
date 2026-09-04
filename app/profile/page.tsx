@@ -10,10 +10,16 @@ import {
   getProfileManagerAvatarImage,
   uploadImage,
 } from "@/lib/cloudinary";
+import { useUser } from "@/hooks/useUser";
 
 const DEFAULT_AVATAR = "/images/default.jpg";
 
 export default function ProfilePage() {
+  const {
+    user: authenticatedUser,
+    role,
+    loading: authLoading,
+  } = useUser();
   const [user, setUser] = useState<any>(null);
   const [newPassword, setNewPassword] = useState("");
   const [name, setName] = useState("");
@@ -45,21 +51,21 @@ export default function ProfilePage() {
   // LOAD DATA
   useEffect(() => {
     const fetchData = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      if (authLoading) return;
 
-      if (!user) {
+      if (!authenticatedUser || role !== "admin") {
+        setUser(null);
+        setAvatarLoading(false);
         setLoading(false);
         return;
       }
 
-      setUser(user);
+      setUser(authenticatedUser);
 
       const { data: profile } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", user.id)
+        .eq("id", authenticatedUser.id)
         .single();
 
       const initialAvatar =
@@ -75,7 +81,7 @@ export default function ProfilePage() {
       const { data: avatarList, error } = await supabase
         .from("user_avatars")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", authenticatedUser.id)
         .order("created_at", { ascending: false });
 
       console.log("AVATAR LIST:", avatarList, error);
@@ -86,8 +92,8 @@ export default function ProfilePage() {
       setLoading(false);
     };
 
-    fetchData();
-  }, []);
+    void fetchData();
+  }, [authLoading, authenticatedUser, role]);
 
   // CROP
   const onCropComplete = useCallback((_: any, area: any) => {
@@ -291,7 +297,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <main className="relative min-h-screen flex items-center justify-center pt-18 md:pb-4 pb-23">
         <PremiumGlassCard
@@ -332,7 +338,7 @@ export default function ProfilePage() {
     );
   }
 
-  if (!user) {
+  if (!user || role !== "admin") {
     return (
       <main className="relative min-h-screen flex items-center justify-center py-26">
         <PremiumGlassCard
@@ -356,7 +362,7 @@ export default function ProfilePage() {
                 Hello 👋
               </p>
               <p className="mt-2 text-sm sm:text-base text-muted-foreground">
-                Bạn chưa đăng nhập.
+                Khu vực này chỉ dành cho quản trị viên.
               </p>
             </div>
           </div>

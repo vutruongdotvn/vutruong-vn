@@ -100,7 +100,7 @@ export default function NavbarUserMenu({
             </div>
 
             <div className="mt-3 flex flex-col gap-1.5">
-              {user && (
+              {user && role === "admin" && (
                 <Link
                   href="/profile"
                   onClick={() => {

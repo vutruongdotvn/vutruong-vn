@@ -1,121 +1,277 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { encryptSecret, decryptSecret } from "@/lib/crypto";
+import { decryptSecret, encryptSecret } from "@/lib/crypto";
+import { requireAppAdmin } from "@/lib/server/requireAppAdmin";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-// Hàm helper check quyền Admin và khởi tạo Supabase mang quyền Admin
-async function getAuthAdmin(req: Request) {
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
+const MAX_REQUEST_BODY_BYTES = 64 * 1024;
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-  const token = authHeader.split(" ")[1];
+const STRING_FIELD_LIMITS = {
+  title: 500,
+  account: 4_096,
+  password: 8_192,
+  email: 4_096,
+  recovery_email: 4_096,
+  phone: 512,
+  recovery_phone: 512,
+  secret_code: 8_192,
+  notes: 20_000,
+} as const;
 
-  // 🔥 FIX RLS: Phải bơm trực tiếp Token vào global headers. 
-  // Lúc này lệnh gọi Database mới hiểu đây là thao tác của Admin.
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      global: {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    }
-  );
+const MAX_TAGS = 100;
+const MAX_TAG_LENGTH = 128;
 
-  const { data: { user }, error } = await supabase.auth.getUser(token);
-  
-  if (error || !user || user.email !== "admin@vutruong.vn") return null;
+type SecretStringField = keyof typeof STRING_FIELD_LIMITS;
+type SecretWritePayload = Partial<Record<SecretStringField, string | null>> & {
+  tags?: string[];
+  updated_at?: string;
+};
 
-  return supabase;
+class RequestValidationError extends Error {
+  constructor(
+    message: string,
+    readonly status = 400
+  ) {
+    super(message);
+  }
 }
 
-// LẤY DỮ LIỆU & GIẢI MÃ (GET)
+function json(
+  body: Record<string, unknown>,
+  init: { status?: number } = {}
+) {
+  return NextResponse.json(body, {
+    status: init.status,
+    headers: {
+      "Cache-Control": "private, no-store, max-age=0",
+      Pragma: "no-cache",
+      "X-Content-Type-Options": "nosniff",
+    },
+  });
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+async function readJsonObject(req: Request): Promise<Record<string, unknown>> {
+  const declaredLength = Number(req.headers.get("content-length"));
+
+  if (
+    Number.isFinite(declaredLength) &&
+    declaredLength > MAX_REQUEST_BODY_BYTES
+  ) {
+    throw new RequestValidationError("Dữ liệu gửi lên quá lớn.", 413);
+  }
+
+  const rawBody = await req.text();
+  if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BODY_BYTES) {
+    throw new RequestValidationError("Dữ liệu gửi lên quá lớn.", 413);
+  }
+
+  let value: unknown;
+  try {
+    value = JSON.parse(rawBody);
+  } catch {
+    throw new RequestValidationError("Dữ liệu JSON không hợp lệ.");
+  }
+
+  if (!isRecord(value)) {
+    throw new RequestValidationError("Dữ liệu yêu cầu không hợp lệ.");
+  }
+
+  return value;
+}
+
+function readUuid(body: Record<string, unknown>): string {
+  const id = body.id;
+  if (typeof id !== "string" || !UUID_PATTERN.test(id)) {
+    throw new RequestValidationError("ID dữ liệu không hợp lệ.");
+  }
+  return id.toLowerCase();
+}
+
+function buildWritePayload(
+  body: Record<string, unknown>,
+  requireTitle: boolean
+): SecretWritePayload {
+  const payload: SecretWritePayload = {};
+
+  for (const [field, maxLength] of Object.entries(
+    STRING_FIELD_LIMITS
+  ) as [SecretStringField, number][]) {
+    if (!(field in body)) continue;
+
+    const value = body[field];
+    if (value !== null && typeof value !== "string") {
+      throw new RequestValidationError(
+        `Trường ${field} phải là chuỗi hoặc null.`
+      );
+    }
+
+    if (typeof value === "string" && value.length > maxLength) {
+      throw new RequestValidationError(
+        `Trường ${field} vượt quá giới hạn cho phép.`
+      );
+    }
+
+    if (field === "password" || field === "secret_code") {
+      payload[field] =
+        typeof value === "string" && value.length > 0
+          ? encryptSecret(value)
+          : null;
+    } else {
+      payload[field] = value;
+    }
+  }
+
+  if (requireTitle) {
+    if (typeof payload.title !== "string" || !payload.title.trim()) {
+      throw new RequestValidationError("Tên dịch vụ không được để trống.");
+    }
+    payload.title = payload.title.trim();
+  } else if (typeof payload.title === "string") {
+    if (!payload.title.trim()) {
+      throw new RequestValidationError("Tên dịch vụ không được để trống.");
+    }
+    payload.title = payload.title.trim();
+  }
+
+  if ("tags" in body) {
+    if (!Array.isArray(body.tags) || body.tags.length > MAX_TAGS) {
+      throw new RequestValidationError("Danh sách tags không hợp lệ.");
+    }
+
+    const tags = body.tags.map((tag) => {
+      if (typeof tag !== "string") {
+        throw new RequestValidationError("Mỗi tag phải là một chuỗi.");
+      }
+
+      const normalized = tag.trim();
+      if (!normalized || normalized.length > MAX_TAG_LENGTH) {
+        throw new RequestValidationError("Tag không hợp lệ.");
+      }
+      return normalized;
+    });
+
+    payload.tags = [...new Set(tags)];
+  }
+
+  if (Object.keys(payload).length === 0) {
+    throw new RequestValidationError("Không có trường hợp lệ để cập nhật.");
+  }
+
+  return payload;
+}
+
+function handleRouteError(operation: string, error: unknown) {
+  if (error instanceof RequestValidationError) {
+    return json(
+      { success: false, error: error.message },
+      { status: error.status }
+    );
+  }
+
+  console.error(`Secrets API ${operation} failed:`, {
+    message: error instanceof Error ? error.message : "Unknown error",
+  });
+  return json(
+    { success: false, error: "Không thể xử lý dữ liệu mật lúc này." },
+    { status: 500 }
+  );
+}
+
 export async function GET(req: Request) {
   try {
-    const supabase = await getAuthAdmin(req);
-    if (!supabase) return NextResponse.json({ success: false, error: "Forbidden: Truy cập bị từ chối" }, { status: 403 });
+    const authorization = await requireAppAdmin(req);
+    if (!authorization.ok) return authorization.response;
 
-    const { data, error } = await supabase.from("secrets").select("*").order("created_at", { ascending: false });
-    if (error) throw new Error(error.message);
+    const { data, error } = await authorization.supabase
+      .from("secrets")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-    // Giải mã mật khẩu trước khi gửi về Client
-    const decryptedData = data.map((item) => ({
+    if (error) throw error;
+
+    const decryptedData = (data ?? []).map((item) => ({
       ...item,
       password: item.password ? decryptSecret(item.password) : "",
       secret_code: item.secret_code ? decryptSecret(item.secret_code) : "",
     }));
 
-    return NextResponse.json({ success: true, data: decryptedData });
-  } catch (err: any) {
-    console.error("❌ Lỗi GET /api/secrets:", err);
-    return NextResponse.json({ success: false, error: err.message || "Lỗi hệ thống" }, { status: 500 });
+    return json({ success: true, data: decryptedData });
+  } catch (error: unknown) {
+    return handleRouteError("GET", error);
   }
 }
 
-// THÊM MỚI & MÃ HÓA (POST)
 export async function POST(req: Request) {
   try {
-    const supabase = await getAuthAdmin(req);
-    if (!supabase) return NextResponse.json({ success: false, error: "Forbidden: Truy cập bị từ chối" }, { status: 403 });
+    const authorization = await requireAppAdmin(req);
+    if (!authorization.ok) return authorization.response;
 
-    const body = await req.json();
-    
-    // Mã hóa trước khi lưu
-    const encryptedPassword = body.password ? encryptSecret(body.password) : null;
-    const encryptedCode = body.secret_code ? encryptSecret(body.secret_code) : null;
+    const body = await readJsonObject(req);
+    const payload = buildWritePayload(body, true);
+    if (!("tags" in payload)) payload.tags = [];
 
-    const payload = { ...body, password: encryptedPassword, secret_code: encryptedCode };
+    const { data, error } = await authorization.supabase
+      .from("secrets")
+      .insert(payload)
+      .select("id")
+      .single();
 
-    const { data, error } = await supabase.from("secrets").insert([payload]).select().single();
-    if (error) throw new Error(error.message);
+    if (error) throw error;
 
-    return NextResponse.json({ success: true, data });
-  } catch (err: any) {
-    console.error("❌ Lỗi POST /api/secrets:", err);
-    return NextResponse.json({ success: false, error: err.message || "Lỗi mã hóa hoặc hệ thống" }, { status: 500 });
+    return json({ success: true, data: { id: data.id } }, { status: 201 });
+  } catch (error: unknown) {
+    return handleRouteError("POST", error);
   }
 }
 
-// CẬP NHẬT & MÃ HÓA (PUT)
 export async function PUT(req: Request) {
   try {
-    const supabase = await getAuthAdmin(req);
-    if (!supabase) return NextResponse.json({ success: false, error: "Forbidden: Truy cập bị từ chối" }, { status: 403 });
+    const authorization = await requireAppAdmin(req);
+    if (!authorization.ok) return authorization.response;
 
-    const body = await req.json();
-    const { id, ...rest } = body;
+    const body = await readJsonObject(req);
+    const id = readUuid(body);
+    const payload = buildWritePayload(body, false);
+    payload.updated_at = new Date().toISOString();
 
-    const encryptedPassword = rest.password ? encryptSecret(rest.password) : null;
-    const encryptedCode = rest.secret_code ? encryptSecret(rest.secret_code) : null;
+    const { data, error } = await authorization.supabase
+      .from("secrets")
+      .update(payload)
+      .eq("id", id)
+      .select("id")
+      .single();
 
-    const payload = { ...rest, password: encryptedPassword, secret_code: encryptedCode, updated_at: new Date().toISOString() };
+    if (error) throw error;
 
-    const { data, error } = await supabase.from("secrets").update(payload).eq("id", id).select().single();
-    if (error) throw new Error(error.message);
-
-    return NextResponse.json({ success: true, data });
-  } catch (err: any) {
-    console.error("❌ Lỗi PUT /api/secrets:", err);
-    return NextResponse.json({ success: false, error: err.message || "Lỗi cập nhật hoặc hệ thống" }, { status: 500 });
+    return json({ success: true, data: { id: data.id } });
+  } catch (error: unknown) {
+    return handleRouteError("PUT", error);
   }
 }
 
-// XÓA (DELETE)
 export async function DELETE(req: Request) {
   try {
-    const supabase = await getAuthAdmin(req);
-    if (!supabase) return NextResponse.json({ success: false, error: "Forbidden: Truy cập bị từ chối" }, { status: 403 });
+    const authorization = await requireAppAdmin(req);
+    if (!authorization.ok) return authorization.response;
 
-    const { id } = await req.json();
-    const { error } = await supabase.from("secrets").delete().eq("id", id);
-    
-    if (error) throw new Error(error.message);
-    return NextResponse.json({ success: true });
-  } catch (err: any) {
-    console.error("❌ Lỗi DELETE /api/secrets:", err);
-    return NextResponse.json({ success: false, error: err.message || "Lỗi xóa hệ thống" }, { status: 500 });
+    const body = await readJsonObject(req);
+    const id = readUuid(body);
+    const { error } = await authorization.supabase
+      .from("secrets")
+      .delete()
+      .eq("id", id);
+
+    if (error) throw error;
+
+    return json({ success: true });
+  } catch (error: unknown) {
+    return handleRouteError("DELETE", error);
   }
 }

@@ -20,15 +20,9 @@ export async function createProfileIfNotExists(user: {
     return;
   }
 
-  if (existing) return;
-
-  const { error: insertError } = await supabase.from("profiles").insert({
-    id: user.id,
-    name: user.user_metadata?.full_name || "User",
-    avatar: user.user_metadata?.avatar_url || "",
-  });
-
-  if (insertError) {
-    console.error("createProfileIfNotExists insert error:", insertError);
+  if (!existing) {
+    // Profile phải được tạo duy nhất bởi trigger handle_new_user đã harden.
+    // Client không tự INSERT vì user thường không có quyền tạo profile.
+    console.warn("Profile chưa sẵn sàng; chờ Auth trigger đồng bộ.");
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import PostBody from "@/components/blog/PostBody";
 import PostActions from "@/components/blog/PostActions";
 import ModalPostHeader from "@/components/blog/modal/ModalPostHeader";
@@ -34,7 +34,7 @@ export type ModalFullPostData = {
 };
 
 type PrivateResolutionStatus =
-  "checking" | "granted" | "denied" | "unavailable";
+  "checking" | "granted" | "denied" | "not_found" | "unavailable";
 
 type PrivateResolution = {
   postId: string;
@@ -256,6 +256,15 @@ export default function ModalFullPostV2({
 
   const isChecking = resolutionStatus === "checking" && !activePost;
 
+  // Cùng semantics với canonical route: người không có quyền và ID thật sự
+  // không tồn tại đều nhận not-found, kể cả khi mở bài qua intercepted modal.
+  if (
+    !activePost &&
+    (resolutionStatus === "denied" || resolutionStatus === "not_found")
+  ) {
+    notFound();
+  }
+
   return (
     <ModalPostFrame
       onClose={closeModal}
@@ -338,14 +347,10 @@ export default function ModalFullPostV2({
               aria-hidden="true"
             />
             <h2 className="mt-3 text-base font-semibold text-foreground">
-              {resolutionStatus === "denied"
-                ? "Truy cập bị từ chối"
-                : "Không thể tải bài viết"}
+              Không thể tải bài viết
             </h2>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              {resolutionStatus === "denied"
-                ? "Bạn không có quyền xem nội dung này."
-                : "Dữ liệu bài viết hiện không khả dụng."}
+              Dữ liệu bài viết hiện không khả dụng.
             </p>
             {routeVisibility === "public" && (
               <a

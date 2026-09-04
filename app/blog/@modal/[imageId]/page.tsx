@@ -44,7 +44,7 @@ export default async function InterceptedPostImagePage({
   if (!isValidPostId(id) || !isValidPostImageId(imageId)) notFound();
 
   const routeState = await getPostRouteState(id);
-  const routeVisibility = routeState?.visibility ?? "public";
+  const routeVisibility = routeState?.visibility ?? "privacy";
 
   return (
     <ModalFullPostV2
@@ -54,13 +54,7 @@ export default async function InterceptedPostImagePage({
       routeVisibility={routeVisibility}
       post={null}
       loadPublicPost={routeState?.visibility === "public"}
-      documentTitle={
-        !routeState
-          ? "Không tìm thấy bài viết"
-          : routeVisibility === "privacy"
-            ? "Bài viết riêng tư"
-            : ""
-      }
+      documentTitle={!routeState ? "Bài viết" : ""}
     />
   );
 }

@@ -109,7 +109,7 @@ function useSharedUserState(): UserContextValue {
       for (let attempt = 0; attempt < 2; attempt += 1) {
         const result = await supabase
           .from("profiles")
-          .select("name, avatar, role, status")
+          .select("name, avatar, status")
           .eq("id", userId)
           .maybeSingle();
 
@@ -126,7 +126,24 @@ function useSharedUserState(): UserContextValue {
       throw new Error("Không thể hoàn tất truy vấn profile.");
     };
 
-    const syncUser = async (currentUser: User | null) => {
+    const queryAppAdmin = async () => {
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const result = await supabase.rpc("is_featured_approved_admin");
+
+        if (!result.error) return result;
+
+        if (!isNetworkError(result.error) || attempt === 1) {
+          return result;
+        }
+
+        await wait(800);
+        if (!active) return result;
+      }
+
+      throw new Error("Không thể hoàn tất truy vấn quyền quản trị.");
+    };
+
+    const syncUser = async (currentUser: User | null, force = false) => {
       if (!currentUser) {
         requestedUserId = null;
         requestId += 1;
@@ -138,7 +155,7 @@ function useSharedUserState(): UserContextValue {
 
       // getSession(), INITIAL_SESSION, SIGNED_IN và TOKEN_REFRESHED có thể
       // cùng trả về một user. Chỉ tải profile khi danh tính thực sự thay đổi.
-      if (requestedUserId === currentUser.id) return;
+      if (requestedUserId === currentUser.id && !force) return;
 
       if (
         requestedUserId !== undefined &&
@@ -154,13 +171,31 @@ function useSharedUserState(): UserContextValue {
       setLoading(true);
 
       try {
-        const { data, error } = await queryProfile(currentUser.id);
+        const [profileResult, adminResult] = await Promise.all([
+          queryProfile(currentUser.id),
+          queryAppAdmin(),
+        ]);
         if (!active || currentRequestId !== requestId) return;
 
-        if (error) {
-          const errorInfo = serializeProfileError(error);
+        const isAdmin = !adminResult.error && adminResult.data === true;
 
-          if (isNetworkError(error)) {
+        if (adminResult.error) {
+          const errorInfo = serializeProfileError(adminResult.error);
+
+          if (isNetworkError(adminResult.error)) {
+            console.warn("Không thể kết nối Supabase để xác minh quyền:", errorInfo);
+          } else {
+            console.error("Lỗi xác minh quyền quản trị Supabase:", errorInfo);
+          }
+        }
+
+        // Đây chỉ là trạng thái UI. API và RLS vẫn tự xác thực lại từng thao tác.
+        setRole(isAdmin ? "admin" : "user");
+
+        if (profileResult.error) {
+          const errorInfo = serializeProfileError(profileResult.error);
+
+          if (isNetworkError(profileResult.error)) {
             // Lỗi mạng tạm thời không nên kích hoạt Next.js error overlay.
             console.warn(
               "Không thể kết nối Supabase để tải profile:",
@@ -170,25 +205,24 @@ function useSharedUserState(): UserContextValue {
             console.error("Lỗi truy vấn profile Supabase:", errorInfo);
           }
 
-          // Mặc định an toàn: không cấp quyền admin khi chưa xác minh được.
-          setRole("user");
-          setStatus("pending");
+          // Profile lỗi không được thay đổi kết quả quyền từ RPC đã xác minh.
+          setStatus(isAdmin ? "approved" : "pending");
           setProfile(null);
           return;
         }
 
-        if (!data) {
-          setRole("user");
-          setStatus("pending");
+        if (!profileResult.data) {
+          setStatus(isAdmin ? "approved" : "pending");
           setProfile(null);
           return;
         }
 
-        setRole(data.role?.toLowerCase() === "admin" ? "admin" : "user");
-        setStatus(normalizeStatus(data.status));
+        // Registry UID là nguồn quyền duy nhất. status=approved ở đây chỉ là
+        // trạng thái hiệu lực cho UI admin cũ, không ghi ngược vào profiles.
+        setStatus(isAdmin ? "approved" : normalizeStatus(profileResult.data.status));
         setProfile({
-          name: data.name || null,
-          avatar: data.avatar || null,
+          name: profileResult.data.name || null,
+          avatar: profileResult.data.avatar || null,
         });
       } catch (error) {
         if (!active || currentRequestId !== requestId) return;
@@ -229,7 +263,7 @@ function useSharedUserState(): UserContextValue {
       if (!session?.user) return;
 
       authEventVersion += 1;
-      void syncUser(session.user);
+      void syncUser(session.user, event === "SIGNED_IN" || event === "TOKEN_REFRESHED");
     };
 
     const getSessionAuthVersion = authEventVersion;

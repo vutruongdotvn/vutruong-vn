@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
+const PRIMARY_ADMIN_EMAIL = "admin@vutruong.vn";
+
 export type AdminProfile = {
   id: string;
   name: string | null;
@@ -34,7 +36,9 @@ export function useProfile() {
     const { data, error } = await supabase
       .from("profiles")
       .select("*")
-      .eq("role", "admin")
+      // Chỉ dùng email để chọn hồ sơ công khai cần hiển thị. Quyền quản trị
+      // không được suy ra từ truy vấn này.
+      .eq("email", PRIMARY_ADMIN_EMAIL)
       .limit(1)
       .maybeSingle();
 
