@@ -8,11 +8,9 @@ import PostCard from "@/components/blog/PostCard";
 import PostCardSkeleton from "@/components/blog/PostCardSkeleton";
 import CreatePostModal from "@/components/blog/CreatePostModal";
 import FancyboxWrapper from "@/components/blog/FancyboxWrapper";
-import LoginModal from "@/components/auth/LoginModal";
 
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
-import { buildCloudinaryImage } from "@/lib/cloudinary";
 import { useToastContext } from "@/components/ui/ToastProvider";
 
 import {
@@ -22,6 +20,8 @@ import {
   deletePost,
 } from "@/services/postService";
 
+type TagAccessScope = "public" | "admin";
+
 export default function BlogTagPage() {
   const router = useRouter();
   const params = useParams();
@@ -29,7 +29,6 @@ export default function BlogTagPage() {
   const tagName = decodeURIComponent(rawTag).trim().toLowerCase();
 
   const [open, setOpen] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingPost, setEditingPost] = useState<any | null>(null);
@@ -40,13 +39,19 @@ export default function BlogTagPage() {
   const [totalPosts, setTotalPosts] = useState(0);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const dataRequestVersionRef = useRef(0);
+  const accessScopeSyncingRef = useRef(false);
+  const loadedTagRef = useRef<string | null>(null);
+  const loadedAccessScopeRef = useRef<TagAccessScope | null>(null);
   const LIMIT = 3;
-
-  const [profile, setProfile] = useState<any>(null);
-  const [profileLoading, setProfileLoading] = useState(true);
 
   const { user, role, loading: userLoading } = useUser();
   const { showToast, removeToast } = useToastContext();
+  const accessScope: TagAccessScope | null = userLoading
+    ? null
+    : user && role === "admin"
+      ? "admin"
+      : "public";
 
   const displayTag = useMemo(() => {
     return tagName.startsWith("#") ? tagName : `#${tagName}`;
@@ -100,28 +105,11 @@ export default function BlogTagPage() {
     });
   };
 
-  const fetchProfile = async () => {
-    if (!user) {
-      setProfileLoading(false);
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("name, avatar")
-      .eq("id", user.id)
-      .single();
-
-    if (!error) {
-      setProfile(data);
-    }
-
-    setProfileLoading(false);
-  };
-
   const fetchTotalPosts = async () => {
     if (!tagName) return;
+    const requestVersion = dataRequestVersionRef.current;
     const total = await countPostsByHashtag(tagName);
+    if (requestVersion !== dataRequestVersionRef.current) return;
     setTotalPosts(total);
   };
 
@@ -205,7 +193,9 @@ export default function BlogTagPage() {
   };
 
   const fetchPosts = async () => {
-    if (!hasMore || !tagName) return;
+    if (!hasMore || !tagName || accessScopeSyncingRef.current) return;
+
+    const requestVersion = dataRequestVersionRef.current;
 
     if (page === 0) {
       setLoading(true);
@@ -217,6 +207,8 @@ export default function BlogTagPage() {
     const to = from + LIMIT - 1;
 
     const data = await getPostsByHashtag(tagName, from, to);
+
+    if (requestVersion !== dataRequestVersionRef.current) return;
 
     if (data.length < LIMIT) {
       setHasMore(false);
@@ -238,31 +230,72 @@ export default function BlogTagPage() {
   };
 
   useEffect(() => {
-    if (!tagName) return;
+    if (!tagName || !accessScope) return;
 
-    setPosts([]);
+    const requestVersion = ++dataRequestVersionRef.current;
+    const isNewTag = loadedTagRef.current !== tagName;
+    let active = true;
+
+    loadedTagRef.current = tagName;
+    loadedAccessScopeRef.current = accessScope;
+    accessScopeSyncingRef.current = true;
+
+    if (isNewTag) {
+      setPosts([]);
+      setLoading(true);
+    } else if (accessScope === "public") {
+      // Ẩn và loại dữ liệu privacy ngay khi admin rời phiên.
+      setPosts((current) =>
+        current.filter((post) => post.visibility === "public"),
+      );
+    }
+
     setPage(0);
     setHasMore(true);
-    setLoading(true);
-
-    fetchTotalPosts();
+    setLoadingMore(false);
 
     (async () => {
-      const firstBatch = await getPostsByHashtag(tagName, 0, LIMIT - 1);
+      try {
+        const [firstBatch, total] = await Promise.all([
+          getPostsByHashtag(tagName, 0, LIMIT - 1),
+          countPostsByHashtag(tagName),
+        ]);
 
-      if (firstBatch.length < LIMIT) {
-        setHasMore(false);
+        if (
+          !active ||
+          requestVersion !== dataRequestVersionRef.current
+        ) {
+          return;
+        }
+
+        setHasMore(firstBatch.length >= LIMIT);
+        setPosts(sortPosts(firstBatch || []));
+        setTotalPosts(total);
+        setPage(1);
+      } catch (error) {
+        if (
+          active &&
+          requestVersion === dataRequestVersionRef.current
+        ) {
+          console.error("BlogTagPage auth scope sync error:", error);
+          showToast("Không thể đồng bộ lại bài viết. Vui lòng thử lại.", "error", 3200);
+        }
+      } finally {
+        if (
+          active &&
+          requestVersion === dataRequestVersionRef.current
+        ) {
+          accessScopeSyncingRef.current = false;
+          setLoading(false);
+          setLoadingMore(false);
+        }
       }
-
-      setPosts(sortPosts(firstBatch || []));
-      setPage(1);
-      setLoading(false);
     })();
-  }, [tagName]);
 
-  useEffect(() => {
-    fetchProfile();
-  }, [user]);
+    return () => {
+      active = false;
+    };
+  }, [accessScope, showToast, tagName]);
 
   useEffect(() => {
     if (!loadMoreRef.current) return;
@@ -276,10 +309,10 @@ export default function BlogTagPage() {
 
     observer.observe(loadMoreRef.current);
     return () => observer.disconnect();
-  }, [hasMore, loadingMore, page, loading, tagName]);
+  }, [accessScope, hasMore, loadingMore, page, loading, tagName]);
 
   useEffect(() => {
-    if (!tagName) return;
+    if (!tagName || !accessScope) return;
 
     const normalizedTag = tagName.replace(/^#/, "");
 
@@ -325,7 +358,9 @@ export default function BlogTagPage() {
         },
         async (payload) => {
           const updatedPost = payload.new as any;
-          const stillHasTag = postHasCurrentTag(updatedPost);
+          const canViewPost =
+            updatedPost.visibility === "public" || accessScope === "admin";
+          const stillHasTag = canViewPost && postHasCurrentTag(updatedPost);
 
           setPosts((prev) => {
             const exists = prev.some((p) => p.id === updatedPost.id);
@@ -373,21 +408,22 @@ export default function BlogTagPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [tagName, router]);
+  }, [accessScope, tagName, router]);
 
-  const fullName = user ? profile?.name || "Người dùng" : "Xin chào! 👋";
-  const email = user?.email || "";
-
-  const avatar = user
-    ? buildCloudinaryImage(profile?.avatar, {
-        width: 80,
-        height: 80,
-        quality: 80,
-        crop: "fill",
-      }) || "/images/default.jpg"
-    : "/images/default.jpg";
-
-  const isReady = !userLoading && !profileLoading && !loading;
+  const isReady = !loading;
+  const visiblePosts = posts.filter(
+    (post) =>
+      post.visibility === "public" ||
+      (post.visibility === "privacy" && user && role === "admin"),
+  );
+  const renderScope: TagAccessScope =
+    user && role === "admin" ? "admin" : "public";
+  const scopeIsSynced =
+    loadedAccessScopeRef.current === renderScope &&
+    !accessScopeSyncingRef.current;
+  const displayedTotalPosts = scopeIsSynced
+    ? totalPosts
+    : visiblePosts.length;
 
   return (
     <>
@@ -416,8 +452,8 @@ export default function BlogTagPage() {
                 <h1 className="text-base text-foreground">
                   <span>
                     <i className="fa-duotone fa-tags me-2"/>
-                    {totalPosts > 0
-                      ? `${totalPosts} bài viết có `
+                    {displayedTotalPosts > 0
+                      ? `${displayedTotalPosts} bài viết có `
                       : `Hông có bài viết nào có `}
                   </span>
                   <span className="text-foreground font-semibold hover:text-foreground">
@@ -442,19 +478,19 @@ export default function BlogTagPage() {
             </p>
           )*/}
 
-          {!loading && posts.length === 0 && (
+          {!loading && visiblePosts.length === 0 && (
             <div className="text-center text-muted-foreground py-8">
               Chưa có bài viết nào có hashtag{" "}
               <span className="font-medium">{displayTag}</span> cả 🧐
             </div>
           )}
 
-          {posts.map((post, index) => (
+          {visiblePosts.map((post, index) => (
             <PostCard
               key={post.id}
               post={post}
               isFirst={index === 0}
-              isLast={index === posts.length - 1}
+              isLast={index === visiblePosts.length - 1}
               onPin={handlePin}
               onDelete={handleDelete}
               onEdit={handleEdit}
@@ -490,8 +526,6 @@ export default function BlogTagPage() {
     }}
   />
 )}
-
-          {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
         </>
       )}
     </>

@@ -14,6 +14,8 @@ import { useUser } from "@/hooks/useUser";
 //   "scroll" → tự động tải khi cuộn đến cuối danh sách (Infinity Scroll)
 const FEED_MODE: "button" | "scroll" = "scroll";
 
+type FeedAccessScope = "public" | "admin";
+
 export default function BlogPostFeed() {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,10 +32,16 @@ export default function BlogPostFeed() {
 
   // ✅ Chống request chồng nhau / stale closure
   const isFetchingRef = useRef(false);
+  const normalRequestIdRef = useRef(0);
   const pageRef = useRef(0);
   const hasMoreRef = useRef(true);
   const mountedRef = useRef(true);
   const postsRef = useRef<any[]>([]);
+  // Mỗi lần quyền xem đổi, vô hiệu hóa kết quả của các request thuộc quyền cũ.
+  const dataRequestVersionRef = useRef(0);
+  const accessScopeRequestIdRef = useRef(0);
+  const accessScopeSyncingRef = useRef(false);
+  const previousAccessScopeRef = useRef<FeedAccessScope | null>(null);
 
   // ─── Infinity scroll refs ────────────────────────────────────────────────────
   /** Phần tử sentinel ở cuối danh sách, được IntersectionObserver theo dõi */
@@ -59,8 +67,13 @@ export default function BlogPostFeed() {
    */
   const SCROLL_FETCH_DELAY = 500;
 
-  const { user, role } = useUser();
+  const { user, role, loading: authLoading } = useUser();
   const { showToast, removeToast } = useToastContext();
+  const accessScope: FeedAccessScope | null = authLoading
+    ? null
+    : user && role === "admin"
+      ? "admin"
+      : "public";
 
   // ─── Helpers (không thay đổi) ────────────────────────────────────────────────
   const sortPostsByPinnedAndDate = (items: any[]) => {
@@ -106,8 +119,10 @@ export default function BlogPostFeed() {
       const resetUi = options?.resetUi ?? false;
       const showRefreshUi = options?.showRefreshUi ?? false;
 
-      if (isFetchingRef.current) return;
+      if (isFetchingRef.current || accessScopeSyncingRef.current) return;
       isFetchingRef.current = true;
+      const normalRequestId = ++normalRequestIdRef.current;
+      const requestVersion = dataRequestVersionRef.current;
 
       const visibleCount = Math.max(postsRef.current.length, INITIAL_LIMIT);
 
@@ -119,7 +134,12 @@ export default function BlogPostFeed() {
 
       try {
         const data = await getPosts(0, visibleCount - 1);
-        if (!mountedRef.current) return;
+        if (
+          !mountedRef.current ||
+          requestVersion !== dataRequestVersionRef.current
+        ) {
+          return;
+        }
 
         const safeData = Array.isArray(data) ? data : [];
         const sortedData = sortPostsByPinnedAndDate(safeData);
@@ -142,14 +162,19 @@ export default function BlogPostFeed() {
         }
       } catch (err) {
         console.error("BlogPostFeed refreshCurrentWindow error:", err);
-        if (mountedRef.current) {
+        if (
+          mountedRef.current &&
+          requestVersion === dataRequestVersionRef.current
+        ) {
           setShowRefreshSkeleton(false);
           setRefreshing(false);
           setRefreshDone(false);
           showToast("Không thể tải bài viết. Vui lòng thử lại.", "error", 3200);
         }
       } finally {
-        isFetchingRef.current = false;
+        if (normalRequestId === normalRequestIdRef.current) {
+          isFetchingRef.current = false;
+        }
       }
     },
     [showToast]
@@ -157,8 +182,10 @@ export default function BlogPostFeed() {
 
   // ─── hardRefreshFeed (không thay đổi) ────────────────────────────────────────
   const hardRefreshFeed = useCallback(async () => {
-    if (isFetchingRef.current) return;
+    if (isFetchingRef.current || accessScopeSyncingRef.current) return;
     isFetchingRef.current = true;
+    const normalRequestId = ++normalRequestIdRef.current;
+    const requestVersion = dataRequestVersionRef.current;
 
     setRefreshDone(false);
     setRefreshing(true);
@@ -166,7 +193,12 @@ export default function BlogPostFeed() {
 
     try {
       const data = await getPosts(0, INITIAL_LIMIT - 1);
-      if (!mountedRef.current) return;
+      if (
+        !mountedRef.current ||
+        requestVersion !== dataRequestVersionRef.current
+      ) {
+        return;
+      }
 
       const safeData = Array.isArray(data) ? data : [];
       const sortedData = sortPostsByPinnedAndDate(safeData);
@@ -186,15 +218,23 @@ export default function BlogPostFeed() {
       }, 1200);
     } catch (err) {
       console.error("BlogPostFeed hardRefreshFeed error:", err);
-      if (mountedRef.current) {
+      if (
+        mountedRef.current &&
+        requestVersion === dataRequestVersionRef.current
+      ) {
         setShowRefreshSkeleton(false);
         setRefreshing(false);
         setRefreshDone(false);
         showToast("Không thể tải bài viết. Vui lòng thử lại.", "error", 3200);
       }
     } finally {
-      isFetchingRef.current = false;
-      if (mountedRef.current) {
+      if (normalRequestId === normalRequestIdRef.current) {
+        isFetchingRef.current = false;
+      }
+      if (
+        mountedRef.current &&
+        requestVersion === dataRequestVersionRef.current
+      ) {
         setLoading(false);
         setLoadingMore(false);
       }
@@ -209,10 +249,12 @@ export default function BlogPostFeed() {
         return;
       }
 
-      if (isFetchingRef.current) return;
+      if (isFetchingRef.current || accessScopeSyncingRef.current) return;
       if (!hasMoreRef.current) return;
 
       isFetchingRef.current = true;
+      const normalRequestId = ++normalRequestIdRef.current;
+      const requestVersion = dataRequestVersionRef.current;
 
       const currentCount = postsRef.current.length;
       const limit = currentCount === 0 ? INITIAL_LIMIT : LOAD_MORE_LIMIT;
@@ -227,7 +269,12 @@ export default function BlogPostFeed() {
 
       try {
         const data = await getPosts(from, to);
-        if (!mountedRef.current) return;
+        if (
+          !mountedRef.current ||
+          requestVersion !== dataRequestVersionRef.current
+        ) {
+          return;
+        }
 
         const safeData = Array.isArray(data) ? data : [];
 
@@ -251,18 +298,109 @@ export default function BlogPostFeed() {
         });
       } catch (err) {
         console.error("BlogPostFeed fetchPosts error:", err);
-        if (mountedRef.current) {
+        if (
+          mountedRef.current &&
+          requestVersion === dataRequestVersionRef.current
+        ) {
           showToast("Không thể tải bài viết. Vui lòng thử lại.", "error", 3200);
         }
       } finally {
-        if (mountedRef.current) {
+        if (
+          mountedRef.current &&
+          requestVersion === dataRequestVersionRef.current
+        ) {
           setLoading(false);
           setLoadingMore(false);
         }
-        isFetchingRef.current = false;
+        if (normalRequestId === normalRequestIdRef.current) {
+          isFetchingRef.current = false;
+        }
       }
     },
     [hardRefreshFeed, showToast]
+  );
+
+  /**
+   * Đồng bộ lại cửa sổ bài viết khi quyền xem đổi giữa public/admin.
+   * Đây là một lần tải nền: giữ nguyên các PostCard đang có và không bật
+   * skeleton/refresh indicator. Khi rời quyền admin, bài privacy được loại
+   * khỏi state ngay trước khi request public hoàn tất.
+   */
+  const syncPostsForAccessScope = useCallback(
+    async (nextScope: FeedAccessScope, initialLoad: boolean) => {
+      const requestId = ++accessScopeRequestIdRef.current;
+      const requestVersion = ++dataRequestVersionRef.current;
+      const visibleCount = Math.max(postsRef.current.length, INITIAL_LIMIT);
+
+      accessScopeSyncingRef.current = true;
+      // Request cũ đã bị requestVersion vô hiệu hóa, không để lock của nó
+      // chặn các lần tải theo quyền mới sau khi đồng bộ hoàn tất.
+      normalRequestIdRef.current += 1;
+      isFetchingRef.current = false;
+      if (scrollTimerRef.current) {
+        clearTimeout(scrollTimerRef.current);
+        scrollTimerRef.current = null;
+      }
+      isScrollPendingRef.current = false;
+      setLoadingMore(false);
+      setShowRefreshSkeleton(false);
+      setRefreshing(false);
+      setRefreshDone(false);
+
+      if (nextScope === "public") {
+        const publicPosts = postsRef.current.filter(
+          (post) => post.visibility === "public",
+        );
+
+        if (publicPosts.length !== postsRef.current.length) {
+          setPosts(publicPosts);
+          syncFeedMeta(publicPosts);
+        }
+      }
+
+      if (initialLoad) setLoading(true);
+
+      try {
+        const data = await getPosts(0, visibleCount - 1);
+
+        if (
+          !mountedRef.current ||
+          requestId !== accessScopeRequestIdRef.current ||
+          requestVersion !== dataRequestVersionRef.current
+        ) {
+          return;
+        }
+
+        const safeData = Array.isArray(data) ? data : [];
+        const sortedData = sortPostsByPinnedAndDate(safeData);
+
+        setPosts(sortedData);
+        syncFeedMeta(sortedData);
+
+        const nextHasMore = safeData.length >= visibleCount;
+        setHasMore(nextHasMore);
+        hasMoreRef.current = nextHasMore;
+      } catch (err) {
+        console.error("BlogPostFeed auth scope sync error:", err);
+
+        if (
+          mountedRef.current &&
+          requestId === accessScopeRequestIdRef.current
+        ) {
+          showToast("Không thể đồng bộ lại bài viết. Vui lòng thử lại.", "error", 3200);
+        }
+      } finally {
+        if (
+          mountedRef.current &&
+          requestId === accessScopeRequestIdRef.current
+        ) {
+          accessScopeSyncingRef.current = false;
+          setLoading(false);
+          setLoadingMore(false);
+        }
+      }
+    },
+    [showToast],
   );
 
   // ─── Handlers (không thay đổi) ───────────────────────────────────────────────
@@ -310,14 +448,28 @@ export default function BlogPostFeed() {
     await refreshCurrentWindow();
   };
 
-  // ─── Effects (không thay đổi) ────────────────────────────────────────────────
+  // ─── Effects ─────────────────────────────────────────────────────────────────
   useEffect(() => {
     mountedRef.current = true;
-    fetchPosts();
     return () => {
       mountedRef.current = false;
+      accessScopeRequestIdRef.current += 1;
+      dataRequestVersionRef.current += 1;
+      normalRequestIdRef.current += 1;
+      previousAccessScopeRef.current = null;
+      accessScopeSyncingRef.current = false;
     };
-  }, [fetchPosts]);
+  }, []);
+
+  useEffect(() => {
+    if (!accessScope) return;
+
+    const previousScope = previousAccessScopeRef.current;
+    if (previousScope === accessScope) return;
+
+    previousAccessScopeRef.current = accessScope;
+    void syncPostsForAccessScope(accessScope, previousScope === null);
+  }, [accessScope, syncPostsForAccessScope]);
 
   useEffect(() => {
     postsRef.current = posts;
