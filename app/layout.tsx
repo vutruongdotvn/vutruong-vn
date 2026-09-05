@@ -6,7 +6,6 @@ import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import AuthProvider from "@/components/AuthProvider";
 import LayoutShell from "@/components/LayoutShell";
 import { ToastProvider } from "@/components/ui/ToastProvider";
-import ConditionalPageTransition from "@/components/ConditionalPageTransition";
 import LiquidMenu from "@/components/LiquidMenu";
 import RouteChangeIndicator from "@/components/RouteChangeIndicator";
 import ThemeProvider from "@/components/theme/ThemeProvider";
@@ -122,7 +121,7 @@ export default function RootLayout({
             <RouteChangeIndicator />
           </Suspense>
 
-        {/* Background ô vuông 
+          {/* Background ô vuông 
         <div
           className="pointer-events-none fixed -inset-1 -z-1 opacity-[0.5] mix-blend-overlay"
           style={{
@@ -139,9 +138,7 @@ export default function RootLayout({
           <ToastProvider>
             <AuthProvider>
               <LayoutShell>
-                <ConditionalPageTransition>
-                  {children}
-                </ConditionalPageTransition>
+                {children}
               </LayoutShell>
               <LiquidMenu />
             </AuthProvider>

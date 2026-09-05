@@ -42,10 +42,9 @@ export default function NavbarMoreMenu({
           cursor-pointer
           group relative flex items-center gap-2 rounded-full px-4 py-2.5
           text-sm font-medium active:scale-95 transition-all duration-300
-          ${
-            moreMenu.some((item) => isActive(item.href))
-              ? "bg-nav-active text-nav-active-foreground shadow-lg"
-              : "text-foreground/75 hover:text-foreground hover:bg-secondary"
+          ${moreMenu.some((item) => isActive(item.href))
+            ? "bg-nav-active text-nav-active-foreground shadow-lg"
+            : "text-foreground/75 hover:text-foreground hover:bg-secondary"
           }
         `}
         aria-label="Open more menu"
@@ -54,9 +53,8 @@ export default function NavbarMoreMenu({
         <i className="fa-duotone fa-grid-2 relative z-10 text-base transition-transform duration-300 group-hover:scale-105" />
         <span className="relative z-10">More</span>
         <i
-          className={`fa-duotone fa-chevron-down relative z-10 text-xs transition-transform duration-300 ${
-            moreOpen ? "rotate-180" : ""
-          }`}
+          className={`fa-duotone fa-chevron-down relative z-10 text-xs transition-transform duration-300 ${moreOpen ? "rotate-180" : ""
+            }`}
         />
       </button>
 
@@ -81,10 +79,9 @@ export default function NavbarMoreMenu({
                     onClick={(e) => onNavClick(e, item.href)}
                     className={`
                       flex items-center justify-between rounded-2xl px-4 py-3
-                      ${
-                        active
-                          ? "bg-nav-active text-nav-active-foreground shadow-sm"
-                          : "text-foreground/75 hover:bg-muted active:bg-secondary active:scale-97"
+                      ${active
+                        ? "bg-nav-active text-nav-active-foreground shadow-sm"
+                        : "text-foreground/75 hover:bg-muted active:bg-secondary active:scale-97"
                       }
                     `}
                   >
@@ -103,13 +100,8 @@ export default function NavbarMoreMenu({
               })}
             </div>
 
-            <div className="mt-3 border-t border-border pt-3">
-              <p className="mb-2 px-1 text-xs font-medium text-muted-foreground">
-                Giao diện
-              </p>
-              <ThemeSwitcher />
-            </div>
-            
+            <ThemeSwitcher />
+
             {/*
             <div className="mt-3 border-t border-border/70 pt-3 px-1 flex items-center gap-2">
               <button

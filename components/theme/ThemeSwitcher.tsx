@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
-import { useTheme } from "next-themes";
 import { LayoutGroup, motion } from "framer-motion";
+import { useTheme } from "next-themes";
+import { useEffect, useId, useState } from "react";
 
 type ThemeMode = "system" | "light" | "dark";
 
-const THEME_OPTIONS: Array<{
+const THEME_OPTIONS: ReadonlyArray<{
   value: ThemeMode;
   label: string;
   icon: string;
 }> = [
-  { value: "system", label: "Hệ thống", icon: "fa-laptop" },
+  { value: "system", label: "Hệ thống", icon: "fa-sliders" },
   { value: "light", label: "Sáng", icon: "fa-sun-bright" },
   { value: "dark", label: "Tối", icon: "fa-moon" },
 ];
@@ -26,12 +26,22 @@ export default function ThemeSwitcher() {
   }, []);
 
   return (
-    <div className="">
+    <div className="group flex min-h-10 items-center justify-between gap-3 rounded-2xl px-4 py-1 transition-colors hover:bg-muted/60 mt-1.5">
+      <div className="flex min-w-0 items-center gap-3">
+        <i
+          className="fa-duotone fa-circle-half-stroke w-5 shrink-0 text-center text-base text-muted-foreground transition-colors group-hover:text-foreground"
+          aria-hidden="true"
+        />
+        <span className="truncate text-sm font-medium text-foreground">
+          Theme
+        </span>
+      </div>
+
       <LayoutGroup id={layoutGroupId}>
         <div
           role="radiogroup"
           aria-label="Chọn giao diện"
-          className="grid grid-cols-3 gap-1"
+          className="flex shrink-0 items-center gap-0.5 rounded-full bg-muted/80 p-1 dark:bg-black/20"
         >
           {THEME_OPTIONS.map((option) => {
             const active = mounted && theme === option.value;
@@ -42,12 +52,14 @@ export default function ThemeSwitcher() {
                 type="button"
                 role="radio"
                 aria-checked={active}
+                aria-label={option.label}
+                title={option.label}
                 disabled={!mounted}
                 onClick={() => setTheme(option.value)}
-                className={`relative flex min-w-0 cursor-pointer flex-col items-center gap-1 rounded-xl px-2 py-2 text-xs font-medium transition-colors disabled:cursor-default ${
+                className={`relative grid size-8 shrink-0 place-items-center rounded-full text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:cursor-default ${
                   active
                     ? "text-foreground"
-                    : "text-muted-foreground hover:bg-card/70 hover:text-foreground "
+                    : "cursor-pointer text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {active && (
@@ -60,7 +72,7 @@ export default function ThemeSwitcher() {
                       damping: 35,
                       mass: 0.7,
                     }}
-                    className="pointer-events-none absolute inset-0 rounded-xl bg-background shadow-sm"
+                    className="pointer-events-none absolute inset-0 rounded-full bg-background shadow-sm ring-1 ring-black/5 dark:bg-white/20 dark:ring-white/10"
                     aria-hidden="true"
                   />
                 )}
@@ -69,7 +81,7 @@ export default function ThemeSwitcher() {
                   className={`fa-duotone ${option.icon} relative z-10 text-sm`}
                   aria-hidden="true"
                 />
-                <span className="relative z-10 truncate">{option.label}</span>
+                <span className="sr-only">{option.label}</span>
               </button>
             );
           })}

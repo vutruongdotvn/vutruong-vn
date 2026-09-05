@@ -25,13 +25,13 @@ export default function NotFound() {
 
           {/* Heading */}
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">
-            Lỗi rồi! <i className="far fa-face-pensive" />
+            Trang không tồn tại!
           </h1>
 
           {/* Description */}
           <div className="mt-4 mb-6 space-y-1.5">
             <p className="mx-auto max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
-              Trang này không tồn tại, có thể đã bị xóa hoặc đã chuyển sang địa chỉ khác.
+              Có thể đã bị xóa hoặc đã chuyển sang địa chỉ khác.
             </p>
           </div>
 
