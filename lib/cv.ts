@@ -41,13 +41,18 @@ function normalizeTimelineItem(
   const title = cleanText(value.title, 160);
   const organization = cleanText(value.organization, 200);
   if (!title && !organization) return null;
+  const id = cleanText(value.id, 80) || "timeline-" + (index + 1);
+  const isProject = value.kind === "project" || id.startsWith("project-");
+  const url = cleanText(value.url, 500);
 
   return {
-    id: cleanText(value.id, 80) || "timeline-" + (index + 1),
+    id,
+    ...(isProject ? { kind: "project" as const } : {}),
     period: cleanText(value.period, 80),
     title,
     organization,
     location: cleanText(value.location, 160),
+    ...(url ? { url } : {}),
     description: cleanText(value.description, 1500),
     highlights: cleanList(value.highlights, 12),
   };

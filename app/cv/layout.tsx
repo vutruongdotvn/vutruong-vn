@@ -4,7 +4,7 @@ export const metadata: Metadata = {
   title: {
     absolute: "CV",
   },
-  description: "Hồ sơ năng lực và kinh nghiệm của Vũ Trường.",
+  description: "Hồ sơ năng lực và kinh nghiệm của bản thân.",
   robots: "noindex, nofollow, noarchive, nosnippet, noimageindex",
 };
 

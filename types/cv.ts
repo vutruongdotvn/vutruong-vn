@@ -1,9 +1,11 @@
 export type CvTimelineItem = {
   id: string;
+  kind?: "experience" | "project";
   period: string;
   title: string;
   organization: string;
   location: string;
+  url?: string;
   description: string;
   highlights: string[];
 };

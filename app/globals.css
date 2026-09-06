@@ -7,7 +7,6 @@
 :root {
   --font-sans: var(--font-roboto);
 }
-
 ::selection {
   background: var(--foreground);
   color: var(--background);
@@ -333,6 +332,7 @@ img {
     color: #161616 !important;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
+    overflow: visible !important;
   }
 
   body:has(.cv-page) .topNavbar,
@@ -347,9 +347,53 @@ img {
   }
 
   .cv-sheet {
+    width: 190mm !important;
+    max-width: 190mm !important;
+    margin: 0 auto !important;
     border: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
+  }
+
+  .cv-header {
+    padding: 8mm !important;
+  }
+
+  .cv-avatar {
+    width: 24mm !important;
+    height: 24mm !important;
+    border-radius: 6mm !important;
+  }
+
+  .cv-summary {
+    font-size: 9.5pt !important;
+    line-height: 1.55 !important;
+  }
+
+  .cv-layout {
+    display: grid !important;
+    grid-template-columns: 34% 66% !important;
+  }
+
+  .cv-sidebar {
+    padding: 7mm !important;
+    border-right: 1px solid var(--border) !important;
+    border-bottom: 0 !important;
+  }
+
+  .cv-main {
+    gap: 9mm !important;
+    padding: 7mm !important;
+  }
+
+  .cv-footer {
+    padding: 4mm 7mm !important;
+  }
+
+  .cv-main h2,
+  .cv-sidebar h2 {
+    break-after: avoid;
+    page-break-after: avoid;
   }
 
   .cv-timeline-item,
@@ -363,4 +407,3 @@ img {
     text-decoration: none !important;
   }
 }
-

@@ -9,9 +9,17 @@ import { createCvUpdatePayload, normalizeCvData } from "@/lib/cv";
 import type { CvData, CvSkillGroup, CvTimelineItem } from "@/types/cv";
 
 const ADMIN_USER_ID = "785f79e8-223a-41ea-a52d-dead8e2bf383";
-const CV_SELECT = "id,full_name,nickname,headline,summary,location,email,website,avatar_url,experience,education,skills,interests,is_published,updated_at";
+const CV_SELECT =
+  "id,full_name,nickname,headline,summary,location,email,website,avatar_url,experience,education,skills,interests,is_published,updated_at";
+const CV_CONFLICT_ERROR = "CV_STALE_VERSION";
 
 type TimelineSection = "experience" | "education";
+type TimelineKind = "experience" | "project" | "education";
+
+type IndexedTimelineItem = {
+  item: CvTimelineItem;
+  sourceIndex: number;
+};
 
 type CvPageProps = {
   initialCv: CvData | null;
@@ -38,7 +46,9 @@ function linesToList(value: string) {
 function safeWebsite(value: string) {
   try {
     const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:" ? url.href : null;
+    return url.protocol === "https:" || url.protocol === "http:"
+      ? url.href
+      : null;
   } catch {
     return null;
   }
@@ -56,13 +66,45 @@ function safeAvatar(value: string | null) {
   }
 }
 
+function isTimelineKind(
+  item: CvTimelineItem,
+  section: TimelineSection,
+  kind: TimelineKind,
+) {
+  if (section === "education") return kind === "education";
+  const isProject = item.kind === "project" || item.id.startsWith("project-");
+  return kind === "project" ? isProject : !isProject;
+}
+
+function getTimelineItems(
+  items: CvTimelineItem[],
+  section: TimelineSection,
+  kind: TimelineKind,
+): IndexedTimelineItem[] {
+  return items
+    .map((item, sourceIndex) => ({ item, sourceIndex }))
+    .filter(({ item }) => isTimelineKind(item, section, kind));
+}
+
+function formatUpdatedDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  return new Intl.DateTimeFormat("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "Asia/Ho_Chi_Minh",
+  }).format(date);
+}
+
 export default function CvPage({ initialCv }: CvPageProps) {
   const { user, role, loading: authLoading } = useUser();
   const { showToast } = useToast();
 
   const [cv, setCv] = useState<CvData | null>(initialCv);
   const [draft, setDraft] = useState<CvData | null>(
-    initialCv ? cloneCv(initialCv) : null
+    initialCv ? cloneCv(initialCv) : null,
   );
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -73,7 +115,7 @@ export default function CvPage({ initialCv }: CvPageProps) {
   const data = editing ? draft : cv;
   const isDirty = useMemo(
     () => Boolean(cv && draft && JSON.stringify(cv) !== JSON.stringify(draft)),
-    [cv, draft]
+    [cv, draft],
   );
 
   useEffect(() => {
@@ -85,6 +127,19 @@ export default function CvPage({ initialCv }: CvPageProps) {
   useEffect(() => {
     setAvatarFailed(false);
   }, [data?.avatar_url]);
+
+  useEffect(() => {
+    if (!editing || !isDirty) return;
+
+    const preventAccidentalClose = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", preventAccidentalClose);
+    return () =>
+      window.removeEventListener("beforeunload", preventAccidentalClose);
+  }, [editing, isDirty]);
 
   if (!data) {
     return (
@@ -104,7 +159,7 @@ export default function CvPage({ initialCv }: CvPageProps) {
 
   const updateField = <Key extends keyof CvData>(
     key: Key,
-    value: CvData[Key]
+    value: CvData[Key],
   ) => {
     setDraft((current) => (current ? { ...current, [key]: value } : current));
   };
@@ -112,27 +167,29 @@ export default function CvPage({ initialCv }: CvPageProps) {
   const updateTimeline = (
     section: TimelineSection,
     index: number,
-    patch: Partial<CvTimelineItem>
+    patch: Partial<CvTimelineItem>,
   ) => {
     setDraft((current) =>
       current
         ? {
             ...current,
             [section]: current[section].map((item, itemIndex) =>
-              itemIndex === index ? { ...item, ...patch } : item
+              itemIndex === index ? { ...item, ...patch } : item,
             ),
           }
-        : current
+        : current,
     );
   };
 
-  const addTimeline = (section: TimelineSection) => {
+  const addTimeline = (section: TimelineSection, kind: TimelineKind) => {
     const item: CvTimelineItem = {
-      id: createId(section),
+      id: createId(kind === "project" ? "project" : section),
+      ...(kind === "project" ? { kind: "project" as const } : {}),
       period: "",
       title: "",
       organization: "",
       location: "",
+      ...(kind === "project" ? { url: "" } : {}),
       description: "",
       highlights: [],
     };
@@ -140,51 +197,61 @@ export default function CvPage({ initialCv }: CvPageProps) {
     setDraft((current) =>
       current
         ? { ...current, [section]: [...current[section], item] }
-        : current
+        : current,
     );
   };
 
   const removeTimeline = (section: TimelineSection, index: number) => {
+    const item = draft?.[section][index];
+    const label = item?.title.trim() || "mục này";
+    if (!window.confirm(`Xoá “${label}” khỏi bản nháp?`)) return;
+
     setDraft((current) =>
       current
         ? {
             ...current,
             [section]: current[section].filter(
-              (_, itemIndex) => itemIndex !== index
+              (_, itemIndex) => itemIndex !== index,
             ),
           }
-        : current
+        : current,
     );
   };
 
   const moveTimeline = (
     section: TimelineSection,
     index: number,
-    direction: -1 | 1
+    direction: -1 | 1,
+    kind: TimelineKind,
   ) => {
     setDraft((current) => {
       if (!current) return current;
       const next = [...current[section]];
-      const destination = index + direction;
-      if (destination < 0 || destination >= next.length) return current;
+      const matchingIndexes = next.reduce<number[]>(
+        (indexes, item, itemIndex) => {
+          if (isTimelineKind(item, section, kind)) indexes.push(itemIndex);
+          return indexes;
+        },
+        [],
+      );
+      const visibleIndex = matchingIndexes.indexOf(index);
+      const destination = matchingIndexes[visibleIndex + direction];
+      if (visibleIndex < 0 || destination === undefined) return current;
       [next[index], next[destination]] = [next[destination], next[index]];
       return { ...current, [section]: next };
     });
   };
 
-  const updateSkill = (
-    index: number,
-    patch: Partial<CvSkillGroup>
-  ) => {
+  const updateSkill = (index: number, patch: Partial<CvSkillGroup>) => {
     setDraft((current) =>
       current
         ? {
             ...current,
             skills: current.skills.map((group, groupIndex) =>
-              groupIndex === index ? { ...group, ...patch } : group
+              groupIndex === index ? { ...group, ...patch } : group,
             ),
           }
-        : current
+        : current,
     );
   };
 
@@ -203,20 +270,23 @@ export default function CvPage({ initialCv }: CvPageProps) {
               },
             ],
           }
-        : current
+        : current,
     );
   };
 
   const removeSkill = (index: number) => {
+    const label = draft?.skills[index]?.title.trim() || "nhóm kỹ năng này";
+    if (!window.confirm(`Xoá “${label}” khỏi bản nháp?`)) return;
+
     setDraft((current) =>
       current
         ? {
             ...current,
             skills: current.skills.filter(
-              (_, groupIndex) => groupIndex !== index
+              (_, groupIndex) => groupIndex !== index,
             ),
           }
-        : current
+        : current,
     );
   };
 
@@ -246,10 +316,31 @@ export default function CvPage({ initialCv }: CvPageProps) {
     setEditing(false);
   };
 
-  const saveCv = async () => {
-    if (!isAdmin || !draft || saving) return;
+  const downloadCvBackup = () => {
+    if (!cv) return;
 
-    if (!draft.full_name.trim() || !draft.headline.trim() || !draft.summary.trim()) {
+    const file = new Blob([JSON.stringify(cv, null, 2)], {
+      type: "application/json;charset=utf-8",
+    });
+    const url = URL.createObjectURL(file);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `cv-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    showToast("Đã tạo bản sao dữ liệu CV.", "success");
+  };
+
+  const saveCv = async () => {
+    if (!isAdmin || !cv || !draft || saving) return;
+
+    if (
+      !draft.full_name.trim() ||
+      !draft.headline.trim() ||
+      !draft.summary.trim()
+    ) {
       showToast("Vui lòng nhập đủ tên, tiêu đề và phần giới thiệu.", "warning");
       return;
     }
@@ -269,6 +360,14 @@ export default function CvPage({ initialCv }: CvPageProps) {
       return;
     }
 
+    const hasInvalidProjectUrl = draft.experience.some(
+      (item) => item.url && !safeWebsite(item.url),
+    );
+    if (hasInvalidProjectUrl) {
+      showToast("Liên kết dự án chưa đúng định dạng URL.", "warning");
+      return;
+    }
+
     setSaving(true);
 
     try {
@@ -277,10 +376,12 @@ export default function CvPage({ initialCv }: CvPageProps) {
         .from("cv")
         .update(payload)
         .eq("id", 1)
+        .eq("updated_at", cv.updated_at)
         .select(CV_SELECT)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+      if (!saved) throw new Error(CV_CONFLICT_ERROR);
 
       const normalized = normalizeCvData(saved);
       if (!normalized) throw new Error("Dữ liệu phản hồi không hợp lệ.");
@@ -291,7 +392,14 @@ export default function CvPage({ initialCv }: CvPageProps) {
       showToast("Đã cập nhật CV.", "success");
     } catch (error) {
       console.error("CV update failed:", error);
-      showToast("Không thể lưu CV lúc này.", "error");
+      if (error instanceof Error && error.message === CV_CONFLICT_ERROR) {
+        showToast(
+          "CV đã được cập nhật ở tab khác. Hãy tải lại trang trước khi lưu tiếp.",
+          "warning",
+        );
+      } else {
+        showToast("Không thể lưu CV lúc này.", "error");
+      }
     } finally {
       setSaving(false);
     }
@@ -310,22 +418,36 @@ export default function CvPage({ initialCv }: CvPageProps) {
     .slice(-2)
     .map((part) => part.charAt(0).toUpperCase())
     .join("");
+  const experienceItems = getTimelineItems(
+    data.experience,
+    "experience",
+    "experience",
+  );
+  const projectItems = getTimelineItems(
+    data.experience,
+    "experience",
+    "project",
+  );
+  const educationItems = getTimelineItems(
+    data.education,
+    "education",
+    "education",
+  );
+  const updatedDate = formatUpdatedDate(data.updated_at);
 
   return (
     <main className="cv-page min-h-screen px-3 pb-28 pt-20 sm:px-5 sm:pt-24 md:pb-10">
-      <form
-        onSubmit={handleSubmit}
-        className="mx-auto w-full max-w-6xl"
-      >
+      <form onSubmit={handleSubmit} className="mx-auto w-full max-w-6xl">
         <div className="cv-no-print mb-3 flex min-h-11 items-center justify-end gap-2">
           {!editing && (
             <button
               type="button"
               onClick={() => window.print()}
               className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground/75 shadow-sm transition hover:bg-muted hover:text-foreground active:scale-95"
+              title="Mở hộp thoại in hoặc lưu CV dưới dạng PDF"
             >
               <i className="fa-duotone fa-print" aria-hidden="true" />
-              <span className="hidden sm:inline">In CV</span>
+              <span className="hidden sm:inline">In / Lưu PDF</span>
             </button>
           )}
 
@@ -344,6 +466,16 @@ export default function CvPage({ initialCv }: CvPageProps) {
             <>
               <button
                 type="button"
+                onClick={downloadCvBackup}
+                disabled={saving}
+                className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground/75 transition hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                title="Tải bản sao JSON của dữ liệu đang được lưu"
+              >
+                <i className="fa-duotone fa-download" aria-hidden="true" />
+                <span className="hidden sm:inline">Sao lưu</span>
+              </button>
+              <button
+                type="button"
                 onClick={cancelEditing}
                 disabled={saving}
                 className="cursor-pointer rounded-full border border-border bg-card px-4 py-2.5 text-sm font-medium transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
@@ -358,7 +490,7 @@ export default function CvPage({ initialCv }: CvPageProps) {
                 <i
                   className={cn(
                     "fa-duotone",
-                    saving ? "fa-spinner-third fa-spin" : "fa-floppy-disk"
+                    saving ? "fa-spinner-third fa-spin" : "fa-floppy-disk",
                   )}
                   aria-hidden="true"
                 />
@@ -369,7 +501,7 @@ export default function CvPage({ initialCv }: CvPageProps) {
         </div>
 
         <article className="cv-sheet overflow-hidden rounded-2xl border border-border bg-card shadow-[0_20px_60px_rgba(0,0,0,0.06)] sm:rounded-3xl">
-          <header className="relative overflow-hidden border-b border-border px-5 py-8 sm:px-10 sm:py-11">
+          <header className="cv-header relative overflow-hidden border-b border-border px-5 py-8 sm:px-10 sm:py-11">
             <div
               className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,var(--color-muted),transparent_48%)] opacity-80"
               aria-hidden="true"
@@ -377,7 +509,7 @@ export default function CvPage({ initialCv }: CvPageProps) {
 
             <div className="relative flex flex-col gap-6 sm:flex-row sm:items-start">
               <div className="shrink-0">
-                <div className="grid size-24 overflow-hidden rounded-[1.75rem] bg-primary text-2xl font-bold text-primary-foreground shadow-sm sm:size-28">
+                <div className="cv-avatar grid size-24 overflow-hidden rounded-[1.75rem] bg-primary text-2xl font-bold text-primary-foreground shadow-sm sm:size-28">
                   {avatarUrl && !avatarFailed ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -420,7 +552,7 @@ export default function CvPage({ initialCv }: CvPageProps) {
                     }
                     className={cn(
                       inputClass,
-                      "mb-3 text-2xl font-bold tracking-tight sm:text-4xl"
+                      "mb-3 text-2xl font-bold tracking-tight sm:text-4xl",
                     )}
                   />
                 ) : (
@@ -451,7 +583,10 @@ export default function CvPage({ initialCv }: CvPageProps) {
 
                   {!editing && data.location && (
                     <span className="inline-flex items-center gap-1.5 px-1">
-                      <i className="fa-duotone fa-location-dot" aria-hidden="true" />
+                      <i
+                        className="fa-duotone fa-location-dot"
+                        aria-hidden="true"
+                      />
                       {data.location}
                     </span>
                   )}
@@ -468,7 +603,7 @@ export default function CvPage({ initialCv }: CvPageProps) {
                     }
                     className={cn(
                       inputClass,
-                      "mt-4 text-lg font-medium sm:text-xl"
+                      "mt-4 text-lg font-medium sm:text-xl",
                     )}
                   />
                 ) : (
@@ -490,7 +625,7 @@ export default function CvPage({ initialCv }: CvPageProps) {
                     className={cn(inputClass, "mt-5 resize-y leading-7")}
                   />
                 ) : (
-                  <p className="mt-5 max-w-3xl whitespace-pre-line text-base leading-7 text-muted-foreground">
+                  <p className="cv-summary mt-5 max-w-3xl whitespace-pre-line text-base leading-7 text-muted-foreground">
                     {data.summary}
                   </p>
                 )}
@@ -498,8 +633,8 @@ export default function CvPage({ initialCv }: CvPageProps) {
             </div>
           </header>
 
-          <div className="grid lg:grid-cols-[0.78fr_1.45fr]">
-            <aside className="space-y-8 border-b border-border bg-muted/20 p-5 sm:p-8 lg:border-b-0 lg:border-r lg:p-9">
+          <div className="cv-layout grid lg:grid-cols-[0.78fr_1.45fr]">
+            <aside className="cv-sidebar space-y-8 border-b border-border bg-muted/20 p-5 sm:p-8 lg:border-b-0 lg:border-r lg:p-9">
               <CvSectionTitle icon="fa-address-card" title="Thông tin" />
 
               <div className="space-y-3">
@@ -551,7 +686,9 @@ export default function CvPage({ initialCv }: CvPageProps) {
                           rel="noopener noreferrer"
                           className="break-all font-medium text-foreground hover:underline"
                         >
-                          {data.website.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
+                          {data.website
+                            .replace(/^https?:\/\/(www\.)?/, "")
+                            .replace(/\/$/, "")}
                         </a>
                       </ContactItem>
                     )}
@@ -559,111 +696,152 @@ export default function CvPage({ initialCv }: CvPageProps) {
                 )}
               </div>
 
-              <div>
-                <CvSectionTitle icon="fa-sparkles" title="Kỹ năng" />
-                <div className="mt-4 space-y-5">
-                  {data.skills.map((group, index) => (
-                    <div key={group.id} className="cv-skill-group">
-                      <div className="flex items-center gap-2">
-                        <i
-                          className={cn(
-                            "fa-duotone w-5 text-center text-muted-foreground",
-                            group.icon
+              {(editing || data.skills.length > 0) && (
+                <div>
+                  <CvSectionTitle icon="fa-sparkles" title="Kỹ năng" />
+                  <div className="mt-4 space-y-5">
+                    {data.skills.map((group, index) => (
+                      <div key={group.id} className="cv-skill-group">
+                        <div className="flex items-center gap-2">
+                          <i
+                            className={cn(
+                              "fa-duotone w-5 text-center text-muted-foreground",
+                              group.icon,
+                            )}
+                            aria-hidden="true"
+                          />
+                          {editing ? (
+                            <input
+                              maxLength={120}
+                              aria-label={"Tên nhóm kỹ năng " + (index + 1)}
+                              value={group.title}
+                              onChange={(event) =>
+                                updateSkill(index, {
+                                  title: event.target.value,
+                                })
+                              }
+                              className={cn(
+                                inputClass,
+                                "py-2 text-sm font-semibold",
+                              )}
+                            />
+                          ) : (
+                            <h3 className="text-sm font-semibold">
+                              {group.title}
+                            </h3>
                           )}
-                          aria-hidden="true"
-                        />
+
+                          {editing && (
+                            <ItemControls
+                              index={index}
+                              total={data.skills.length}
+                              onMove={(direction) =>
+                                moveSkill(index, direction)
+                              }
+                              onRemove={() => removeSkill(index)}
+                            />
+                          )}
+                        </div>
+
                         {editing ? (
-                          <input
-                            maxLength={120}
-                            aria-label={"Tên nhóm kỹ năng " + (index + 1)}
-                            value={group.title}
+                          <textarea
+                            rows={5}
+                            aria-label={"Danh sách kỹ năng " + (index + 1)}
+                            value={group.items.join("\n")}
                             onChange={(event) =>
-                              updateSkill(index, { title: event.target.value })
+                              updateSkill(index, {
+                                items: linesToList(event.target.value),
+                              })
                             }
-                            className={cn(inputClass, "py-2 text-sm font-semibold")}
+                            className={cn(
+                              inputClass,
+                              "mt-2 resize-y text-sm leading-6",
+                            )}
+                            placeholder="Mỗi kỹ năng một dòng"
                           />
                         ) : (
-                          <h3 className="text-sm font-semibold">{group.title}</h3>
-                        )}
-
-                        {editing && (
-                          <ItemControls
-                            index={index}
-                            total={data.skills.length}
-                            onMove={(direction) => moveSkill(index, direction)}
-                            onRemove={() => removeSkill(index)}
-                          />
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {group.items.map((item) => (
+                              <span
+                                key={item}
+                                className="rounded-lg border border-border bg-card px-2.5 py-1.5 text-sm leading-5 text-foreground/75"
+                              >
+                                {item}
+                              </span>
+                            ))}
+                          </div>
                         )}
                       </div>
+                    ))}
 
-                      {editing ? (
-                        <textarea
-                          rows={5}
-                          aria-label={"Danh sách kỹ năng " + (index + 1)}
-                          value={group.items.join("\n")}
-                          onChange={(event) =>
-                            updateSkill(index, {
-                              items: linesToList(event.target.value),
-                            })
-                          }
-                          className={cn(inputClass, "mt-2 resize-y text-sm leading-6")}
-                          placeholder="Mỗi kỹ năng một dòng"
-                        />
-                      ) : (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {group.items.map((item) => (
-                            <span
-                              key={item}
-                              className="rounded-lg border border-border bg-card px-2.5 py-1.5 text-sm leading-5 text-foreground/75"
-                            >
-                              {item}
-                            </span>
-                          ))}
-                        </div>
+                    {editing && (
+                      <AddItemButton
+                        label="Thêm nhóm kỹ năng"
+                        onClick={addSkill}
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {(editing || data.interests.length > 0) && (
+                <div>
+                  <CvSectionTitle icon="fa-heart" title="Sở thích" />
+                  {editing ? (
+                    <textarea
+                      rows={7}
+                      aria-label="Danh sách sở thích"
+                      value={data.interests.join("\n")}
+                      onChange={(event) =>
+                        updateField(
+                          "interests",
+                          linesToList(event.target.value),
+                        )
+                      }
+                      className={cn(
+                        inputClass,
+                        "mt-4 resize-y text-sm leading-6",
                       )}
+                      placeholder="Mỗi sở thích một dòng"
+                    />
+                  ) : (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {data.interests.map((interest) => (
+                        <span
+                          key={interest}
+                          className="rounded-full bg-muted px-3 py-1.5 text-sm text-foreground/75"
+                        >
+                          {interest}
+                        </span>
+                      ))}
                     </div>
-                  ))}
-
-                  {editing && (
-                    <AddItemButton label="Thêm nhóm kỹ năng" onClick={addSkill} />
                   )}
                 </div>
-              </div>
-
-              <div>
-                <CvSectionTitle icon="fa-heart" title="Sở thích" />
-                {editing ? (
-                  <textarea
-                    rows={7}
-                    aria-label="Danh sách sở thích"
-                    value={data.interests.join("\n")}
-                    onChange={(event) =>
-                      updateField("interests", linesToList(event.target.value))
-                    }
-                    className={cn(inputClass, "mt-4 resize-y text-sm leading-6")}
-                    placeholder="Mỗi sở thích một dòng"
-                  />
-                ) : (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {data.interests.map((interest) => (
-                      <span
-                        key={interest}
-                        className="rounded-full bg-muted px-3 py-1.5 text-sm text-foreground/75"
-                      >
-                        {interest}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
+              )}
             </aside>
 
-            <div className="space-y-10 p-5 sm:p-8 lg:p-10">
+            <div className="cv-main space-y-10 p-5 sm:p-8 lg:p-10">
               <Timeline
                 title="Kinh nghiệm và hoạt động"
                 icon="fa-briefcase"
                 section="experience"
-                items={data.experience}
+                kind="experience"
+                addLabel="Thêm kinh nghiệm"
+                items={experienceItems}
+                editing={editing}
+                onUpdate={updateTimeline}
+                onAdd={addTimeline}
+                onRemove={removeTimeline}
+                onMove={moveTimeline}
+              />
+
+              <Timeline
+                title="Dự án tiêu biểu"
+                icon="fa-code"
+                section="experience"
+                kind="project"
+                addLabel="Thêm dự án"
+                items={projectItems}
                 editing={editing}
                 onUpdate={updateTimeline}
                 onAdd={addTimeline}
@@ -675,7 +853,9 @@ export default function CvPage({ initialCv }: CvPageProps) {
                 title="Học vấn"
                 icon="fa-graduation-cap"
                 section="education"
-                items={data.education}
+                kind="education"
+                addLabel="Thêm học vấn"
+                items={educationItems}
                 editing={editing}
                 onUpdate={updateTimeline}
                 onAdd={addTimeline}
@@ -684,6 +864,11 @@ export default function CvPage({ initialCv }: CvPageProps) {
               />
             </div>
           </div>
+
+          <footer className="cv-footer flex flex-col gap-1 border-t border-border px-5 py-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-10">
+            <span>vutruong.vn/cv</span>
+            {updatedDate && <span>Cập nhật lần cuối: {updatedDate}</span>}
+          </footer>
         </article>
       </form>
     </main>
@@ -756,6 +941,8 @@ function Timeline({
   title,
   icon,
   section,
+  kind,
+  addLabel,
   items,
   editing,
   onUpdate,
@@ -766,166 +953,211 @@ function Timeline({
   title: string;
   icon: string;
   section: TimelineSection;
-  items: CvTimelineItem[];
+  kind: TimelineKind;
+  addLabel: string;
+  items: IndexedTimelineItem[];
   editing: boolean;
   onUpdate: (
     section: TimelineSection,
     index: number,
-    patch: Partial<CvTimelineItem>
+    patch: Partial<CvTimelineItem>,
   ) => void;
-  onAdd: (section: TimelineSection) => void;
+  onAdd: (section: TimelineSection, kind: TimelineKind) => void;
   onRemove: (section: TimelineSection, index: number) => void;
   onMove: (
     section: TimelineSection,
     index: number,
-    direction: -1 | 1
+    direction: -1 | 1,
+    kind: TimelineKind,
   ) => void;
 }) {
+  if (!editing && items.length === 0) return null;
+
   return (
     <section>
       <CvSectionTitle icon={icon} title={title} />
 
-      <div className="relative mt-6 space-y-7 before:absolute before:bottom-2 before:left-[7px] before:top-2 before:w-px before:bg-border">
-        {items.map((item, index) => (
-          <article
-            key={item.id}
-            className="cv-timeline-item relative pl-8"
-          >
-            <span
-              className="absolute left-0 top-2 size-[15px] rounded-full border-[4px] border-card bg-foreground/60 ring-1 ring-border"
-              aria-hidden="true"
-            />
+      {items.length > 0 && (
+        <div className="relative mt-6 space-y-7 before:absolute before:bottom-2 before:left-[7px] before:top-2 before:w-px before:bg-border">
+          {items.map(({ item, sourceIndex }, index) => (
+            <article key={item.id} className="cv-timeline-item relative pl-8">
+              <span
+                className="absolute left-0 top-2 size-[15px] rounded-full border-[4px] border-card bg-foreground/60 ring-1 ring-border"
+                aria-hidden="true"
+              />
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-              {editing ? (
-                <input
-                  maxLength={80}
-                  aria-label={"Thời gian " + (index + 1)}
-                  value={item.period}
-                  onChange={(event) =>
-                    onUpdate(section, index, { period: event.target.value })
-                  }
-                  className={cn(inputClass, "w-full py-2 text-sm sm:max-w-40")}
-                  placeholder="Thời gian"
-                />
-              ) : (
-                <span className="w-fit rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">
-                  {item.period}
-                </span>
-              )}
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                {editing ? (
+                  <input
+                    maxLength={80}
+                    aria-label={"Thời gian " + (index + 1)}
+                    value={item.period}
+                    onChange={(event) =>
+                      onUpdate(section, sourceIndex, {
+                        period: event.target.value,
+                      })
+                    }
+                    className={cn(
+                      inputClass,
+                      "w-full py-2 text-sm sm:max-w-40",
+                    )}
+                    placeholder="Thời gian"
+                  />
+                ) : (
+                  <span className="w-fit rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">
+                    {item.period}
+                  </span>
+                )}
 
-              {editing && (
-                <ItemControls
-                  index={index}
-                  total={items.length}
-                  onMove={(direction) => onMove(section, index, direction)}
-                  onRemove={() => onRemove(section, index)}
-                />
-              )}
-            </div>
-
-            {editing ? (
-              <div className="mt-3 space-y-2.5">
-                <input
-                  required
-                  maxLength={160}
-                  aria-label={"Vai trò " + (index + 1)}
-                  value={item.title}
-                  onChange={(event) =>
-                    onUpdate(section, index, { title: event.target.value })
-                  }
-                  className={cn(inputClass, "font-semibold")}
-                  placeholder="Vai trò hoặc chương trình"
-                />
-                <input
-                  maxLength={200}
-                  aria-label={"Đơn vị " + (index + 1)}
-                  value={item.organization}
-                  onChange={(event) =>
-                    onUpdate(section, index, {
-                      organization: event.target.value,
-                    })
-                  }
-                  className={inputClass}
-                  placeholder="Đơn vị"
-                />
-                <input
-                  maxLength={160}
-                  aria-label={"Địa điểm " + (index + 1)}
-                  value={item.location}
-                  onChange={(event) =>
-                    onUpdate(section, index, { location: event.target.value })
-                  }
-                  className={inputClass}
-                  placeholder="Địa điểm"
-                />
-                <textarea
-                  rows={3}
-                  maxLength={1500}
-                  aria-label={"Mô tả " + (index + 1)}
-                  value={item.description}
-                  onChange={(event) =>
-                    onUpdate(section, index, {
-                      description: event.target.value,
-                    })
-                  }
-                  className={cn(inputClass, "resize-y leading-6")}
-                  placeholder="Mô tả"
-                />
-                <textarea
-                  rows={4}
-                  aria-label={"Điểm nổi bật " + (index + 1)}
-                  value={item.highlights.join("\n")}
-                  onChange={(event) =>
-                    onUpdate(section, index, {
-                      highlights: linesToList(event.target.value),
-                    })
-                  }
-                  className={cn(inputClass, "resize-y text-sm leading-6")}
-                  placeholder="Mỗi điểm nổi bật một dòng"
-                />
+                {editing && (
+                  <ItemControls
+                    index={index}
+                    total={items.length}
+                    onMove={(direction) =>
+                      onMove(section, sourceIndex, direction, kind)
+                    }
+                    onRemove={() => onRemove(section, sourceIndex)}
+                  />
+                )}
               </div>
-            ) : (
-              <>
-                <h3 className="mt-3 text-lg font-bold leading-7 text-foreground">
-                  {item.title}
-                </h3>
 
-                {(item.organization || item.location) && (
-                  <p className="mt-1 text-sm font-medium leading-6 text-foreground/70">
-                    {item.organization}
-                    {item.organization && item.location ? " • " : ""}
-                    {item.location}
-                  </p>
-                )}
+              {editing ? (
+                <div className="mt-3 space-y-2.5">
+                  <input
+                    required
+                    maxLength={160}
+                    aria-label={"Vai trò " + (index + 1)}
+                    value={item.title}
+                    onChange={(event) =>
+                      onUpdate(section, sourceIndex, {
+                        title: event.target.value,
+                      })
+                    }
+                    className={cn(inputClass, "font-semibold")}
+                    placeholder="Vai trò hoặc chương trình"
+                  />
+                  <input
+                    maxLength={200}
+                    aria-label={"Đơn vị " + (index + 1)}
+                    value={item.organization}
+                    onChange={(event) =>
+                      onUpdate(section, sourceIndex, {
+                        organization: event.target.value,
+                      })
+                    }
+                    className={inputClass}
+                    placeholder="Đơn vị"
+                  />
+                  <input
+                    maxLength={160}
+                    aria-label={"Địa điểm " + (index + 1)}
+                    value={item.location}
+                    onChange={(event) =>
+                      onUpdate(section, sourceIndex, {
+                        location: event.target.value,
+                      })
+                    }
+                    className={inputClass}
+                    placeholder="Địa điểm"
+                  />
+                  {kind === "project" && (
+                    <input
+                      type="url"
+                      maxLength={500}
+                      aria-label={"Liên kết dự án " + (index + 1)}
+                      value={item.url ?? ""}
+                      onChange={(event) =>
+                        onUpdate(section, sourceIndex, {
+                          url: event.target.value,
+                        })
+                      }
+                      className={inputClass}
+                      placeholder="https://..."
+                    />
+                  )}
+                  <textarea
+                    rows={3}
+                    maxLength={1500}
+                    aria-label={"Mô tả " + (index + 1)}
+                    value={item.description}
+                    onChange={(event) =>
+                      onUpdate(section, sourceIndex, {
+                        description: event.target.value,
+                      })
+                    }
+                    className={cn(inputClass, "resize-y leading-6")}
+                    placeholder="Mô tả"
+                  />
+                  <textarea
+                    rows={4}
+                    aria-label={"Điểm nổi bật " + (index + 1)}
+                    value={item.highlights.join("\n")}
+                    onChange={(event) =>
+                      onUpdate(section, sourceIndex, {
+                        highlights: linesToList(event.target.value),
+                      })
+                    }
+                    className={cn(inputClass, "resize-y text-sm leading-6")}
+                    placeholder="Mỗi điểm nổi bật một dòng"
+                  />
+                </div>
+              ) : (
+                <>
+                  <h3 className="mt-3 text-lg font-bold leading-7 text-foreground">
+                    {item.title}
+                  </h3>
 
-                {item.description && (
-                  <p className="mt-3 whitespace-pre-line text-base leading-7 text-muted-foreground">
-                    {item.description}
-                  </p>
-                )}
+                  {(item.organization || item.location) && (
+                    <p className="mt-1 text-sm font-medium leading-6 text-foreground/70">
+                      {item.organization}
+                      {item.organization && item.location ? " • " : ""}
+                      {item.location}
+                    </p>
+                  )}
 
-                {item.highlights.length > 0 && (
-                  <ul className="mt-3 space-y-2 text-sm leading-6 text-foreground/75">
-                    {item.highlights.map((highlight) => (
-                      <li key={highlight} className="flex gap-2.5">
-                        <span className="mt-[0.6rem] size-1.5 shrink-0 rounded-full bg-foreground/40" />
-                        <span>{highlight}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </>
-            )}
-          </article>
-        ))}
-      </div>
+                  {kind === "project" && item.url && safeWebsite(item.url) && (
+                    <a
+                      href={safeWebsite(item.url) ?? undefined}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground underline-offset-4 hover:underline"
+                    >
+                      Xem dự án
+                      <i
+                        className="fa-duotone fa-arrow-up-right-from-square text-xs"
+                        aria-hidden="true"
+                      />
+                    </a>
+                  )}
+
+                  {item.description && (
+                    <p className="mt-3 whitespace-pre-line text-base leading-7 text-muted-foreground">
+                      {item.description}
+                    </p>
+                  )}
+
+                  {item.highlights.length > 0 && (
+                    <ul className="mt-3 space-y-2 text-sm leading-6 text-foreground/75">
+                      {item.highlights.map((highlight) => (
+                        <li key={highlight} className="flex gap-2.5">
+                          <span className="mt-[0.6rem] size-1.5 shrink-0 rounded-full bg-foreground/40" />
+                          <span>{highlight}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              )}
+            </article>
+          ))}
+        </div>
+      )}
 
       {editing && (
         <div className="mt-6 pl-8">
           <AddItemButton
-            label={"Thêm " + title.toLowerCase()}
-            onClick={() => onAdd(section)}
+            label={addLabel}
+            onClick={() => onAdd(section, kind)}
           />
         </div>
       )}
@@ -992,7 +1224,7 @@ function SmallIconButton({
         "grid size-9 cursor-pointer place-items-center rounded-full transition disabled:cursor-not-allowed disabled:opacity-25",
         danger
           ? "text-red-600 hover:bg-red-500/10 dark:text-red-300"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground",
       )}
     >
       <i className={cn("fa-duotone", icon)} aria-hidden="true" />
