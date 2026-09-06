@@ -313,3 +313,54 @@ img {
     border-radius: 1.5rem;
   }
 }
+
+@media print {
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  body:has(.cv-page) {
+    --background: #ffffff;
+    --foreground: #161616;
+    --card: #ffffff;
+    --card-foreground: #161616;
+    --muted: #f2f3f5;
+    --muted-foreground: #555b65;
+    --border: #dfe2e7;
+    --input: #dfe2e7;
+    background: #ffffff !important;
+    color: #161616 !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  body:has(.cv-page) .topNavbar,
+  body:has(.cv-page) nav[aria-label="Điều hướng mobile"],
+  body:has(.cv-page) .cv-no-print {
+    display: none !important;
+  }
+
+  .cv-page {
+    min-height: 0 !important;
+    padding: 0 !important;
+  }
+
+  .cv-sheet {
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .cv-timeline-item,
+  .cv-skill-group {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .cv-sheet a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+}
+
