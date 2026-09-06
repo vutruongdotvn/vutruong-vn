@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "CV • Vũ Trường",
+    absolute: "CV",
   },
   description: "Hồ sơ năng lực và kinh nghiệm của Vũ Trường.",
   robots: "noindex, nofollow, noarchive, nosnippet, noimageindex",
