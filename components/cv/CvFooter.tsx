@@ -1,6 +1,6 @@
 export default function CvFooter({ updatedDate }: { updatedDate: string }) {
   return (
-    <footer className="cv-footer relative isolate overflow-hidden rounded-2xl border border-border bg-card shadow-[0_10px_30px_rgba(15,23,42,0.04)] p-3 sm:p-4">
+    <footer className="cv-footer relative isolate overflow-hidden sm:rounded-2xl sm:border border-border bg-card shadow-[0_10px_30px_rgba(15,23,42,0.04)] p-3 sm:p-4">
       <div
         className="pointer-events-none absolute -right-16 -top-20 -z-10 size-48 rounded-full border border-foreground/[0.05]"
         aria-hidden="true"

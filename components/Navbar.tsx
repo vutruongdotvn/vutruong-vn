@@ -331,7 +331,7 @@ export default function Navbar() {
         >
           <div
             className={`
-              relative overflow-visible border border-border bg-card/90 transition-all duration-900 ease-in-out hover:bg-card
+              relative overflow-visible border-b border-border bg-card transition-all duration-900 ease-in-out hover:bg-card
               ${scrolled
                 ? "backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
                 : "shadow-[0_12px_24px_rgba(0,0,0,0.01)]"

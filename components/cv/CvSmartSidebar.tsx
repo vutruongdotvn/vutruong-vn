@@ -23,7 +23,7 @@ export default function CvSmartSidebar({ children }: { children: ReactNode }) {
         <div
           ref={sidebarRef}
           className={[
-            "cv-smart-sidebar space-y-3",
+            "cv-smart-sidebar sm:space-y-3",
             "print:!static print:!inset-auto print:!w-auto print:space-y-[4mm]",
             className,
           ]

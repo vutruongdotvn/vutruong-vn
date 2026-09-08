@@ -33,7 +33,7 @@ export default function CvProfileCard({
   return (
     <section
       aria-label="Thông tin cá nhân"
-      className="cv-profile-card overflow-hidden rounded-2xl border border-border bg-card shadow-[0_22px_70px_rgba(15,23,42,0.08)]"
+      className="cv-profile-card overflow-hidden sm:rounded-2xl sm:border border-border bg-card shadow-[0_22px_70px_rgba(15,23,42,0.08)]"
     >
       <header className="relative isolate overflow-hidden bg-[#111216] px-5 pb-20 pt-6 text-white sm:px-8 sm:pb-24 sm:pt-8 lg:px-10">
         <div

@@ -145,7 +145,7 @@ function TimelineEntry({
       ? "Dự án / Đơn vị"
       : kind === "education"
         ? "Cơ sở đào tạo"
-        : "Nơi công tác";
+        : "Nơi công tác / làm việc";
   const organizationIcon =
     kind === "project"
       ? "fa-code"
@@ -155,7 +155,7 @@ function TimelineEntry({
 
   return (
     <article className="cv-timeline-entry relative pl-11 sm:pl-12">
-      <span className="absolute left-0 top-0 z-10 grid size-9 place-items-center rounded-full border-4 border-card bg-[#111216] text-xs text-white shadow-md dark:bg-background">
+      <span className="absolute left-0 top-0 z-10 grid size-9 place-items-center rounded-full bg-[#111216] text-xs text-white shadow-md dark:bg-background">
         <i className={cn("fa-duotone", markerIcon)} aria-hidden="true" />
       </span>
 
@@ -273,15 +273,11 @@ function TimelineEntry({
             </div>
           </>
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between gap-3 sm:block">
               {item.period && (
-                <span className="inline-flex max-w-full items-center gap-2 rounded-full bg-muted-foreground/15 border border-black/10 dark:border-border
-                px-5 py-2 text-xs font-bold text-muted-foreground tracking-[0.1em] dark:bg-background">
-                  {/* <i
-                    className="fa-duotone fa-calendar-days shrink-0 text-[0.7rem] opacity-70"
-                    aria-hidden="true"
-                  /> */}
+                <span className="inline-flex rounded-full bg-muted-foreground/15 border border-black/10 dark:border-border
+                px-5 py-1.75 text-xs font-semibold text-slate-700 dark:text-muted-foreground tracking-[0.1em] dark:bg-background">
                   {item.period}
                 </span>
               )}
@@ -340,7 +336,7 @@ function TimelineEntry({
 
               {item.highlights.length > 0 && (
                 <section className="my-3">
-                  {/* <div className="flex items-center gap-2">
+                  {/* <div className="flex items-center gap-2 pb-2">
                     <i
                       className="fa-duotone fa-sparkles text-[0.65rem] text-foreground/40"
                       aria-hidden="true"
@@ -353,14 +349,14 @@ function TimelineEntry({
                     </span>
                   </div> */}
 
-                  <ul className="space-y-2 text-sm leading-6 text-foreground/75">
+                  <ul className="space-y-1 text-sm leading-6 text-foreground/75">
                     {item.highlights.map((highlight, highlightIndex) => (
                       <li
                         key={`${item.id}-highlight-${highlightIndex}`}
                         className="flex items-start gap-2.5"
                       >
                         <i
-                          className="fa-duotone fa-hand-point-right mt-1 shrink-0 text-foreground/35"
+                          className="fa-duotone fa-hand-point-right mt-1.25 shrink-0 text-foreground/35"
                           aria-hidden="true"
                         />
                         <span>{highlight}</span>

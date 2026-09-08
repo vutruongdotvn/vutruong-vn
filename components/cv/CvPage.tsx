@@ -44,7 +44,7 @@ export default function CvPage({ initialCv }: { initialCv: CvData | null }) {
   };
 
   return (
-    <main className="cv-page min-h-screen px-3 py-20 pb-24 sm:pb-4">
+    <main className="cv-page min-h-screen px-0 sm:px-3 py-20 pb-24 sm:pb-4">
       <form onSubmit={handleSubmit} className="mx-auto w-full max-w-6xl">
         <CvToolbar
           isAdmin={editor.isAdmin}
@@ -56,7 +56,7 @@ export default function CvPage({ initialCv }: { initialCv: CvData | null }) {
           onCancel={editor.cancelEditing}
         />
 
-        <div className="cv-document space-y-3">
+        <div className="cv-document sm:space-y-3">
 
           <CvProfileCard
             data={data}
@@ -64,8 +64,8 @@ export default function CvPage({ initialCv }: { initialCv: CvData | null }) {
             onUpdateField={editor.updateField}
           />
 
-          <div className="cv-content-grid grid items-start gap-3 xl:grid-cols-[minmax(0,1.38fr)_minmax(330px,0.62fr)]">
-            <div className="cv-primary-column space-y-3">
+          <div className="cv-content-grid grid items-start sm:gap-3 xl:grid-cols-[minmax(0,1.38fr)_minmax(330px,0.62fr)]">
+            <div className="cv-primary-column sm:space-y-3">
               <CvTimeline
                 title="Kinh nghiệm & hoạt động"
                 eyebrow="Career"

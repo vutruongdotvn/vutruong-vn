@@ -23,9 +23,9 @@ const menuItems = [
     icon: "fa-pen",
   },
   {
-    label: "Secret",
-    href: "/secret",
-    icon: "fa-shield-keyhole",
+    label: "CV",
+    href: "/cv",
+    icon: "fa-briefcase",
   },
 ];
 
@@ -35,7 +35,7 @@ export default function LiquidMenu() {
   const visibleMenuItems =
     role === "admin"
       ? menuItems
-      : menuItems.filter((item) => item.href !== "/secret");
+      : menuItems.filter((item) => item.href !== "/cv");
 
   const isActive = (href: string) => {
     return href === "/"
