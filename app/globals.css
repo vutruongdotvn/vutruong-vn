@@ -313,6 +313,14 @@ img {
   }
 }
 
+.cv-page {
+  background-image: radial-gradient(
+    circle at 50% 0%,
+    color-mix(in oklab, var(--muted) 72%, transparent),
+    transparent 34rem
+  );
+}
+
 @media print {
   @page {
     size: A4;
@@ -344,65 +352,111 @@ img {
   .cv-page {
     min-height: 0 !important;
     padding: 0 !important;
+    background: #ffffff !important;
   }
 
-  .cv-sheet {
+  .cv-document {
     width: 190mm !important;
     max-width: 190mm !important;
     margin: 0 auto !important;
-    border: 0 !important;
-    border-radius: 0 !important;
+  }
+
+  .cv-document > * + * {
+    margin-top: 4mm !important;
+  }
+
+  .cv-cover {
+    padding: 5mm 6mm !important;
+    border-radius: 5mm !important;
     box-shadow: none !important;
   }
 
-  .cv-header {
-    padding: 8mm !important;
+  .cv-profile-card,
+  .cv-section-card {
+    border-color: var(--border) !important;
+    border-radius: 5mm !important;
+    box-shadow: none !important;
+  }
+
+  .cv-profile-card > header,
+  .cv-section-card > header {
+    padding: 4mm 5mm !important;
+  }
+
+  .cv-profile-card > div,
+  .cv-section-card > div {
+    padding: 5mm !important;
   }
 
   .cv-avatar {
-    width: 24mm !important;
-    height: 24mm !important;
-    border-radius: 6mm !important;
+    width: 22mm !important;
+    height: 22mm !important;
+    border-radius: 5mm !important;
   }
 
   .cv-summary {
-    font-size: 9.5pt !important;
+    font-size: 9pt !important;
     line-height: 1.55 !important;
   }
 
-  .cv-layout {
+  .cv-profile-card > div {
     display: grid !important;
-    grid-template-columns: 34% 66% !important;
+    grid-template-columns: 62% 38% !important;
+    gap: 5mm !important;
   }
 
-  .cv-sidebar {
-    padding: 7mm !important;
-    border-right: 1px solid var(--border) !important;
-    border-bottom: 0 !important;
+  .cv-contact-panel {
+    padding: 4mm !important;
+    border-radius: 4mm !important;
   }
 
-  .cv-main {
-    gap: 9mm !important;
-    padding: 7mm !important;
+  .cv-contact-item {
+    padding: 3mm !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
-  .cv-footer {
-    padding: 4mm 7mm !important;
+  .cv-content-grid {
+    display: block !important;
   }
 
-  .cv-main h2,
-  .cv-sidebar h2 {
-    break-after: avoid;
+  .cv-primary-column > * + *,
+  .cv-secondary-column > * + *,
+  .cv-secondary-column {
+    margin-top: 4mm !important;
+  }
+
+  .cv-section-card > header {
+    break-after: avoid-page;
     page-break-after: avoid;
   }
 
+  .cv-timeline-list {
+    margin-top: 0 !important;
+  }
+
+  .cv-timeline-entry {
+    padding-left: 10mm !important;
+  }
+
+  .cv-timeline-entry > div {
+    padding: 4mm !important;
+    border-radius: 4mm !important;
+  }
+
   .cv-timeline-item,
+  .cv-timeline-entry,
   .cv-skill-group {
     break-inside: avoid;
     page-break-inside: avoid;
   }
 
-  .cv-sheet a {
+  .cv-footer {
+    padding: 3mm 5mm !important;
+    border-radius: 4mm !important;
+  }
+
+  .cv-document a {
     color: inherit !important;
     text-decoration: none !important;
   }
