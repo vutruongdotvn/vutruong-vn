@@ -69,10 +69,10 @@ export default function ThemeSwitcher() {
                     transition={{
                       type: "spring",
                       stiffness: 450,
-                      damping: 35,
+                      damping: 20,
                       mass: 0.7,
                     }}
-                    className="pointer-events-none absolute inset-0 rounded-full bg-background shadow-sm ring-1 ring-black/5 dark:bg-white/20 dark:ring-white/10"
+                    className="pointer-events-none absolute inset-0 rounded-full bg-background shadow-sm dark:bg-white/20"
                     aria-hidden="true"
                   />
                 )}

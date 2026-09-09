@@ -793,12 +793,12 @@ export default function ProfileMediaEditorModal({
                     ))}
                   </div>
 
-                  <div className="mb-3 flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
+                  {/* <div className="mb-3 flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
                     <span>Tải tối đa 10 ảnh mỗi lần</span>
                     {assets.length > 0 && (
                       <span>Đã tải {assets.length} ảnh</span>
                     )}
-                  </div>
+                  </div> */}
 
                   {loadingLibrary && assets.length === 0 ? (
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4">
@@ -948,17 +948,17 @@ export default function ProfileMediaEditorModal({
                           })
                         }
                         disabled={loadingLibrary || saving}
-                        className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-muted px-5 py-2.5 text-sm font-medium text-foreground/75 transition hover:bg-secondary active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-muted px-5 py-2.5 text-sm font-medium text-foreground/75 hover:bg-secondary active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <i
                           className={`fad ${
                             loadingLibrary
                               ? "fa-spinner-third fa-spin"
-                              : "fa-images"
+                              : "fa-chevron-down"
                           }`}
                           aria-hidden="true"
                         />
-                        {loadingLibrary ? "Đang tải" : "Xem thêm 10 ảnh"}
+                        {loadingLibrary ? "Đang tải" : "Tải thêm"}
                       </button>
                     </div>
                   )}

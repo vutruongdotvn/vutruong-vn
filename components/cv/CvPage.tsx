@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { FormEvent } from "react";
 import type { CvData } from "@/types/cv";
 import CvFooter from "@/components/cv/CvFooter";
@@ -13,6 +14,7 @@ import {
   formatUpdatedDate,
   getTimelineItems,
 } from "@/components/cv/utils";
+import PremiumGlassCard from "../ui/PremiumGlassCard";
 
 export default function CvPage({ initialCv }: { initialCv: CvData | null }) {
   const editor = useCvEditor(initialCv);
@@ -141,25 +143,19 @@ export default function CvPage({ initialCv }: { initialCv: CvData | null }) {
 
 function CvUnavailable() {
   return (
-    <main className="flex min-h-screen items-center justify-center px-4 pb-28 pt-24 md:pb-10">
-      <section className="relative isolate w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-card p-8 text-center shadow-[0_22px_70px_rgba(15,23,42,0.08)] sm:p-10">
-        <div
-          className="pointer-events-none absolute -right-20 -top-24 -z-10 size-64 rounded-full border border-foreground/[0.05]"
-          aria-hidden="true"
-        />
-        <span className="mx-auto mb-5 grid size-14 place-items-center rounded-2xl bg-[#111216] text-xl text-white shadow-lg">
-          <i className="fa-duotone fa-file-user" aria-hidden="true" />
-        </span>
-        <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.22em] text-muted-foreground">
-          Curriculum Vitae
+    <div className="flex min-h-screen flex-col items-center justify-center">
+      <PremiumGlassCard className="max-w-3xl" contentClassName="text-center p-4 sm:p-8 py-8">
+        <div className="size-16 mb-6 flex items-center mx-auto justify-center rounded-full bg-red-50 dark:bg-red-400/15 border border-red-200 dark:border-red-400/25">
+          <i className="fa-duotone fa-lock-keyhole text-3xl text-red-500"></i>
+        </div>
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-1.5">Truy cập bị từ chối</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mb-8">
+          Bạn không có quyền truy cập vào trang này.
         </p>
-        <h1 className="mt-2 text-xl font-black text-foreground">
-          CV đang được cập nhật
-        </h1>
-        <p className="mt-2 text-base leading-7 text-muted-foreground">
-          Nội dung chưa sẵn sàng. Vui lòng quay lại sau.
-        </p>
-      </section>
-    </main>
+        <Link href="/" className="flex items-center gap-3 justify-center mt-6 mx-auto px-6 py-3 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition shadow-lg shadow-primary/20 active:scale-95 w-sm max-w-full">
+          <i className="fad fa-arrow-left" /> Về Trang chủ
+        </Link>
+      </PremiumGlassCard>
+    </div>
   );
 }

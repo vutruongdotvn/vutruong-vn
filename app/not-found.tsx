@@ -29,7 +29,7 @@ export default function NotFound() {
           </h1>
 
           {/* Description */}
-          <div className="mt-4 mb-6 space-y-1.5">
+          <div className="mt-1 mb-6 space-y-1.5">
             <p className="mx-auto max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
               Có thể đã bị xóa hoặc đã chuyển sang địa chỉ khác.
             </p>

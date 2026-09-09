@@ -13,14 +13,14 @@ const menuItems = [
     icon: "fa-house",
   },
   {
-    label: "About",
-    href: "/blog/about",
-    icon: "fa-user-vneck",
-  },
-  {
     label: "Blog",
     href: "/blog",
-    icon: "fa-pen",
+    icon: "fa-signature",
+  },
+  {
+    label: "Watch",
+    href: "/watch",
+    icon: "fa-film",
   },
   {
     label: "CV",

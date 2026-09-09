@@ -57,12 +57,12 @@ export default async function Page() {
     .eq("is_published", true)
     .maybeSingle();
 
-  if (error) {
-    console.error("[cv] Public query failed:", {
-      code: error.code,
-      message: error.message,
-    });
-  }
+  // if (error) {
+  //   console.error("[cv] Public query failed:", {
+  //     code: error.code,
+  //     message: error.message,
+  //   });
+  // }
 
   return <CvPage initialCv={error ? null : normalizeCvData(data)} />;
 }

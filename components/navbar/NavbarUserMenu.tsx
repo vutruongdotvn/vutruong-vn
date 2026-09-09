@@ -68,7 +68,7 @@ export default function NavbarUserMenu({
             initial={{ opacity: 0, y: 10, scale: 1 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 1 }}
-            transition={{ duration: 0.3 , ease: "easeOut" }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
             className="absolute right-0 top-[calc(100%+7px)] w-72 rounded-xl bg-card shadow-[0_20px_60px_rgba(0,0,0,0.14)] p-3"
           >
             <div className="flex items-center gap-3 rounded-2xl px-3 py-3">
@@ -101,24 +101,6 @@ export default function NavbarUserMenu({
 
             <div className="mt-3 flex flex-col gap-1.5">
               {user && role === "admin" && (
-                <Link
-                  href="/profile"
-                  onClick={() => {
-                    setUserOpen(false);
-                    setMoreOpen(false);
-                  }}
-                  className="flex items-center justify-between rounded-2xl px-4 py-3 text-foreground/75 hover:bg-muted active:bg-secondary active:scale-97"
-                >
-                  <div className="flex items-center gap-3">
-                    <i className="fa-duotone fa-user text-base" />
-                    <span className="text-sm font-medium">Chỉnh sửa Profile</span>
-                  </div>
-                  <i className="fa-duotone fa-arrow-up-right text-xs text-muted-foreground" />
-                </Link>
-              )}
-
-              {/*
-              {user && role === "admin" && (
                 <button
                   onClick={() => {
                     setUserOpen(false);
@@ -133,7 +115,40 @@ export default function NavbarUserMenu({
                   <i className="fa-duotone fa-plus text-xs text-muted-foreground" />
                 </button>
               )}
-              */}
+
+              {user && role === "admin" && (
+                <Link
+                  href="/cv"
+                  onClick={() => {
+                    setUserOpen(false);
+                    setMoreOpen(false);
+                  }}
+                  className="flex items-center justify-between rounded-2xl px-4 py-3 text-foreground/75 hover:bg-muted active:bg-secondary active:scale-97"
+                >
+                  <div className="flex items-center gap-3">
+                    <i className="fa-duotone fa-briefcase text-base" />
+                    <span className="text-sm font-medium">CV</span>
+                  </div>
+                  <i className="fa-duotone fa-arrow-up-right text-xs text-muted-foreground" />
+                </Link>
+              )}
+
+              {user && role === "admin" && (
+                <Link
+                  href="/profile"
+                  onClick={() => {
+                    setUserOpen(false);
+                    setMoreOpen(false);
+                  }}
+                  className="flex items-center justify-between rounded-2xl px-4 py-3 text-foreground/75 hover:bg-muted active:bg-secondary active:scale-97"
+                >
+                  <div className="flex items-center gap-3">
+                    <i className="fa-duotone fa-user-gear text-base" />
+                    <span className="text-sm font-medium">Chỉnh sửa Profile</span>
+                  </div>
+                  <i className="fa-duotone fa-arrow-up-right text-xs text-muted-foreground" />
+                </Link>
+              )}
 
               {!user ? (
                 <button

@@ -74,8 +74,8 @@ export default function NavbarDesktopMenu({
           }}
           transition={{
             type: "spring",
-            stiffness: 350,
-            damping: 20,
+            stiffness: 400,
+            damping: 40,
           }}
           className="pointer-events-none absolute left-0 top-0 h-full rounded-full bg-nav-active shadow-lg"
         />
@@ -99,7 +99,7 @@ export default function NavbarDesktopMenu({
               ${
                 active
                   ? "text-nav-active-foreground"
-                  : "text-foreground/75 hover:text-foreground hover:bg-secondary"
+                  : "text-foreground"
               }
             `}
           >
@@ -114,7 +114,7 @@ export default function NavbarDesktopMenu({
             </span>
 
             {active && (
-              <span className="relative z-10 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-nav-active-foreground/75" />
+              <span className="relative z-10 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-nav-active-foreground animate-pulse" />
             )}
           </Link>
         );

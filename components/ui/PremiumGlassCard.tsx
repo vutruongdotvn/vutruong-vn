@@ -28,7 +28,7 @@ export default function PremiumGlassCard({
       >
 
         {/* Vệt sáng lướt qua (Diagonal Shine Effect) - Kích hoạt khi Hover */}
-        <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-foreground/3 to-transparent transition-transform duration-[1600ms] ease-in-out group-hover:translate-x-full" />
+        <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-foreground/5 to-transparent transition-transform duration-[1800ms] ease-in-out group-hover:translate-x-full" />
 
         {/* 📦 CONTENT WRAPPER */}
         <div className="relative z-10 h-full w-full" id="glassCard">{children}</div>
