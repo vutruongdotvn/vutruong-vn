@@ -9,6 +9,7 @@ import { watchQueryKeys, type WatchQueryIdentity } from "./watchQueryKeys";
 export const WATCH_QUERY_POLICY = Object.freeze({
   listStaleMs: 5 * 60_000,
   inactiveGcMs: 10 * 60_000,
+  playbackGcMs: 2 * 60_000,
   maxInactiveQueries: 32,
 });
 
@@ -131,6 +132,29 @@ export class WatchQueryScope {
     });
   }
 
+  /**
+   * Player URLs are fetched only after an episode route mounts. They stay in
+   * authorized RAM briefly so switching episodes does not refetch the manifest.
+   * stop()/revoke still cancels and clears them synchronously.
+   */
+  playbackOptions(slug: string) {
+    watchMovieUrl(slug);
+    const epoch = this.state.epoch;
+
+    return queryOptions({
+      queryKey: watchQueryKeys.playback(this.identity, epoch, slug),
+      staleTime: Infinity,
+      gcTime: this.policy.playbackGcMs,
+      refetchOnMount: false,
+      queryFn: async ({ signal }) => {
+        this.assertReady(epoch);
+        const data = await this.api.playback(slug, signal);
+        this.assertReady(epoch);
+        return data;
+      },
+    });
+  }
+
   collectionOptions(source: WatchCollectionSource, page = 1) {
     watchCollectionUrl(source, page);
     const epoch = this.state.epoch;
@@ -153,9 +177,9 @@ export class WatchQueryScope {
     });
   }
 
-  /** Native images cannot use the JSON CORS transport: the source image server
-   * doesn't advertise CORS. Obtain a fresh permit before assigning ANY img src.
-   * A1 coalesces simultaneous checks; no second auth/realtime subscription.
+  /** Remote images/players are assigned by native browser elements, outside the
+   * JSON transport. Obtain a fresh permit before assigning ANY media src. A1
+   * coalesces simultaneous checks; no second auth/realtime subscription.
    */
   async permitMedia(consumerSignal: AbortSignal): Promise<WatchAccessPermit> {
     const epoch = this.state.epoch;

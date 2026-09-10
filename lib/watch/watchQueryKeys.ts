@@ -10,6 +10,8 @@ export const watchQueryKeys = {
       : ["watch", identity.userId, identity.accessKind, identity.revision, epoch, "collection", source.kind, source.slug, page] as const,
   detail: (identity: WatchQueryIdentity, epoch: number, slug: string) =>
     ["watch", identity.userId, identity.accessKind, identity.revision, epoch, "detail", slug] as const,
+  playback: (identity: WatchQueryIdentity, epoch: number, slug: string) =>
+    ["watch", identity.userId, identity.accessKind, identity.revision, epoch, "playback", slug] as const,
   latest: (identity: WatchQueryIdentity, epoch: number, page: number) =>
     ["watch", identity.userId, identity.accessKind, identity.revision, epoch, "latest", page] as const,
 };

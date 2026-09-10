@@ -26,23 +26,57 @@ export type WatchLatestPage = {
 };
 export type WatchCollectionPage = WatchLatestPage;
 
-/** Only display data is retained. Episode/player URLs never enter the Hero cache. */
+/** A route-safe episode summary. It deliberately contains no player URL. */
+export type WatchEpisodeSummary = {
+  name: string;
+  segment: string;
+  sourceCount: number;
+};
+
+/** Only display data is retained. Player URLs never enter the Hero/detail cache. */
 export type WatchMovieSummary = {
   id: string | null;
   slug: string;
   name: string;
   originalName: string | null;
   description: string | null;
+  /** Horizontal NguồnC artwork used as the full-width backdrop. */
   posterUrl: string | null;
+  /** Vertical 2:3 NguồnC artwork used as the movie cover. */
+  thumbUrl: string | null;
   quality: string | null;
   language: string | null;
   duration: string | null;
   currentEpisode: string | null;
+  totalEpisodes: number | null;
   year: string | null;
+  formats: ReadonlyArray<string>;
   genres: ReadonlyArray<string>;
   countries: ReadonlyArray<string>;
   director: string | null;
   casts: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+  /** Optional and allowlisted. Current NguồnC responses normally omit it. */
+  trailerUrl: string | null;
+  episodes: ReadonlyArray<WatchEpisodeSummary>;
+};
+
+export type WatchPlaybackSource = {
+  serverName: string;
+  embedUrl: string;
+};
+
+export type WatchPlaybackEpisode = WatchEpisodeSummary & {
+  sources: ReadonlyArray<WatchPlaybackSource>;
+};
+
+/** Kept in authorized RAM only and created after entering an episode route. */
+export type WatchPlaybackManifest = {
+  movieSlug: string;
+  movieName: string;
+  originalName: string | null;
+  episodes: ReadonlyArray<WatchPlaybackEpisode>;
 };
 
 export type WatchApiErrorCode =

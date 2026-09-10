@@ -1,7 +1,17 @@
 import { waitForWatchOperation } from "../../lib/watch/watchAccessController";
 import { watchLatestUrl, watchMovieUrl, watchCollectionUrl } from "../../lib/watch/nguoncEndpoints";
-import { normalizeWatchLatest, normalizeWatchMovie } from "../../lib/watch/normalizeNguonc";
-import { WatchApiError, type WatchLatestPage, type WatchMovieSummary, type WatchCollectionSource } from "../../types/watchApi";
+import {
+  normalizeWatchLatest,
+  normalizeWatchMovie,
+  normalizeWatchPlaybackManifest,
+} from "../../lib/watch/normalizeNguonc";
+import {
+  WatchApiError,
+  type WatchLatestPage,
+  type WatchMovieSummary,
+  type WatchCollectionSource,
+  type WatchPlaybackManifest,
+} from "../../types/watchApi";
 import type { WatchAccessPermit } from "../../types/watchAccess";
 
 type Scope = Pick<WatchAccessPermit, "userId" | "revision" | "accessKind">;
@@ -67,21 +77,49 @@ export class WatchNguoncClient {
   };
 
   latest(page = 1, consumerSignal?: AbortSignal): Promise<WatchLatestPage> {
-    try { return this.request(watchLatestUrl(page), value => normalizeWatchLatest(value, page), consumerSignal); }
+    try {
+      const url = watchLatestUrl(page);
+      return this.request(url, url, value => normalizeWatchLatest(value, page), consumerSignal);
+    }
     catch (error) { return Promise.reject(error); }
   }
 
   detail(slug: string, consumerSignal?: AbortSignal): Promise<WatchMovieSummary> {
-    try { return this.request(watchMovieUrl(slug), value => normalizeWatchMovie(value, slug), consumerSignal); }
+    try {
+      const url = watchMovieUrl(slug);
+      return this.request(url, `detail:${slug}`, value => normalizeWatchMovie(value, slug), consumerSignal);
+    }
     catch (error) { return Promise.reject(error); }
+  }
+
+  playback(slug: string, consumerSignal?: AbortSignal): Promise<WatchPlaybackManifest> {
+    try {
+      const url = watchMovieUrl(slug);
+      return this.request(
+        url,
+        `playback:${slug}`,
+        value => normalizeWatchPlaybackManifest(value, slug),
+        consumerSignal,
+      );
+    } catch (error) {
+      return Promise.reject(error);
+    }
   }
 
   collection(source: WatchCollectionSource, page = 1, consumerSignal?: AbortSignal): Promise<WatchLatestPage> {
-    try { return this.request(watchCollectionUrl(source, page), value => normalizeWatchLatest(value, page), consumerSignal); }
+    try {
+      const url = watchCollectionUrl(source, page);
+      return this.request(url, url, value => normalizeWatchLatest(value, page), consumerSignal);
+    }
     catch (error) { return Promise.reject(error); }
   }
 
-  private request<T>(url: string, normalize: (value: unknown) => T, consumerSignal?: AbortSignal): Promise<T> {
+  private request<T>(
+    url: string,
+    dedupeKey: string,
+    normalize: (value: unknown) => T,
+    consumerSignal?: AbortSignal,
+  ): Promise<T> {
     try {
       if (typeof window === "undefined") throw new WatchApiError("browser_only");
       if (!this.active) throw new WatchApiError("inactive");
@@ -89,7 +127,7 @@ export class WatchNguoncClient {
       this.assertCooldown();
       // Endpoint builders fix each URL's result type. The untyped map is internal;
       // external JSON still passes runtime normalization before any consumer.
-      let entry = this.entries.get(url) as Entry<T> | undefined;
+      let entry = this.entries.get(dedupeKey) as Entry<T> | undefined;
       if (entry?.controller.signal.aborted) entry = undefined;
       if (!entry) {
         if (this.entries.size >= MAX_ACTIVE + MAX_QUEUED) throw new WatchApiError("busy");
@@ -100,11 +138,11 @@ export class WatchNguoncClient {
         created.promise = Promise.resolve().then(() => this.perform(url, normalize, controller, epoch))
           .finally(() => {
             created.settled = true;
-            if (this.entries.get(url) === created) this.entries.delete(url);
+            if (this.entries.get(dedupeKey) === created) this.entries.delete(dedupeKey);
           });
         // A caller may cancel before the operation settles; never leak a rejection.
         void created.promise.catch(() => undefined);
-        this.entries.set(url, created);
+        this.entries.set(dedupeKey, created);
         entry = created;
       }
       return this.consume(entry, consumerSignal);

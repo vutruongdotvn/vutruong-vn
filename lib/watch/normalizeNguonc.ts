@@ -1,5 +1,17 @@
-import { WatchApiError, type WatchLatestPage, type WatchMovieSummary } from "../../types/watchApi";
-import { safeWatchImageUrl } from "./nguoncEndpoints";
+import {
+  WatchApiError,
+  type WatchLatestPage,
+  type WatchMovieSummary,
+  type WatchPlaybackEpisode,
+  type WatchPlaybackManifest,
+  type WatchPlaybackSource,
+} from "../../types/watchApi";
+import {
+  safeWatchEmbedUrl,
+  safeWatchImageUrl,
+  safeWatchTrailerUrl,
+} from "./nguoncEndpoints";
+import { normalizeWatchEpisodeSegment } from "./watchRoutes";
 
 function record(value: unknown, field: string): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -37,6 +49,110 @@ function categoryLabels(value: unknown, groupName: string): string[] {
   return result.slice(0, 8);
 }
 
+function optionalNonNegativeInteger(value: unknown): number | null {
+  if (typeof value === "number" && Number.isSafeInteger(value) && value >= 0) {
+    return value;
+  }
+
+  if (typeof value === "string" && /^\d{1,4}$/.test(value)) {
+    return Number(value);
+  }
+
+  return null;
+}
+
+function optionalDate(value: unknown): string | null {
+  const text = shortText(value, 80);
+  return text && Number.isFinite(Date.parse(text)) ? text : null;
+}
+
+function firstTrailerUrl(movie: Record<string, unknown>): string | null {
+  // NguồnC does not currently document a trailer key. These candidates are
+  // inert unless the API itself starts returning an allowlisted YouTube URL.
+  const candidates = [
+    movie.trailer_url,
+    movie.trailer,
+    movie.youtube_url,
+    movie.youtube,
+  ];
+
+  for (const candidate of candidates) {
+    const url = safeWatchTrailerUrl(candidate);
+    if (url) return url;
+  }
+
+  return null;
+}
+
+type MutablePlaybackEpisode = {
+  name: string;
+  segment: string;
+  sources: WatchPlaybackSource[];
+};
+
+function episodeOrder(segment: string): number {
+  if (segment === "full") return 0;
+  return Number(segment.replace("tap-", ""));
+}
+
+/**
+ * Validate episode routes and provider URLs once. Detail callers only receive
+ * route summaries; the playback normalizer below is the sole caller retaining
+ * the allowlisted iframe URLs.
+ */
+function playableEpisodes(value: unknown): WatchPlaybackEpisode[] {
+  if (!Array.isArray(value)) return [];
+
+  const episodes = new Map<string, MutablePlaybackEpisode>();
+
+  for (const [serverIndex, serverValue] of value.slice(0, 24).entries()) {
+    if (!serverValue || typeof serverValue !== "object" || Array.isArray(serverValue)) {
+      continue;
+    }
+
+    const server = serverValue as Record<string, unknown>;
+    const serverName = plainText(server.server_name, 80) ?? `Nguồn ${serverIndex + 1}`;
+    if (!Array.isArray(server.items)) continue;
+
+    for (const itemValue of server.items.slice(0, 1_000)) {
+      if (!itemValue || typeof itemValue !== "object" || Array.isArray(itemValue)) {
+        continue;
+      }
+
+      const item = itemValue as Record<string, unknown>;
+      const segment = normalizeWatchEpisodeSegment(item.slug);
+      const embedUrl = safeWatchEmbedUrl(item.embed);
+      if (!segment || !embedUrl) continue;
+
+      const fallbackName = segment === "full"
+        ? "FULL"
+        : segment.replace("tap-", "Tập ");
+      const name = plainText(item.name, 60) ?? fallbackName;
+
+      let episode = episodes.get(segment);
+      if (!episode) {
+        if (episodes.size >= 1_000) break;
+        episode = { name, segment, sources: [] };
+        episodes.set(segment, episode);
+      }
+
+      const alreadyIncluded = episode.sources.some(source => source.embedUrl === embedUrl);
+      if (!alreadyIncluded && episode.sources.length < 24) {
+        episode.sources.push({ serverName, embedUrl });
+      }
+    }
+  }
+
+  return [...episodes.values()]
+    .sort((left, right) => episodeOrder(left.segment) - episodeOrder(right.segment))
+    .map(episode => ({
+      name: episode.name,
+      segment: episode.segment,
+      sourceCount: episode.sources.length,
+      sources: episode.sources,
+    }));
+}
+
 export function normalizeWatchMovie(value: unknown, requestedSlug: string): WatchMovieSummary {
   const root = record(value, "root");
   if (root.status !== "success") throw new WatchApiError("invalid_response", { field: "status" });
@@ -45,15 +161,60 @@ export function normalizeWatchMovie(value: unknown, requestedSlug: string): Watc
   if (!name || movie.slug !== requestedSlug) {
     throw new WatchApiError("invalid_response", { field: "movie.name/slug" });
   }
+
+  const episodes = playableEpisodes(movie.episodes);
+
   return {
-    id: shortText(movie.id, 100), slug: requestedSlug, name,
-    originalName: plainText(movie.original_name), description: plainText(movie.description, 4_000),
+    id: shortText(movie.id, 100),
+    slug: requestedSlug,
+    name,
+    originalName: plainText(movie.original_name),
+    description: plainText(movie.description, 4_000),
     posterUrl: safeWatchImageUrl(movie.poster_url) ?? safeWatchImageUrl(movie.thumb_url),
-    quality: plainText(movie.quality, 30), language: plainText(movie.language, 50),
-    duration: plainText(movie.time, 50), currentEpisode: plainText(movie.current_episode, 60),
+    thumbUrl: safeWatchImageUrl(movie.thumb_url) ?? safeWatchImageUrl(movie.poster_url),
+    quality: plainText(movie.quality, 30),
+    language: plainText(movie.language, 50),
+    duration: plainText(movie.time, 50),
+    currentEpisode: plainText(movie.current_episode, 60),
+    totalEpisodes: optionalNonNegativeInteger(movie.total_episodes),
     year: categoryLabels(movie.category, "Năm").find(year => /^\d{4}$/.test(year)) ?? null,
-    genres: categoryLabels(movie.category, "Thể loại"), countries: categoryLabels(movie.category, "Quốc gia"),
-    director: plainText(movie.director, 500), casts: plainText(movie.casts, 800),
+    formats: categoryLabels(movie.category, "Định dạng"),
+    genres: categoryLabels(movie.category, "Thể loại"),
+    countries: categoryLabels(movie.category, "Quốc gia"),
+    director: plainText(movie.director, 500),
+    casts: plainText(movie.casts, 800),
+    createdAt: optionalDate(movie.created),
+    updatedAt: optionalDate(movie.modified),
+    trailerUrl: firstTrailerUrl(movie),
+    episodes: episodes.map(episode => ({
+      name: episode.name,
+      segment: episode.segment,
+      sourceCount: episode.sourceCount,
+    })),
+  };
+}
+
+/** Player URLs are exposed only to the authorized episode route query. */
+export function normalizeWatchPlaybackManifest(
+  value: unknown,
+  requestedSlug: string,
+): WatchPlaybackManifest {
+  const root = record(value, "root");
+  if (root.status !== "success") {
+    throw new WatchApiError("invalid_response", { field: "status" });
+  }
+
+  const movie = record(root.movie, "movie");
+  const movieName = plainText(movie.name);
+  if (!movieName || movie.slug !== requestedSlug) {
+    throw new WatchApiError("invalid_response", { field: "movie.name/slug" });
+  }
+
+  return {
+    movieSlug: requestedSlug,
+    movieName,
+    originalName: plainText(movie.original_name),
+    episodes: playableEpisodes(movie.episodes),
   };
 }
 
