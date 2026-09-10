@@ -26,7 +26,7 @@ type AccessContent = {
 
 // Mỗi trạng thái là một khối riêng để có thể thay icon/text độc lập tại đây.
 const CHECKING_CONTENT: AccessContent = {
-  icon: "fa-user-shield",
+  icon: "fa-spinner-third fa-spin",
   title: "Đang xác minh tài khoản",
   description: "Vui lòng chờ trong lúc kiểm tra tài khoản của bạn",
 };
@@ -152,8 +152,8 @@ function WatchBlockedCard({ access, view }: { access: WatchAccessState; view: Ac
     >
       <PremiumGlassCard
         aria-labelledby="watch-access-title"
-        className="max-w-3xl"
-        contentClassName="text-center p-4 sm:p-8 py-8"
+        className="max-w-4xl"
+        contentClassName="text-center px-4 py-18"
       >
         {/* Icon Container — giữ nguyên bố cục cá nhân hóa của WatchGuard. */}
         <div className="size-16 mb-6 flex items-center mx-auto justify-center rounded-full bg-red-50 dark:bg-red-400/15 border border-red-200 dark:border-red-400/25">

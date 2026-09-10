@@ -101,7 +101,7 @@ export default function AdminUsersPage() {
   if (!authLoading && (!user || role !== "admin")) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
-        <PremiumGlassCard className="max-w-3xl" contentClassName="text-center p-4 sm:p-8 py-8">
+        <PremiumGlassCard className="max-w-4xl" contentClassName="text-center px-4 py-18">
           <div className="size-16 mb-6 flex items-center mx-auto justify-center rounded-full bg-red-50 dark:bg-red-400/15 border border-red-200 dark:border-red-400/25">
             <i className="fa-duotone fa-lock-keyhole text-3xl text-red-500"></i>
           </div>

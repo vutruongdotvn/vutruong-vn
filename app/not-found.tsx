@@ -13,8 +13,8 @@ export default function NotFound() {
       <main className="flex min-h-screen flex-col items-center justify-center">
 
         <PremiumGlassCard
-          className="max-w-3xl w-full"
-          contentClassName="text-center p-4 sm:p-8 py-8"
+          className="max-w-4xl w-full"
+          contentClassName="text-center px-4 py-18"
         >
           {/* Main Icon */}
           <div className="mb-6 flex justify-center">

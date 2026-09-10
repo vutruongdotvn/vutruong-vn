@@ -39,9 +39,9 @@ const HERO_ARTICLE_CLASS = [
 const HERO_GRADIENT_CLASS = [
   "pointer-events-none absolute inset-0 size-full",
   // Đáy đậm màu 100%, kéo dày tới 15%, rồi tan nhanh và kết thúc hoàn toàn ở 35% chiều cao
-  "bg-gradient-to-t from-[var(--background)] from-0% via-[var(--background)] via-15% to-transparent to-100%",
+  "bg-gradient-to-t from-[var(--background)] from-0% via-[var(--background)] via-15% to-transparent to-75%",
   // Responsive (< 47.99rem): Đậm ở đáy và kết thúc sớm hơn ở 40%
-  "max-[47.99rem]:bg-gradient-to-t max-[47.99rem]:from-[var(--background)] max-[47.99rem]:from-0% max-[47.99rem]:via-[color-mix(in_srgb,var(--background)_90%,transparent)] max-[47.99rem]:via-20% max-[47.99rem]:to-transparent max-[47.99rem]:to-40%",
+  // "max-[47.99rem]:bg-gradient-to-t max-[47.99rem]:from-[var(--background)] max-[47.99rem]:from-0% max-[47.99rem]:via-[color-mix(in_srgb,var(--background)_90%,transparent)] max-[47.99rem]:via-20% max-[47.99rem]:to-transparent max-[47.99rem]:to-40%",
 ].join(" ");
 
 const HERO_BUTTON_CLASS = [
