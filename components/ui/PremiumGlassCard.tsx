@@ -20,7 +20,7 @@ export default function PremiumGlassCard({
       {/* 🔮 MAIN GLASS SHELL (Lớp kính chính) */}
       <div
         className={cn(
-          "relative overflow-hidden rounded-0 sm:rounded-2xl border border-border bg-card",
+          "relative overflow-hidden rounded-0 sm:rounded-2xl sm:border sm:border-border bg-card",
           "shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-1200 ease-out",
           "hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)]",
           contentClassName

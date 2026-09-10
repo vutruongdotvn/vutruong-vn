@@ -21,7 +21,7 @@ import "swiper/css/effect-fade";
 const SLUGS = selectWatchHeroSlugs(WATCH_HERO_SLUGS);
 
 const HERO_ROOT_CLASS = [
-  "relative isolate w-full bg-background text-foreground",
+  "relative isolate w-full bg-background text-foreground hidden md:block",
   "[&_button:focus-visible]:outline-2 [&_button:focus-visible]:outline-ring",
   "[&_button:focus-visible]:outline-offset-4",
   "[&_button:disabled]:cursor-default [&_button:disabled]:opacity-50",
@@ -272,7 +272,7 @@ export default function WatchHero() {
     return (
       <section className="min-h-[70svh] px-8 pt-40 pb-16">
         <h1>Phim nổi bật</h1>
-        <p>Chưa có phim trong bộ sưu tập này.</p>
+        <p>Chưa có phim trong bộ sưu tập này</p>
       </section>
     );
   }

@@ -123,13 +123,13 @@ export default function RootLayout({
 
           {/* Background ô vuông */}
         <div
-          className="pointer-events-none fixed -inset-1 -z-1 opacity-[0.375] dark:opacity-[0.25] mix-blend-overlay"
+          className="pointer-events-none fixed -inset-1 -z-1 opacity-[0.25] dark:opacity-[0.125] mix-blend-overlay"
           style={{
             backgroundImage: `
               linear-gradient(to right, #000 1px, transparent 1px),
               linear-gradient(to bottom, #000 1px, transparent 1px)
             `,
-            backgroundSize: "45px 45px",
+            backgroundSize: "40px 40px",
           }}
         />
         

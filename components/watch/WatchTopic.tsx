@@ -30,7 +30,7 @@ const TOPIC_CARD_CLASS = [
   "after:size-48 after:rounded-full after:border",
   "after:border-[color-mix(in_srgb,var(--topic-color)_25%,transparent)]",
   "after:content-['']",
-  "[@media(hover:hover)_and_(pointer:fine)]:hover:-translate-y-[3px]",
+  // "[@media(hover:hover)_and_(pointer:fine)]:hover:-translate-y-1",
   "[@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_10px_24px_color-mix(in_srgb,var(--foreground)_7%,transparent)]",
   "max-[63.99rem]:min-h-38",
   "max-[39.99rem]:min-h-33 max-[39.99rem]:gap-[.7rem]",

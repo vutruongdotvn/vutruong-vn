@@ -9,13 +9,13 @@ type WatchHomeRow = {
 
 /** Each row loads page 1 only. Do not use arbitrary URLs or per-card lookups. */
 export const WATCH_HOME_ROWS = [
-  { id: "watch-latest", title: "Phim mới", description: "Phim mới được cập nhật.", source: { kind: "latest" } },
-  { id: "watch-series", title: "Phim bộ", source: { kind: "format", slug: "phim-bo" } },
-  { id: "watch-movies", title: "Phim lẻ", source: { kind: "format", slug: "phim-le" } },
+  { id: "watch-latest", title: "Phim mới", description: "Phim mới được cập nhật", source: { kind: "latest" } },
   { id: "watch-airing", title: "Phim đang chiếu", source: { kind: "format", slug: "dang-chieu" } },
+  { id: "watch-movies", title: "Phim lẻ", source: { kind: "format", slug: "phim-le" } },
+  { id: "watch-series", title: "Phim bộ", source: { kind: "format", slug: "phim-bo" } },
+  { id: "watch-vietnam", title: "Phim Việt Nam", source: { kind: "country", slug: "viet-nam" } },
   { id: "watch-korea", title: "Phim Hàn Quốc", source: { kind: "country", slug: "han-quoc" } },
   { id: "watch-china", title: "Phim Trung Quốc", source: { kind: "country", slug: "trung-quoc" } },
-  { id: "watch-vietnam", title: "Phim Việt Nam", source: { kind: "country", slug: "viet-nam" } },
   { id: "watch-action", title: "Hành động", source: { kind: "genre", slug: "hanh-dong" } },
   { id: "watch-romance", title: "Tình cảm", source: { kind: "genre", slug: "tinh-cam" } },
 ] as const satisfies readonly WatchHomeRow[];

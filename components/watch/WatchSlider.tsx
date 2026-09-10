@@ -140,8 +140,8 @@ export default function WatchSlider({ id, title, description, source }: Props) {
 
     setEdges(old => (
       old.beginning === next.beginning
-      && old.end === next.end
-      && old.locked === next.locked
+        && old.end === next.end
+        && old.locked === next.locked
         ? old
         : next
     ));
@@ -268,32 +268,72 @@ export default function WatchSlider({ id, title, description, source }: Props) {
           <WatchGrid movies={movies} label={`Phim trong ${title}`} />
         ) : (
           <Swiper
+            // 1. TÙY CHỈNH GIAO DIỆN (CSS)
+            // Sử dụng Tailwind CSS. Dấu `!` ở cuối (ví dụ: -mx-1!) tương đương với `!important` trong CSS.
+            // Đoạn này chủ yếu dùng lề âm (-mx, -mt) và đệm bù lại (px, pt) để xử lý việc đổ bóng (box-shadow) 
+            // của các card phim không bị cắt gọt bởi `overflow-hidden` mặc định của Swiper.
             className="-mx-1! -mt-[.35rem]! -mb-2! px-1! pt-[.35rem]! pb-2!"
+
+            // 2. KHAI BÁO MODULE
+            // Swiper được thiết kế dạng module để giảm dung lượng. Ở đây bạn đang nạp module A11y (Accessibility/Trợ năng).
+            // Nếu bạn muốn dùng nút Next/Prev hay Pagination (chấm tròn), bạn phải import và khai báo thêm ở đây (VD: modules={[A11y, Navigation, Pagination]}).
             modules={[A11y]}
-            slidesPerView={2}
+
+            // 3. CẤU HÌNH HIỂN THỊ CƠ BẢN
+            // Số lượng slide hiển thị cùng lúc trên màn hình (mặc định là 2).
+            slidesPerView={3}
+            // Khoảng cách giữa các slide là 12px.
             spaceBetween={12}
+            // Khi người dùng vuốt hoặc nhấn next, slider sẽ trượt đi 1 slide mỗi lần.
             slidesPerGroup={1}
+
+            // 4. CẤU HÌNH HÀNH VI (BEHAVIOR)
+            // Tắt chế độ lặp vô tận. Cuộn đến cuối sẽ dừng lại, không quay vòng về slide đầu.
             loop={false}
+            // Nếu tổng số slide ít hơn `slidesPerView` (nghĩa là không đủ để trượt), Swiper sẽ tự động
+            // ẩn đi các nút điều hướng và vô hiệu hóa chức năng trượt để tránh lỗi giao diện.
             watchOverflow
+            // Tắt chế độ cuộn ngược. Nếu = true, khi đến slide cuối cùng mà bấm Next, nó sẽ trượt ngược tuột về đầu.
             rewind={false}
+
+            // 5. RESPONSIVE (THÍCH ỨNG MÀN HÌNH)
+            // Ghi đè các thuộc tính bên trên (như slidesPerView, spaceBetween) tùy theo kích thước màn hình.
+            // Biến SWIPER_BREAKPOINTS được định nghĩa ở ngoài (VD: màn hình > 768px thì hiện 4 slide, > 1024px thì hiện 6 slide).
             breakpoints={SWIPER_BREAKPOINTS}
+
+            // 6. TRỢ NĂNG (ACCESSIBILITY - A11y)
+            // Hỗ trợ người dùng khiếm thị sử dụng trình đọc màn hình (Screen Reader).
             a11y={{
-              enabled: true,
-              containerRoleDescriptionMessage: title,
-              itemRoleDescriptionMessage: "Phim",
-              slideLabelMessage: "{{index}} trên {{slidesLength}}",
+              enabled: true, // Bật tính năng
+              containerRoleDescriptionMessage: title, // Mô tả vai trò của khối này (vd: "Danh sách phim hành động")
+              itemRoleDescriptionMessage: "Phim", // Phân loại từng thẻ con là gì
+              slideLabelMessage: "{{index}} trên {{slidesLength}}", // Đọc vị trí: "1 trên 10", "2 trên 10"
             }}
+
+            // 7. XỬ LÝ SỰ KIỆN (EVENTS)
+            // Kích hoạt ngay khi Swiper vừa khởi tạo xong.
+            // instance chính là đối tượng lõi của Swiper, nó được lưu vào `swiper.current` (chắc hẳn bạn đang dùng useRef)
+            // Hàm `sync(instance)` có thể là một hàm do bạn tự viết để đồng bộ trạng thái (ví dụ kiểm tra xem đang ở đầu hay cuối mảng để làm mờ nút Prev/Next tự chế).
             onSwiper={(instance: SwiperInstance) => {
               swiper.current = instance;
               sync(instance);
             }}
+
+            // Kích hoạt mỗi khi slide bị thay đổi (người dùng vuốt, hoặc bấm chuyển slide).
             onSlideChange={sync}
+            // Kích hoạt khi kích thước khung hình bị thay đổi (người dùng xoay màn hình điện thoại hoặc thu phóng trình duyệt).
             onResize={sync}
+            // Kích hoạt khi Swiper chuyển sang trạng thái "khóa" (ví dụ: màn hình to ra làm số lượng slide hiển thị lớn hơn tổng số phim, nên không cần trượt nữa).
             onLock={sync}
+            // Kích hoạt khi Swiper "mở khóa" (từ màn hình to thu nhỏ lại, bắt đầu cần trượt).
             onUnlock={sync}
           >
+            {/* 8. RENDER DỮ LIỆU */}
+            {/* Duyệt qua mảng phim và tạo ra các thẻ SwiperSlide */}
             {movies.map(movie => (
+              // Thẻ bọc bắt buộc của Swiper. `h-auto!` giúp các slide có chiều cao bằng nhau (bằng với slide cao nhất)
               <SwiperSlide key={movie.slug} className="h-auto!">
+                {/* Component hiển thị chi tiết 1 bộ phim của bạn */}
                 <WatchMovieCard movie={movie} />
               </SwiperSlide>
             ))}

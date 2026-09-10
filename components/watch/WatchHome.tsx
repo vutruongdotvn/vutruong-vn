@@ -6,9 +6,9 @@ import WatchTopic from "@/components/watch/WatchTopic";
 import { WATCH_HOME_ROWS } from "@/lib/watch/watchHomeConfig";
 
 const HOME_CONTAINER_CLASS = [
-  "mx-auto w-[min(calc(100%_-_4rem),76rem)] pt-14 pb-8",
+  "mx-auto w-[min(calc(100%_-_4rem),76rem)] md:pb-4 pb-23",
   "max-[47.99rem]:w-[calc(100%_-_2.5rem)]",
-  "max-[47.99rem]:pt-10 max-[47.99rem]:pb-24",
+  "max-[47.99rem]:pt-20 max-[47.99rem]:pb-24",
 ].join(" ");
 
 const FOOTER_CLASS = [

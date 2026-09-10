@@ -32,7 +32,7 @@ const CHECKING_CONTENT: AccessContent = {
 };
 
 const ANONYMOUS_CONTENT: AccessContent = {
-  icon: "fa-user-secret",
+  icon: "fa-ban",
   title: "Truy cập bị từ chối",
   description: "Vui lòng đăng nhập để tiếp tục truy cập",
 };
@@ -148,7 +148,7 @@ function WatchBlockedCard({ access, view }: { access: WatchAccessState; view: Ac
       data-watch-guard="blocked"
       data-watch-access-state={view}
       aria-labelledby="watch-access-title"
-      className="min-h-screen flex items-center justify-center text-center px-4 pb-28 pt-24 sm:px-6"
+      className="min-h-screen flex items-center justify-center text-center px-0 pb-28 pt-24 sm:px-4"
     >
       <PremiumGlassCard
         aria-labelledby="watch-access-title"
@@ -184,7 +184,7 @@ function WatchBlockedCard({ access, view }: { access: WatchAccessState; view: Ac
         <Link
           href="/"
           prefetch={false}
-          className="flex items-center gap-3 justify-center mt-6 px-6 py-3 mx-auto bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition shadow-lg shadow-primary/20 active:scale-95 w-sm max-w-full"
+          className="flex items-center gap-3 justify-center mt-8 px-6 py-3 mx-auto bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition shadow-lg shadow-primary/20 active:scale-95 w-sm max-w-full"
         >
           <i aria-hidden="true" className="fad fa-arrow-left" />
           Về Trang chủ
