@@ -1,8 +1,8 @@
 import { QueryClient, queryOptions } from "@tanstack/react-query";
 import { WatchNguoncClient } from "../../services/watch/nguoncClient";
-import { WatchApiError } from "../../types/watchApi";
+import { WatchApiError, type WatchCollectionSource } from "../../types/watchApi";
 import type { WatchAccessPermit } from "../../types/watchAccess";
-import { watchLatestUrl, watchMovieUrl } from "./nguoncEndpoints";
+import { watchLatestUrl, watchMovieUrl, watchCollectionUrl } from "./nguoncEndpoints";
 import { waitForWatchOperation } from "./watchAccessController";
 import { watchQueryKeys, type WatchQueryIdentity } from "./watchQueryKeys";
 
@@ -125,6 +125,28 @@ export class WatchQueryScope {
       queryFn: async ({ signal }) => {
         this.assertReady(epoch);
         const data = await this.api.detail(slug, signal);
+        this.assertReady(epoch);
+        return data;
+      },
+    });
+  }
+
+  collectionOptions(source: WatchCollectionSource, page = 1) {
+    watchCollectionUrl(source, page);
+    const epoch = this.state.epoch;
+    // Copy primitives so a caller cannot mutate an in-flight query's endpoint.
+    const selected: WatchCollectionSource = source.kind === "latest"
+      ? { kind: "latest" } : { kind: source.kind, slug: source.slug };
+    return queryOptions({
+      queryKey: watchQueryKeys.collection(this.identity, epoch, selected, page),
+      staleTime: Infinity,
+      // Home has eight fixed collections; keep accepted pages for its scope.
+      // The existing 32-inactive-entry cap and stop()/revoke still clear memory.
+      gcTime: Infinity,
+      refetchOnMount: false,
+      queryFn: async ({ signal }) => {
+        this.assertReady(epoch);
+        const data = await this.api.collection(selected, page, signal);
         this.assertReady(epoch);
         return data;
       },

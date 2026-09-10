@@ -91,11 +91,16 @@ export function normalizeWatchLatest(value: unknown, requestedPage: number): Wat
     throw new WatchApiError("invalid_response", { field: "items/paginate" });
   }
   const rows = root.items.map((item: unknown) => record(item, "items[]"));
-  // The supplied example has items: []; name/slug are optional until the real
-  // payload is checked. Other fields are neither persisted nor rendered as HTML.
+  // Missing optional list metadata never triggers a detail lookup per card.
   return {
     pagination,
-    items: rows.map(item => ({ name: shortText(item.name, 300), slug: shortText(item.slug, 300) })),
+    items: rows.map(item => ({
+      name: plainText(item.name), slug: shortText(item.slug, 300),
+      originalName: plainText(item.original_name),
+      thumbUrl: safeWatchImageUrl(item.thumb_url) ?? safeWatchImageUrl(item.poster_url),
+      quality: plainText(item.quality, 30), language: plainText(item.language, 50),
+      currentEpisode: plainText(item.current_episode, 60),
+    })),
     observedItemFields: rows[0]
       ? Object.keys(rows[0]).slice(0, 40).map(key => shortText(key, 80) ?? "")
       : [],

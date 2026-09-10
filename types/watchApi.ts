@@ -1,4 +1,19 @@
-/** B1 keeps only the fields needed to inspect the list contract. No media URLs. */
+export type WatchCollectionSource =
+  | { readonly kind: "latest" }
+  | { readonly kind: "format" | "genre" | "country"; readonly slug: string };
+
+/** Only optional display metadata from a list response. Never episode/player URLs. */
+export type WatchListMovie = {
+  name: string | null;
+  slug: string | null;
+  originalName: string | null;
+  thumbUrl: string | null;
+  quality: string | null;
+  language: string | null;
+  currentEpisode: string | null;
+};
+
+/** The documented list envelope is shared by latest/category/country endpoints. */
 export type WatchLatestPage = {
   pagination: {
     currentPage: number;
@@ -6,9 +21,10 @@ export type WatchLatestPage = {
     totalItems: number;
     itemsPerPage: number;
   };
-  items: ReadonlyArray<{ name: string | null; slug: string | null }>;
+  items: ReadonlyArray<WatchListMovie>;
   observedItemFields: ReadonlyArray<string>;
 };
+export type WatchCollectionPage = WatchLatestPage;
 
 /** Only display data is retained. Episode/player URLs never enter the Hero cache. */
 export type WatchMovieSummary = {

@@ -4,11 +4,12 @@ import { isWatchMovieSlug } from "./nguoncEndpoints";
  * Nguonc documents /api/film/{slug}; a raw ID is not a documented lookup route.
  */
 export const WATCH_HERO_SLUGS: readonly string[] = [
+  "truy-tim-long-dien-huong",
   "anh-hung-2026",
   "tai",
-  "quy-nhap-trang-2",
+  "thien-duong-mau-2025",
   "tho-oi",
-  "con-ke-ba-nghe",
+  "ai-chet-gio-tay-phap-su-mu",
 ];
 
 /** A bad entry cannot create arbitrary requests or unbounded fan-out. */

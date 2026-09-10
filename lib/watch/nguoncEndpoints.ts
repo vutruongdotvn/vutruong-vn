@@ -1,4 +1,4 @@
-import { WatchApiError } from "../../types/watchApi";
+import { WatchApiError, type WatchCollectionSource } from "../../types/watchApi";
 
 export const NGUONC_API_ORIGIN = "https://phim.nguonc.com";
 
@@ -18,6 +18,19 @@ export function isWatchMovieSlug(value: unknown): value is string {
 export function watchMovieUrl(slug: string): string {
   if (!isWatchMovieSlug(slug)) throw new WatchApiError("invalid_request");
   return new URL(`/api/film/${slug}`, NGUONC_API_ORIGIN).href;
+}
+
+export function watchCollectionUrl(source: WatchCollectionSource, page = 1): string {
+  if (!source || typeof source !== "object" || !Number.isSafeInteger(page) || page < 1) {
+    throw new WatchApiError("invalid_request");
+  }
+  if (source.kind === "latest") return watchLatestUrl(page);
+  const directories = { format: "danh-sach", genre: "the-loai", country: "quoc-gia" } as const;
+  if ((source.kind !== "format" && source.kind !== "genre" && source.kind !== "country")
+    || !isWatchMovieSlug(source.slug)) throw new WatchApiError("invalid_request");
+  const url = new URL(`/api/films/${directories[source.kind]}/${source.slug}`, NGUONC_API_ORIGIN);
+  url.searchParams.set("page", String(page));
+  return url.href;
 }
 
 /** These paths were checked against the real Nguonc detail responses.

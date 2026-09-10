@@ -1,104 +1,222 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment, useState, type ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { useWatchAccess } from "@/components/watch/access/WatchAccessProvider";
 import PremiumGlassCard from "@/components/ui/PremiumGlassCard";
+import type { WatchAccessState, WatchUserStatus } from "@/types/watchAccess";
 
-const blockedContent = {
-  checking: {
-    title: "Đang xác minh tài khoản",
-    description: "Vui lòng chờ trong lúc kiểm tra tài khoản của bạn",
-  },
-  anonymous: {
-    title: "Truy cập bị từ chối",
-    description: "Vui lòng đăng nhập để tiếp tục truy cập",
-  },
-  denied: {
-    title: "Tài khoản chưa được phê duyệt",
-    description: "Tài khoản được phê duyệt mới có thể truy cập",
-  },
-  error: {
-    title: "Chưa thể xác minh quyền",
-    description: "Không thể kiểm tra quyền truy cập lúc này",
-  },
+type AccessView =
+  | "checking"
+  | "anonymous"
+  | "pending"
+  | "error"
+  | "revoked"
+  | "banned"
+  | "rejected"
+  | "unknown"
+  | "approved"
+  | "admin";
+
+type AccessContent = {
+  readonly icon: string;
+  readonly title: string;
+  readonly description: string;
 };
 
-const statusLabels = {
-  approved: "Đã duyệt", pending: "Đang chờ duyệt", banned: "Tài khoản đã bị khóa",
-  rejected: "Yêu cầu bị từ chối", revoked: "Quyền truy cập bị thu hồi", unknown: "Chưa xác định",
+// Mỗi trạng thái là một khối riêng để có thể thay icon/text độc lập tại đây.
+const CHECKING_CONTENT: AccessContent = {
+  icon: "fa-user-shield",
+  title: "Đang xác minh tài khoản",
+  description: "Vui lòng chờ trong lúc kiểm tra tài khoản của bạn",
 };
 
-/**
- * Gates rendering and mounting of the browser-owned Watch subtree.
- * Movie modules must stay free of import-time/server-side requests. Each future
- * movie request must also acquire a permit through requireAccess() (step B).
- */
-export default function WatchGuard({ children }: { children: ReactNode }) {
-  const access = useWatchAccess();
-  const [manualCheckPending, setManualCheckPending] = useState(false);
-  const canMount = access.phase === "allowed" && Boolean(access.userId)
+const ANONYMOUS_CONTENT: AccessContent = {
+  icon: "fa-user-secret",
+  title: "Truy cập bị từ chối",
+  description: "Vui lòng đăng nhập để tiếp tục truy cập",
+};
+
+const PENDING_CONTENT: AccessContent = {
+  icon: "fa-spinner-third motion-safe:animate-spin",
+  title: "Tài khoản chưa được phê duyệt",
+  description: "Tài khoản được phê duyệt mới có thể truy cập",
+};
+
+const ERROR_CONTENT: AccessContent = {
+  icon: "fa-triangle-exclamation",
+  title: "Chưa thể xác minh quyền",
+  description: "Không thể kiểm tra quyền truy cập lúc này",
+};
+
+const REVOKED_CONTENT: AccessContent = {
+  icon: "fa-shield-slash",
+  title: "Quyền truy cập đã bị thu hồi",
+  description: "Tài khoản hiện không còn quyền truy cập Watch",
+};
+
+const BANNED_CONTENT: AccessContent = {
+  icon: "fa-ban",
+  title: "Tài khoản đã bị khóa",
+  description: "Tài khoản đang bị khóa và không thể truy cập Watch",
+};
+
+const REJECTED_CONTENT: AccessContent = {
+  icon: "fa-circle-xmark",
+  title: "Yêu cầu truy cập bị từ chối",
+  description: "Yêu cầu phê duyệt tài khoản của bạn đã bị từ chối",
+};
+
+const UNKNOWN_CONTENT: AccessContent = {
+  icon: "fa-circle-question",
+  title: "Chưa xác định được trạng thái tài khoản",
+  description: "Tài khoản chưa có trạng thái quyền Watch hợp lệ",
+};
+
+const APPROVED_CONTENT: AccessContent = {
+  icon: "fa-shield-check",
+  title: "Tài khoản đã được xác thực",
+  description: "Bạn đã được phê duyệt và có quyền truy cập Watch",
+};
+
+const ADMIN_CONTENT: AccessContent = {
+  icon: "fa-badge-check",
+  title: "Đã xác thực quản trị viên",
+  description: "Bạn có quyền quản trị và được phép truy cập Watch",
+};
+
+export const WATCH_ACCESS_CONTENT = {
+  checking: CHECKING_CONTENT,
+  anonymous: ANONYMOUS_CONTENT,
+  pending: PENDING_CONTENT,
+  error: ERROR_CONTENT,
+  revoked: REVOKED_CONTENT,
+  banned: BANNED_CONTENT,
+  rejected: REJECTED_CONTENT,
+  unknown: UNKNOWN_CONTENT,
+  approved: APPROVED_CONTENT,
+  admin: ADMIN_CONTENT,
+} satisfies Record<AccessView, AccessContent>;
+
+const STATUS_LABELS: Record<WatchUserStatus, string> = {
+  approved: "Đã duyệt",
+  pending: "Đang chờ duyệt",
+  banned: "Tài khoản đã bị khóa",
+  rejected: "Yêu cầu bị từ chối",
+  revoked: "Quyền truy cập bị thu hồi",
+  unknown: "Chưa xác định",
+};
+
+export function watchAccessView(access: WatchAccessState): AccessView {
+  if (access.phase === "checking") return "checking";
+  if (access.phase === "anonymous") return "anonymous";
+  if (access.phase === "error") return "error";
+
+  if (access.phase === "allowed") {
+    if (!access.userId || access.status !== "approved") return "error";
+    if (access.accessKind === "admin") return "admin";
+    return access.accessKind === "approved_user" ? "approved" : "error";
+  }
+
+  switch (access.status) {
+    case "pending":
+      return "pending";
+    case "revoked":
+      return "revoked";
+    case "banned":
+      return "banned";
+    case "rejected":
+      return "rejected";
+    default:
+      return "unknown";
+  }
+}
+
+function canMountWatch(access: WatchAccessState): boolean {
+  return access.phase === "allowed"
+    && Boolean(access.userId)
     && access.status === "approved"
     && (access.accessKind === "admin" || access.accessKind === "approved_user");
-  const showChecking = access.phase === "checking" || manualCheckPending;
+}
 
-  async function handleRecheck() {
-    if (showChecking) return;
-    setManualCheckPending(true);
-    try {
-      // The provider owns verification, including deduplication and cancellation.
-      await access.recheck();
-    } finally {
-      setManualCheckPending(false);
-    }
-  }
-
-  if (canMount) {
-    // Same-account background verification keeps the mounted subtree stable.
-    // A new identity or permission revision discards the previous subtree state.
-    return <Fragment key={`${access.userId}:${access.revision}`}>{children}</Fragment>;
-  }
-
-  // An inconsistent "allowed" snapshot must still fail closed.
-  const phase = access.phase === "allowed" ? "error" : access.phase;
-  const content = blockedContent[phase];
+function WatchBlockedCard({ access, view }: { access: WatchAccessState; view: AccessView }) {
+  const content = WATCH_ACCESS_CONTENT[view];
+  const denied = access.phase === "denied";
 
   return (
-    <main data-watch-guard="blocked" className="min-h-screen flex items-center justify-center text-center px-4 pb-28 pt-24 sm:px-6">
-      <PremiumGlassCard aria-labelledby="watch-access-title" className="max-w-3xl" contentClassName="text-center p-4 sm:p-8 py-8">
-
-        {/* Icon Container */}
+    <main
+      data-watch-guard="blocked"
+      data-watch-access-state={view}
+      aria-labelledby="watch-access-title"
+      className="min-h-screen flex items-center justify-center text-center px-4 pb-28 pt-24 sm:px-6"
+    >
+      <PremiumGlassCard
+        aria-labelledby="watch-access-title"
+        className="max-w-3xl"
+        contentClassName="text-center p-4 sm:p-8 py-8"
+      >
+        {/* Icon Container — giữ nguyên bố cục cá nhân hóa của WatchGuard. */}
         <div className="size-16 mb-6 flex items-center mx-auto justify-center rounded-full bg-red-50 dark:bg-red-400/15 border border-red-200 dark:border-red-400/25">
-          <i className="fa-duotone fa-lock-keyhole text-3xl text-red-500" />
+          <i
+            aria-hidden="true"
+            className={`fa-duotone ${content.icon} text-3xl text-red-500`}
+          />
         </div>
 
-        <h1 id="watch-access-title" className="text-xl sm:text-2xl font-bold text-foreground mb-1.5">
+        <h1
+          id="watch-access-title"
+          className="text-xl sm:text-2xl font-bold text-foreground mb-1.5"
+        >
           {content.title}
         </h1>
 
-        <p className="text-sm sm:text-base text-muted-foreground mb-6">{content.description}</p>
+        <p className="text-sm sm:text-base text-muted-foreground mb-6">
+          {content.description}
+        </p>
 
-        {phase === "denied" && (
-          <p className="text-sm text-foreground border border-border py-2 px-6 inline-flex rounded-full bg-background/75">Trạng thái tài khoản: {statusLabels[access.status]}</p>
+        {denied && (
+          <p className="text-sm text-foreground border border-border py-2 px-6 inline-flex rounded-full bg-background/75">
+            Trạng thái tài khoản: {STATUS_LABELS[access.status]}
+          </p>
         )}
 
-        {/* <div aria-live="polite" className="mb-5 mt-6 min-h-7 text-sm leading-6 text-muted-foreground">
-          {showChecking ? "Đang kiểm tra quyền truy cập của tài khoản..." : "Bạn có thể kiểm tra lại sau khi trạng thái tài khoản thay đổi."}
-        </div> */}
-        {/* <div className="flex items-center justify-center flex-wrap items-center gap-3">
-          <button type="button" onClick={() => { void handleRecheck(); }} disabled={showChecking} aria-busy={showChecking}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-opacity disabled:cursor-wait disabled:opacity-50">
-            <i aria-hidden="true" className="fad fa-arrows-rotate" /> Kiểm tra lại quyền
-          </button>
-          <Link href="/" prefetch={false} className="inline-flex min-h-11 items-center rounded-full px-5 py-2.5 text-sm font-medium text-foreground hover:bg-muted">Về Trang chủ</Link>
-        </div> */}
-
         {/* Nút điều hướng lối thoát */}
-        <Link href="/" className="flex items-center gap-3 justify-center mt-6 px-6 py-3 mx-auto bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition shadow-lg shadow-primary/20 active:scale-95 w-sm max-w-full">
-          <i className="fad fa-arrow-left" /> Về Trang chủ
+        <Link
+          href="/"
+          prefetch={false}
+          className="flex items-center gap-3 justify-center mt-6 px-6 py-3 mx-auto bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition shadow-lg shadow-primary/20 active:scale-95 w-sm max-w-full"
+        >
+          <i aria-hidden="true" className="fad fa-arrow-left" />
+          Về Trang chủ
         </Link>
-
       </PremiumGlassCard>
     </main>
+  );
+}
+
+/**
+ * Chặn toàn bộ cây Watch cho tới khi RPC xác nhận admin/approved user.
+ * Mọi request phim vẫn phải gọi requireAccess() ngay trước khi fetch.
+ */
+export default function WatchGuard({ children }: { children: ReactNode }) {
+  const access = useWatchAccess();
+  const view = watchAccessView(access);
+
+  if (!canMountWatch(access)) {
+    return <WatchBlockedCard access={access} view={view} />;
+  }
+
+  // Không hiển thị card "thành công" để tránh nháy trước trang chủ Watch.
+  // Screen reader vẫn nhận đúng trạng thái approved/admin.
+  const content = WATCH_ACCESS_CONTENT[view];
+
+  return (
+    <Fragment key={`${access.userId}:${access.revision}`}>
+      <span className="sr-only" role="status" data-watch-access-state={view}>
+        <i aria-hidden="true" className={`fa-duotone ${content.icon}`} />
+        {content.title}
+      </span>
+      {children}
+    </Fragment>
   );
 }

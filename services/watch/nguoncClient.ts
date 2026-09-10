@@ -1,7 +1,7 @@
 import { waitForWatchOperation } from "../../lib/watch/watchAccessController";
-import { watchLatestUrl, watchMovieUrl } from "../../lib/watch/nguoncEndpoints";
+import { watchLatestUrl, watchMovieUrl, watchCollectionUrl } from "../../lib/watch/nguoncEndpoints";
 import { normalizeWatchLatest, normalizeWatchMovie } from "../../lib/watch/normalizeNguonc";
-import { WatchApiError, type WatchLatestPage, type WatchMovieSummary } from "../../types/watchApi";
+import { WatchApiError, type WatchLatestPage, type WatchMovieSummary, type WatchCollectionSource } from "../../types/watchApi";
 import type { WatchAccessPermit } from "../../types/watchAccess";
 
 type Scope = Pick<WatchAccessPermit, "userId" | "revision" | "accessKind">;
@@ -73,6 +73,11 @@ export class WatchNguoncClient {
 
   detail(slug: string, consumerSignal?: AbortSignal): Promise<WatchMovieSummary> {
     try { return this.request(watchMovieUrl(slug), value => normalizeWatchMovie(value, slug), consumerSignal); }
+    catch (error) { return Promise.reject(error); }
+  }
+
+  collection(source: WatchCollectionSource, page = 1, consumerSignal?: AbortSignal): Promise<WatchLatestPage> {
+    try { return this.request(watchCollectionUrl(source, page), value => normalizeWatchLatest(value, page), consumerSignal); }
     catch (error) { return Promise.reject(error); }
   }
 
