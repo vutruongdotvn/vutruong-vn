@@ -2,7 +2,7 @@ import { WatchApiError, type WatchCollectionSource } from "../../types/watchApi"
 
 export const NGUONC_API_ORIGIN = "https://phim.nguonc.com";
 
-const WATCH_EMBED_HOST = /^embed\d{1,3}\.streamc\.xyz$/i;
+const WATCH_EMBED_HOST = /^embed(?:\d{1,3})?\.streamc\.xyz$/i;
 const WATCH_TRAILER_HOSTS = new Set([
   "youtube.com",
   "www.youtube.com",
