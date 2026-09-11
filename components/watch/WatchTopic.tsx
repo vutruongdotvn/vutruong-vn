@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useId, useState } from "react";
 import { WATCH_TOPICS, WATCH_TOPIC_INITIAL_COUNT } from "@/lib/watch/watchHomeConfig";
 
@@ -18,7 +19,7 @@ const TOPIC_TONES = {
 const TOPIC_CARD_CLASS = [
   "relative isolate box-border flex h-full min-h-40 flex-col justify-end",
   "gap-[.9rem] overflow-hidden rounded-[1rem_2rem_1rem_1rem]",
-  "border border-[color-mix(in_srgb,var(--topic-color)_25%,var(--border))]",
+  "border-2 border-[color-mix(in_srgb,var(--topic-color)_25%,var(--border))]",
   "bg-[color-mix(in_srgb,var(--topic-color)_23%,var(--card))]",
   "p-[1.35rem] text-foreground no-underline",
   "transition-[transform,box-shadow] duration-200 ease-out",
@@ -47,7 +48,7 @@ const TOPIC_SECTION_CLASS = [
   "[&_button:focus-visible]:outline-offset-4",
 ].join(" ");
 
-/** Local navigation only. Fetching belongs to the protected destination row. */
+/** Navigation shortcuts only. Movie fetching remains inside the protected destination route. */
 export default function WatchTopic() {
   const [expanded, setExpanded] = useState(false);
   const headingId = useId();
@@ -91,27 +92,11 @@ export default function WatchTopic() {
         data-expanded={expanded}
       >
         {topics.map(topic => (
-          <li key={topic.target}>
-            <a
-              href={`#${topic.target}`}
+          <li key={topic.href}>
+            <Link
+              href={topic.href}
+              prefetch={false}
               className={`${TOPIC_CARD_CLASS} ${TOPIC_TONES[topic.tone]}`}
-              onClick={event => {
-                if (
-                  event.metaKey
-                  || event.ctrlKey
-                  || event.shiftKey
-                  || event.altKey
-                  || event.button !== 0
-                ) {
-                  return;
-                }
-
-                // Native hash navigation scrolls; focus activates a lazy row for keyboard users.
-                window.document
-                  .getElementById(topic.target)
-                  ?.querySelector<HTMLElement>("h2")
-                  ?.focus({ preventScroll: true });
-              }}
             >
               <i
                 className={`fad ${topic.icon} absolute! top-[1.2rem] right-[1.35rem] -rotate-12 text-[1.7rem] opacity-[.24]`}
@@ -124,7 +109,7 @@ export default function WatchTopic() {
                 Xem chủ đề
                 <i className="fad fa-arrow-right" aria-hidden="true" />
               </span>
-            </a>
+            </Link>
           </li>
         ))}
       </ul>

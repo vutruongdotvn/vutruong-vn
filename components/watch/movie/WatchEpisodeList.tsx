@@ -32,12 +32,9 @@ export default function WatchEpisodeList({ movieSlug, episodes, currentSegment }
 
   return (
     <section aria-labelledby="watch-episode-heading">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="m-0 text-[.68rem] font-bold tracking-[.18em] text-muted-foreground">
-            DANH SÁCH PHÁT
-          </p>
-          <h2 id="watch-episode-heading" className="m-0 mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
+          <h2 id="watch-episode-heading" className="m-0 mt-2 text-lg font-bold tracking-tight sm:text-2xl">
             Chọn tập phim
           </h2>
           <p className="m-0 mt-2 text-sm leading-6 text-muted-foreground">
@@ -45,7 +42,7 @@ export default function WatchEpisodeList({ movieSlug, episodes, currentSegment }
           </p>
         </div>
 
-        {currentSegment && movieHref && (
+        {/* {currentSegment && movieHref && (
           <Link
             href={movieHref}
             prefetch={false}
@@ -54,7 +51,7 @@ export default function WatchEpisodeList({ movieSlug, episodes, currentSegment }
             <i className="fad fa-circle-info" aria-hidden="true" />
             Chi tiết phim
           </Link>
-        )}
+        )} */}
       </div>
 
       <nav className="mt-7 flex flex-wrap gap-2" aria-label="Các tập phim">

@@ -5,7 +5,6 @@ import { useId, useMemo, useRef, useState } from "react";
 import { A11y } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperInstance } from "swiper";
-import WatchGrid from "@/components/watch/WatchGrid";
 import WatchMovieCard from "@/components/watch/WatchMovieCard";
 import WatchRowSkeleton from "@/components/watch/WatchRowSkeleton";
 import { useWatchCollection } from "@/hooks/watch/useWatchCollection";
@@ -119,7 +118,6 @@ export default function WatchSlider({ id, title, description, source }: Props) {
     [query.data],
   );
 
-  const [expanded, setExpanded] = useState(false);
   const [edges, setEdges] = useState<Edges>({
     beginning: true,
     end: true,
@@ -128,7 +126,6 @@ export default function WatchSlider({ id, title, description, source }: Props) {
 
   const swiper = useRef<SwiperInstance | null>(null);
   const headingId = useId();
-  const contentId = useId();
   const collectionHref = watchCollectionHref(source);
 
   function sync(instance: SwiperInstance) {
@@ -215,57 +212,36 @@ export default function WatchSlider({ id, title, description, source }: Props) {
           )}
         </div>
 
-        <div className="flex shrink-0 items-center gap-[.9rem] max-[39.99rem]:self-start">
+        <div className="flex shrink-0 items-center gap-[.45rem] max-[39.99rem]:hidden">
           <button
             type="button"
-            className="inline-flex min-h-10 cursor-pointer items-center gap-2 border-0 bg-transparent px-1 py-[.4rem] text-xs text-muted-foreground enabled:hover:text-foreground max-[39.99rem]:min-h-8 max-[39.99rem]:gap-[.35rem] max-[39.99rem]:text-[.65rem]"
-            disabled={movies.length === 0}
-            aria-expanded={expanded}
-            aria-controls={contentId}
-            onClick={() => setExpanded(value => !value)}
+            className="grid size-[2.35rem] cursor-pointer place-items-center rounded-full border border-border bg-card text-xs text-foreground enabled:hover:bg-accent"
+            aria-label={`Phim trước — ${title}`}
+            disabled={movies.length < 2 || edges.beginning || edges.locked}
+            onClick={() => move("prev")}
           >
-            <i
-              className={expanded ? "fad fa-rectangle-list" : "fad fa-grid-2"}
-              aria-hidden="true"
-            />
-            <span>{expanded ? "Thu gọn" : "Xem dạng lưới"}</span>
+            <i className="fad fa-chevron-left" aria-hidden="true" />
           </button>
 
-          {!expanded && (
-            <div className="flex shrink-0 items-center gap-[.45rem] max-[39.99rem]:hidden">
-              <button
-                type="button"
-                className="grid size-[2.35rem] cursor-pointer place-items-center rounded-full border border-border bg-card text-xs text-foreground enabled:hover:bg-accent"
-                aria-label={`Phim trước — ${title}`}
-                disabled={movies.length < 2 || edges.beginning || edges.locked}
-                onClick={() => move("prev")}
-              >
-                <i className="fad fa-chevron-left" aria-hidden="true" />
-              </button>
-
-              <button
-                type="button"
-                className="grid size-[2.35rem] cursor-pointer place-items-center rounded-full border border-border bg-card text-xs text-foreground enabled:hover:bg-accent"
-                aria-label={`Phim tiếp theo — ${title}`}
-                disabled={movies.length < 2 || edges.end || edges.locked}
-                onClick={() => move("next")}
-              >
-                <i className="fad fa-chevron-right" aria-hidden="true" />
-              </button>
-            </div>
-          )}
+          <button
+            type="button"
+            className="grid size-[2.35rem] cursor-pointer place-items-center rounded-full border border-border bg-card text-xs text-foreground enabled:hover:bg-accent"
+            aria-label={`Phim tiếp theo — ${title}`}
+            disabled={movies.length < 2 || edges.end || edges.locked}
+            onClick={() => move("next")}
+          >
+            <i className="fad fa-chevron-right" aria-hidden="true" />
+          </button>
         </div>
       </header>
 
-      <div id={contentId} aria-busy={row.visible && query.isFetching}>
+      <div aria-busy={row.visible && query.isFetching}>
         {!row.visible || query.isPending ? (
           <WatchRowSkeleton loading={row.visible} />
         ) : query.isError && !query.data ? (
           <WatchRowError error={error} pending={query.isFetching} retry={retry} />
         ) : movies.length === 0 ? (
           <WatchRowEmpty />
-        ) : expanded ? (
-          <WatchGrid movies={movies} label={`Phim trong ${title}`} />
         ) : (
           <Swiper
             // 1. TÙY CHỈNH GIAO DIỆN (CSS)

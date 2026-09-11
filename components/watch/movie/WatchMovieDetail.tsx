@@ -3,6 +3,7 @@
 import Link from "next/link";
 import WatchMovieDetailSkeleton from "@/components/watch/movie/WatchMovieDetailSkeleton";
 import WatchMovieInfo from "@/components/watch/movie/WatchMovieInfo";
+import WatchRuntimeMetadata from "@/components/watch/WatchRuntimeMetadata";
 import { useWatchMovie } from "@/hooks/watch/useWatchMovie";
 import { WatchApiError, watchApiErrorMessage } from "@/types/watchApi";
 
@@ -57,5 +58,16 @@ export default function WatchMovieDetail({ slug }: { slug: string }) {
     );
   }
 
-  return <WatchMovieInfo movie={query.data} />;
+  const movie = query.data;
+
+  return (
+    <>
+      <WatchRuntimeMetadata
+        title={`${movie.name} | Watch`}
+        description={movie.description}
+        imageUrl={movie.thumbUrl}
+      />
+      <WatchMovieInfo movie={movie} />
+    </>
+  );
 }

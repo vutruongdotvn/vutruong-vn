@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useWatchQueryScope } from "@/components/watch/WatchQueryProvider";
 import { safeWatchTrailerUrl } from "@/lib/watch/nguoncEndpoints";
 
 type Props = {
@@ -17,33 +18,92 @@ const BUTTON_CLASS = [
 ].join(" ");
 
 export default function WatchTrailerButton({ movieName, trailerUrl }: Props) {
+  const scope = useWatchQueryScope();
   const safeUrl = safeWatchTrailerUrl(trailerUrl);
+
   const buttonRef = useRef<HTMLButtonElement>(null);
   const instanceRef = useRef<{ destroy: () => void } | null>(null);
+  const attemptRef = useRef<AbortController | null>(null);
+  const detachPermitRef = useRef<(() => void) | null>(null);
   const mountedRef = useRef(true);
+
   const [opening, setOpening] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  function clearPermitListener() {
+    detachPermitRef.current?.();
+    detachPermitRef.current = null;
+  }
+
+  function destroyTrailer() {
+    instanceRef.current?.destroy();
+    instanceRef.current = null;
+  }
 
   useEffect(() => {
     mountedRef.current = true;
 
     return () => {
       mountedRef.current = false;
-      instanceRef.current?.destroy();
-      instanceRef.current = null;
+      attemptRef.current?.abort();
+      attemptRef.current = null;
+      clearPermitListener();
+      destroyTrailer();
     };
   }, []);
 
   async function openTrailer() {
     if (!safeUrl || opening) return;
 
+    // A repeated explicit click owns a fresh media authorization attempt.
+    attemptRef.current?.abort();
+    clearPermitListener();
+    destroyTrailer();
+
+    const consumer = new AbortController();
+    attemptRef.current = consumer;
+
     setOpening(true);
     setError(null);
 
     try {
-      // Fancybox and its video code are downloaded only after this click.
+      // Security contract shared with WatchRemoteImage / WatchRemotePlayer:
+      // authorize immediately before any remote media can be created.
+      const permit = await scope.permitMedia(consumer.signal);
+
+      if (
+        !mountedRef.current
+        || consumer.signal.aborted
+        || permit.signal.aborted
+        || !scope.getSnapshot().ready
+      ) {
+        return;
+      }
+
+      const closeOnRevoke = () => {
+        destroyTrailer();
+      };
+
+      permit.signal.addEventListener("abort", closeOnRevoke, { once: true });
+      detachPermitRef.current = () => {
+        permit.signal.removeEventListener("abort", closeOnRevoke);
+      };
+
+      // Fancybox and its video code are still downloaded only after the
+      // explicit click AND after a fresh Watch permit has been granted.
       const { Fancybox } = await import("@fancyapps/ui/dist/fancybox/");
-      if (!mountedRef.current) return;
+
+      // Authorization may have changed while the dynamic import was in flight.
+      // Keep this as the final synchronous gate immediately before show().
+      if (
+        !mountedRef.current
+        || consumer.signal.aborted
+        || permit.signal.aborted
+        || !scope.getSnapshot().ready
+      ) {
+        clearPermitListener();
+        return;
+      }
 
       instanceRef.current = Fancybox.show(
         [{
@@ -91,11 +151,23 @@ export default function WatchTrailerButton({ movieName, trailerUrl }: Props) {
         },
       ) ?? null;
     } catch {
-      if (mountedRef.current) {
+      // Logout/revoke/unmount cancellation is an expected security path,
+      // not a user-facing trailer failure.
+      if (
+        mountedRef.current
+        && !consumer.signal.aborted
+        && scope.getSnapshot().ready
+      ) {
         setError("Chưa thể mở trailer. Vui lòng thử lại.");
       }
     } finally {
-      if (mountedRef.current) setOpening(false);
+      if (attemptRef.current === consumer) {
+        attemptRef.current = null;
+
+        if (mountedRef.current) {
+          setOpening(false);
+        }
+      }
     }
   }
 
@@ -111,12 +183,19 @@ export default function WatchTrailerButton({ movieName, trailerUrl }: Props) {
         aria-describedby={error ? "watch-trailer-error" : undefined}
         onClick={() => void openTrailer()}
       >
-        <i className={opening ? "fad fa-spinner-third fa-spin" : "fad fa-play-circle"} aria-hidden="true" />
+        <i
+          className={opening ? "fad fa-spinner-third fa-spin" : "fad fa-play-circle"}
+          aria-hidden="true"
+        />
         {opening ? "Đang mở…" : "Xem Trailer"}
       </button>
 
       {error && (
-        <p id="watch-trailer-error" className="m-0 mt-2 text-xs text-destructive" role="status">
+        <p
+          id="watch-trailer-error"
+          className="m-0 mt-2 text-xs text-destructive"
+          role="status"
+        >
           {error}
         </p>
       )}

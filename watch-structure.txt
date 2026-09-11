@@ -1,0 +1,114 @@
+﻿=== app\watch ===
+Folder PATH listing
+Volume serial number is 3C3A-F3B2
+C:\USERS\VUTRUONG\VUTRUONG-VN\APP\WATCH
+|   layout.tsx
+|   page.tsx
+|   
++---danh-sach
+|   |   page.tsx
+|   |   
+|   \---[slug]
+|           page.tsx
+|           
++---movie
+|   \---[slug]
+|       |   page.tsx
+|       |   
+|       \---[episode]
+|               page.tsx
+|               
++---quoc-gia
+|   |   page.tsx
+|   |   
+|   \---[slug]
+|           page.tsx
+|           
+\---the-loai
+    |   page.tsx
+    |   
+    \---[slug]
+            page.tsx
+            
+
+=== components\watch ===
+Folder PATH listing
+Volume serial number is 3C3A-F3B2
+C:\USERS\VUTRUONG\VUTRUONG-VN\COMPONENTS\WATCH
+|   WatchApiProbe.tsx
+|   WatchGrid.tsx
+|   WatchHero.tsx
+|   WatchHome.tsx
+|   WatchHomeSlider.tsx
+|   WatchMovieCard.tsx
+|   WatchQueryProvider.tsx
+|   WatchRemoteImage.tsx
+|   WatchRowSkeleton.tsx
+|   WatchSlider.tsx
+|   WatchTopic.tsx
+|   
++---access
+|       WatchAccessProvider.tsx
+|       WatchGuard.tsx
+|       
++---browse
+|       WatchBrowseGridSkeleton.tsx
+|       WatchCollectionBrowser.tsx
+|       WatchCountryFlag.tsx
+|       WatchDirectoryIndex.tsx
+|       WatchPagination.tsx
+|       
+\---movie
+        WatchEpisodeList.tsx
+        WatchMovieDetail.tsx
+        WatchMovieDetailSkeleton.tsx
+        WatchMovieInfo.tsx
+        WatchMoviePlayer.tsx
+        WatchMoviePlayerSkeleton.tsx
+        WatchRemotePlayer.tsx
+        WatchTrailerButton.tsx
+        
+
+=== lib\watch ===
+Folder PATH listing
+Volume serial number is 3C3A-F3B2
+C:\USERS\VUTRUONG\VUTRUONG-VN\LIB\WATCH
+    nguoncEndpoints.ts
+    normalizeNguonc.ts
+    watchAccessController.ts
+    watchAccessRuntime.ts
+    watchCollectionView.ts
+    watchDirectory.ts
+    watchHeroConfig.ts
+    watchHomeConfig.ts
+    watchQueryKeys.ts
+    watchQueryScope.ts
+    watchRoutes.ts
+    
+No subfolders exist 
+
+
+=== hooks\watch ===
+Folder PATH listing
+Volume serial number is 3C3A-F3B2
+C:\USERS\VUTRUONG\VUTRUONG-VN\HOOKS\WATCH
+    useWatchCollection.ts
+    useWatchCollectionPage.ts
+    useWatchDirectory.ts
+    useWatchLatest.ts
+    useWatchMovie.ts
+    useWatchPlayback.ts
+    useWatchRowVisibility.ts
+    
+No subfolders exist 
+
+
+=== services\watch ===
+Folder PATH listing
+Volume serial number is 3C3A-F3B2
+C:\USERS\VUTRUONG\VUTRUONG-VN\SERVICES\WATCH
+    nguoncClient.ts
+    watchAccessService.ts
+    
+No subfolders exist 
+

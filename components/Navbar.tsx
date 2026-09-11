@@ -92,10 +92,12 @@ export default function Navbar() {
   const currentMeta =
     pathname === "/blog" || pathname.startsWith("/blog/")
       ? pageMeta["/blog"]
-      : pageMeta[pathname as keyof typeof pageMeta] || {
-        title: "VT Zone",
-        subtitle: "Personal ecosystem",
-      };
+      : pathname === "/watch" || pathname.startsWith("/watch/")
+        ? pageMeta["/watch"]
+        : pageMeta[pathname as keyof typeof pageMeta] || {
+          title: "VT Zone",
+          subtitle: "Personal ecosystem",
+        };
 
   const title = currentMeta.title;
   const subtitle = currentMeta.subtitle;
@@ -331,9 +333,9 @@ export default function Navbar() {
         >
           <div
             className={`
-              relative overflow-visible border-b border-border bg-card transition-all duration-900 ease-in-out hover:bg-card
+              relative overflow-visible border-b border-border/75 bg-card transition-all duration-900 ease-in-out hover:bg-card
               ${scrolled
-                ? "afterScrooled shadow-[0_12px_24px_rgba(0,0,0,0.035)]"
+                ? "afterScrooled shadow-[0_12px_18px_rgba(0,0,0,0.02)]"
                 : "beforeScrolled shadow-none"
               }
               ${visible

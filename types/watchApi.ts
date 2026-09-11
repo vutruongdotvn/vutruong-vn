@@ -76,6 +76,28 @@ export type WatchPlaybackManifest = {
   movieSlug: string;
   movieName: string;
   originalName: string | null;
+
+  /**
+   * Sanitized display metadata copied from the SAME authorized playback response.
+   * These fields never trigger a second movie/detail request.
+   */
+  description: string | null;
+  /** Vertical 2:3 artwork for browser-only runtime metadata and protected UI. */
+  thumbUrl: string | null;
+  quality: string | null;
+  language: string | null;
+  duration: string | null;
+  currentEpisode: string | null;
+  totalEpisodes: number | null;
+  year: string | null;
+  formats: ReadonlyArray<string>;
+  genres: ReadonlyArray<string>;
+  countries: ReadonlyArray<string>;
+  director: string | null;
+  casts: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+
   episodes: ReadonlyArray<WatchPlaybackEpisode>;
 };
 

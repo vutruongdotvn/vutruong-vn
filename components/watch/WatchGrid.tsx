@@ -10,7 +10,7 @@ export default function WatchGrid({ movies, label }: { movies: ReadonlyArray<Wat
         "[&>li]:min-w-0",
         "min-[30rem]:grid-cols-3",
         "min-[40rem]:grid-cols-4 min-[40rem]:gap-x-2 min-[40rem]:gap-y-7",
-        "min-[60rem]:grid-cols-5 min-[75rem]:grid-cols-6 min-[96rem]:grid-cols-7",
+        "min-[60rem]:grid-cols-5 min-[75rem]:grid-cols-5 min-[96rem]:grid-cols-5",
       ].join(" ")}
       aria-label={label}
       data-watch-grid

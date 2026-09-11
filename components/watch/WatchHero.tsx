@@ -21,65 +21,67 @@ import "swiper/css/effect-fade";
 const SLUGS = selectWatchHeroSlugs(WATCH_HERO_SLUGS);
 
 const HERO_ROOT_CLASS = [
-  "relative isolate w-full bg-background text-foreground hidden md:block",
+  "relative isolate w-full overflow-hidden bg-background text-foreground",
   "[&_button:focus-visible]:outline-2 [&_button:focus-visible]:outline-ring",
   "[&_button:focus-visible]:outline-offset-4",
-  "[&_button:disabled]:cursor-default [&_button:disabled]:opacity-50",
+  "[&_button:disabled]:cursor-default [&_button:disabled]:opacity-45",
   "motion-reduce:[&_*]:duration-0! motion-reduce:[&_*]:animate-none!",
   "motion-reduce:[&_*]:scroll-auto!",
 ].join(" ");
 
 const HERO_ARTICLE_CLASS = [
-  "relative box-border flex min-h-[max(45rem,100svh)] items-end",
-  "overflow-hidden bg-card pt-32 pb-46",
-  "max-[47.99rem]:min-h-[max(48rem,100svh)]",
-  "max-[47.99rem]:pt-84 max-[47.99rem]:pb-50",
+  "relative box-border flex min-h-[max(46rem,100svh)] items-end overflow-hidden",
+  "bg-background pt-32 pb-40",
+  "max-[47.99rem]:min-h-[40rem]",
+  "max-[47.99rem]:pt-24 max-[47.99rem]:pb-20",
 ].join(" ");
 
-const HERO_GRADIENT_CLASS = [
-  "pointer-events-none absolute inset-0 size-full",
-  // Đáy đậm màu 100%, kéo dày tới 15%, rồi tan nhanh và kết thúc hoàn toàn ở 35% chiều cao
-  "bg-gradient-to-t from-[var(--background)] from-0% via-[var(--background)] via-15% to-transparent to-75%",
-  // Responsive (< 47.99rem): Đậm ở đáy và kết thúc sớm hơn ở 40%
-  // "max-[47.99rem]:bg-gradient-to-t max-[47.99rem]:from-[var(--background)] max-[47.99rem]:from-0% max-[47.99rem]:via-[color-mix(in_srgb,var(--background)_90%,transparent)] max-[47.99rem]:via-20% max-[47.99rem]:to-transparent max-[47.99rem]:to-40%",
+const HERO_CONTENT_CLASS = [
+  "relative z-2 mx-auto w-[min(calc(100%_-_4rem),76rem)]",
+  "max-[47.99rem]:w-[calc(100%_-_2.25rem)]",
 ].join(" ");
 
-const HERO_BUTTON_CLASS = [
-  "inline-flex min-h-[3.15rem] cursor-pointer items-center justify-center",
-  "gap-[.65rem] rounded-full border border-transparent",
-  "bg-primary px-[1.4rem] py-3 text-[.9rem] font-semibold",
-  "text-primary-foreground",
-  "shadow-[0_8px_24px_color-mix(in_srgb,var(--foreground)_12%,transparent)]",
-  "hover:opacity-90 [&_svg]:size-[1.2rem]",
+const HERO_CONTENT_INNER_CLASS = [
+  "min-[100rem]:max-w-full",
+  "max-[47.99rem]:max-w-[34rem]",
+].join(" ");
+
+const HERO_PRIMARY_LINK_CLASS = [
+  "group/hero-cta inline-flex min-h-[3.35rem] items-center justify-center",
+  "gap-3 rounded-full border border-primary bg-primary px-6 py-3",
+  "text-sm font-bold text-primary-foreground no-underline",
+  "shadow-[0_12px_34px_color-mix(in_srgb,var(--foreground)_18%,transparent)]",
+  "transition-[transform,opacity,box-shadow] duration-200 ease-out",
+  "hover:-translate-y-px hover:opacity-95",
+  "hover:shadow-[0_15px_40px_color-mix(in_srgb,var(--foreground)_22%,transparent)]",
+  "focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-4",
+  "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
+  "max-[47.99rem]:min-h-12 max-[47.99rem]:px-5 max-[47.99rem]:text-[.82rem]",
 ].join(" ");
 
 const HERO_NAV_BUTTON_CLASS = [
-  "inline-flex size-11 shrink-0 cursor-pointer items-center justify-center",
-  "rounded-full border border-border bg-card p-0",
-  "text-[1.2rem] text-foreground hover:bg-accent",
-  "max-[47.99rem]:size-[2.55rem]",
+  "grid size-11 shrink-0 cursor-pointer place-items-center rounded-full",
+  "border border-border/80 bg-card/88 text-sm text-foreground",
+  "shadow-sm backdrop-blur-md transition-[background-color,opacity] duration-200",
+  "hover:bg-accent",
 ].join(" ");
 
 const THUMBNAIL_BUTTON_CLASS = [
-  "relative aspect-[16/10] w-[clamp(4.2rem,7vw,6.3rem)] shrink-0",
-  "cursor-pointer overflow-hidden rounded-xl border-2 border-border",
-  "bg-muted p-0 opacity-65",
-  "transition-[opacity,border-color,transform] duration-[180ms]",
-  "aria-pressed:-translate-y-[2px] aria-pressed:border-primary",
-  "aria-pressed:opacity-100",
-  "aria-pressed:shadow-[0_0_0_3px_color-mix(in_srgb,var(--primary)_18%,transparent)]",
-  "hover:opacity-100",
-  "max-[47.99rem]:w-[3.7rem] max-[47.99rem]:rounded-[.55rem]",
+  "group/hero-thumb relative aspect-[16/10] min-w-0 flex-1 cursor-pointer overflow-hidden",
+  "rounded-[.85rem] border border-border bg-muted p-0 opacity-55",
+  "shadow-sm transition-[opacity,border-color,transform,box-shadow] duration-200 ease-out",
+  "hover:opacity-85",
+  "aria-pressed:-translate-y-1 aria-pressed:border-foreground/35 aria-pressed:opacity-100",
+  "aria-pressed:shadow-[0_8px_26px_color-mix(in_srgb,var(--foreground)_16%,transparent)]",
+  "motion-reduce:transition-none motion-reduce:aria-pressed:translate-y-0",
 ].join(" ");
 
-const HERO_DIALOG_CLASS = [
-  "m-auto max-h-[85svh] w-[min(42rem,calc(100%_-_2rem))] animate-fadeIn",
-  "rounded-3xl border border-border bg-card p-0 text-foreground",
-  "shadow-[0_24px_90px_color-mix(in_srgb,var(--foreground)_18%,transparent)]",
-  "backdrop:bg-overlay backdrop:backdrop-blur-[5px]",
-  "[&_h2]:m-0 [&_h2]:mt-4 [&_h2]:text-[1.85rem]",
-  "[&_h2]:leading-[1.25] [&_h2]:text-balance",
-  "max-[47.99rem]:[&_h2]:text-[1.6rem]",
+const MOBILE_INDICATOR_CLASS = [
+  "h-1.5 cursor-pointer rounded-full border-0 bg-foreground/25 p-0",
+  "transition-[width,background-color,opacity] duration-300",
+  "aria-pressed:w-7 aria-pressed:bg-foreground aria-pressed:opacity-90",
+  "w-1.5 hover:bg-foreground/55",
+  "motion-reduce:transition-none",
 ].join(" ");
 
 function heroErrorMessage(error: unknown): string {
@@ -96,23 +98,17 @@ function heroErrorMessage(error: unknown): string {
   return "Chưa tải được thông tin phim. Bạn có thể thử lại hoặc chọn phim khác.";
 }
 
-function WatchHeroMovie({
-  movie,
-  openInfo,
-}: {
-  movie: WatchMovieSummary;
-  openInfo: () => void;
-}) {
+function WatchHeroMovie({ movie }: { movie: WatchMovieSummary }) {
   const movieHref = watchMovieHref(movie.slug);
   const badges = [
     movie.quality,
     movie.language,
     movie.year,
-    movie.duration,
     movie.currentEpisode,
   ].filter((value): value is string => Boolean(value));
+
   const categories = [
-    ...movie.genres.slice(0, 3),
+    ...movie.genres.slice(0, 2),
     ...movie.countries.slice(0, 1),
   ];
 
@@ -120,61 +116,66 @@ function WatchHeroMovie({
     <>
       <h2
         data-watch-hero-title
-        className="m-0 text-[clamp(2rem,3vw,4rem)] font-extrabold leading-[1.08] tracking-[.0015em] text-balance wrap-anywhere max-[47.99rem]:text-[clamp(2rem,8vw,3.25rem)]"
+        className={[
+          "m-0 w-full max-w-[800px] text-[clamp(1.75rem,5vw,2.75rem)] font-extrabold",
+          "leading-[1.15] text-balance wrap-anywhere",
+        ].join(" ")}
       >
         {movie.name}
       </h2>
 
       {movie.originalName && (
-        <p className="m-0 mt-[.8rem] text-[clamp(.95rem,1.5vw,1.125rem)] leading-[1.5] text-muted-foreground max-[47.99rem]:text-[.9rem]">
+        <p className="m-0 mt-3 max-w-[34rem] truncate text-[clamp(.9rem,1.25vw,1.05rem)] leading-6 text-muted-foreground max-[47.99rem]:mt-2 max-[47.99rem]:text-[.78rem]">
           {movie.originalName}
         </p>
       )}
 
-      <div className="mt-[1.6rem] flex flex-wrap gap-[.45rem] [&_span]:rounded-[.4rem] [&_span]:border [&_span]:border-border [&_span]:bg-card/88 [&_span]:px-[.55rem] [&_span]:py-[.3rem] [&_span]:text-xs [&_span]:font-semibold max-[47.99rem]:mt-[1.1rem] max-[47.99rem]:[&_span]:text-[.68rem]">
-        {badges.map((value, index) => (
-          <span key={`${index}-${value}`}>{value}</span>
-        ))}
-      </div>
+      {badges.length > 0 && (
+        <div className="mt-5 flex flex-wrap gap-2 max-[47.99rem]:mt-4 max-[47.99rem]:gap-1.5">
+          {badges.map((value, badgeIndex) => (
+            <span
+              key={`${badgeIndex}-${value}`}
+              className={[
+                "rounded-full border border-border/80 bg-card/80 px-2.5 py-1.5",
+                "text-[.68rem] font-bold leading-none text-foreground shadow-sm backdrop-blur-md",
+                "max-[47.99rem]:px-2 max-[47.99rem]:py-1.5 max-[47.99rem]:text-[.62rem]",
+              ].join(" ")}
+            >
+              {value}
+            </span>
+          ))}
+        </div>
+      )}
 
       {categories.length > 0 && (
-        <p className="mx-0 my-[.85rem] text-[.85rem] leading-[1.7] text-muted-foreground max-[47.99rem]:text-[.78rem]">
+        <p className="m-0 mt-4 text-[.82rem] leading-6 text-muted-foreground max-[47.99rem]:mt-3 max-[47.99rem]:line-clamp-1 max-[47.99rem]:text-[.72rem]">
           {categories.join(" · ")}
         </p>
       )}
 
       {movie.description && (
-        <p className="mx-0 mt-4 mb-7 line-clamp-3 max-w-[34rem] text-[.95rem] leading-[1.85] max-[47.99rem]:mb-[1.2rem] max-[47.99rem]:text-sm">
+        <p
+          className={[
+            "m-0 mt-4 line-clamp-3 max-w-[37rem] text-[.92rem] leading-7 text-foreground/88",
+            "max-[47.99rem]:mt-3 max-[47.99rem]:line-clamp-2",
+            "max-[47.99rem]:max-w-[31rem] max-[47.99rem]:text-[.8rem] max-[47.99rem]:leading-6",
+          ].join(" ")}
+        >
           {movie.description}
         </p>
       )}
 
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <button type="button" className={HERO_BUTTON_CLASS} onClick={openInfo}>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            aria-hidden="true"
-          >
-            <circle cx="12" cy="12" r="9" />
-            <path d="M12 11v6m0-10v1" />
-          </svg>
-          Thông tin phim
-        </button>
-
-        {movieHref && (
-          <Link
-            href={movieHref}
-            prefetch={false}
-            className="inline-flex min-h-[3.15rem] items-center justify-center gap-[.65rem] rounded-full border border-border bg-card/88 px-[1.4rem] py-3 text-[.9rem] font-semibold text-foreground no-underline hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-4"
-          >
-            Chi tiết phim
-            <i className="fad fa-arrow-right" aria-hidden="true" />
+      {movieHref && (
+        <div className="mt-7 max-[47.99rem]:mt-5">
+          <Link href={movieHref} prefetch={false} className={HERO_PRIMARY_LINK_CLASS}>
+            <span>Chi tiết phim</span>
+            <i
+              className="fad fa-arrow-up-right transition-transform duration-200 group-hover/hero-cta:translate-x-0.5 group-hover/hero-cta:-translate-y-0.5 motion-reduce:transition-none"
+              aria-hidden="true"
+            />
           </Link>
-        )}
-      </div>
+        </div>
+      )}
     </>
   );
 }
@@ -192,12 +193,25 @@ function WatchHeroError({
 }) {
   return (
     <div
-      className="min-h-60 max-w-[30rem] [&_h2]:m-0 [&_h2]:text-[2rem] [&_h2]:leading-[1.2] [&_p]:mx-0 [&_p]:mt-4 [&_p]:mb-6 [&_p]:leading-[1.8] [&_p]:text-muted-foreground"
+      className="max-w-[31rem] py-4 max-[47.99rem]:py-2"
       role={active ? "status" : undefined}
     >
-      <h2>Chưa tải được phim này</h2>
-      <p>{heroErrorMessage(error)}</p>
-      <button type="button" className={HERO_BUTTON_CLASS} disabled={pending} onClick={retry}>
+      <div className="mb-4 grid size-11 place-items-center rounded-full border border-border bg-card/80 text-muted-foreground backdrop-blur-md">
+        <i className="fad fa-cloud-exclamation" aria-hidden="true" />
+      </div>
+      <h2 className="m-0 text-[clamp(2rem,4vw,3.4rem)] font-extrabold leading-[1.05] tracking-[-.035em]">
+        Chưa tải được phim này
+      </h2>
+      <p className="m-0 mt-4 text-sm leading-7 text-muted-foreground">
+        {heroErrorMessage(error)}
+      </p>
+      <button
+        type="button"
+        className="mt-6 inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-border bg-card/90 px-5 text-sm font-semibold text-foreground backdrop-blur-md hover:bg-accent"
+        disabled={pending}
+        onClick={retry}
+      >
+        <i className={pending ? "fad fa-spinner-third fa-spin" : "fad fa-rotate-right"} aria-hidden="true" />
         {pending ? "Đang tải…" : "Thử lại phim này"}
       </button>
     </div>
@@ -207,20 +221,29 @@ function WatchHeroError({
 function WatchHeroLoading({ active }: { active: boolean }) {
   return (
     <div
-      className="min-h-68 pt-2 [&>span:not(.sr-only)]:mb-4 [&>span:not(.sr-only)]:block [&>span:not(.sr-only)]:h-11 [&>span:not(.sr-only)]:w-4/5 [&>span:not(.sr-only)]:rounded-xl [&>span:not(.sr-only)]:bg-skeleton [&>span:last-child]:mt-8 [&>span:last-child]:h-[1.3rem] [&>span:last-child]:w-[55%]"
+      className="max-w-[34rem] py-4 max-[47.99rem]:py-2"
       role={active ? "status" : undefined}
     >
       <span className="sr-only">Đang tải phim nổi bật…</span>
-      <span />
-      <span />
-      <span />
+      <div className="h-2.5 w-24 rounded-full bg-skeleton" aria-hidden="true" />
+      <div className="mt-5 h-14 w-[88%] rounded-2xl bg-skeleton max-[47.99rem]:h-11" aria-hidden="true" />
+      <div className="mt-3 h-14 w-[68%] rounded-2xl bg-skeleton max-[47.99rem]:h-11" aria-hidden="true" />
+      <div className="mt-5 flex gap-2" aria-hidden="true">
+        <span className="h-7 w-14 rounded-full bg-skeleton" />
+        <span className="h-7 w-18 rounded-full bg-skeleton" />
+        <span className="h-7 w-16 rounded-full bg-skeleton" />
+      </div>
+      <div className="mt-5 h-3 w-[78%] rounded-full bg-skeleton" aria-hidden="true" />
+      <div className="mt-3 h-3 w-[62%] rounded-full bg-skeleton" aria-hidden="true" />
+      <div className="mt-7 h-12 w-36 rounded-full bg-skeleton" aria-hidden="true" />
     </div>
   );
 }
 
 /**
  * Hero dùng một danh sách slug hữu hạn trong watchHeroConfig.ts.
- * Chuyển slide chỉ đổi index, không tạo thêm query ngoài danh sách cấu hình.
+ * Chuyển slide chỉ đổi index, không tạo query ngoài danh sách cấu hình.
+ * watchHeroConfig.ts tiếp tục là nơi duy nhất quản lý phim nào xuất hiện.
  */
 export default function WatchHero() {
   const scope = useWatchQueryScope();
@@ -234,11 +257,7 @@ export default function WatchHero() {
   const [index, setIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(true);
   const swiper = useRef<SwiperInstance | null>(null);
-  const dialog = useRef<HTMLDialogElement>(null);
-  const thumbList = useRef<HTMLDivElement>(null);
   const headingId = useId();
-  const dialogHeadingId = useId();
-  const active = queries[index]?.data;
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -250,29 +269,28 @@ export default function WatchHero() {
     return () => media.removeEventListener("change", update);
   }, []);
 
-  useEffect(() => {
-    const list = thumbList.current;
-    const button = list?.children[index] as HTMLButtonElement | undefined;
-
-    if (list && button) {
-      list.scrollTo({
-        left: button.offsetLeft - list.offsetLeft - (list.clientWidth - button.offsetWidth) / 2,
-        behavior: reducedMotion ? "instant" : "smooth",
-      });
-    }
-  }, [index, reducedMotion]);
-
   function goTo(next: number) {
-    if (swiper.current && !swiper.current.destroyed && SLUGS.length > 1) {
-      swiper.current.slideTo((next + SLUGS.length) % SLUGS.length);
+    const instance = swiper.current;
+
+    if (!instance || instance.destroyed || SLUGS.length < 2) {
+      return;
     }
+
+    const normalized = Math.max(0, Math.min(next, SLUGS.length - 1));
+    instance.slideTo(normalized);
   }
 
   if (SLUGS.length === 0) {
     return (
-      <section className="min-h-[70svh] px-8 pt-40 pb-16">
-        <h1>Phim nổi bật</h1>
-        <p>Chưa có phim trong bộ sưu tập này</p>
+      <section
+        className="flex min-h-96 items-end bg-background px-6 pt-28 pb-12 text-foreground sm:px-8"
+        aria-labelledby={headingId}
+        data-watch-hero
+      >
+        <div className="mx-auto w-full max-w-6xl">
+          <h1 id={headingId} className="m-0 text-3xl font-extrabold">Phim nổi bật</h1>
+          <p className="m-0 mt-3 text-sm text-muted-foreground">Chưa có phim trong bộ sưu tập này.</p>
+        </div>
       </section>
     );
   }
@@ -291,7 +309,7 @@ export default function WatchHero() {
         slidesPerView={1}
         loop={false}
         rewind={false}
-        speed={reducedMotion ? 0 : 550}
+        speed={reducedMotion ? 0 : 500}
         allowTouchMove={SLUGS.length > 1}
         a11y={{
           enabled: true,
@@ -303,7 +321,6 @@ export default function WatchHero() {
           swiper.current = instance;
         }}
         onSlideChange={(instance: SwiperInstance) => {
-          dialog.current?.close();
           setIndex(instance.activeIndex);
         }}
       >
@@ -319,28 +336,86 @@ export default function WatchHero() {
                 aria-hidden={!isActive}
                 inert={!isActive}
               >
-                <div
-                  className="absolute inset-0 size-full bg-surface max-[47.99rem]:h-[62%]"
-                  aria-hidden="true"
-                >
+                <div className="absolute inset-0 z-0 bg-surface" aria-hidden="true">
                   {movie?.posterUrl && (
                     <WatchRemoteImage
                       src={movie.posterUrl}
-                      className="absolute inset-0 size-full object-cover object-[65%_center] [&:not([data-state=loaded])]:opacity-0 max-[47.99rem]:object-[65%_top] brightness-75"
                       priority={position === 0}
+                      className={[
+                        "absolute inset-0 size-full object-cover",
+                        "object-[66%_center] brightness-75 saturate-80 contrast-125",
+                        "transition-opacity duration-500 [&:not([data-state=loaded])]:opacity-0",
+                        "max-[47.99rem]:object-[62%_center] max-[47.99rem]:brightness-[.78]",
+                        "motion-reduce:transition-none",
+                      ].join(" ")}
                     />
                   )}
                 </div>
 
-                <div className={HERO_GRADIENT_CLASS} aria-hidden="true" />
+                {/* Texture LED/pixel grid rõ hơn, gần ảnh mẫu hơn. */}
+                <div
+                  className="pointer-events-none absolute inset-0 z-1 mix-blend-multiply opacity-[.28] max-[47.99rem]:opacity-[.22]"
+                  aria-hidden="true"
+                  style={{
+                    backgroundImage: [
+                      "repeating-linear-gradient(to right, rgba(255,255,255,0.18) 0 1px, transparent 1px 4px)",
+                      "repeating-linear-gradient(to bottom, rgba(255,255,255,0.14) 0 1px, transparent 1px 4px)",
+                    ].join(", "),
+                  }}
+                />
 
-                <div className="relative z-1 mx-auto w-[min(calc(100%_-_4rem),76rem)] max-[47.99rem]:w-[calc(100%_-_2.5rem)]">
-                  <div className="max-w-[38rem] min-[100rem]:max-w-[42rem] max-[47.99rem]:max-w-full">
+                <div
+                  className="pointer-events-none absolute inset-0 z-1 mix-blend-multiply opacity-[.24] max-[47.99rem]:opacity-[.18]"
+                  aria-hidden="true"
+                  style={{
+                    backgroundImage:
+                      "radial-gradient(circle at 1.5px 1.5px, rgba(0,0,0,0.65) 0 0.75px, rgba(0,0,0,0.16) 0.76px 1.15px, transparent 1.2px)",
+                    backgroundSize: "4px 4px",
+                  }}
+                />
+
+                <div
+                  className="pointer-events-none absolute inset-0 z-1 mix-blend-soft-light opacity-[.1] max-[47.99rem]:opacity-[.08]"
+                  aria-hidden="true"
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 18%, rgba(0,0,0,0.05) 100%)",
+                  }}
+                />
+
+                {/* Desktop: tăng độ đọc ở phía nội dung bên trái mà không tạo box riêng. */}
+                {/* <div
+                  className={[
+                    "pointer-events-none absolute inset-0 z-1",
+                    "bg-gradient-to-r from-[var(--background)]/88 from-0% via-[var(--background)]/34 via-42% to-transparent to-72%",
+                    "max-[47.99rem]:hidden",
+                  ].join(" ")}
+                  aria-hidden="true"
+                /> */}
+
+                {/* Gradient chính kéo từ body lên poster, dùng chung desktop/mobile. */}
+                <div
+                  className={[
+                    "pointer-events-none absolute inset-0 z-1",
+                    "bg-gradient-to-t from-[var(--background)] from-0%",
+                    "via-[color-mix(in_srgb,var(--background)_88%,transparent)] via-24%",
+                    "to-transparent to-72%",
+                    "max-[47.99rem]:via-[color-mix(in_srgb,var(--background)_94%,transparent)]",
+                    "max-[47.99rem]:via-34% max-[47.99rem]:to-65%",
+                  ].join(" ")}
+                  aria-hidden="true"
+                />
+
+                {/* Một lớp tối rất nhẹ phía trên giúp poster không đập trực tiếp vào navbar. */}
+                <div
+                  className="pointer-events-none absolute inset-x-0 top-0 z-1 h-36 bg-gradient-to-b from-black/18 to-transparent max-[47.99rem]:h-28"
+                  aria-hidden="true"
+                />
+
+                <div className={HERO_CONTENT_CLASS}>
+                  <div className={HERO_CONTENT_INNER_CLASS}>
                     {movie ? (
-                      <WatchHeroMovie
-                        movie={movie}
-                        openInfo={() => dialog.current?.showModal()}
-                      />
+                      <WatchHeroMovie movie={movie} />
                     ) : query.isError ? (
                       <WatchHeroError
                         active={isActive}
@@ -363,24 +438,29 @@ export default function WatchHero() {
         })}
       </Swiper>
 
-      <div className="absolute right-0 bottom-[2.35rem] left-0 z-2 mx-auto flex w-[min(calc(100%_-_4rem),76rem)] items-center justify-between gap-8 max-[47.99rem]:bottom-6 max-[47.99rem]:w-[calc(100%_-_2.5rem)] max-[47.99rem]:flex-col-reverse max-[47.99rem]:items-start max-[47.99rem]:gap-[.8rem]">
-        <div className="flex shrink-0 items-center gap-[.85rem] max-[47.99rem]:gap-[.7rem]">
+      <div
+        className={[
+          "absolute right-0 bottom-8 left-0 z-3 mx-auto hidden",
+          "w-[min(calc(100%_-_4rem),76rem)] items-center gap-5 min-[48rem]:flex",
+        ].join(" ")}
+      >
+        <div className="flex shrink-0 items-center gap-2">
           <button
             type="button"
             className={HERO_NAV_BUTTON_CLASS}
             aria-label="Phim trước"
-            disabled={SLUGS.length < 2}
+            disabled={SLUGS.length < 2 || index === 0}
             onClick={() => goTo(index - 1)}
           >
-            <span aria-hidden="true">←</span>
+            <i className="fad fa-chevron-left" aria-hidden="true" />
           </button>
 
           <span
-            className="min-w-16 text-[.85rem] tabular-nums [&_strong]:text-[1.05rem] [&_strong]:text-foreground [&_span]:text-muted-foreground"
+            className="min-w-15 text-center text-xs font-bold tabular-nums text-muted-foreground"
             aria-live="polite"
             aria-atomic="true"
           >
-            <strong>{String(index + 1).padStart(2, "0")}</strong>
+            <span className="text-foreground">{String(index + 1).padStart(2, "0")}</span>
             <span> / {String(SLUGS.length).padStart(2, "0")}</span>
           </span>
 
@@ -388,16 +468,15 @@ export default function WatchHero() {
             type="button"
             className={HERO_NAV_BUTTON_CLASS}
             aria-label="Phim tiếp theo"
-            disabled={SLUGS.length < 2}
+            disabled={SLUGS.length < 2 || index === SLUGS.length - 1}
             onClick={() => goTo(index + 1)}
           >
-            <span aria-hidden="true">→</span>
+            <i className="fad fa-chevron-right" aria-hidden="true" />
           </button>
         </div>
 
         <div
-          className="flex max-w-[70%] gap-[.7rem] overflow-x-auto p-[.45rem] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[47.99rem]:-ml-[.2rem] max-[47.99rem]:w-full max-[47.99rem]:max-w-full max-[47.99rem]:gap-[.55rem]"
-          ref={thumbList}
+          className="grid min-w-0 flex-1 grid-flow-col auto-cols-fr gap-2.5"
           role="group"
           aria-label="Chọn phim nổi bật"
         >
@@ -414,27 +493,29 @@ export default function WatchHero() {
               aria-pressed={index === position}
               title={queries[position].data?.name}
               onClick={() => goTo(position)}
-              onKeyDown={event => {
-                if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") {
-                  return;
-                }
-
-                event.preventDefault();
-                const offset = event.key === "ArrowRight" ? 1 : -1;
-                const next = (position + offset + SLUGS.length) % SLUGS.length;
-
-                goTo(next);
-                (thumbList.current?.children[next] as HTMLButtonElement | undefined)?.focus();
-              }}
             >
               {queries[position].data?.posterUrl && (
                 <WatchRemoteImage
                   src={queries[position].data!.posterUrl}
-                  className="size-full object-cover [&:not([data-state=loaded])]:opacity-0"
+                  className={[
+                    "absolute inset-0 size-full object-cover",
+                    "transition-transform duration-300",
+                    "[&:not([data-state=loaded])]:opacity-0",
+                    "group-hover/hero-thumb:scale-[1.035]",
+                    "motion-reduce:transition-none",
+                  ].join(" ")}
                 />
               )}
 
-              <span className="absolute bottom-1 left-[.3rem] rounded-[.3rem] bg-card px-[.3rem] py-[.15rem] text-[.6rem] font-bold text-foreground tabular-nums">
+              <span
+                className={[
+                  "absolute inset-x-0 bottom-0 h-1/2",
+                  "bg-gradient-to-t from-black/55 to-transparent",
+                ].join(" ")}
+                aria-hidden="true"
+              />
+
+              <span className="absolute right-2 bottom-1.5 text-[.58rem] font-extrabold tracking-[.08em] text-white tabular-nums drop-shadow-sm">
                 {String(position + 1).padStart(2, "0")}
               </span>
             </button>
@@ -442,60 +523,28 @@ export default function WatchHero() {
         </div>
       </div>
 
-      <dialog
-        ref={dialog}
-        className={HERO_DIALOG_CLASS}
-        aria-labelledby={dialogHeadingId}
-        onClick={event => {
-          if (event.target === event.currentTarget) {
-            dialog.current?.close();
-          }
-        }}
-      >
-        <div className="p-8 max-[47.99rem]:p-[1.35rem]">
-          <div className="flex items-center justify-between gap-4 [&>p]:m-0">
-            <p className="m-0 mb-[1.2rem] flex items-center gap-[.65rem] text-xs font-bold tracking-[.17em] text-muted-foreground max-[47.99rem]:mb-[.9rem] max-[47.99rem]:text-[.65rem]">
-              THÔNG TIN PHIM
-            </p>
+      {SLUGS.length > 1 && (
+        <div
+          className="absolute right-0 bottom-6 left-0 z-3 mx-auto flex w-[calc(100%_-_2.25rem)] items-center justify-center gap-2 min-[48rem]:hidden"
+          role="group"
+          aria-label="Chọn phim nổi bật"
+        >
+          {SLUGS.map((slug, position) => (
             <button
               type="button"
-              className={HERO_NAV_BUTTON_CLASS}
-              autoFocus
-              aria-label="Đóng thông tin phim"
-              onClick={() => dialog.current?.close()}
-            >
-              ×
-            </button>
-          </div>
-
-          <h2 className="font-bold" id={dialogHeadingId}>{active?.name ?? "Thông tin phim"}</h2>
-
-          {active?.originalName && (
-            <p className="m-0 mt-[.8rem] text-[clamp(.95rem,1.5vw,1.125rem)] leading-[1.5] text-muted-foreground max-[47.99rem]:text-[.9rem]">
-              {active.originalName}
-            </p>
-          )}
-
-          <p className="mx-0 my-6 text-[.95rem] leading-[1.9]">
-            {active?.description ?? "Nguồn chưa cung cấp mô tả cho phim này."}
-          </p>
-
-          <dl className="m-0 [&>div]:mt-4 [&>div]:border-t [&>div]:border-border [&>div]:pt-4 [&>div]:text-[.85rem] [&>div]:leading-[1.7] [&_dt]:text-muted-foreground [&_dd]:m-0 [&_dd]:mt-1">
-            {active?.director && (
-              <div>
-                <dt>Đạo diễn</dt>
-                <dd>{active.director}</dd>
-              </div>
-            )}
-            {active?.casts && (
-              <div>
-                <dt>Diễn viên</dt>
-                <dd>{active.casts}</dd>
-              </div>
-            )}
-          </dl>
+              key={slug}
+              className={MOBILE_INDICATOR_CLASS}
+              aria-label={
+                queries[position].data
+                  ? `Chọn ${queries[position].data!.name}`
+                  : `Chọn phim ${position + 1}`
+              }
+              aria-pressed={index === position}
+              onClick={() => goTo(position)}
+            />
+          ))}
         </div>
-      </dialog>
+      )}
     </section>
   );
 }
