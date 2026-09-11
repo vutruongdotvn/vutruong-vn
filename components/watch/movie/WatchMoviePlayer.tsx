@@ -445,7 +445,7 @@ export default function WatchMoviePlayer({ slug, episodeSegment }: Props) {
 
       <main className="min-h-screen bg-background text-foreground">
         {/* Theater stays centered and dark in both themes. */}
-        <section className="bg-[#0a0d11] px-3 pt-24 pb-4 sm:px-5 sm:pt-25 sm:pb-5">
+        <section className="bg-[#0a0d11] pt-14">
           <div className="mx-auto w-full max-w-[80rem]">
             {source ? (
               <WatchRemotePlayer
@@ -463,7 +463,7 @@ export default function WatchMoviePlayer({ slug, episodeSegment }: Props) {
           </div>
         </section>
 
-        <div className="mx-auto w-full max-w-[80rem] px-4 pt-8 pb-16 sm:px-6 sm:pt-10">
+        <div className="mx-auto w-full max-w-[80rem] px-4 pt-5 pb-24 md:pb-8 sm:px-6 sm:pt-6">
           {/* Movie identity block inspired by the uploaded reference. */}
           <section
             className={[
@@ -475,14 +475,32 @@ export default function WatchMoviePlayer({ slug, episodeSegment }: Props) {
             aria-labelledby="watch-player-movie-title"
           >
             {showArtwork && manifest.thumbUrl && (
-              <div className="mx-auto w-36 md:mx-0 md:w-full">
+              <div className="mx-auto w-36 md:mx-0 md:w-full hidden md:block">
                 <div className="aspect-[2/3] overflow-hidden rounded-xl bg-muted shadow-[0_18px_50px_rgb(0_0_0/18%)]">
                   <WatchRemoteImage
                     src={manifest.thumbUrl}
                     alt={`Poster ${manifest.movieName}`}
                     className="size-full object-cover [&:not([data-state=loaded])]:opacity-0"
                   />
+
                 </div>
+
+                {/* {manifest.thumbUrl && (
+                  <label className="inline-flex cursor-pointer items-center gap-2.5 text-sm text-muted-foreground mt-3">
+                    <span>{showArtwork ? "Ẩn ảnh" : "Hiện ảnh"}</span>
+                    <span className="relative inline-flex">
+                      <input
+                        type="checkbox"
+                        className="peer sr-only"
+                        checked={showArtwork}
+                        onChange={event => setShowArtwork(event.target.checked)}
+                      />
+                      <span className="h-7 w-12 rounded-full bg-muted transition-colors peer-checked:bg-foreground/75" />
+                      <span className="absolute top-1 left-1 size-5 rounded-full bg-background shadow-sm transition-transform peer-checked:translate-x-5" />
+                    </span>
+                  </label>
+                )} */}
+
               </div>
             )}
 
@@ -567,7 +585,7 @@ export default function WatchMoviePlayer({ slug, episodeSegment }: Props) {
                   {manifest.description ?? "NguồnC chưa cung cấp mô tả cho phim này."}
                 </p>
 
-                <div className="mt-2 flex flex-wrap items-center gap-1">
+                <div className="mt-3 flex flex-wrap items-center gap-2">
                   <Link
                     href={movieHref}
                     prefetch={false}
@@ -685,24 +703,26 @@ export default function WatchMoviePlayer({ slug, episodeSegment }: Props) {
                   </div>
                 )}
               </div>
-            </div>
-          </section>
-
-          {/* Episode + server area matching the reference hierarchy. */}
-          <section
-            className="mt-12"
-            aria-labelledby="watch-episode-heading"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-5">
-              <h2
-                id="watch-episode-heading"
-                className="m-0 inline-flex items-center gap-3 text-xl font-bold tracking-tight sm:text-2xl"
+              {/* Episode + server area matching the reference hierarchy. */}
+              <section
+                className="mt-12"
+                aria-labelledby="watch-episode-heading"
               >
-                <i className="fad fa-list-ul text-muted-foreground" aria-hidden="true" />
-                Danh sách tập
-              </h2>
+                <div className="flex flex-wrap items-center justify-between gap-5">
+                  <h2
+                    id="watch-episode-heading"
+                    className="m-0 inline-flex items-center gap-1.5 text-base font-bold sm:text-xl"
+                  >
+                    Danh sách tập
 
-              {sources.length > 0 && (
+                    <span className="text-foreground">
+                      ({manifest.episodes.length}
+                      {manifest.totalEpisodes !== null ? `/${manifest.totalEpisodes}` : ""})
+                    </span>
+
+                  </h2>
+
+                  {/* {sources.length > 0 && (
                 <label className="flex items-center gap-3 text-sm text-muted-foreground">
                   <span className="whitespace-nowrap">Chọn Server:</span>
                   <span className="relative">
@@ -724,105 +744,83 @@ export default function WatchMoviePlayer({ slug, episodeSegment }: Props) {
                     />
                   </span>
                 </label>
-              )}
-            </div>
-
-            <div className="mt-7 flex flex-wrap items-center justify-between gap-4">
-              <p className="m-0 text-sm font-bold text-muted-foreground sm:text-base">
-                Danh sách tập{" "}
-                <span className="text-foreground">
-                  ({manifest.episodes.length}
-                  {manifest.totalEpisodes !== null ? ` / ${manifest.totalEpisodes}` : ""})
-                </span>
-              </p>
-
-              {/* {manifest.thumbUrl && (
-                <label className="inline-flex cursor-pointer items-center gap-2.5 text-sm text-muted-foreground">
-                  <span>{showArtwork ? "Ẩn ảnh" : "Hiện ảnh"}</span>
-                  <span className="relative inline-flex">
-                    <input
-                      type="checkbox"
-                      className="peer sr-only"
-                      checked={showArtwork}
-                      onChange={event => setShowArtwork(event.target.checked)}
-                    />
-                    <span className="h-7 w-12 rounded-full bg-muted transition-colors peer-checked:bg-foreground/75" />
-                    <span className="absolute top-1 left-1 size-5 rounded-full bg-background shadow-sm transition-transform peer-checked:translate-x-5" />
-                  </span>
-                </label>
               )} */}
+                </div>
+
+                {hasAlternateSource && (
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {sources.map((item, itemIndex) => {
+                      const isActive = effectiveSourceIndex === itemIndex;
+
+                      return (
+                        <button
+                          key={`${item.serverName}-${itemIndex}`}
+                          type="button"
+                          aria-pressed={isActive}
+                          className={[
+                            "inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border px-4",
+                            "text-sm font-semibold transition-colors",
+                            "focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2",
+                            isActive
+                              ? "border-foreground/25 bg-card text-foreground shadow-sm"
+                              : "border-transparent bg-muted/55 text-muted-foreground hover:bg-muted hover:text-foreground",
+                          ].join(" ")}
+                          onClick={() => {
+                            if (!isActive) setSourceIndex(itemIndex);
+                          }}
+                        >
+                          <i
+                            className={isActive ? "fad fa-circle-check" : "fad fa-server"}
+                            aria-hidden="true"
+                          />
+                          {item.serverName}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <nav
+                  className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8"
+                  aria-label="Các tập phim"
+                >
+                  {manifest.episodes.map(item => {
+                    const href = watchEpisodeHref(slug, item.segment);
+                    if (!href) return null;
+
+                    const isCurrent = item.segment === episode.segment;
+                    const label = episodeLabel(item.name, item.segment);
+
+                    return (
+                      <Link
+                        key={item.segment}
+                        href={href}
+                        prefetch={false}
+                        aria-current={isCurrent ? "page" : undefined}
+                        className={[
+                          "inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border px-3",
+                          "text-sm font-semibold no-underline transition-[background-color,border-color,color,transform]",
+                          "focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2",
+                          "active:scale-[.985] motion-reduce:transition-none motion-reduce:active:scale-100",
+                          isCurrent
+                            ? "border-foreground bg-foreground text-background"
+                            : "border-border/55 bg-card text-foreground hover:border-foreground/20 hover:bg-accent",
+                        ].join(" ")}
+                      >
+                        <i
+                          className={isCurrent ? "fad fa-play" : "fad fa-circle-play"}
+                          aria-hidden="true"
+                        />
+                        <span>{label}</span>
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </section>
             </div>
-
-            {hasAlternateSource && (
-              <div className="mt-6 flex flex-wrap gap-2">
-                {sources.map((item, itemIndex) => {
-                  const isActive = effectiveSourceIndex === itemIndex;
-
-                  return (
-                    <button
-                      key={`${item.serverName}-${itemIndex}`}
-                      type="button"
-                      aria-pressed={isActive}
-                      className={[
-                        "inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border px-4",
-                        "text-sm font-semibold transition-colors",
-                        "focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2",
-                        isActive
-                          ? "border-foreground/25 bg-card text-foreground shadow-sm"
-                          : "border-transparent bg-muted/55 text-muted-foreground hover:bg-muted hover:text-foreground",
-                      ].join(" ")}
-                      onClick={() => {
-                        if (!isActive) setSourceIndex(itemIndex);
-                      }}
-                    >
-                      <i
-                        className={isActive ? "fad fa-circle-check" : "fad fa-server"}
-                        aria-hidden="true"
-                      />
-                      {item.serverName}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            <nav
-              className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8"
-              aria-label="Các tập phim"
-            >
-              {manifest.episodes.map(item => {
-                const href = watchEpisodeHref(slug, item.segment);
-                if (!href) return null;
-
-                const isCurrent = item.segment === episode.segment;
-                const label = episodeLabel(item.name, item.segment);
-
-                return (
-                  <Link
-                    key={item.segment}
-                    href={href}
-                    prefetch={false}
-                    aria-current={isCurrent ? "page" : undefined}
-                    className={[
-                      "inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border px-3",
-                      "text-sm font-semibold no-underline transition-[background-color,border-color,color,transform]",
-                      "focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2",
-                      "active:scale-[.985] motion-reduce:transition-none motion-reduce:active:scale-100",
-                      isCurrent
-                        ? "border-foreground bg-foreground text-background"
-                        : "border-border/55 bg-card text-foreground hover:border-foreground/20 hover:bg-accent",
-                    ].join(" ")}
-                  >
-                    <i
-                      className={isCurrent ? "fad fa-play" : "fad fa-circle-play"}
-                      aria-hidden="true"
-                    />
-                    <span>{label}</span>
-                  </Link>
-                );
-              })}
-            </nav>
           </section>
+
+
         </div>
       </main>
     </>

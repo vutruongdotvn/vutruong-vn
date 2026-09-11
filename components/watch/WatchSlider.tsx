@@ -170,7 +170,7 @@ export default function WatchSlider({ id, title, description, source }: Props) {
   const error = query.error instanceof WatchApiError
     && query.error.code === "rate_limited"
     ? watchApiErrorMessage(query.error)
-    : "Nguồn phim tạm thời chưa phản hồi. Bạn có thể thử lại hoặc khám phá mục khác.";
+    : "Nguồn phim tạm thời chưa phản hồi.";
 
   return (
     <section

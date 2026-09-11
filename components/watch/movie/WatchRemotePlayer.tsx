@@ -192,8 +192,8 @@ export default function WatchRemotePlayer({
               />
               <p className="m-0 mt-3 text-sm text-white/70">
                 {state === "authorizing"
-                  ? "Đang xác minh nguồn phát…"
-                  : "Đang tải và chuẩn bị phát…"}
+                  ? "Đang xác minh"
+                  : "Đang tải"}
               </p>
             </div>
           )}

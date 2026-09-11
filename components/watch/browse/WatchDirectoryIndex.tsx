@@ -71,7 +71,7 @@ export default function WatchDirectoryIndex({
             className="inline-flex min-h-10 items-center gap-2 rounded-full text-sm font-semibold text-muted-foreground no-underline hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-4"
           >
             <i className="fad fa-arrow-left" aria-hidden="true" />
-            Trở lại
+            Quay lại
           </Link>
           {/* <p className="m-0 text-[.68rem] font-bold tracking-[.18em] text-muted-foreground">
             KHÁM PHÁ

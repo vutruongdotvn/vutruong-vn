@@ -343,7 +343,7 @@ export default function WatchMovieInfo({ movie }: Props) {
               className="inline-flex items-center gap-2 rounded-full text-sm font-medium text-foreground/50 border border-border/50 dark:border-foreground/15 bg-background/35 backdrop-blur-sm px-5 py-1.5 hover:opacity-90 active:scale-98 no-underline focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-3"
             >
               <i className="fad fa-arrow-left" aria-hidden="true" />
-              Trở lại
+              Quay lại
             </Link>
 
             <h1
