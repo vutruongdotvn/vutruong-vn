@@ -14,5 +14,14 @@ export default async function WatchEpisodePage({ params }: Props) {
     notFound();
   }
 
-  return <WatchMoviePlayer slug={slug} episodeSegment={episode} />;
+  // Treat movie + episode as the player's identity. This guarantees every
+  // navigation starts from the provider's first validated source instead of
+  // inheriting local source-selection state from the previous route.
+  return (
+    <WatchMoviePlayer
+      key={`${slug}:${episode}`}
+      slug={slug}
+      episodeSegment={episode}
+    />
+  );
 }
