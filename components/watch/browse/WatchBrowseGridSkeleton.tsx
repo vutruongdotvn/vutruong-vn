@@ -16,8 +16,7 @@ export default function WatchBrowseGridSkeleton({ count = 10 }: { count?: number
             <div className="h-full min-w-0 rounded-[.8rem]">
               <div className="aspect-[2/3] rounded-[.85rem] border border-border bg-skeleton max-[39.99rem]:rounded-[.65rem]" />
               <span className="mx-auto mt-[.7rem] block h-[.75rem] w-[82%] rounded-full bg-skeleton" />
-              <span className="mx-auto mt-[.3rem] block h-[.6rem] w-[62%] rounded-full bg-skeleton opacity-70" />
-              <span className="mx-auto mt-[.45rem] block h-[.55rem] w-[42%] rounded-full bg-skeleton opacity-50" />
+              <span className="mx-auto mt-[.5rem] block h-[.6rem] w-[62%] rounded-full bg-skeleton opacity-70" />
             </div>
           </li>
         ))}

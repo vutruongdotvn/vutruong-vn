@@ -11,7 +11,7 @@ import { watchCollectionMovies } from "@/lib/watch/watchCollectionView";
 import { watchApiErrorMessage, type WatchCollectionSource } from "@/types/watchApi";
 
 const CONTAINER_CLASS = [
-  "mx-auto w-[min(calc(100%_-_4rem),76rem)] pb-16 pt-28",
+  "mx-auto w-[min(calc(100%_-_4rem),76rem)] pb-16 pt-20",
   "max-[47.99rem]:w-[calc(100%_-_2.5rem)]",
   "max-[47.99rem]:pb-24 max-[47.99rem]:pt-20",
 ].join(" ");
@@ -126,7 +126,7 @@ export default function WatchCollectionBrowser({
       <WatchProtectedMetadata title={metadataTitle} />
       <main className="min-h-[70vh] bg-background text-foreground" data-watch-collection-browser>
       <div className={CONTAINER_CLASS}>
-        <header className="mb-8 max-[47.99rem]:mb-6">
+        <header className="mb-4 max-[47.99rem]:mb-3">
           <Link
             href={backHref}
             prefetch={false}
@@ -144,11 +144,11 @@ export default function WatchCollectionBrowser({
               <h1 className="m-0 text-[clamp(1.7rem,3vw,2rem)] font-black">
                 {title}
               </h1>
-              <p className="m-0 mt-3 text-sm leading-6 text-muted-foreground">
+              {/* <p className="m-0 mt-3 text-sm leading-6 text-muted-foreground">
                 {pagination
                   ? `Trang ${page}/${Math.max(1, totalPages)} · ${(totalItems ?? 0).toLocaleString("vi-VN")} kết quả`
                   : `Trang ${page}`}
-              </p>
+              </p> */}
             </div>
           </div>
         </header>

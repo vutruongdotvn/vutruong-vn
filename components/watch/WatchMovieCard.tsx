@@ -49,10 +49,10 @@ export default function WatchMovieCard({ movie }: { movie: WatchListMovie }) {
       >
         <div className="relative isolate aspect-[2/3] overflow-hidden rounded-[.85rem] border border-border bg-muted max-[39.99rem]:rounded-[.65rem]">
           <span
-            className="absolute inset-0 grid place-items-center text-[2rem] text-muted-foreground opacity-35"
+            className="absolute inset-0 grid place-items-center text-[1.5rem] text-muted-foreground opacity-35"
             aria-hidden="true"
           >
-            <i className="fad fa-film" />
+            <i className="fad fa-spinner-third fa-spin" />
           </span>
 
           {movie.thumbUrl && (
@@ -61,9 +61,14 @@ export default function WatchMovieCard({ movie }: { movie: WatchListMovie }) {
 
           {movie.quality && (
             <span className="absolute top-2 right-2 z-1 max-w-[calc(100%_-_1rem)] truncate rounded-[.35rem] border border-border bg-card px-[.4rem] py-1 text-[.65rem] font-bold leading-[1.3] text-foreground">
-              {movie.quality}
+              {movie.language}
             </span>
           )}
+          {/* {movie.language && (
+          <p className="mx-[.2rem] mt-[.35rem] mb-0 truncate text-center text-[.65rem] leading-[1.5] text-muted-foreground">
+              {movie.quality}
+          </p>
+        )} */}
 
           {movie.currentEpisode && (
             <span className="absolute bottom-2 left-2 z-1 max-w-[calc(100%_-_1rem)] truncate rounded-[.35rem] border border-border bg-card px-[.4rem] py-1 text-[.65rem] font-bold leading-[1.3] text-foreground">
@@ -89,11 +94,6 @@ export default function WatchMovieCard({ movie }: { movie: WatchListMovie }) {
           </p>
         )}
 
-        {movie.language && (
-          <p className="mx-[.2rem] mt-[.35rem] mb-0 truncate text-center text-[.65rem] leading-[1.5] text-muted-foreground">
-            {movie.language}
-          </p>
-        )}
       </Link>
     </article>
   );

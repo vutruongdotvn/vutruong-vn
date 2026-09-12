@@ -379,7 +379,7 @@ export default function WatchMoviePlayer({ slug, episodeSegment }: Props) {
     {
       label: "CHẤT LƯỢNG",
       value: manifest.quality ?? "",
-      icon: "fad fa-badge-hd",
+      icon: "fad fa-high-definition",
     },
     {
       label: "THỜI LƯỢNG",

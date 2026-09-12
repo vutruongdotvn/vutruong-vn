@@ -3,7 +3,7 @@ const SKELETON_CARD_CLASS = [
   "[&>div]:aspect-[2/3]",
   "[&>div]:rounded-[.85rem]",
   "max-[39.99rem]:[&>div]:rounded-[.65rem]",
-  "[&>div]:bg-skeleton",
+  "[&>div]:bg-skeleton animate-pulse",
   "[&>span]:mx-auto [&>span]:mt-[.85rem] [&>span]:block",
   "[&>span]:h-[.65rem] [&>span]:w-[85%] [&>span]:rounded-full",
   "[&>span]:bg-skeleton",

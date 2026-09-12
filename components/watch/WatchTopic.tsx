@@ -64,7 +64,7 @@ export default function WatchTopic() {
       aria-labelledby={headingId}
       data-watch-topics
     >
-      <header className="mb-6 flex items-end justify-between gap-4 max-[39.99rem]:mb-[1.1rem] max-[39.99rem]:items-start max-[39.99rem]:gap-3 [&_h2]:m-0 [&_h2]:text-[clamp(1.4rem,2vw,1.9rem)] [&_h2]:font-[750] [&_h2]:leading-[1.3] [&_h2]:tracking-[-.03em] [&_h2]:text-foreground max-[39.99rem]:[&_h2]:text-[1.35rem]">
+      <header className="mb-6 flex items-end justify-between gap-4 max-[39.99rem]:mb-[1.1rem] max-[39.99rem]:items-start max-[39.99rem]:gap-3 [&_h2]:m-0 [&_h2]:text-[clamp(1.25rem,2vw,1.5rem)] [&_h2]:font-bold [&_h2]:leading-[1.3] [&_h2]:text-foreground max-[39.99rem]:[&_h2]:text-[1.35rem]">
         <div>
           <h2 id={headingId}>Bạn đang quan tâm gì?</h2>
         </div>

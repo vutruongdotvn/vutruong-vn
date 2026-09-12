@@ -333,14 +333,14 @@ export default function Navbar() {
         >
           <div
             className={`
-              relative overflow-visible border-b border-border/75 bg-card transition-all duration-900 ease-in-out hover:bg-card
+              relative overflow-visible border-b border-border/75 bg-card transition-all duration-600 ease-in-out
               ${scrolled
                 ? "afterScrooled shadow-[0_12px_18px_rgba(0,0,0,0.02)]"
                 : "beforeScrolled shadow-none"
               }
               ${visible
                 ? "translate-y-0 opacity-100"
-                : "-translate-y-0 opacity-100"
+                : "-translate-y-10 opacity-0"
               }
             `}
           >
