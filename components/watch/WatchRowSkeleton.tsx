@@ -29,13 +29,13 @@ const SKELETON_WRAPPER_CLASS = [
   "min-[640px]:auto-cols-[calc((100%_-_12px)/4)]",
 
   // 960px -> 1199px: 5 card, gap 4px.
-  "min-[960px]:auto-cols-[calc((100%_-_16px)/5)]",
+  "min-[960px]:auto-cols-[calc((100%_-_12px)/5)]",
 
   // 1200px -> 1535px: 6 card, gap 8px.
-  "min-[1200px]:gap-2 min-[1200px]:auto-cols-[calc((100%_-_40px)/6)]",
+  // "min-[1200px]:gap-2 min-[1200px]:auto-cols-[calc((100%_-_40px)/6)]",
 
   // >= 1536px: 7 card, gap 8px.
-  "min-[1536px]:auto-cols-[calc((100%_-_48px)/7)]",
+  // "min-[1536px]:auto-cols-[calc((100%_-_48px)/7)]",
 ].join(" ");
 
 export default function WatchRowSkeleton({ loading }: { loading: boolean }) {

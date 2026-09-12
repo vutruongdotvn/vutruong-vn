@@ -7,9 +7,9 @@ import type { WatchListMovie } from "@/types/watchApi";
 
 const POSTER_IMAGE_CLASS = [
   "absolute inset-0 size-full object-cover",
-  "transition-transform duration-[220ms] ease-out",
+  "transition-transform duration-[500ms] ease-out",
   "[&:not([data-state=loaded])]:opacity-0",
-  "[@media(hover:hover)_and_(pointer:fine)]:group-hover/watch-card:scale-[1.035]",
+  "[@media(hover:hover)_and_(pointer:fine)]:group-hover/watch-card:scale-[1.05]",
   "motion-reduce:transition-none",
 ].join(" ");
 
@@ -47,7 +47,7 @@ export default function WatchMovieCard({ movie }: { movie: WatchListMovie }) {
         className="group/watch-card block h-full rounded-[.8rem] text-foreground no-underline focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-4"
         aria-label={`Chi tiết phim: ${movie.name}`}
       >
-        <div className="relative isolate aspect-[2/3] overflow-hidden rounded-[.85rem] border border-border bg-muted max-[39.99rem]:rounded-[.65rem]">
+        <div className="relative isolate aspect-[2/3] overflow-hidden rounded-[.85rem] bg-muted max-[39.99rem]:rounded-[.65rem]">
           <span
             className="absolute inset-0 grid place-items-center text-[1.5rem] text-muted-foreground opacity-35"
             aria-hidden="true"

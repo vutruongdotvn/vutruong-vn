@@ -446,7 +446,7 @@ export default function WatchMoviePlayer({ slug, episodeSegment }: Props) {
       <main className="min-h-screen bg-background text-foreground">
         {/* Theater stays centered and dark in both themes. */}
         <section className="bg-[#0a0d11] pt-14">
-          <div className="mx-auto w-full max-w-[80rem]">
+          <div className="mx-auto w-full max-w-[90rem]">
             {source ? (
               <WatchRemotePlayer
                 key={`${episode.segment}-${effectiveSourceIndex}-${source.embedUrl}`}
@@ -463,7 +463,7 @@ export default function WatchMoviePlayer({ slug, episodeSegment }: Props) {
           </div>
         </section>
 
-        <div className="mx-auto w-full max-w-[80rem] px-4 pt-5 pb-24 md:pb-8 sm:px-6 sm:pt-6">
+        <div className="mx-auto w-full max-w-[72rem] px-4 pt-5 pb-24 md:pb-8 sm:px-6 sm:pt-6">
           {/* Movie identity block inspired by the uploaded reference. */}
           <section
             className={[

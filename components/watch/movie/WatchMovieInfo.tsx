@@ -228,7 +228,7 @@ export default function WatchMovieInfo({ movie }: Props) {
   ].filter((value): value is string => Boolean(value));
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen bg-background text-foreground pt-14">
       <article
         className={[
           "relative isolate overflow-hidden",
@@ -295,14 +295,14 @@ export default function WatchMovieInfo({ movie }: Props) {
 
         <div
           className={[
-            "relative z-2 mx-auto grid w-[min(calc(100%_-_2rem),76rem)] gap-8",
-            "sm:w-[min(calc(100%_-_3rem),76rem)]",
+            "relative z-2 mx-auto grid w-[min(calc(100%_-_2rem),72rem)] gap-8",
+            "sm:w-[min(calc(100%_-_3rem),72rem)]",
             "md:grid-cols-[13rem_minmax(0,1fr)] md:items-start",
-            "lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-12",
+            "lg:grid-cols-[15rem_minmax(0,1fr)]",
           ].join(" ")}
         >
           {/* Cột poster */}
-          <aside className="md:pt-10">
+          <aside className="posterCol">
             <div
               className={[
                 "aspect-[2/3] w-[min(42vw,11rem)] overflow-hidden rounded-[1.35rem]",
@@ -329,34 +329,34 @@ export default function WatchMovieInfo({ movie }: Props) {
               <p className="m-0 text-[.68rem] font-bold tracking-[.16em] text-muted-foreground">
                 NỘI DUNG PHIM
               </p>
-              <p className="m-0 mt-3 text-sm leading-6 text-muted-foreground text-justify">
+              <p className="m-0 mt-3 text-sm leading-6 text-muted-foreground text-justify line-clamp-9">
                 {movie.description ?? "Đang cập nhật."}
               </p>
             </div>
           </aside>
 
           {/* Cột nội dung chính + danh sách phát */}
-          <div className="min-w-0 max-w-4xl">
-            <Link
+          <div className="min-w-0 backdrop-blur-md p-3 md:p-5 lg:p-7 rounded-3xl border border-border/25 bg-card/20">
+            {/* <Link
               href="/watch"
               prefetch={false}
-              className="inline-flex items-center gap-2 rounded-full text-sm font-medium text-foreground/50 border border-border/50 dark:border-foreground/15 bg-background/35 backdrop-blur-sm px-5 py-1.5 hover:opacity-90 active:scale-98 no-underline focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-3"
+              className="inline-flex items-center gap-2 rounded-full text-xs mb-3 font-medium text-foreground/50 border border-border/35 dark:border-foreground/10 bg-card/5 dark:bg-card/50 backdrop-blur-xs px-5 py-1.5 hover:opacity-90 active:scale-98 no-underline focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-3"
             >
               <i className="fad fa-arrow-left" aria-hidden="true" />
               Quay lại
-            </Link>
+            </Link> */}
 
             <h1
               className={[
-                "m-0 mt-5 text-[clamp(2rem,5vw,3rem)]",
-                "font-extrabold leading-[1.15] text-balance wrap-anywhere",
+                "m-0 text-[clamp(1.5rem,5vw,2rem)]",
+                "font-extrabold leading-[1.135] text-balance wrap-anywhere",
               ].join(" ")}
             >
               {movie.name}
             </h1>
 
             {movie.originalName && (
-              <p className="m-0 mt-3 text-base leading-7 text-muted-foreground sm:text-lg">
+              <p className="m-0 mt-3 text-base leading-7 opacity-50 hover:opacity-75 transition-opacity sm:text-lg">
                 {movie.originalName}
               </p>
             )}

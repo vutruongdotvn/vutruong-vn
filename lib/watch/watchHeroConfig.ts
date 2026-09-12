@@ -5,9 +5,11 @@ import { isWatchMovieSlug } from "./nguoncEndpoints";
  */
 export const WATCH_HERO_SLUGS: readonly string[] = [
   "doraemon-nobita-va-lau-dai-duoi-day-bien-phien-ban-moi",
+  "hen-em-ngay-nhat-thuc",
+  "dau-xuan-tuoi-sang",
+  "thua-me-con-di",
   "anh-hung-2026",
   "tai",
-  "hen-em-ngay-nhat-thuc",
   "truy-tim-long-dien-huong",
 ];
 

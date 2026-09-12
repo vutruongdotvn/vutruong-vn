@@ -31,13 +31,13 @@ const HERO_ROOT_CLASS = [
 
 const HERO_ARTICLE_CLASS = [
   "relative box-border flex min-h-[max(46rem,100svh)] items-end overflow-hidden",
-  "bg-background pt-32 pb-40",
+  "bg-background pt-32 pb-56",
   "max-[47.99rem]:min-h-[40rem]",
   "max-[47.99rem]:pt-24 max-[47.99rem]:pb-20",
 ].join(" ");
 
 const HERO_CONTENT_CLASS = [
-  "relative z-2 mx-auto w-[min(calc(100%_-_4rem),76rem)]",
+  "relative z-2 mx-auto w-[min(calc(100%_-_4rem),72rem)]",
   "max-[47.99rem]:w-[calc(100%_-_2.25rem)]",
 ].join(" ");
 
@@ -67,11 +67,11 @@ const HERO_NAV_BUTTON_CLASS = [
 ].join(" ");
 
 const THUMBNAIL_BUTTON_CLASS = [
-  "group/hero-thumb relative aspect-[16/10] min-w-0 flex-1 cursor-pointer overflow-hidden",
-  "rounded-[.85rem] border border-border bg-muted p-0 opacity-55",
-  "shadow-sm transition-[opacity,border-color,transform,box-shadow] duration-200 ease-out",
+  "group/hero-thumb relative aspect-[16/9] min-w-0 flex-1 cursor-pointer overflow-hidden",
+  "rounded-[.85rem] bg-muted p-0 opacity-35 grayscale-50",
+  "shadow-sm transition-[opacity,border-color,transform,box-shadow] duration-300 ease-out",
   "hover:opacity-85",
-  "aria-pressed:-translate-y-1 aria-pressed:border-foreground/35 aria-pressed:opacity-100",
+  "aria-pressed:-translate-y-0 aria-pressed:opacity-100 aria-pressed:grayscale-0",
   "aria-pressed:shadow-[0_8px_26px_color-mix(in_srgb,var(--foreground)_16%,transparent)]",
   "motion-reduce:transition-none motion-reduce:aria-pressed:translate-y-0",
 ].join(" ");
@@ -118,14 +118,14 @@ function WatchHeroMovie({ movie }: { movie: WatchMovieSummary }) {
         data-watch-hero-title
         className={[
           "m-0 w-full max-w-[800px] text-[clamp(1.75rem,5vw,2.75rem)] font-extrabold",
-          "leading-[1.15] text-balance wrap-anywhere",
+          "leading-[1.135] text-white/90 dark:text-white/75 text-shadow-lg text-balance wrap-anywhere",
         ].join(" ")}
       >
         {movie.name}
       </h2>
 
       {movie.originalName && (
-        <p className="m-0 mt-3 max-w-[34rem] truncate text-[clamp(.9rem,1.25vw,1.05rem)] leading-6 text-muted-foreground max-[47.99rem]:mt-2 max-[47.99rem]:text-[.78rem]">
+        <p className="m-0 mt-3 max-w-[34rem] truncate text-[clamp(.9rem,1.25vw,1.05rem)] leading-6 text-white/75 dark:text-white/50 max-[47.99rem]:mt-2 max-[47.99rem]:text-[.78rem]">
           {movie.originalName}
         </p>
       )}
@@ -136,9 +136,8 @@ function WatchHeroMovie({ movie }: { movie: WatchMovieSummary }) {
             <span
               key={`${badgeIndex}-${value}`}
               className={[
-                "rounded-full border border-border/80 bg-card/80 px-2.5 py-1.5",
-                "text-[.68rem] font-bold leading-none text-foreground shadow-sm backdrop-blur-md",
-                "max-[47.99rem]:px-2 max-[47.99rem]:py-1.5 max-[47.99rem]:text-[.62rem]",
+                "rounded-full border border-border/35 dark:border-white/4 bg-card/15 dark:bg-card/5 px-3 py-1.5",
+                "text-xs font-medium leading-none text-white/75 dark:text-white/50 backdrop-blur-xs",
               ].join(" ")}
             >
               {value}
@@ -148,7 +147,7 @@ function WatchHeroMovie({ movie }: { movie: WatchMovieSummary }) {
       )}
 
       {categories.length > 0 && (
-        <p className="m-0 mt-4 text-[.82rem] leading-6 text-muted-foreground max-[47.99rem]:mt-3 max-[47.99rem]:line-clamp-1 max-[47.99rem]:text-[.72rem]">
+        <p className="m-0 mt-4 text-[.82rem] leading-6 text-white/75 dark:text-muted-foreground max-[47.99rem]:mt-3 max-[47.99rem]:line-clamp-1 max-[47.99rem]:text-[.72rem]">
           {categories.join(" · ")}
         </p>
       )}
@@ -156,7 +155,7 @@ function WatchHeroMovie({ movie }: { movie: WatchMovieSummary }) {
       {movie.description && (
         <p
           className={[
-            "m-0 mt-4 line-clamp-3 max-w-[37rem] text-[.92rem] leading-7 text-foreground/88",
+            "m-0 mt-4 line-clamp-2 max-w-[37rem] text-[.92rem] leading-6 text-white/75 dark:text-white/50",
             "max-[47.99rem]:mt-3 max-[47.99rem]:line-clamp-2",
             "max-[47.99rem]:max-w-[31rem] max-[47.99rem]:text-[.8rem] max-[47.99rem]:leading-6",
           ].join(" ")}
@@ -168,7 +167,7 @@ function WatchHeroMovie({ movie }: { movie: WatchMovieSummary }) {
       {movieHref && (
         <div className="mt-7 max-[47.99rem]:mt-5">
           <Link href={movieHref} prefetch={false} className={HERO_PRIMARY_LINK_CLASS}>
-            <span>Chi tiết phim</span>
+            <span>Xem chi tiết</span>
             <i
               className="fad fa-arrow-up-right transition-transform duration-200 group-hover/hero-cta:translate-x-0.5 group-hover/hero-cta:-translate-y-0.5 motion-reduce:transition-none"
               aria-hidden="true"
@@ -345,7 +344,7 @@ export default function WatchHero() {
                         "absolute inset-0 size-full object-cover",
                         "object-[66%_center] brightness-75 saturate-80 contrast-125",
                         "transition-opacity duration-500 [&:not([data-state=loaded])]:opacity-0",
-                        "max-[47.99rem]:object-[62%_center] max-[47.99rem]:brightness-[.78]",
+                        "max-[47.99rem]:object-cover max-[47.99rem]:brightness-[.78]",
                         "motion-reduce:transition-none",
                       ].join(" ")}
                     />
@@ -399,16 +398,10 @@ export default function WatchHero() {
                     "pointer-events-none absolute inset-0 z-1",
                     "bg-gradient-to-t from-[var(--background)] from-0%",
                     "via-[color-mix(in_srgb,var(--background)_88%,transparent)] via-24%",
-                    "to-transparent to-72%",
+                    "to-transparent to-48%",
                     "max-[47.99rem]:via-[color-mix(in_srgb,var(--background)_94%,transparent)]",
                     "max-[47.99rem]:via-34% max-[47.99rem]:to-65%",
                   ].join(" ")}
-                  aria-hidden="true"
-                />
-
-                {/* Một lớp tối rất nhẹ phía trên giúp poster không đập trực tiếp vào navbar. */}
-                <div
-                  className="pointer-events-none absolute inset-x-0 top-0 z-1 h-36 bg-gradient-to-b from-black/18 to-transparent max-[47.99rem]:h-28"
                   aria-hidden="true"
                 />
 
@@ -440,7 +433,7 @@ export default function WatchHero() {
 
       <div
         className={[
-          "absolute right-0 bottom-8 left-0 z-3 mx-auto hidden",
+          "absolute right-0 bottom-24 left-0 z-3 mx-auto hidden",
           "w-[min(calc(100%_-_4rem),76rem)] items-center gap-5 min-[48rem]:flex",
         ].join(" ")}
       >

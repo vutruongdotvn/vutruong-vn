@@ -37,8 +37,8 @@ const SLIDER_SECTION_CLASS = [
   "min-[30rem]:[--card-width:calc((100%_-_31.5px)/3)]",
   "min-[40rem]:[--card-width:calc((100%_-_52px)/4)]",
   "min-[60rem]:[--card-width:calc((100%_-_68px)/5)]",
-  "min-[75rem]:[--card-width:calc((100%_-_84px)/6)]",
-  "min-[96rem]:[--card-width:calc((100%_-_100px)/7)]",
+  // "min-[75rem]:[--card-width:calc((100%_-_84px)/6)]",
+  // "min-[96rem]:[--card-width:calc((100%_-_100px)/7)]",
   "[&_button:disabled]:cursor-default [&_button:disabled]:opacity-35",
   "[&_button:focus-visible]:outline-2 [&_button:focus-visible]:outline-ring",
   "[&_button:focus-visible]:outline-offset-[3px]",
@@ -70,8 +70,8 @@ const SWIPER_BREAKPOINTS = {
   480: { slidesPerView: 3, spaceBetween: 4 },
   640: { slidesPerView: 4, spaceBetween: 4 },
   960: { slidesPerView: 5, spaceBetween: 4 },
-  1200: { slidesPerView: 6, spaceBetween: 8 },
-  1536: { slidesPerView: 7, spaceBetween: 8 },
+  // 1200: { slidesPerView: 6, spaceBetween: 8 },
+  // 1536: { slidesPerView: 7, spaceBetween: 8 },
 } as const;
 
 function WatchRowError({
@@ -220,7 +220,7 @@ export default function WatchSlider({ id, title, description, source }: Props) {
             disabled={movies.length < 2 || edges.beginning || edges.locked}
             onClick={() => move("prev")}
           >
-            <i className="fad fa-chevron-left" aria-hidden="true" />
+            <i className="fad fa-arrow-left" aria-hidden="true" />
           </button>
 
           <button
@@ -230,7 +230,7 @@ export default function WatchSlider({ id, title, description, source }: Props) {
             disabled={movies.length < 2 || edges.end || edges.locked}
             onClick={() => move("next")}
           >
-            <i className="fad fa-chevron-right" aria-hidden="true" />
+            <i className="fad fa-arrow-right" aria-hidden="true" />
           </button>
         </div>
       </header>

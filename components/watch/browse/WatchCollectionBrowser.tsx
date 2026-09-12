@@ -11,7 +11,7 @@ import { watchCollectionMovies } from "@/lib/watch/watchCollectionView";
 import { watchApiErrorMessage, type WatchCollectionSource } from "@/types/watchApi";
 
 const CONTAINER_CLASS = [
-  "mx-auto w-[min(calc(100%_-_4rem),76rem)] pb-16 pt-20",
+  "mx-auto w-[min(calc(100%_-_4rem),72rem)] pb-16 pt-20",
   "max-[47.99rem]:w-[calc(100%_-_2.5rem)]",
   "max-[47.99rem]:pb-24 max-[47.99rem]:pt-20",
 ].join(" ");

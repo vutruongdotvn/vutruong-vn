@@ -1,38 +1,85 @@
-const BLOCK = "animate-pulse bg-skeleton";
+const BLOCK = "animate-pulse bg-skeleton motion-reduce:animate-none";
 
-function Line({
-  className,
-}: {
-  className: string;
-}) {
+function Line({ className }: { className: string }) {
   return <div className={`${BLOCK} rounded-lg ${className}`} />;
 }
 
-function Pill({
-  className = "h-8 w-20",
-}: {
-  className?: string;
-}) {
+function Pill({ className = "h-8 w-20" }: { className?: string }) {
   return <div className={`${BLOCK} rounded-full ${className}`} />;
 }
 
-function DetailFactSkeleton({
-  pills = false,
+function LabelSkeleton({ width = "w-20" }: { width?: string }) {
+  return (
+    <div className="flex h-4 items-center">
+      <Line className={`h-2.5 ${width}`} />
+    </div>
+  );
+}
+
+function ParagraphSkeleton({
+  widths,
 }: {
-  pills?: boolean;
+  widths: ReadonlyArray<string>;
+}) {
+  return (
+    <div>
+      {widths.map((width, index) => (
+        <div key={`${width}-${index}`} className="flex h-6 items-center">
+          <Line className={`h-3.5 ${width}`} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DetailGroupSkeleton({
+  widths,
+}: {
+  widths: ReadonlyArray<string>;
 }) {
   return (
     <div className="border-t border-border/80 pt-4">
-      <Line className="h-3 w-20" />
+      <LabelSkeleton />
 
-      {pills ? (
-        <div className="mt-2 flex flex-wrap gap-2">
-          <Pill className="h-8 w-20" />
-          <Pill className="h-8 w-24" />
-        </div>
-      ) : (
-        <Line className="mt-2 h-4 w-[min(100%,11rem)]" />
-      )}
+      <div className="mt-2 flex flex-wrap gap-2">
+        {widths.map((width, index) => (
+          <Pill key={`${width}-${index}`} className={`h-8 ${width}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DetailFactSkeleton({
+  width = "w-[min(100%,11rem)]",
+}: {
+  width?: string;
+}) {
+  return (
+    <div className="border-t border-border/80 pt-4">
+      <LabelSkeleton />
+
+      <div className="mt-1.5 flex h-6 items-center">
+        <Line className={`h-3.5 ${width}`} />
+      </div>
+    </div>
+  );
+}
+
+function ActionSkeleton({
+  label,
+  icon,
+}: {
+  label: string;
+  icon: string;
+}) {
+  return (
+    <div
+      className={`${BLOCK} inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full border border-border px-5 text-sm font-semibold`}
+      aria-hidden="true"
+    >
+      <i className={`${icon} invisible`} aria-hidden="true" />
+      <span className="invisible">{label}</span>
     </div>
   );
 }
@@ -40,45 +87,51 @@ function DetailFactSkeleton({
 function EpisodeListSkeleton() {
   return (
     <section aria-hidden="true">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Line className="h-3 w-28" />
-          <Line className="mt-2 h-8 w-44 sm:h-9" />
-          <Line className="mt-2 h-4 w-52" />
+          {/* WatchEpisodeList: mt-2 text-lg leading-7 -> sm:text-2xl leading-8. */}
+          <div className="mt-2 flex h-7 items-center sm:h-8">
+            <Line className="h-[1.125rem] w-36 sm:h-[1.375rem] sm:w-44" />
+          </div>
+
+          <div className="mt-2 flex h-6 items-center">
+            <Line className="h-3.5 w-52" />
+          </div>
         </div>
       </div>
 
-      <div className="mt-7 flex flex-wrap gap-2">
-        {Array.from({ length: 16 }, (_, index) => (
+      <nav className="mt-7 flex flex-wrap gap-2" aria-hidden="true">
+        {Array.from({ length: 18 }, (_, index) => (
           <Pill
             key={index}
             className={[
               "h-10",
-              index % 5 === 0
+              index % 6 === 0
                 ? "w-28"
-                : index % 3 === 0
+                : index % 4 === 0
                   ? "w-24"
                   : "w-20",
             ].join(" ")}
           />
         ))}
-      </div>
+      </nav>
     </section>
   );
 }
 
 /**
- * Structural 1:1 mirror of WatchMovieInfo.
+ * Loading state for WatchMovieInfo.
  *
- * Content-dependent text lengths / optional fields cannot be known before the
- * movie query resolves, but every major container, breakpoint, spacing rule,
- * column, action area, metadata grid and episode section follows the rendered
- * component's current layout.
+ * Container widths, breakpoints, spacing, poster geometry, detail card styling,
+ * metadata grid and episode-list structure intentionally mirror the real UI.
+ * Data-dependent text wrapping, optional fields and episode count cannot be
+ * known until the movie request resolves, so only those intrinsic lengths are
+ * represented by stable placeholders.
  */
 export default function WatchMovieDetailSkeleton() {
   return (
     <main
-      className="min-h-screen bg-background text-foreground"
+      className="min-h-screen bg-background text-foreground pt-14"
       aria-busy="true"
       aria-live="polite"
     >
@@ -91,12 +144,30 @@ export default function WatchMovieDetailSkeleton() {
           "lg:pt-[clamp(18rem,31vh,24rem)] lg:pb-24",
         ].join(" ")}
       >
-        {/* Same visual footprint as the real backdrop region. */}
         <div
           className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[min(62rem,100svh)] overflow-hidden bg-surface max-[47.99rem]:h-[34rem]"
           aria-hidden="true"
         >
-          <div className="absolute inset-0 animate-pulse bg-skeleton/70" />
+          <div className="absolute inset-0 animate-pulse bg-skeleton/65 motion-reduce:animate-none" />
+
+          <div
+            className="absolute inset-0 mix-blend-multiply opacity-[.24] dark:opacity-[.3] max-[47.99rem]:opacity-[.18] max-[47.99rem]:dark:opacity-[.23]"
+            style={{
+              backgroundImage: [
+                "repeating-linear-gradient(to right, rgba(0,0,0,0.34) 0 1px, transparent 1px 4px)",
+                "repeating-linear-gradient(to bottom, rgba(0,0,0,0.28) 0 1px, transparent 1px 4px)",
+              ].join(", "),
+            }}
+          />
+
+          <div
+            className="absolute inset-0 mix-blend-multiply opacity-[.18] dark:opacity-[.24] max-[47.99rem]:opacity-[.14] max-[47.99rem]:dark:opacity-[.18]"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 1.5px 1.5px, rgba(0,0,0,0.72) 0 0.72px, rgba(0,0,0,0.2) 0.73px 1.1px, transparent 1.15px)",
+              backgroundSize: "4px 4px",
+            }}
+          />
 
           <div
             className={[
@@ -114,46 +185,54 @@ export default function WatchMovieDetailSkeleton() {
 
         <div
           className={[
-            "relative z-2 mx-auto grid w-[min(calc(100%_-_2rem),76rem)] gap-8",
-            "sm:w-[min(calc(100%_-_3rem),76rem)]",
+            "relative z-2 mx-auto grid w-[min(calc(100%_-_2rem),72rem)] gap-8",
+            "sm:w-[min(calc(100%_-_3rem),72rem)]",
             "md:grid-cols-[13rem_minmax(0,1fr)] md:items-start",
-            "lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-12",
+            "lg:grid-cols-[15rem_minmax(0,1fr)]",
           ].join(" ")}
         >
-          {/* Poster column — same width/radius and desktop offset as WatchMovieInfo. */}
-          <aside className="md:pt-10">
+          <aside className="posterCol">
             <div
               className={[
                 BLOCK,
-                "aspect-[2/3] w-[min(42vw,11rem)] rounded-[1.35rem]",
-                "shadow-[0_24px_70px_rgb(0_0_0/12%)]",
+                "aspect-[2/3] w-[min(42vw,11rem)] overflow-hidden rounded-[1.35rem]",
+                "shadow-[0_24px_70px_rgb(0_0_0/25%)]",
                 "md:w-full md:rounded-[1.6rem]",
               ].join(" ")}
             />
 
-            {/* Desktop-only movie synopsis mirrors the real aside. */}
             <div className="mt-5 hidden md:block">
-              <Line className="h-3 w-28" />
-              <div className="mt-3 space-y-2.5">
-                <Line className="h-4 w-full" />
-                <Line className="h-4 w-[96%]" />
-                <Line className="h-4 w-[90%]" />
-                <Line className="h-4 w-[82%]" />
-                <Line className="h-4 w-[68%]" />
+              <LabelSkeleton width="w-28" />
+
+              <div className="mt-3">
+                <ParagraphSkeleton
+                  widths={[
+                    "w-full",
+                    "w-[97%]",
+                    "w-[94%]",
+                    "w-[91%]",
+                    "w-[87%]",
+                    "w-[83%]",
+                    "w-[78%]",
+                    "w-[72%]",
+                    "w-[60%]",
+                  ]}
+                />
               </div>
             </div>
           </aside>
 
-          {/* Main movie column. */}
-          <div className="min-w-0 max-w-4xl">
-            {/* Back pill */}
-            <Pill className="h-8 w-28" />
+          <div className="min-w-0 backdrop-blur-md p-3 md:p-5 lg:p-7 rounded-3xl border border-border/25 bg-card/20">
+            {/* One-line title footprint; actual wrapping remains data-dependent. */}
+            <div className="flex h-[clamp(1.7rem,5.675vw,2.27rem)] items-center">
+              <Line className="h-[68%] w-[min(100%,34rem)]" />
+            </div>
 
-            {/* Movie name / original name */}
-            <Line className="mt-5 h-10 w-[min(100%,34rem)] sm:h-12" />
-            <Line className="mt-3 h-5 w-[min(78%,22rem)] sm:h-6" />
+            {/* originalName is optional in the real UI. */}
+            <div className="mt-3 flex h-7 items-center">
+              <Line className="h-4 w-[min(78%,22rem)] sm:h-[1.125rem]" />
+            </div>
 
-            {/* Badges */}
             <div className="mt-6 flex flex-wrap gap-2">
               <Pill className="h-7 w-14" />
               <Pill className="h-7 w-20" />
@@ -162,40 +241,43 @@ export default function WatchMovieDetailSkeleton() {
               <Pill className="h-7 w-20" />
             </div>
 
-            {/* Mobile-only synopsis mirrors the real md:hidden block. */}
             <div className="mt-6 md:hidden">
-              <Line className="h-3 w-28" />
-              <div className="mt-3 space-y-2.5">
-                <Line className="h-4 w-full" />
-                <Line className="h-4 w-[94%]" />
-                <Line className="h-4 w-[86%]" />
-                <Line className="h-4 w-[70%]" />
+              <LabelSkeleton width="w-28" />
+
+              <div className="mt-3">
+                <ParagraphSkeleton
+                  widths={[
+                    "w-full",
+                    "w-[97%]",
+                    "w-[93%]",
+                    "w-[88%]",
+                    "w-[81%]",
+                    "w-[69%]",
+                  ]}
+                />
               </div>
             </div>
 
-            {/* Watch + trailer buttons */}
             <div className="mt-7 flex flex-wrap items-start gap-3">
-              <Pill className="h-12 w-32" />
-              <Pill className="h-12 w-36" />
+              <ActionSkeleton label="Xem phim" icon="fad fa-play" />
+              <ActionSkeleton label="Xem Trailer" icon="fad fa-play-circle" />
             </div>
 
-            {/* Same 1 → 2 → 3-column fact grid as the rendered UI. */}
             <dl className="mt-10 grid gap-x-8 gap-y-4 sm:grid-cols-2 xl:grid-cols-3">
-              <DetailFactSkeleton pills />
-              <DetailFactSkeleton pills />
-              <DetailFactSkeleton pills />
+              <DetailGroupSkeleton widths={["w-20", "w-24"]} />
+              <DetailGroupSkeleton widths={["w-20", "w-24"]} />
+              <DetailGroupSkeleton widths={["w-20", "w-24"]} />
 
-              <DetailFactSkeleton />
-              <DetailFactSkeleton />
-              <DetailFactSkeleton />
-              <DetailFactSkeleton />
-              <DetailFactSkeleton />
-              <DetailFactSkeleton />
-              <DetailFactSkeleton />
-              <DetailFactSkeleton />
+              <DetailFactSkeleton width="w-24" />
+              <DetailFactSkeleton width="w-16" />
+              <DetailFactSkeleton width="w-28" />
+              <DetailFactSkeleton width="w-[min(100%,10rem)]" />
+              <DetailFactSkeleton width="w-full" />
+              <DetailFactSkeleton width="w-28" />
+              <DetailFactSkeleton width="w-24" />
+              <DetailFactSkeleton width="w-24" />
             </dl>
 
-            {/* Episode list lives inside the main column in the real detail UI. */}
             <div className="mt-12 border-t border-border pt-10 sm:mt-14">
               <EpisodeListSkeleton />
             </div>

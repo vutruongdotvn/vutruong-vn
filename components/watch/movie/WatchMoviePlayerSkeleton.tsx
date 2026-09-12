@@ -1,7 +1,25 @@
-const BLOCK = "animate-pulse bg-skeleton";
+const BLOCK = "animate-pulse bg-skeleton motion-reduce:animate-none";
 
 function Line({ className }: { className: string }) {
   return <div className={`${BLOCK} rounded-lg ${className}`} />;
+}
+
+function ActionSkeleton({
+  label,
+  icon,
+}: {
+  label: string;
+  icon: string;
+}) {
+  return (
+    <div
+      className={`${BLOCK} inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border/55 px-6 text-sm font-semibold`}
+      aria-hidden="true"
+    >
+      <i className={`${icon} invisible text-xs`} aria-hidden="true" />
+      <span className="invisible">{label}</span>
+    </div>
+  );
 }
 
 function EpisodeSkeletons() {
@@ -18,11 +36,12 @@ function EpisodeSkeletons() {
 }
 
 /**
- * Structural mirror of WatchMoviePlayer's default (collapsed) state.
+ * Structural mirror of WatchMoviePlayer's initial collapsed state.
  *
- * Keep this component aligned with the real player layout only. Dynamic blocks
- * that do not always exist (alternate servers and expanded metadata panels) are
- * intentionally omitted to avoid skeleton-only layout shifts.
+ * The theater, 72rem content container, responsive paddings, poster grid,
+ * controls and episode grid match the real component. Blocks whose existence
+ * depends on fetched data (poster availability, alternate servers, episode
+ * count and intrinsic text wrapping) cannot be known before the query resolves.
  */
 export default function WatchMoviePlayerSkeleton() {
   return (
@@ -33,51 +52,70 @@ export default function WatchMoviePlayerSkeleton() {
     >
       <span className="sr-only">Đang chuẩn bị trình phát…</span>
 
-      {/* Mirrors the real theater exactly: same wrapper, width and aspect ratio. */}
       <section className="bg-[#0a0d11] pt-14">
-        <div className="mx-auto w-full max-w-[80rem]">
+        <div className="mx-auto w-full max-w-[90rem]">
+          {/* WatchRemotePlayer itself is exactly aspect-video. */}
           <div className="aspect-video w-full bg-black" />
         </div>
       </section>
 
-      {/* Same spacing as WatchMoviePlayer's content container. */}
-      <div className="mx-auto w-full max-w-[80rem] px-4 pt-5 pb-24 md:pb-8 sm:px-6 sm:pt-6">
+      <div className="mx-auto w-full max-w-[72rem] px-4 pt-5 pb-24 md:pb-8 sm:px-6 sm:pt-6">
         <section className="grid items-start gap-7 md:grid-cols-[11rem_minmax(0,1fr)] lg:grid-cols-[12rem_minmax(0,1fr)]">
-          {/* Real artwork is hidden below md, so the skeleton follows it 1:1. */}
-          <div className="mx-auto hidden w-36 md:mx-0 md:block md:w-full">
+          {/* Mirrors the common showArtwork && thumbUrl branch. */}
+          <div className="mx-auto w-36 md:mx-0 md:w-full hidden md:block">
             <div
               className={`${BLOCK} aspect-[2/3] overflow-hidden rounded-xl shadow-[0_18px_50px_rgb(0_0_0/18%)]`}
             />
           </div>
 
           <div className="min-w-0">
-            {/* Movie identity */}
-            <Line className="h-7 w-[min(88%,34rem)] sm:h-9" />
-            <Line className="mt-2 h-5 w-[min(62%,20rem)]" />
+            {/* h1: text-[clamp(1.5rem,3vw,2rem)] + leading-[1.15]. */}
+            <div className="flex h-[clamp(1.725rem,3.45vw,2.3rem)] items-center">
+              <Line className="h-[68%] w-[min(88%,34rem)]" />
+            </div>
 
-            {/* Nội dung phim: same card, padding, radius and spacing as the real UI. */}
-            <div className="mt-3 max-w-5xl rounded-xl border border-border bg-white/75 p-3 backdrop-blur-md dark:border-border/50 dark:bg-card sm:p-4">
-              <Line className="h-4 w-28" />
+            {/* originalName: text-sm -> sm:text-base. */}
+            <div className="mt-2 flex h-5 items-center sm:h-6">
+              <Line className="h-3.5 w-[min(62%,20rem)] sm:h-4" />
+            </div>
 
-              <div className="mt-2 space-y-2.5">
-                <Line className="h-4 w-full" />
-                <Line className="h-4 w-[96%]" />
-                <Line className="h-4 w-[78%]" />
+            {/* Same description card geometry as the real <p>. */}
+            <div className="mt-3 max-w-5xl rounded-xl border border-border bg-white/75 p-3 text-sm leading-6 backdrop-blur-md dark:border-border/50 dark:bg-card sm:p-4 sm:text-[.9375rem] sm:leading-6">
+              <div className="mb-1.5 flex h-5 items-center">
+                <Line className="h-3.5 w-28" />
+              </div>
+
+              <div>
+                <div className="flex h-6 items-center">
+                  <Line className="h-3.5 w-full" />
+                </div>
+                <div className="flex h-6 items-center">
+                  <Line className="h-3.5 w-[97%]" />
+                </div>
+                <div className="flex h-6 items-center">
+                  <Line className="h-3.5 w-[92%]" />
+                </div>
+                <div className="flex h-6 items-center">
+                  <Line className="h-3.5 w-[78%]" />
+                </div>
               </div>
             </div>
 
-            {/* Same two controls visible while details are collapsed. */}
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <div className={`${BLOCK} h-12 w-[7.5rem] rounded-xl border border-border/55`} />
-              <div className={`${BLOCK} h-12 w-32 rounded-xl border border-border/55`} />
+              <ActionSkeleton label="Quay lại" icon="fad fa-arrow-left" />
+              <ActionSkeleton label="Xem thêm" icon="fad fa-expand" />
             </div>
 
-            {/* Episode list belongs inside the right content column in the real UI. */}
+            {/* detailsExpanded starts false, so expanded InfoPanels are omitted. */}
             <section className="mt-12" aria-hidden="true">
               <div className="flex flex-wrap items-center justify-between gap-5">
-                <Line className="h-6 w-44 sm:h-7 sm:w-52" />
+                {/* h2: text-base -> sm:text-xl. */}
+                <div className="flex h-6 items-center sm:h-7">
+                  <Line className="h-4 w-40 sm:h-5 sm:w-48" />
+                </div>
               </div>
 
+              {/* Alternate-source controls are data-dependent and intentionally omitted. */}
               <EpisodeSkeletons />
             </section>
           </div>
