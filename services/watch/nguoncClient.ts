@@ -238,7 +238,8 @@ export class WatchNguoncClient {
         this.options.verificationTimeoutMs ?? 13_000);
       let permit: WatchAccessPermit;
       try {
-        // Runs AFTER queue admission, and again for every new GET. No cached grant.
+        // Runs after queue admission. The access controller reuses its short-lived
+        // RAM permit and performs a new RPC only after expiry or invalidation.
         permit = await waitForWatchOperation(this.requireAccess(), signal);
       } catch (error) {
         if (signal.aborted) throw signal.reason ?? cancelled();

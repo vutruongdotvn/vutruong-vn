@@ -25,9 +25,8 @@ export default function WatchAccessProvider({ children }: { children: ReactNode 
   const controller = runtime.controller;
   const state = useSyncExternalStore(controller.subscribe, controller.getSnapshot, controller.getServerSnapshot);
 
-  // Intentionally document-scoped, not route-scoped. The runtime owns one Auth
-  // listener, one current-profile channel and the existing bounded rechecks.
-  // Keeping those alive off-route is what makes remembered permissions safe.
+  // Route-scoped: leaving /watch releases the Auth listener, Realtime channel
+  // and timers. Returning starts from a clean state and verifies once again.
   useEffect(() => {
     runtime.start();
     // Returning after a genuine verification error may retry once. Known
@@ -35,6 +34,7 @@ export default function WatchAccessProvider({ children }: { children: ReactNode 
     if (controller.getSnapshot().phase === "error") {
       controller.recheckOnReturn();
     }
+    return () => runtime.stop();
   }, [runtime, controller]);
 
   const value = useMemo(

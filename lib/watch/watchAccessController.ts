@@ -8,6 +8,18 @@ export const WATCH_INITIAL_ACCESS: WatchAccessState = Object.freeze({
   isChecking: false, checkedAt: null, revision: 0, error: null,
 });
 
+export const WATCH_ACCESS_POLICY = Object.freeze({
+  timeoutMs: 12_000,
+  freshnessMs: 5 * 60_000,
+  heartbeatMs: 15 * 60_000,
+});
+
+type WatchAccessControllerOptions = {
+  timeoutMs?: number;
+  freshnessMs?: number;
+  heartbeatMs?: number;
+};
+
 export class WatchAccessError extends Error {
   constructor(public readonly code: "session_invalid" | "rpc_missing" | "unavailable" | "invalid_response") {
     super(code);
@@ -46,8 +58,12 @@ export class WatchAccessController {
 
   constructor(
     private readonly transport: WatchAccessTransport,
-    private readonly options: { timeoutMs?: number; heartbeatMs?: number } = {},
-  ) {}
+    options: WatchAccessControllerOptions = {},
+  ) {
+    this.policy = { ...WATCH_ACCESS_POLICY, ...options };
+  }
+
+  private readonly policy: Readonly<Required<WatchAccessControllerOptions>>;
 
   getSnapshot = () => this.state;
   getServerSnapshot = () => WATCH_INITIAL_ACCESS;
@@ -78,6 +94,21 @@ export class WatchAccessController {
     this.permitAbort.abort();
     this.permitAbort = new AbortController();
     this.state = { ...this.state, revision: this.state.revision + 1 };
+  }
+
+  private hasFreshDecision(now = Date.now()) {
+    return this.state.phase !== "checking" && this.state.phase !== "error"
+      && this.state.checkedAt !== null
+      && now - this.state.checkedAt < this.policy.freshnessMs;
+  }
+
+  private currentPermit(): WatchAccessPermit | null {
+    if (!this.active || this.state.phase !== "allowed" || !this.hasFreshDecision()
+      || !this.state.userId || !this.state.accessKind || this.permitAbort.signal.aborted) {
+      return null;
+    }
+    return { userId: this.state.userId, accessKind: this.state.accessKind,
+      revision: this.state.revision, signal: this.permitAbort.signal };
   }
 
   private schedule() {
@@ -156,9 +187,10 @@ export class WatchAccessController {
 
   recheckOnReturn = () => {
     if (!this.active) return;
-    // focus and pageshow often fire together; coalesce already-completed checks too.
-    if (this.state.phase !== "error" && this.state.phase !== "checking"
-      && this.state.checkedAt !== null && Date.now() - this.state.checkedAt < 1_000) return;
+    // focus, visibilitychange and pageshow often fire together. A recent
+    // authoritative decision is still valid; important auth/profile/network
+    // events invalidate it through their dedicated handlers.
+    if (this.hasFreshDecision()) return;
     void this.recheck();
   };
 
@@ -174,7 +206,7 @@ export class WatchAccessController {
     const timeout = setTimeout(() => {
       timedOut = true;
       controller.abort(new DOMException("Watch verification timed out", "TimeoutError"));
-    }, this.options.timeoutMs ?? 12_000);
+    }, this.policy.timeoutMs);
 
     // Begin in a microtask so pending is assigned before any transport can finish.
     const promise = Promise.resolve().then(async () => {
@@ -206,7 +238,7 @@ export class WatchAccessController {
           this.heartbeat = setTimeout(() => {
             this.heartbeat = null;
             void this.recheck();
-          }, this.options.heartbeatMs ?? 60_000);
+          }, this.policy.heartbeatMs);
         }
         return result;
       } catch (error) {
@@ -233,14 +265,18 @@ export class WatchAccessController {
   };
 
   requireAccess = async (): Promise<WatchAccessPermit> => {
+    const cached = this.currentPermit();
+    if (cached) return cached;
+
     const version = this.version;
     const result = await this.recheck();
     if (!result?.allowed || !this.active || version !== this.version || this.state.phase !== "allowed"
       || this.state.userId !== result.userId || !this.state.accessKind) {
       throw new WatchAccessError("unavailable");
     }
-    return { userId: result.userId, accessKind: this.state.accessKind,
-      revision: this.state.revision, signal: this.permitAbort.signal };
+    const permit = this.currentPermit();
+    if (!permit) throw new WatchAccessError("unavailable");
+    return permit;
   };
 }
 

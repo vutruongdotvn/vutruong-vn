@@ -196,7 +196,8 @@ function WatchBlockedCard({ access, view }: { access: WatchAccessState; view: Ac
 
 /**
  * Chặn toàn bộ cây Watch cho tới khi RPC xác nhận admin/approved user.
- * Mọi request phim vẫn phải gọi requireAccess() ngay trước khi fetch.
+ * Mọi request phim vẫn kiểm tra permit ngay trước khi fetch; RPC chỉ chạy khi
+ * permit hết freshness window hoặc bị một sự kiện bảo mật vô hiệu hóa.
  */
 export default function WatchGuard({ children }: { children: ReactNode }) {
   const access = useWatchAccess();

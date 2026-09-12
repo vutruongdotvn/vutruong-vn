@@ -6,10 +6,9 @@ const RUNTIME_KEY = Symbol.for("vtzone.watch.access.runtime.v1");
 let channelSequence = 0;
 
 /**
- * One live auth monitor per browser document, started only on first Watch mount.
- *
- * Route unmounts do NOT dispose it: logout/profile events must still invalidate
- * the remembered state on / or /blog. It stores no movie data or durable role.
+ * One live auth monitor while the Watch route tree is mounted. The singleton
+ * object survives route/StrictMode remounts, but stop() releases every listener,
+ * timer and Realtime channel as soon as the user leaves /watch.
  */
 export class WatchAccessRuntime {
   readonly controller: WatchAccessController;
@@ -121,11 +120,7 @@ export class WatchAccessRuntime {
     }
   }
 
-  /**
-   * Used only when the Supabase client is replaced (for example HMR) or in tests.
-   * Ordinary provider cleanup must NOT call this method.
-   */
-  destroy() {
+  stop() {
     if (!this.started) return;
 
     this.started = false;
@@ -140,6 +135,11 @@ export class WatchAccessRuntime {
     window.removeEventListener("offline", this.onOffline);
     document.removeEventListener("visibilitychange", this.onVisible);
     this.controller.stop();
+  }
+
+  /** Used when the Supabase client is replaced, for example during HMR. */
+  destroy() {
+    this.stop();
   }
 }
 

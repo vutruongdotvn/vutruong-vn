@@ -178,8 +178,8 @@ export class WatchQueryScope {
   }
 
   /** Remote images/players are assigned by native browser elements, outside the
-   * JSON transport. Obtain a fresh permit before assigning ANY media src. A1
-   * coalesces simultaneous checks; no second auth/realtime subscription.
+   * JSON transport. Validate the current RAM permit before assigning ANY media
+   * src; expiry and invalidation still trigger one coalesced authoritative RPC.
    */
   async permitMedia(consumerSignal: AbortSignal): Promise<WatchAccessPermit> {
     const epoch = this.state.epoch;
