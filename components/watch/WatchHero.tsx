@@ -32,7 +32,7 @@ const HERO_ROOT_CLASS = [
 const HERO_ARTICLE_CLASS = [
   "relative box-border flex min-h-[max(46rem,100svh)] items-end overflow-hidden",
   "bg-background pt-32 pb-56",
-  "max-[47.99rem]:min-h-[40rem]",
+  "max-[47.99rem]:min-h-[33rem]",
   "max-[47.99rem]:pt-24 max-[47.99rem]:pb-20",
 ].join(" ");
 
@@ -397,10 +397,10 @@ export default function WatchHero() {
                   className={[
                     "pointer-events-none absolute inset-0 z-1",
                     "bg-gradient-to-t from-[var(--background)] from-0%",
-                    "via-[color-mix(in_srgb,var(--background)_88%,transparent)] via-24%",
-                    "to-transparent to-48%",
+                    "via-[color-mix(in_srgb,var(--background)_55%,transparent)] via-24%",
+                    "to-transparent to-50%",
                     "max-[47.99rem]:via-[color-mix(in_srgb,var(--background)_94%,transparent)]",
-                    "max-[47.99rem]:via-34% max-[47.99rem]:to-65%",
+                    "max-[47.99rem]:via-10% max-[47.99rem]:to-35%",
                   ].join(" ")}
                   aria-hidden="true"
                 />

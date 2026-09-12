@@ -54,7 +54,7 @@ export default function WatchEpisodeList({ movieSlug, episodes, currentSegment }
         )} */}
       </div>
 
-      <nav className="mt-7 flex flex-wrap gap-2" aria-label="Các tập phim">
+      <nav className="mt-7 grid grid-cols-3 sm:grid-cols-4 gap-1" aria-label="Các tập phim">
         {visibleEpisodes.map(episode => {
           const href = watchEpisodeHref(movieSlug, episode.segment);
           if (!href) return null;
@@ -68,12 +68,12 @@ export default function WatchEpisodeList({ movieSlug, episodes, currentSegment }
               prefetch={false}
               aria-current={isCurrent ? "page" : undefined}
               className={[
-                "inline-flex min-h-10 items-center justify-center gap-2 rounded-full border px-4",
+                "inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border px-4",
                 "text-sm font-semibold no-underline transition-colors",
                 "focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2",
                 isCurrent
                   ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-card text-foreground hover:bg-accent",
+                  : "border-border bg-card text-foreground hover:bg-accent hover:border-black/15 dark:hover:border-white/15",
               ].join(" ")}
             >
               {episodeLabel(episode)}

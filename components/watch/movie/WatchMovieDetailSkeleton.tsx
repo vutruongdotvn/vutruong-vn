@@ -5,7 +5,7 @@ function Line({ className }: { className: string }) {
 }
 
 function Pill({ className = "h-8 w-20" }: { className?: string }) {
-  return <div className={`${BLOCK} rounded-full ${className}`} />;
+  return <div className={`${BLOCK} rounded-lg ${className}`} />;
 }
 
 function LabelSkeleton({ width = "w-20" }: { width?: string }) {
@@ -100,17 +100,17 @@ function EpisodeListSkeleton() {
         </div>
       </div>
 
-      <nav className="mt-7 flex flex-wrap gap-2" aria-hidden="true">
+      <nav className="mt-7 grid grid-cols-3 sm:grid-cols-4 gap-1" aria-hidden="true">
         {Array.from({ length: 18 }, (_, index) => (
           <Pill
             key={index}
             className={[
               "h-10",
               index % 6 === 0
-                ? "w-28"
+                ? "w-full"
                 : index % 4 === 0
-                  ? "w-24"
-                  : "w-20",
+                  ? "w-full"
+                  : "w-full",
             ].join(" ")}
           />
         ))}
@@ -208,14 +208,8 @@ export default function WatchMovieDetailSkeleton() {
                 <ParagraphSkeleton
                   widths={[
                     "w-full",
-                    "w-[97%]",
-                    "w-[94%]",
-                    "w-[91%]",
-                    "w-[87%]",
-                    "w-[83%]",
-                    "w-[78%]",
-                    "w-[72%]",
-                    "w-[60%]",
+                    "w-full",
+                    "w-full",
                   ]}
                 />
               </div>

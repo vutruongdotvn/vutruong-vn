@@ -509,7 +509,7 @@ export default function WatchMoviePlayer({ slug, episodeSegment }: Props) {
                 id="watch-player-movie-title"
                 className="m-0 text-[clamp(1.5rem,3vw,2rem)] font-extrabold leading-[1.15] tracking-tight text-balance"
               >
-                {manifest.movieName}
+                {manifest.movieName} | {episodeDisplayLabel}
               </h1>
 
               {manifest.originalName && (
@@ -582,7 +582,7 @@ export default function WatchMoviePlayer({ slug, episodeSegment }: Props) {
                 >
                   <span className="block font-bold mb-1.5 tracking-wider text-sm">NỘI DUNG PHIM</span>
 
-                  {manifest.description ?? "NguồnC chưa cung cấp mô tả cho phim này."}
+                  {manifest.description ?? "Đang cập nhật."}
                 </p>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">

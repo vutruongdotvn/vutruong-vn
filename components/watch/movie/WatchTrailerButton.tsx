@@ -178,7 +178,7 @@ export default function WatchTrailerButton({ movieName, trailerUrl }: Props) {
         type="button"
         className={BUTTON_CLASS}
         disabled={!safeUrl || opening}
-        title={!safeUrl ? "NguồnC chưa cung cấp trailer cho phim này" : undefined}
+        title={!safeUrl ? "Chưa có trailer cho phim này" : undefined}
         aria-label={`Xem trailer ${movieName}`}
         aria-describedby={error ? "watch-trailer-error" : undefined}
         onClick={() => void openTrailer()}
@@ -187,7 +187,7 @@ export default function WatchTrailerButton({ movieName, trailerUrl }: Props) {
           className={opening ? "fad fa-spinner-third fa-spin" : "fad fa-play-circle"}
           aria-hidden="true"
         />
-        {opening ? "Đang mở…" : "Xem Trailer"}
+        {opening ? "Đang mở" : "Xem Trailer"}
       </button>
 
       {error && (
